@@ -1,0 +1,113 @@
+#include "include/BeanFactory/impl/McAbstractBeanFactory.h"
+
+#include <QMutex>
+#include <QDebug>
+
+#include "include/BeanDefinition/impl/McRootBeanDefinition.h"
+#include "include/BeanFactory/impl/McBeanReference.h"
+
+MC_BEGIN_NAMESPACE
+
+MC_DECL_PRIVATE_DATA(McAbstractBeanFactory)
+QMap<QString, IMcBeanDefinitionPtr> map;
+QMutex mtx{ QMutex::Recursive };
+QThread *targetThread{nullptr};     //!< 生成对象的目标线程
+MC_DECL_PRIVATE_DATA_END
+
+McAbstractBeanFactory::McAbstractBeanFactory(QObject *parent)
+    : QObject(parent)
+{
+    MC_NEW_PRIVATE_DATA(McAbstractBeanFactory)
+}
+
+McAbstractBeanFactory::~McAbstractBeanFactory() {
+}
+
+QObjectPtr McAbstractBeanFactory::getBean(const QString &name, QThread *thread) noexcept {
+    auto var = getBeanToVariant(name, thread);
+    if(!var.isValid())
+        return QObjectPtr();
+    return var.value<QObjectPtr>();
+}
+
+QVariant McAbstractBeanFactory::getBeanToVariant(const QString &name, QThread *thread)  noexcept {
+    QMutexLocker locker(&d->mtx);
+    d->targetThread = thread;
+    auto beanDefinition = d->map.value(name);
+    if (beanDefinition == nullptr) {
+        qCritical() << "No bean named " << name << " is defined";
+        return QVariant();
+    }
+    auto beanVar = beanDefinition->getBean();
+    if (!beanVar.isValid()) {	//!< 如果bean不存在
+        beanVar = doCreate(beanDefinition, d->targetThread);	//!< 创建
+        if (!beanVar.isValid()) {
+            qWarning() << QString("failed to create bean '%1'").arg(name);
+            return QVariant();
+        }
+        if(beanDefinition->isSingleton())
+            beanDefinition->setBean(beanVar);		//!< 如果为单例时，则放进beanDefinition，以达到复用。
+    }
+    return beanVar;
+}
+
+bool McAbstractBeanFactory::containsBean(const QString &name) noexcept {
+    QMutexLocker locker(&d->mtx);
+    return d->map.contains(name);
+}
+
+bool McAbstractBeanFactory::isSingleton(const QString &name) noexcept {
+    QMutexLocker locker(&d->mtx);
+    if(!d->map.contains(name)) {
+        return false;
+    }
+    auto def = d->map.value(name);
+    return def->isSingleton();
+}
+
+void McAbstractBeanFactory::registerBeanDefinition(
+        const QString &name, IMcBeanDefinitionConstPtrRef beanDefinition) noexcept {
+    
+    QMutexLocker locker(&d->mtx);
+    //! 如果存在则替换
+    d->map.insert(name, beanDefinition);
+}
+
+bool McAbstractBeanFactory::isContained(const QString &name) noexcept {
+    return containsBean(name);
+}
+
+QMap<QString, IMcBeanDefinitionPtr> McAbstractBeanFactory::getBeanDefinitions() noexcept {
+    QMutexLocker locker(&d->mtx);
+    return d->map;
+}
+
+QObjectPtr McAbstractBeanFactory::resolveBeanReference(McBeanReferenceConstPtrRef beanRef) noexcept {
+    auto var = resolveBeanReferenceToQVariant(beanRef);
+    if(!var.isValid())
+        return QObjectPtr();
+    return var.value<QObjectPtr>();
+}
+
+QVariant McAbstractBeanFactory::resolveBeanReferenceToQVariant(McBeanReferenceConstPtrRef beanRef) noexcept {
+    if (!beanRef) {
+        qCritical() << "beanReference not exists";
+        return QVariant();
+    }
+    auto pluginPath = beanRef->getPluginPath();
+    if(!pluginPath.isEmpty()) {
+        McRootBeanDefinitionPtr def = McRootBeanDefinitionPtr::create();
+        def->setPluginPath(pluginPath);
+        auto beanVar = doCreate(def, d->targetThread);
+        if (!beanVar.isValid()) {
+            qWarning() << QString("failed to create bean of plugin '%1'").arg(pluginPath);
+            return QVariant();
+        }
+        return beanVar;
+    }else{
+        //! 调用getBeanToVariant方法，根据bean引用的名称获取实例
+        return getBeanToVariant(beanRef->getName(), d->targetThread);
+    }
+}
+
+MC_END_NAMESPACE
