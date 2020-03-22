@@ -57,3 +57,28 @@ Q_PROPERTY(InterfacePtr interface MEMBER m_interface) // 注意这里的类型�
 
 以上都可在Test代码中找到相应用法用例。
 
+# 注意
+- 不能存在一样的bean name，如果存在，则只会保留最后一个。在XML文件中最后面的为最后一个，但是用声明式方法时无法确保先后
+- 不要声明一个beanName为this的bean
+- 受QT自身插件系统性质影响，同一个插件在同一个程序中只能创建一次，即不能将同一个插件声明两次bean：
+~~~
+<bean plugin="p1"></bean>
+<bean plugin="p1"></bean>
+~~~
+~~~
+<bean plugin="p1"></bean>
+<list plugins="包含文件p1的路径"></list>
+~~~
+即上面的用法是错误的，因为QT的插件在同一个程序中是单例的，这会造成多次析构同一个插件。但可以将同一个插件bean多处使用。
+- 框架提供返回单个model的方法，但是返回的类型只能为QObject\*或者QAbstractItemModel\*，如果你需要一次性返回多个model，那么可以使用QT内建类型QVariantList或者QVariantMap来实现，即函数的返回值使用这两个中的任意一种。如果使用QVariantList，那么可以当做JS中的Array，如果使用QVariantMap，则可当做JS中的object
+- getBean时生成的bean的生存线程问题。由于QT对线程的强控制，所以在getBean之后可能会存在线程冲突问题，所以容器内使用自动和手动指定线程的两种形式:
+   1. 如果指定的目标线程为空，那么获取到的bean及其QObject属性都将生存在调用getBean时的线程中。注意: 
+      - 这里的getBean指的是IMcBeanFactory的getBean，而不是IMcApplicationContext。因为IMcApplicationContext存在refresh函数自动加载bean，此时bean的生存线程将是调用refresh时的线程，如果不调用refresh，那么bean的生存线程才是getBean时的线程
+      - 有如下形式: 
+         1. 如果在次线程中创建appContext，如果在次线程中调用getBean，那么获取到的bean的线程为次线程。如果在主线程调用getBean，那么获取到的bean的线程为主线程。
+         2. 如果在次线程中创建appContext，如果在次线程中调用了refresh函数，那么getBean获取到的bean的线程永远在次线程，反之，如果在主线程中调用refresh，那么bean的线程在主线程。
+         3. 上面两种情况只适用于将isSingleton设置为true时的情况，如果isSingleton为false，那么每次调用getBean时都会创建一个新对象，此时获取到的bean就永远为调用getBean时的线程。
+   2. 可以在调用getBean或refresh函数时指定一个目标线程，那么目标bean的生存线程将为指定的线程。同样的，只适用于isSingleton为true的情况。同时，如果isSingleton指定为true，但是在次线程中调用了refresh函数，就算在主线程中调用getBean时指定了目标线程也不会起作用，因为只能在对象创建时才能指定线程。
+   3. 提供上面形式的线程指定方式的主要目的在于，如果XML中声明的对象结构过于复杂，对象的创建可能耗时太长，那么可以在子线程中完成创建，并且能指定目标线程。
+   
+   
