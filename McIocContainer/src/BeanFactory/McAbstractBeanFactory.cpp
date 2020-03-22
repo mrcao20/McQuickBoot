@@ -9,7 +9,7 @@
 MC_BEGIN_NAMESPACE
 
 MC_DECL_PRIVATE_DATA(McAbstractBeanFactory)
-QMap<QString, IMcBeanDefinitionPtr> map;
+QHash<QString, IMcBeanDefinitionPtr> hash;
 QMutex mtx{ QMutex::Recursive };
 QThread *targetThread{nullptr};     //!< 生成对象的目标线程
 MC_DECL_PRIVATE_DATA_END
@@ -33,7 +33,7 @@ QObjectPtr McAbstractBeanFactory::getBean(const QString &name, QThread *thread) 
 QVariant McAbstractBeanFactory::getBeanToVariant(const QString &name, QThread *thread)  noexcept {
     QMutexLocker locker(&d->mtx);
     d->targetThread = thread;
-    auto beanDefinition = d->map.value(name);
+    auto beanDefinition = d->hash.value(name);
     if (beanDefinition == nullptr) {
         qCritical() << "No bean named " << name << " is defined";
         return QVariant();
@@ -53,15 +53,15 @@ QVariant McAbstractBeanFactory::getBeanToVariant(const QString &name, QThread *t
 
 bool McAbstractBeanFactory::containsBean(const QString &name) noexcept {
     QMutexLocker locker(&d->mtx);
-    return d->map.contains(name);
+    return d->hash.contains(name);
 }
 
 bool McAbstractBeanFactory::isSingleton(const QString &name) noexcept {
     QMutexLocker locker(&d->mtx);
-    if(!d->map.contains(name)) {
+    if(!d->hash.contains(name)) {
         return false;
     }
-    auto def = d->map.value(name);
+    auto def = d->hash.value(name);
     return def->isSingleton();
 }
 
@@ -70,16 +70,16 @@ void McAbstractBeanFactory::registerBeanDefinition(
     
     QMutexLocker locker(&d->mtx);
     //! 如果存在则替换
-    d->map.insert(name, beanDefinition);
+    d->hash.insert(name, beanDefinition);
 }
 
 bool McAbstractBeanFactory::isContained(const QString &name) noexcept {
     return containsBean(name);
 }
 
-QMap<QString, IMcBeanDefinitionPtr> McAbstractBeanFactory::getBeanDefinitions() noexcept {
+QHash<QString, IMcBeanDefinitionPtr> McAbstractBeanFactory::getBeanDefinitions() noexcept {
     QMutexLocker locker(&d->mtx);
-    return d->map;
+    return d->hash;
 }
 
 QObjectPtr McAbstractBeanFactory::resolveBeanReference(McBeanReferenceConstPtrRef beanRef) noexcept {

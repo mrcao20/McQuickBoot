@@ -61,21 +61,10 @@
 
 # define MC_AUTOWIRED		//!< 用于表示函数是否需要自动注入
 
-//! QML Socket
-# define MC_ON_OPEN
-# define MC_ON_CLOSE
-# define MC_ON_ERROR
-# define MC_ON_MESSAGE
-//!< end QML Socket
-
 #endif //! !Q_MOC_RUN
 
 //! Q_CLASSINFO
 #define MC_COMPONENT "Component"
-
-#define MC_CONTROLLER "Controller"
-#define MC_MODEL "Model"
-#define MC_QML_SOCKET "QmlSocket"
 
 #define MC_SINGLETON "isSingleton"
 #define MC_BEANNAME "beanName"

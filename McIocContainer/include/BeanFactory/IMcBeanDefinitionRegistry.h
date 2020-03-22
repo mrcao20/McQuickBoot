@@ -38,7 +38,7 @@ public:
      * 获取所有bean定义
      * \return 返回bean的定义的集合。key为beanName，value为bean定义
      */
-    virtual QMap<QString, IMcBeanDefinitionPtr> getBeanDefinitions() noexcept = 0;
+    virtual QHash<QString, IMcBeanDefinitionPtr> getBeanDefinitions() noexcept = 0;
 };
 
 MC_END_NAMESPACE

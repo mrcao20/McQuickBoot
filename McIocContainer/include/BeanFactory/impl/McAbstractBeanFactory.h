@@ -80,7 +80,7 @@ public:
      * \return bean定义的集合。
      * \see IMcBeanDefinitionRegistry
      */
-    QMap<QString, IMcBeanDefinitionPtr> getBeanDefinitions() noexcept override;
+    QHash<QString, IMcBeanDefinitionPtr> getBeanDefinitions() noexcept override;
     /*!
      * \brief resolveBeanReference
      * 

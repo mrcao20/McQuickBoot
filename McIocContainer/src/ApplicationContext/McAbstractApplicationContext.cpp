@@ -52,7 +52,7 @@ bool McAbstractApplicationContext::isContained(const QString &name) noexcept {
     return d->configurableBeanFactory->isContained(name);
 }
 
-QMap<QString, IMcBeanDefinitionPtr> McAbstractApplicationContext::getBeanDefinitions() noexcept {
+QHash<QString, IMcBeanDefinitionPtr> McAbstractApplicationContext::getBeanDefinitions() noexcept {
     return d->configurableBeanFactory->getBeanDefinitions();
 }
 

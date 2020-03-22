@@ -19,6 +19,7 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
     
     
+    //! XML注入方式
     IMcApplicationContextPtr appCon = McLocalPathApplicationContextPtr::create(
                 QStringList() << ":/myspring.xml" << ":/xmltest2.xml");
     appCon->refresh();
@@ -28,8 +29,10 @@ int main(int argc, char *argv[])
              << test->m_strMap << test->m_iMap;
     test->m_interface->say();
     test->m_interface.dynamicCast<Object>()->signal();
+    //!< end
     
     
+    //! 声明式注入方式
     appCon = McAnnotationApplicationContextPtr::create();
     appCon->refresh();
     var = appCon->getBeanToVariant("test");
@@ -37,6 +40,7 @@ int main(int argc, char *argv[])
     qDebug() << test << test->m_interface << appCon->isSingleton("test");
     test->m_interface->say();
     test->m_interface.dynamicCast<Object>()->signal();
+    //!< end
     
     
     QQmlApplicationEngine engine;

@@ -23,7 +23,7 @@ public:
     void registerBeanDefinition(const QString &name
                                 , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept override;
     bool isContained(const QString &name) noexcept override;
-    QMap<QString, IMcBeanDefinitionPtr> getBeanDefinitions() noexcept override;
+    QHash<QString, IMcBeanDefinitionPtr> getBeanDefinitions() noexcept override;
     void refresh(QThread *thread = nullptr) noexcept override;
     
 protected:

@@ -5,6 +5,7 @@
 #include <QSharedPointer>
 #include <QObject>
 
+#include "McIocVersion.h"
 #include "BeanFactory/McBeanGlobal.h"
 
 using QObjectPtr = QSharedPointer<QObject>;
