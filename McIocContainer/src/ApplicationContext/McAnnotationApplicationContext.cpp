@@ -65,7 +65,7 @@ void McAnnotationApplicationContext::insertRegistry(const QString &typeName) noe
             isSingleton = isTrue ? true : false;
         }
     }
-    if(beanNameIndex != 1) {
+    if(beanNameIndex != -1) {
         auto classInfo = metaObj->classInfo(beanNameIndex);
         beanName = classInfo.value();
     }

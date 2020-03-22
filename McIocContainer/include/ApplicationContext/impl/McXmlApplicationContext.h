@@ -30,3 +30,5 @@ public:
 };
 
 MC_END_NAMESPACE
+
+MC_FORWARD_DECL_CLASS(McXmlApplicationContext)

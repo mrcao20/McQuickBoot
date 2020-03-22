@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+    <bean name="test" class="IocTest">
+        <connect sender=" interface">
+            <signal>signal()</signal>
+            <receiver name="this"></receiver>
+            <slot name="slot()"></slot>
+            <ConnectionType>DirectConnection | UniqueConnection</ConnectionType>
+        </connect>
+        <property name="interface" ref="object"></property>
+        <list name="str">
+            <value>停封</value>
+            <value>薄纸</value>
+            <value>关系</value>
+        </list>
+        <list name="interfaces">
+            <ref bean="object"></ref>
+            <ref>object</ref>
+            <ref>object</ref>
+        </list>
+        <map name="strMap">
+            <entry key="jack" value="杰克"></entry>
+            <entry>
+                <key><value>rose</value></key>
+                <value>肉丝</value>
+            </entry>
+        </map>
+        <map name="iMap">
+            <entry>
+                <key><value>jack</value></key>
+                <value><ref>object</ref></value>
+            </entry>
+            <entry>
+                <key><value>rose</value></key>
+                <value><ref>object</ref></value>
+            </entry>
+        </map>
+    </bean>
+</beans>

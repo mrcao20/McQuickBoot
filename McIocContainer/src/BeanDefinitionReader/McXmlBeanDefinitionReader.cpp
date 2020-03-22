@@ -45,6 +45,7 @@ McXmlBeanDefinitionReader::~McXmlBeanDefinitionReader(){
 
 void McXmlBeanDefinitionReader::doReadBeanDefinition() noexcept {
     for(auto device : d->devices) {
+        device->seek(0);
         readBeanDefinition(device);
     }
 }

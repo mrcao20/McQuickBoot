@@ -53,8 +53,7 @@ void McAnnotationBeanDefinitionReader::injectProperty(
     
 	int count = metaObj->propertyCount();
 	for (int i = 0; i < count; ++i) {
-        int index = i + metaObj->propertyOffset();
-		QMetaProperty prop = metaObj->property(index);
+		QMetaProperty prop = metaObj->property(i);
         auto isUser = prop.isUser();
         auto beanName = prop.name();
 		int classInfoIndex = metaObj->indexOfClassInfo(beanName);

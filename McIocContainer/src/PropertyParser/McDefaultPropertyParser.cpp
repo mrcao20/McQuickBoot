@@ -98,7 +98,7 @@ QVariant McDefaultPropertyParser::parseMap(const QDomElement &ele) const noexcep
                     mapValue = entryChildEle.text();
                 }else{
                     //! 递归解析
-                    mapKey = parse(valueChildEle);
+                    mapValue = parse(valueChildEle);
                 }
             }
             

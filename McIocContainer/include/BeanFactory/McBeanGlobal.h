@@ -34,6 +34,12 @@ private:
 #define MC_REGISTER_BEAN_FACTORY_IMPL(...) \
     mcRegisterBeanFactory<__VA_ARGS__>(MC_FIRST_TYPE_NAME(__VA_ARGS__), MC_FIRST_TYPE_NAME_CONST_REF(__VA_ARGS__));
 
+#define MC_REGISTER_LIST_CONVERTER(Type) \
+    mcRegisterListConverter<Type>(#Type);
+#define MC_REGISTER_MAP_CONVERTER(Type) \
+    mcRegisterMapConverter<Type>(#Type);
+
+
 namespace McPrivate {
 
 template <typename...> struct McTypeList;
@@ -144,7 +150,10 @@ void mcRegisterListConverter() {
 }
 
 template<typename T>
-void mcRegisterListConverter() {
+void mcRegisterListConverter(const char *typeName) {
+    if(QMetaType::type(typeName) == QMetaType::UnknownType) {
+        qRegisterMetaType<T>(typeName);
+    }
 	mcRegisterListConverter<QVariantList, T>();
 }
 
@@ -156,6 +165,9 @@ void mcRegisterMapConverter() {
 }
 
 template<typename T>
-void mcRegisterMapConverter() {
+void mcRegisterMapConverter(const char *typeName) {
+    if(QMetaType::type(typeName) == QMetaType::UnknownType) {
+        qRegisterMetaType<T>(typeName);
+    }
 	mcRegisterMapConverter<QMap<QVariant, QVariant>, T>();
 }
