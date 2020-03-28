@@ -13,8 +13,6 @@
 #include "include/BeanFactory/impl/McBeanConnector.h"
 #include "include/PropertyParser/IMcPropertyParser.h"
 
-MC_BEGIN_NAMESPACE
-
 MC_DECL_PRIVATE_DATA(McXmlBeanDefinitionReader)
 IMcPropertyParserPtr parser;
 QList<QIODevicePtr> devices;
@@ -283,5 +281,3 @@ Qt::ConnectionType McXmlBeanDefinitionReader::connectionTypeStrToEnum(const QStr
         return Qt::ConnectionType::UniqueConnection;
     }
 }
-
-MC_END_NAMESPACE

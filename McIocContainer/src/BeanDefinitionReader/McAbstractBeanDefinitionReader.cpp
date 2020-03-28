@@ -2,8 +2,6 @@
 
 #include "include/BeanFactory/IMcBeanDefinitionRegistry.h"
 
-MC_BEGIN_NAMESPACE
-
 MC_DECL_PRIVATE_DATA(McAbstractBeanDefinitionReader)
 IMcBeanDefinitionRegistry *registry{nullptr};
 MC_DECL_PRIVATE_DATA_END
@@ -25,5 +23,3 @@ void McAbstractBeanDefinitionReader::readBeanDefinition(IMcBeanDefinitionRegistr
     d->registry = registry;
     doReadBeanDefinition();
 }
-
-MC_END_NAMESPACE

@@ -2,8 +2,6 @@
 
 #include "../IMcBeanDefinition.h"
 
-MC_BEGIN_NAMESPACE
-
 class McRootBeanDefinition
         : public QObject
         , public IMcBeanDefinition {
@@ -58,6 +56,4 @@ private:
     QVariantList m_connectors;                          //!< bean中需要连接的信号槽
 };
 
-MC_END_NAMESPACE
-
-MC_FORWARD_DECL_CLASS(McRootBeanDefinition)
+MC_DECL_POINTER(McRootBeanDefinition)

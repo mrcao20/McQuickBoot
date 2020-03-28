@@ -31,12 +31,39 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-SOURCES +=
+SOURCES += \
+    src/Controller/McControllerContainer.cpp \
+    src/Controller/McQmlResponse.cpp \
+    src/Controller/McRequestRunner.cpp \
+    src/Controller/McResult.cpp \
+    src/McIocBoot.cpp \
+    src/Model/McModelContainer.cpp \
+    src/Requestor/McQmlRequestor.cpp \
+    src/Socket/McInnerSocket.cpp \
+    src/Socket/McQmlSocket.cpp \
+    src/Socket/McQmlSocketContainer.cpp \
+    src/Socket/McQmlSocketRunner.cpp \
+    src/Socket/McSession.cpp
 
 HEADERS +=  \
+    include/Controller/IMcControllerContainer.h \
+    include/Controller/impl/McControllerContainer.h \
+    include/Controller/impl/McQmlResponse.h \
+    include/Controller/impl/McRequestRunner.h \
+    include/Controller/impl/McResult.h \
     include/McBootGlobal.h \
     include/McBootMacroGlobal.h \
-    include/McBootVersion.h
+    include/McBootVersion.h \
+    include/McIocBoot.h \
+    include/Model/McModelContainer.h \
+    include/Requestor/McQmlRequestor.h \
+    include/Socket/IMcQmlSocketContainer.h \
+    include/Socket/IMcSession.h \
+    include/Socket/impl/McInnerSocket.h \
+    include/Socket/impl/McQmlSocket.h \
+    include/Socket/impl/McQmlSocketContainer.h \
+    include/Socket/impl/McQmlSocketRunner.h \
+    include/Socket/impl/McSession.h
 
 unix {
     target.path = /usr/lib
@@ -51,3 +78,6 @@ else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocContaine
 
 INCLUDEPATH += $$PWD/../McIocContainer/include
 DEPENDPATH += $$PWD/../McIocContainer/include
+
+RESOURCES += \
+    qrc/Resource.qrc

@@ -2,8 +2,6 @@
 
 #include "../McGlobal.h"
 
-MC_BEGIN_NAMESPACE
-
 class IMcBeanDefinitionRegistry;
 
 class IMcBeanDefinitionReader {
@@ -19,6 +17,4 @@ public:
     virtual void readBeanDefinition(IMcBeanDefinitionRegistry *registry) noexcept = 0;
 };
 
-MC_END_NAMESPACE
-
-MC_FORWARD_DECL_CLASS(IMcBeanDefinitionReader)
+MC_DECL_POINTER(IMcBeanDefinitionReader)

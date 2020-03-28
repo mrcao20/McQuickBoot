@@ -2,8 +2,6 @@
 
 #include "McAbstarctPropertyConverter.h"
 
-MC_BEGIN_NAMESPACE
-
 class MCIOCCONTAINER_EXPORT McDefaultPropertyConverter
         : public McAbstarctPropertyConverter {
     
@@ -17,6 +15,4 @@ protected:
     QVariant convertMap(const QVariant &value) const noexcept override;
 };
 
-MC_END_NAMESPACE
-
-MC_FORWARD_DECL_CLASS(McDefaultPropertyConverter)
+MC_DECL_POINTER(McDefaultPropertyConverter)

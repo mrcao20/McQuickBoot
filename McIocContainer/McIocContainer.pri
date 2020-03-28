@@ -29,6 +29,7 @@ HEADERS += \
     $$PWD/include/PropertyParser/impl/McAbstractPropertyParser.h \
     $$PWD/include/PropertyParser/impl/McDefaultPropertyConverter.h \
     $$PWD/include/PropertyParser/impl/McDefaultPropertyParser.h \
+    $$PWD/include/Utils/McScopedFunction.h \
     include/McGlobal.h \
     include/McIocVersion.h \
     include/McMacroGlobal.h

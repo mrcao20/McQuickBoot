@@ -2,8 +2,6 @@
 
 #include "../IMcPropertyConverter.h"
 
-MC_BEGIN_NAMESPACE
-
 MC_FORWARD_DECL_PRIVATE_DATA(McAbstarctPropertyConverter);
 
 class McAbstarctPropertyConverter
@@ -29,6 +27,4 @@ private:
     MC_DECL_PRIVATE(McAbstarctPropertyConverter)
 };
 
-MC_END_NAMESPACE
-
-MC_FORWARD_DECL_CLASS(McAbstarctPropertyConverter)
+MC_DECL_POINTER(McAbstarctPropertyConverter)

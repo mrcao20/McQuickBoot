@@ -4,8 +4,6 @@
 #include <QTimer>
 #include <QElapsedTimer>
 
-MC_BEGIN_NAMESPACE
-
 bool mcWaitForExecFunc(const std::function<bool()> &func, qint64 timeout) noexcept {
     QEventLoop loop;
     QTimer timer;
@@ -31,5 +29,3 @@ bool mcWaitForExecFunc(const std::function<bool()> &func, qint64 timeout) noexce
     loop.exec();
     return ret;
 }
-
-MC_END_NAMESPACE

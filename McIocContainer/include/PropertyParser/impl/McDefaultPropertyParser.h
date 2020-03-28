@@ -2,8 +2,6 @@
 
 #include "McAbstractPropertyParser.h"
 
-MC_BEGIN_NAMESPACE
-
 class MCIOCCONTAINER_EXPORT McDefaultPropertyParser 
         : public McAbstractPropertyParser {
     
@@ -21,6 +19,4 @@ private:
     QVariantList getList(const QString &dirPath) const noexcept;
 };
 
-MC_END_NAMESPACE
-
-MC_FORWARD_DECL_CLASS(McDefaultPropertyParser)
+MC_DECL_POINTER(McDefaultPropertyParser)

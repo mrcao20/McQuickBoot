@@ -2,11 +2,9 @@
 
 #include "McAbstractBeanDefinitionReader.h"
 
-MC_BEGIN_NAMESPACE
+MC_FORWARD_DECL_CLASS(IMcBeanDefinition);
 
-MC_DECL_POINTER(IMcBeanDefinition)
-
-MC_FORWARD_DECL_PRIVATE_DATA(McAnnotationBeanDefinitionReader)
+MC_FORWARD_DECL_PRIVATE_DATA(McAnnotationBeanDefinitionReader);
 
 class MCIOCCONTAINER_EXPORT McAnnotationBeanDefinitionReader 
         : public McAbstractBeanDefinitionReader {
@@ -31,4 +29,4 @@ private:
     MC_DECL_PRIVATE(McAnnotationBeanDefinitionReader)
 };
 
-MC_END_NAMESPACE
+MC_DECL_POINTER(McAnnotationBeanDefinitionReader)

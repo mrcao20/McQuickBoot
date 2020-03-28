@@ -10,8 +10,6 @@
 #include "include/BeanFactory/impl/McBeanConnector.h"
 #include "include/PropertyParser/IMcPropertyConverter.h"
 
-MC_BEGIN_NAMESPACE
-
 MC_DECL_PRIVATE_DATA(McDefaultBeanFactory)
 IMcPropertyConverterPtr converter;
 MC_DECL_PRIVATE_DATA_END
@@ -185,5 +183,3 @@ QObjectPtr McDefaultBeanFactory::getPropertyObject(QObjectConstPtrRef bean
     }
     return obj;
 }
-
-MC_END_NAMESPACE

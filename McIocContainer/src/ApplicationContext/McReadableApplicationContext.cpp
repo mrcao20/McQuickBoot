@@ -4,8 +4,6 @@
 #include "include/BeanFactory/impl/McDefaultBeanFactory.h"
 #include "include/PropertyParser/impl/McDefaultPropertyConverter.h"
 
-MC_BEGIN_NAMESPACE
-
 MC_DECL_PRIVATE_DATA(McReadableApplicationContext)
 IMcBeanDefinitionReaderPtr beanDefinitionReader;
 MC_DECL_PRIVATE_DATA_END
@@ -67,5 +65,3 @@ void McReadableApplicationContext::setReader(
 void McReadableApplicationContext::doRefresh() noexcept {
     readBeans();
 }
-
-MC_END_NAMESPACE

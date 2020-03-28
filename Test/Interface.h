@@ -11,5 +11,4 @@ public:
     virtual void say() noexcept = 0;
 };
 
-MC_DECL_POINTER(Interface)
 MC_DECL_METATYPE(Interface)

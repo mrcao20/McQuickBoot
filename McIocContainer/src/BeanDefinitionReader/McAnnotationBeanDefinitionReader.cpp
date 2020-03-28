@@ -7,8 +7,6 @@
 #include "include/BeanDefinition/IMcBeanDefinition.h"
 #include "include/BeanFactory/impl/McBeanReference.h"
 
-MC_BEGIN_NAMESPACE
-
 MC_DECL_PRIVATE_DATA(McAnnotationBeanDefinitionReader)
 QHash<QString, IMcBeanDefinitionPtr> definitions;
 MC_DECL_PRIVATE_DATA_END
@@ -71,5 +69,3 @@ void McAnnotationBeanDefinitionReader::injectProperty(
 		beanDefinition->addProperty(prop.name(), QVariant::fromValue(beanRef));
 	}
 }
-
-MC_END_NAMESPACE

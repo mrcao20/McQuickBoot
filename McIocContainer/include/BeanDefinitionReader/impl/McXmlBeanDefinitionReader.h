@@ -3,16 +3,14 @@
 #include "McAbstractBeanDefinitionReader.h"
 
 QT_BEGIN_NAMESPACE
-MC_DECL_POINTER(QIODevice);
+MC_FORWARD_DECL_CLASS(QIODevice);
 class QDomDocument;
 class QDomNodeList;
 class QDomElement;
 QT_END_NAMESPACE
 
-MC_BEGIN_NAMESPACE
-
-MC_DECL_POINTER(IMcBeanDefinition)
-MC_DECL_POINTER(IMcPropertyParser)
+MC_FORWARD_DECL_CLASS(IMcBeanDefinition)
+MC_FORWARD_DECL_CLASS(IMcPropertyParser)
 
 MC_FORWARD_DECL_PRIVATE_DATA(McXmlBeanDefinitionReader)
 
@@ -48,6 +46,4 @@ private:
 	MC_DECL_PRIVATE(McXmlBeanDefinitionReader)
 };
 
-MC_END_NAMESPACE
-
-MC_FORWARD_DECL_CLASS(McXmlBeanDefinitionReader)
+MC_DECL_POINTER(McXmlBeanDefinitionReader)

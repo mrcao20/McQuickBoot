@@ -8,8 +8,6 @@
 #include "include/BeanFactory/impl/McBeanConnector.h"
 #include "include/McMacroGlobal.h"
 
-MC_BEGIN_NAMESPACE
-
 MC_DECL_PRIVATE_DATA(McAnnotationApplicationContext)
 /// 用来保存需要自动注入的bean的beanName和BeanDefinition
 static QHash<QString, IMcBeanDefinitionPtr> autowiredRegistry;
@@ -108,5 +106,3 @@ void McAnnotationApplicationContext::addConnect(
     var.setValue(connector);
     beanDefinition->addConnector(var);
 }
-
-MC_END_NAMESPACE

@@ -3,8 +3,6 @@
 #include "../IMcReadableApplicationContext.h"
 #include "McAbstractApplicationContext.h"
 
-MC_BEGIN_NAMESPACE
-
 MC_FORWARD_DECL_PRIVATE_DATA(McReadableApplicationContext);
 
 class MCIOCCONTAINER_EXPORT McReadableApplicationContext
@@ -34,6 +32,4 @@ private:
     MC_DECL_PRIVATE(McReadableApplicationContext)
 };
 
-MC_END_NAMESPACE
-
-MC_FORWARD_DECL_CLASS(McReadableApplicationContext)
+MC_DECL_POINTER(McReadableApplicationContext)

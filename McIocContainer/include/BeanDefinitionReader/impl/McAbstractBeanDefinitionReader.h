@@ -2,8 +2,6 @@
 
 #include "../IMcBeanDefinitionReader.h"
 
-MC_BEGIN_NAMESPACE
-
 MC_FORWARD_DECL_PRIVATE_DATA(McAbstractBeanDefinitionReader)
 
 class McAbstractBeanDefinitionReader
@@ -26,6 +24,4 @@ private:
     MC_DECL_PRIVATE(McAbstractBeanDefinitionReader)
 };
 
-MC_END_NAMESPACE
-
-MC_FORWARD_DECL_CLASS(McAbstractBeanDefinitionReader)
+MC_DECL_POINTER(McAbstractBeanDefinitionReader)

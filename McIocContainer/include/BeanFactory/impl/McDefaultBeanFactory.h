@@ -2,11 +2,9 @@
 
 #include "McAbstractBeanFactory.h"
 
-MC_BEGIN_NAMESPACE
-
 MC_FORWARD_DECL_PRIVATE_DATA(McDefaultBeanFactory);
 
-MC_DECL_POINTER(IMcPropertyConverter);
+MC_FORWARD_DECL_CLASS(IMcPropertyConverter);
 
 class MCIOCCONTAINER_EXPORT McDefaultBeanFactory : public McAbstractBeanFactory {
     Q_OBJECT
@@ -74,6 +72,4 @@ private:
     MC_DECL_PRIVATE(McDefaultBeanFactory)
 };
 
-MC_END_NAMESPACE
-
-MC_FORWARD_DECL_CLASS(McDefaultBeanFactory)
+MC_DECL_POINTER(McDefaultBeanFactory)

@@ -2,8 +2,6 @@
 
 #include "McXmlApplicationContext.h"
 
-MC_BEGIN_NAMESPACE
-
 class MCIOCCONTAINER_EXPORT McLocalPathApplicationContext 
         : public McXmlApplicationContext {
     
@@ -14,6 +12,4 @@ public:
     McLocalPathApplicationContext(const QStringList &locations, QObject *parent = nullptr);
 };
         
-MC_END_NAMESPACE
-
-MC_FORWARD_DECL_CLASS(McLocalPathApplicationContext)
+MC_DECL_POINTER(McLocalPathApplicationContext)

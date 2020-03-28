@@ -2,9 +2,7 @@
 
 #include "../McGlobal.h"
 
-MC_BEGIN_NAMESPACE
-
-MC_DECL_POINTER(IMcBeanDefinitionReader);
+MC_FORWARD_DECL_CLASS(IMcBeanDefinitionReader);
 
 class IMcReadableApplicationContext {
 public:
@@ -15,6 +13,4 @@ public:
     virtual void setReader(IMcBeanDefinitionReaderConstPtrRef reader) noexcept = 0;
 };
 
-MC_END_NAMESPACE
-
-MC_FORWARD_DECL_CLASS(IMcReadableApplicationContext)
+MC_DECL_POINTER(IMcReadableApplicationContext)

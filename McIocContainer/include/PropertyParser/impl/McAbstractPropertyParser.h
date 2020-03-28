@@ -2,8 +2,6 @@
 
 #include "../IMcPropertyParser.h"
 
-MC_BEGIN_NAMESPACE
-
 class McAbstractPropertyParser
         : public QObject
         , public IMcPropertyParser {
@@ -21,6 +19,4 @@ protected:
     virtual QVariant parseMap(const QDomElement &ele) const noexcept = 0;
 };
 
-MC_END_NAMESPACE
-
-MC_FORWARD_DECL_CLASS(McAbstractPropertyParser)
+MC_DECL_POINTER(McAbstractPropertyParser)

@@ -5,8 +5,6 @@
 #include "include/BeanFactory/impl/McBeanReference.h"
 #include "include/BeanFactory/IMcBeanReferenceResolver.h"
 
-MC_BEGIN_NAMESPACE
-
 McDefaultPropertyConverter::McDefaultPropertyConverter(QObject *parent)
     : McAbstarctPropertyConverter(parent)
 {
@@ -65,5 +63,3 @@ QVariant McDefaultPropertyConverter::convertMap(const QVariant &value) const noe
     
     return QVariant::fromValue(result);
 }
-
-MC_END_NAMESPACE

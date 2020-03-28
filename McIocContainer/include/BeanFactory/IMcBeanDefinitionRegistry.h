@@ -4,9 +4,7 @@
 
 #include <QMap>
 
-MC_BEGIN_NAMESPACE
-
-MC_DECL_POINTER(IMcBeanDefinition)
+MC_FORWARD_DECL_CLASS(IMcBeanDefinition)
 
 class IMcBeanDefinitionRegistry {
 public:
@@ -41,6 +39,4 @@ public:
     virtual QHash<QString, IMcBeanDefinitionPtr> getBeanDefinitions() noexcept = 0;
 };
 
-MC_END_NAMESPACE
-
-MC_FORWARD_DECL_CLASS(IMcBeanDefinitionRegistry)
+MC_DECL_POINTER(IMcBeanDefinitionRegistry)

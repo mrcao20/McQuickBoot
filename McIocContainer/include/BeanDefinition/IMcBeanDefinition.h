@@ -4,8 +4,6 @@
 
 #include <QVariant>
 
-MC_BEGIN_NAMESPACE
-
 class IMcBeanDefinition {
 public:
     virtual ~IMcBeanDefinition() = default;
@@ -45,6 +43,4 @@ public:
     virtual void addConnector(const QVariant &val) noexcept = 0;
 };
 
-MC_END_NAMESPACE
-
-MC_FORWARD_DECL_CLASS(IMcBeanDefinition)
+MC_DECL_POINTER(IMcBeanDefinition)

@@ -3,8 +3,6 @@
 #include <QFile>
 #include <QDebug>
 
-MC_BEGIN_NAMESPACE
-
 McLocalPathApplicationContext::McLocalPathApplicationContext(QObject *parent)
     : McXmlApplicationContext(parent)
 {
@@ -37,5 +35,3 @@ McLocalPathApplicationContext::McLocalPathApplicationContext(
     }
     setDevices(devices);
 }
-
-MC_END_NAMESPACE

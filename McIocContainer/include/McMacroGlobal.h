@@ -15,25 +15,15 @@
 #define MC_MACRO_STR(m) #m
 
 #define MC_DECL_POINTER(Class) \
-    class Class; \
     using Class##Ptr = QSharedPointer<Class>; \
     using Class##ConstPtrRef = const QSharedPointer<Class> &;
-
-#define MC_BEGIN_NAMESPACE \
-    namespace Mc { \
-    namespace Ioc {
-
-#define MC_END_NAMESPACE }}
 
 #define MC_FORWARD_DECL_CLASS(Class) \
-    MC_BEGIN_NAMESPACE class Class; MC_END_NAMESPACE \
-    using ::Mc::Ioc::Class; \
-    using Class##Ptr = QSharedPointer<Class>; \
-    using Class##ConstPtrRef = const QSharedPointer<Class> &;
+    class Class; \
+    MC_DECL_POINTER(Class)
 
 #define MC_FORWARD_DECL_STRUCT(Class) \
-    MC_BEGIN_NAMESPACE struct Class; MC_END_NAMESPACE \
-    using ::Mc::Ioc::Class; \
+    struct Class; \
     using Class##Ptr = QSharedPointer<Class>; \
     using Class##ConstPtrRef = const QSharedPointer<Class> &;
 
@@ -64,8 +54,6 @@
 #endif //! !Q_MOC_RUN
 
 //! Q_CLASSINFO
-#define MC_COMPONENT "Component"
-
 #define MC_SINGLETON "isSingleton"
 #define MC_BEANNAME "beanName"
 //!< Q_CLASSINFO

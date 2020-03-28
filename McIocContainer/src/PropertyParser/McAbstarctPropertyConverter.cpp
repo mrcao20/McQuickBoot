@@ -2,8 +2,6 @@
 
 #include "include/BeanFactory/impl/McBeanReference.h"
 
-MC_BEGIN_NAMESPACE
-
 MC_DECL_PRIVATE_DATA(McAbstarctPropertyConverter)
 IMcBeanReferenceResolver *resolver;
 MC_DECL_PRIVATE_DATA_END
@@ -35,5 +33,3 @@ QVariant McAbstarctPropertyConverter::convert(IMcBeanReferenceResolver *resolver
 IMcBeanReferenceResolver *McAbstarctPropertyConverter::resolver() const noexcept {
     return d->resolver;
 }
-
-MC_END_NAMESPACE

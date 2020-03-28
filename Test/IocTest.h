@@ -39,6 +39,5 @@ public:
     QHash<QString, InterfacePtr> m_iMap;
 };
 
-MC_DECL_POINTER(IocTest)
 MC_DECL_METATYPE(IocTest)
 

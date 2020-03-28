@@ -3,8 +3,6 @@
 #include "../IMcConfigurableBeanFactory.h"
 #include "../IMcBeanReferenceResolver.h"
 
-MC_BEGIN_NAMESPACE
-
 MC_FORWARD_DECL_PRIVATE_DATA(McAbstractBeanFactory)
 
 class MCIOCCONTAINER_EXPORT McAbstractBeanFactory
@@ -116,6 +114,4 @@ private:
     MC_DECL_PRIVATE(McAbstractBeanFactory)
 };
 
-MC_END_NAMESPACE
-
-MC_FORWARD_DECL_CLASS(McAbstractBeanFactory)
+MC_DECL_POINTER(McAbstractBeanFactory)

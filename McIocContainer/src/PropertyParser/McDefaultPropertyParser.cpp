@@ -8,8 +8,6 @@
 
 #include "include/BeanFactory/impl/McBeanReference.h"
 
-MC_BEGIN_NAMESPACE
-
 McDefaultPropertyParser::McDefaultPropertyParser(QObject *parent)
     : McAbstractPropertyParser(parent)
 {
@@ -135,5 +133,3 @@ QVariantList McDefaultPropertyParser::getList(const QString &dirPath) const noex
     
     return list;
 }
-
-MC_END_NAMESPACE

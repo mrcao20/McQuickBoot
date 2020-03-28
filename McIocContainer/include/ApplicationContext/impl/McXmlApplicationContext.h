@@ -3,12 +3,10 @@
 #include "McReadableApplicationContext.h"
 
 QT_BEGIN_NAMESPACE
-MC_DECL_POINTER(QIODevice);
+MC_FORWARD_DECL_CLASS(QIODevice);
 QT_END_NAMESPACE
 
-MC_BEGIN_NAMESPACE
-
-MC_DECL_POINTER(IMcBeanDefinitionReader);
+MC_FORWARD_DECL_CLASS(IMcBeanDefinitionReader);
 
 class MCIOCCONTAINER_EXPORT McXmlApplicationContext 
         : public McReadableApplicationContext {
@@ -29,6 +27,4 @@ public:
     void setDevices(const QList<QIODevicePtr> &devices) noexcept;
 };
 
-MC_END_NAMESPACE
-
-MC_FORWARD_DECL_CLASS(McXmlApplicationContext)
+MC_DECL_POINTER(McXmlApplicationContext)

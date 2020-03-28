@@ -13,8 +13,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+        InvokeTest.cpp \
         IocTest.cpp \
         Object.cpp \
+        QmlSocketTest.cpp \
         main.cpp
 
 RESOURCES += qml.qrc
@@ -39,11 +41,19 @@ DISTFILES += \
 
 HEADERS += \
     Interface.h \
+    InvokeTest.h \
     IocTest.h \
-    Object.h
+    Object.h \
+    QmlSocketTest.h
+
+INCLUDEPATH += $$PWD/../McIocContainer/include
+DEPENDPATH += $$PWD/../McIocContainer/include
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocContainer
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocContainerd
 
-INCLUDEPATH += $$PWD/../McIocContainer/include
-DEPENDPATH += $$PWD/../McIocContainer/include
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocBoot
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocBootd
+
+INCLUDEPATH += $$PWD/../McIocBoot/include
+DEPENDPATH += $$PWD/../McIocBoot/include

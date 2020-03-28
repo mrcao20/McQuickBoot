@@ -2,9 +2,7 @@
 
 #include "../McGlobal.h"
 
-MC_BEGIN_NAMESPACE
-
-MC_DECL_POINTER(McBeanReference)
+MC_FORWARD_DECL_CLASS(McBeanReference)
 
 class IMcBeanReferenceResolver {
 public:
@@ -29,6 +27,4 @@ public:
     virtual QVariant resolveBeanReferenceToQVariant(McBeanReferenceConstPtrRef beanRef) noexcept = 0;
 };
 
-MC_END_NAMESPACE
-
-MC_FORWARD_DECL_CLASS(IMcBeanReferenceResolver)
+MC_DECL_POINTER(IMcBeanReferenceResolver)

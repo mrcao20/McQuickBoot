@@ -6,8 +6,6 @@
 #include "include/BeanDefinition/impl/McRootBeanDefinition.h"
 #include "include/BeanFactory/impl/McBeanReference.h"
 
-MC_BEGIN_NAMESPACE
-
 MC_DECL_PRIVATE_DATA(McAbstractBeanFactory)
 QHash<QString, IMcBeanDefinitionPtr> hash;
 QMutex mtx{ QMutex::Recursive };
@@ -109,5 +107,3 @@ QVariant McAbstractBeanFactory::resolveBeanReferenceToQVariant(McBeanReferenceCo
         return getBeanToVariant(beanRef->getName(), d->targetThread);
     }
 }
-
-MC_END_NAMESPACE

@@ -5,8 +5,6 @@
 #include "include/BeanDefinitionReader/impl/McXmlBeanDefinitionReader.h"
 #include "include/PropertyParser/impl/McDefaultPropertyParser.h"
 
-MC_BEGIN_NAMESPACE
-
 McXmlApplicationContext::McXmlApplicationContext(QObject *parent)
     : McReadableApplicationContext(parent)
 {
@@ -53,5 +51,3 @@ void McXmlApplicationContext::setDevices(const QList<QIODevicePtr> &devices) noe
     setReader(McXmlBeanDefinitionReaderPtr::create(
                   McDefaultPropertyParserPtr::create(), devices));
 }
-
-MC_END_NAMESPACE

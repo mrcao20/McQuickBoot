@@ -2,8 +2,6 @@
 
 #include "../McGlobal.h"
 
-MC_BEGIN_NAMESPACE
-
 class IMcRefreshableApplicationContext {
 public:
     virtual ~IMcRefreshableApplicationContext() = default;
@@ -17,6 +15,4 @@ public:
     virtual void refresh(QThread *thread = nullptr) noexcept = 0;
 };
 
-MC_END_NAMESPACE
-
-MC_FORWARD_DECL_CLASS(IMcRefreshableApplicationContext)
+MC_DECL_POINTER(IMcRefreshableApplicationContext)

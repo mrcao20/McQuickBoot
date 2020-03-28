@@ -3,8 +3,6 @@
 #include <QDomElement>
 #include <QDebug>
 
-MC_BEGIN_NAMESPACE
-
 McAbstractPropertyParser::McAbstractPropertyParser(QObject *parent)
     : QObject(parent)
 {
@@ -35,5 +33,3 @@ QVariant McAbstractPropertyParser::parse(const QDomElement &ele) const noexcept 
         return QVariant();
     }
 }
-
-MC_END_NAMESPACE

@@ -6,7 +6,7 @@
 #include "../McMacroGlobal.h"
 
 #define MC_DECL_METATYPE(Class) \
-    using Class##Ptr = QSharedPointer<Class>; \
+    MC_DECL_POINTER(Class) \
     Q_DECLARE_METATYPE(Class##Ptr)
 
 #define MC_DECL_INIT(Class) \

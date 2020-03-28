@@ -2,8 +2,6 @@
 
 #include "../../McGlobal.h"
 
-MC_BEGIN_NAMESPACE
-
 class MCIOCCONTAINER_EXPORT McBeanConnector : public QObject {
     Q_OBJECT
     MC_DECL_INIT(McBeanConnector)
@@ -40,6 +38,4 @@ private:
     Qt::ConnectionType m_type{Qt::AutoConnection};  //!< 连接方式，默认为自动连接
 };
 
-MC_END_NAMESPACE
-
-MC_FORWARD_DECL_CLASS(McBeanConnector)
+MC_DECL_METATYPE(McBeanConnector)

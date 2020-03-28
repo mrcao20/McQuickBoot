@@ -25,14 +25,10 @@ void mcRegisterComponent(const char *typeName, const char *constRefTypeName) {
     McAnnotationApplicationContext::insertRegistry(typeName);
 }
 
-MC_BEGIN_NAMESPACE
-
-MCIOCCONTAINER_EXPORT void connect(
+MCIOCCONTAINER_EXPORT void mcConnect(
         const QString &beanName
         , const QString &sender
         , const QString &signal
         , const QString &receiver
         , const QString &slot
         , Qt::ConnectionType type = Qt::AutoConnection) noexcept;
-
-MC_END_NAMESPACE

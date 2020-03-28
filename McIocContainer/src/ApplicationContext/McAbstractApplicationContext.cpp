@@ -3,8 +3,6 @@
 #include "include/BeanFactory/IMcBeanFactory.h"
 #include "include/BeanDefinition/IMcBeanDefinition.h"
 
-MC_BEGIN_NAMESPACE
-
 MC_DECL_PRIVATE_DATA(McAbstractApplicationContext)
 IMcConfigurableBeanFactoryPtr configurableBeanFactory;
 MC_DECL_PRIVATE_DATA_END
@@ -68,5 +66,3 @@ void McAbstractApplicationContext::refresh(QThread *thread) noexcept {
         }
     }
 }
-
-MC_END_NAMESPACE

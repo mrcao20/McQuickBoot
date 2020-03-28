@@ -2,8 +2,6 @@
 
 #include "McReadableApplicationContext.h"
 
-MC_BEGIN_NAMESPACE
-
 MC_FORWARD_DECL_PRIVATE_DATA(McAnnotationApplicationContext);
 
 class MCIOCCONTAINER_EXPORT McAnnotationApplicationContext 
@@ -30,6 +28,4 @@ private:
     MC_DECL_PRIVATE(McAnnotationApplicationContext)
 };
 
-MC_END_NAMESPACE
-
-MC_FORWARD_DECL_CLASS(McAnnotationApplicationContext)
+MC_DECL_POINTER(McAnnotationApplicationContext)
