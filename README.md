@@ -27,13 +27,12 @@ MC_INIT_END
 ~~~
 如上，可以在MC_INIT和MC_INIT_END之间编写程序运行之前的额外代码，通常用于注册元对象
 
-3. 需要在头文件类定义末尾调用MC_DECL_POINTER和MC_DECL_METATYPE宏:
+3. 需要在头文件类定义末尾调用MC_DECL_METATYPE宏，此宏内部会调用MC_DECL_POINTER:
 ~~~
 .h
 class Class {
 
 }
-MC_DECL_POINTER(Class)
 MC_DECL_METATYPE(Class)
 ~~~
 
@@ -53,7 +52,7 @@ Q_PROPERTY(InterfacePtr interface MEMBER m_interface) // 注意这里的类型�
    
 以上可以参照QObject::connect编写
 
-6. XML注入方式需要编写XML文档。但值得注意的是，如果只想使用XML方式注入，那么上面使用的MC_REGISTER_COMPONENT宏可以换成MC_REGISTER_BEAN_FACTORY宏，同时，不管哪种方式注入，如果使用了容器，都需要使用MC_REGISTER_LIST_CONVERTER或者MC_REGISTER_MAP_CONVERTER注册该容器
+6. XML注入方式需要编写XML文档。但值得注意的是，如果只想使用XML方式注入，那么上面使用的MC_REGISTER_COMPONENT宏可以换成MC_REGISTER_BEAN_FACTORY宏，同时，不管哪种方式注入，如果使用了容器，都需要使用MC_REGISTER_LIST_CONVERTER或者MC_REGISTER_MAP_CONVERTER注册该容器。但值得注意的是，在XML中的容器标签只有list和map两个标签，但具体的容器类型可以在类中具体定义
 
 以上都可在Test代码中找到相应用法用例。
 
@@ -80,5 +79,34 @@ Q_PROPERTY(InterfacePtr interface MEMBER m_interface) // 注意这里的类型�
          3. 上面两种情况只适用于将isSingleton设置为true时的情况，如果isSingleton为false，那么每次调用getBean时都会创建一个新对象，此时获取到的bean就永远为调用getBean时的线程。
    2. 可以在调用getBean或refresh函数时指定一个目标线程，那么目标bean的生存线程将为指定的线程。同样的，只适用于isSingleton为true的情况。同时，如果isSingleton指定为true，但是在次线程中调用了refresh函数，就算在主线程中调用getBean时指定了目标线程也不会起作用，因为只能在对象创建时才能指定线程。
    3. 提供上面形式的线程指定方式的主要目的在于，如果XML中声明的对象结构过于复杂，对象的创建可能耗时太长，那么可以在子线程中完成创建，并且能指定目标线程。
+   
+   
+# IocBoot
+- 提供IocBoot和其静态函数run，以提供一个默认的QML到C++交互的方式：
+   1. 在QML中提供一个名为$的请求器，并提供invoke函数的两种重载函数来请求Controller，invoke函数为C++函数，不可重写
+   2. 在$中又提供了get和post两个函数以此封装invoke函数，这两个函数时js函数，可以重新赋值
+   3. 以上函数的请求方式均为异步请求
+   4. 以上函数的返回值为Response，可以调用then方法来获取请求结果。then方法接收一个js function，并通过一个参数表现其返回值。同时，由于QML自身性质限制，部分操作不能在其它线程，所以提供了一个同步版本的syncThen函数来让线程所有权回到主线程时再调用回调函数
+   5. 通过以上方法请求Controller时可以传递包括QObject\*在内的任何QT元对象能获取到的类型。QObject\*对应js中的object。必须使用QSharedPointer\<QObject\>。同时返回值亦为所有类型，但建议只是用QString、QJsonObject、QObject*
+   6. 请求方式为
+   ~~~
+   $.get("beanName.funcName?param1=1&param2=2")
+   ~~~
+   或者
+   ~~~
+   $.post("beanName.funcName", {
+       param1: 1,
+       param2: "2",
+       param3: {
+           param1: 1
+       }
+   })
+   ~~~
+   上面beanName为mcRegisterBeanFactory注册时的参数，funcName为Controller的函数，param1、param2、param3为函数的参数名，其后的值为将要赋值的参数值，其中param3将会被构造成一个QSharedPointer\<QObject\>
+   
+   7. Controller需要使用Q_CLASSINFO(MC_COMPONENT, MC_CONTROLLER)来声明
+- 增加QML到C++的长连接QmlSocket通信方式：
+   1. C++端声明一个Component，并使用Q_CLASSINFO(MC_COMPONENT, MC_QML_SOCKET)附加额外属性。然后按照需求实现最多四个函数，并使用四种宏标志四个函数以接收各种消息，具体参照QmlSocketTest或者Java Spring WebSocket。注意：每一个函数的执行都是在另外的线程。
+   2. QML端可以使用$.qs("beanName")来发起一个请求，该函数会返回一个对象，参照JS WebSocket。同时$.qs函数拥有第二个参数，可以直接指定onOpen等回调函数。同时因为部分界面操作不能在其他线程执行，所以$.qs的第二个参数中可以指定isOpenSync等参数来让某一个回调函数回到主线程后再执行。具体参照main.qml
    
    
