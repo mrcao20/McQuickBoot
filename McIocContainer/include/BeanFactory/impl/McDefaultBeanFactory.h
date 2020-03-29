@@ -29,6 +29,21 @@ protected:
     
 private:
     /*!
+     * \brief callTagFunction
+     * 
+     * 调用被某一个tag声明的函数
+     * \param bean
+     * \param tag
+     */
+    void callTagFunction(QObjectConstPtrRef bean, const char *tag) noexcept;
+    /*!
+     * \brief callStartFunction
+     * 
+     * 调用构造开始函数
+     * \param bean
+     */
+    void callStartFunction(QObjectConstPtrRef bean) noexcept;
+    /*!
      * \brief addPropertyValue
      * 
      * 给定一个bean定义和一个bean实例，为给定的bean中的属性注入实例。
@@ -67,6 +82,14 @@ private:
     QObjectPtr getPropertyObject(QObjectConstPtrRef bean
                                , const QString &proName
                                , const QVariantMap &proValues) noexcept;
+    
+    /*!
+     * \brief callFinishedFunction
+     * 
+     * 调用构造完成函数
+     * \param bean
+     */
+    void callFinishedFunction(QObjectConstPtrRef bean) noexcept;
     
 private:
     MC_DECL_PRIVATE(McDefaultBeanFactory)

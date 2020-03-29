@@ -19,6 +19,14 @@ public:
     Q_INVOKABLE McResult *invoke2() noexcept;
     Q_INVOKABLE void invoke3(const ObjectPtr &o) noexcept;
     
+    Q_INVOKABLE
+    MC_BEAN_START
+    void start() noexcept;
+    
+    Q_INVOKABLE
+    MC_BEAN_FINISHED
+    void end() noexcept;
+    
 signals:
     
 public slots:

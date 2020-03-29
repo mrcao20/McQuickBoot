@@ -47,11 +47,16 @@
 #define MC_PADDING_CLANG(size)  \
     char ___clang_padding___[size];
 
+
 #ifndef Q_MOC_RUN			//!< 这行语句必须加，只有包围在这行语句之中的宏才能被识别为tag
 
 # define MC_AUTOWIRED		//!< 用于表示函数是否需要自动注入
 
+# define MC_BEAN_START      //!< 当bean被构造，但还未注入属性时调用
+# define MC_BEAN_FINISHED   //!< 当bean完全被构造完成之后调用
+
 #endif //! !Q_MOC_RUN
+
 
 //! Q_CLASSINFO
 #define MC_SINGLETON "isSingleton"

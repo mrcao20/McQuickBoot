@@ -28,3 +28,11 @@ McResult *InvokeTest::invoke2() noexcept {
 void InvokeTest::invoke3(const ObjectPtr &o) noexcept {
     qDebug() << "-------" << o << o->m_text << o->m_t << o->m_t->m_aaa;
 }
+
+void InvokeTest::start() noexcept {
+    qDebug() << "InvokeTest start construct";
+}
+
+void InvokeTest::end() noexcept {
+    qDebug() << "InvokeTest construct finished";
+}

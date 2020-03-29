@@ -54,6 +54,7 @@ QVariant McDefaultBeanFactory::doCreate(
 			.arg(beanDefinition->getClassName());
 		return QVariant();
 	}
+    callStartFunction(bean);    //!< 调用构造开始函数
     QVariantMap proValues;
 	if (!addPropertyValue(bean, beanDefinition, proValues)) {
 		qCritical() << QString("failed to init definition '%1'").arg(bean->metaObject()->className());
@@ -63,6 +64,7 @@ QVariant McDefaultBeanFactory::doCreate(
         qCritical() << QString("failed to add object connect '%1'").arg(bean->metaObject()->className());
         return QVariant();
     }
+    callFinishedFunction(bean);     //!< 调用构造完成函数
     if(thread != nullptr && thread != bean->thread()) {
         bean->moveToThread(thread);
     }
@@ -73,6 +75,22 @@ QVariant McDefaultBeanFactory::doCreate(
         return QVariant();
     }
     return var;
+}
+
+void McDefaultBeanFactory::callTagFunction(QObjectConstPtrRef bean, const char *tag) noexcept {
+    auto mo = bean->metaObject();
+    for(int i = 0; i < mo->methodCount(); ++i) {
+        auto method = mo->method(i);
+        QString tags = method.tag();
+        if(tags.contains(tag)) {
+            method.invoke(bean.data(), Qt::DirectConnection);
+            break;
+        }
+    }
+}
+
+void McDefaultBeanFactory::callStartFunction(QObjectConstPtrRef bean) noexcept {
+    callTagFunction(bean, MC_MACRO_STR(MC_BEAN_START));
 }
 
 bool McDefaultBeanFactory::addPropertyValue(QObjectConstPtrRef bean
@@ -182,4 +200,8 @@ QObjectPtr McDefaultBeanFactory::getPropertyObject(QObjectConstPtrRef bean
         obj = varPro.value<QObjectPtr>();
     }
     return obj;
+}
+
+void McDefaultBeanFactory::callFinishedFunction(QObjectConstPtrRef bean) noexcept {
+    callTagFunction(bean, MC_MACRO_STR(MC_BEAN_FINISHED));
 }

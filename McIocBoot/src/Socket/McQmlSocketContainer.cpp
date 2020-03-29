@@ -99,8 +99,7 @@ McInnerSocketPtr McQmlSocketContainer::getMethods(QObjectConstPtrRef bean) noexc
     
     auto mo = bean->metaObject();
     for(int i = 0; i < mo->methodCount(); ++i) {
-        auto index = i + mo->methodOffset();
-        auto method = mo->method(index);
+        auto method = mo->method(i);
         QString tags = method.tag();
         if(tags.contains(MC_MACRO_STR(MC_ON_OPEN))) {
             innerSocket->setOnOpen(method);
