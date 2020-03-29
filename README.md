@@ -54,6 +54,18 @@ Q_PROPERTY(InterfacePtr interface MEMBER m_interface) // 注意这里的类型�
 
 6. XML注入方式需要编写XML文档。但值得注意的是，如果只想使用XML方式注入，那么上面使用的MC_REGISTER_COMPONENT宏可以换成MC_REGISTER_BEAN_FACTORY宏，同时，不管哪种方式注入，如果使用了容器，都需要使用MC_REGISTER_LIST_CONVERTER或者MC_REGISTER_MAP_CONVERTER注册该容器。但值得注意的是，在XML中的容器标签只有list和map两个标签，但具体的容器类型可以在类中具体定义
 
+7. 同时提供MC_BEAN_START和MC_BEAN_FINISHED两个宏，用于声明两个函数。被MC_BEAN_START声明的函数将在bean被构造完成属性注入之前被调用；被MC_BEAN_FINISHED声明的函数在整个bean被完全构造之后被调用:
+~~~
+Q_INVOKABLE
+MC_BEAN_START
+void start() noexcept;
+
+Q_INVOKABLE
+MC_BEAN_FINISHED
+void end() noexcept;
+~~~
+如上，start函数将在bean被构造完成，但属性未被注入之前调用，end函数将在整个bean被完全构造之后调用。
+
 以上都可在Test代码中找到相应用法用例。
 
 # 注意
