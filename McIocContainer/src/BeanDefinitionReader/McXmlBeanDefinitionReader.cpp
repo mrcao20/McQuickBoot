@@ -78,7 +78,10 @@ void McXmlBeanDefinitionReader::readBeanDefinition(const QDomDocument &doc) noex
 void McXmlBeanDefinitionReader::readBeanDefinition(const QDomNodeList &nodes) noexcept {
 	for (int i = 0; i < nodes.size(); ++i) {
 		QDomElement ele = nodes.at(i).toElement();
-		if (ele.isNull() || ele.tagName() != MC_BEAN || ele.attribute("name").isEmpty() ||
+        if(ele.isNull()) {
+            continue;
+        }
+		if (ele.tagName() != MC_BEAN || ele.attribute("name").isEmpty() ||
 			(ele.attribute("class").isEmpty() && ele.attribute("plugin").isEmpty())) {
 			qCritical() << "node name must be 'bean', and it's not only contains attribute 'name' and 'class/plugin' but also this attribute not is able null!!";
 			continue;
