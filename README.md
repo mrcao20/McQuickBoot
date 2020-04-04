@@ -64,7 +64,7 @@ Q_INVOKABLE
 MC_BEAN_FINISHED
 void end() noexcept;
 ~~~
-如上，start函数将在bean被构造完成，但属性未被注入之前调用，end函数将在整个bean被完全构造之后调用。
+如上，start函数将在bean被构造完成，但属性未被注入之前调用，end函数将在整个bean被完全构造之后调用。同时，如果C继承于B，B继承于A，并且三个类中都有被声明过的函数，那么它们都将会被调用，调用顺序为从超基类到子类。A\>B\>C。
 
 以上都可在Test代码中找到相应用法用例。
 
