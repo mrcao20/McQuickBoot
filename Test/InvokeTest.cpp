@@ -10,7 +10,7 @@ MC_REGISTER_COMPONENT(InvokeTest)
 MC_INIT_END
 
 InvokeTest::InvokeTest(QObject *parent) 
-    : QObject(parent)
+    : ClassTestB(parent)
 {
 }
 

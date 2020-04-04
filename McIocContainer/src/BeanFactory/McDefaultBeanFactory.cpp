@@ -84,7 +84,7 @@ void McDefaultBeanFactory::callTagFunction(QObjectConstPtrRef bean, const char *
         QString tags = method.tag();
         if(tags.contains(tag)) {
             method.invoke(bean.data(), Qt::DirectConnection);
-            break;
+//            break;    //!< 遍历当前对象的所有方法，调用所有被标记过的方法，从超基类开始到子类
         }
     }
 }
