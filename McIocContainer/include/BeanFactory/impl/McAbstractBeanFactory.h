@@ -3,7 +3,7 @@
 #include "../IMcConfigurableBeanFactory.h"
 #include "../IMcBeanReferenceResolver.h"
 
-MC_FORWARD_DECL_PRIVATE_DATA(McAbstractBeanFactory)
+MC_FORWARD_DECL_PRIVATE_DATA(McAbstractBeanFactory);
 
 class MCIOCCONTAINER_EXPORT McAbstractBeanFactory
         : public QObject
@@ -12,6 +12,8 @@ class MCIOCCONTAINER_EXPORT McAbstractBeanFactory
     
     Q_OBJECT
 public:
+    using IMcBeanFactory::getBean;
+    
     explicit McAbstractBeanFactory(QObject *parent = nullptr);
     ~McAbstractBeanFactory() override;
 
