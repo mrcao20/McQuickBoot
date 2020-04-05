@@ -67,6 +67,7 @@ QVariant McDefaultBeanFactory::doCreate(
     callFinishedFunction(bean);     //!< 调用构造完成函数
     if(thread != nullptr && thread != bean->thread()) {
         bean->moveToThread(thread);
+        callThreadFinishedFunction(bean);   //!< 调用线程移动结束函数
     }
     var.setValue(bean);
     QString typeName = QString("%1Ptr").arg(bean->metaObject()->className());
@@ -204,4 +205,8 @@ QObjectPtr McDefaultBeanFactory::getPropertyObject(QObjectConstPtrRef bean
 
 void McDefaultBeanFactory::callFinishedFunction(QObjectConstPtrRef bean) noexcept {
     callTagFunction(bean, MC_MACRO_STR(MC_BEAN_FINISHED));
+}
+
+void McDefaultBeanFactory::callThreadFinishedFunction(QObjectConstPtrRef bean) noexcept {
+    callTagFunction(bean, MC_MACRO_STR(MC_THREAD_FINISHED));
 }

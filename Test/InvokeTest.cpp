@@ -1,5 +1,6 @@
 #include "InvokeTest.h"
 
+#include <QThread>
 #include <QDebug>
 
 #include <ApplicationContext/McContainerGlobal.h>
@@ -34,5 +35,9 @@ void InvokeTest::start() noexcept {
 }
 
 void InvokeTest::end() noexcept {
-    qDebug() << "InvokeTest construct finished";
+    qDebug() << "InvokeTest construct finished" << thread() << QThread::currentThread();
+}
+
+void InvokeTest::threadEnd() noexcept {
+    qDebug() << "InvokeTest construct threadEnd" << thread() << QThread::currentThread();
 }

@@ -53,6 +53,10 @@ public:
     MC_BEAN_FINISHED
     void end() noexcept;
     
+    Q_INVOKABLE
+    MC_THREAD_FINISHED
+    void threadEnd() noexcept;
+    
 signals:
     
 public slots:

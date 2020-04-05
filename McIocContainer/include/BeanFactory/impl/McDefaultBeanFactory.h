@@ -90,6 +90,13 @@ private:
      * \param bean
      */
     void callFinishedFunction(QObjectConstPtrRef bean) noexcept;
+    /*!
+     * \brief callThreadFinishedFunction
+     * 
+     * 调用线程移动结束函数，如果线程未被移动，则不会调用
+     * \param bean
+     */
+    void callThreadFinishedFunction(QObjectConstPtrRef bean) noexcept;
     
 private:
     MC_DECL_PRIVATE(McDefaultBeanFactory)

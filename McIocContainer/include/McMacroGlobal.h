@@ -54,6 +54,7 @@
 
 # define MC_BEAN_START      //!< 当bean被构造，但还未注入属性时调用
 # define MC_BEAN_FINISHED   //!< 当bean完全被构造完成之后调用
+# define MC_THREAD_FINISHED   //!< 当bean的线程被移动之后调用
 
 #endif //! !Q_MOC_RUN
 
