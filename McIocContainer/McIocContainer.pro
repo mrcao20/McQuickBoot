@@ -13,6 +13,8 @@ CONFIG(debug, debug|release) {
 } else {
     win32: TARGET = McIocContainer
     else:unix: TARGET = McIocContainer
+
+    DEFINES += QT_MESSAGELOGCONTEXT
 }
 
 
@@ -38,5 +40,5 @@ unix {
 
 include(McIocContainer.pri)
 
-win32: DESTDIR += $$PWD/../bin
-else:unix: DESTDIR += $$PWD/../bin
+DESTDIR = $$PWD/../bin
+MOC_DIR = $$PWD/../moc/McIocContainer

@@ -14,6 +14,8 @@ CONFIG(debug, debug|release) {
 } else {
     win32: TARGET = McIocBoot
     else:unix: TARGET = McIocBoot
+
+    DEFINES += QT_MESSAGELOGCONTEXT
 }
 
 TEMPLATE = lib
@@ -70,8 +72,8 @@ unix {
     INSTALLS += target
 }
 
-win32: DESTDIR += $$PWD/../bin
-else:unix: DESTDIR += $$PWD/../bin
+DESTDIR = $$PWD/../bin
+MOC_DIR = $$PWD/../moc/McIocBoot
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocContainer
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocContainerd

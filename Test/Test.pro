@@ -32,8 +32,12 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-win32: DESTDIR += $$PWD/../bin
-else:unix: DESTDIR += $$PWD/../bin
+DEFINES += QT_MESSAGELOGCONTEXT
+
+include(McIocContainer.pri)
+
+DESTDIR = $$PWD/../bin
+MOC_DIR = $$PWD/../moc/Test
 
 DISTFILES += \
     myspring.xml \
