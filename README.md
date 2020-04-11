@@ -72,6 +72,7 @@ void end() noexcept;
 # 注意
 - 不能存在一样的bean name，如果存在，则只会保留最后一个。在XML文件中最后面的为最后一个，但是用声明式方法时无法确保先后
 - 不要声明一个beanName为this的bean
+- 如果bean中没有将要注入的属性，那么容器会调用QObject::setProperty函数注入动态属性
 - 受QT自身插件系统性质影响，同一个插件在同一个程序中只能创建一次，即不能将同一个插件声明两次bean：
 ~~~
 <bean plugin="p1"></bean>
