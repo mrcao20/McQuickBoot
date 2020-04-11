@@ -15,43 +15,45 @@
 
 int main(int argc, char *argv[])
 {
-    return McIocBoot::run(argc, argv);
-//    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+//    return McIocBoot::run(argc, argv);
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     
-//    QGuiApplication app(argc, argv);
-    
-    
-//    //! XML注入方式
-//    IMcApplicationContextPtr appCon = McLocalPathApplicationContextPtr::create(
-//                QStringList() << ":/myspring.xml" << ":/xmltest2.xml");
-//    appCon->refresh();
-//    auto test = appCon->getBean<IocTestPtr>("test");
-//    qDebug() << test->m_interface << test->m_str << test->m_interfaces
-//             << test->m_strMap << test->m_iMap;
-//    test->m_interface->say();
-//    test->m_interface.dynamicCast<Object>()->signal();
-//    //!< end
+    QGuiApplication app(argc, argv);
     
     
-//    //! 声明式注入方式
-//    appCon = McAnnotationApplicationContextPtr::create();
-//    appCon->refresh();
-//    QVariant var = appCon->getBeanToVariant("test");
-//    test = var.value<IocTestPtr>();
-//    qDebug() << test << test->m_interface << appCon->isSingleton("test");
-//    test->m_interface->say();
-//    test->m_interface.dynamicCast<Object>()->signal();
-//    //!< end
+    //! XML注入方式
+    IMcApplicationContextPtr appCon = McLocalPathApplicationContextPtr::create(
+                QStringList() << ":/myspring.xml" << ":/xmltest2.xml");
+    appCon->refresh();
+    auto test = appCon->getBean<IocTestPtr>("test");
+    qDebug() << test->m_interface << test->m_str << test->m_interfaces
+             << test->m_strMap << test->m_iMap;
+    test->m_interface->say();
+    test->m_interface.dynamicCast<Object>()->signal();
+    test.dynamicCast<QObject>()->property("inter").value<ObjectPtr>()->signal2();
+    qDebug() << test.dynamicCast<QObject>()->property("interStr");
+    //!< end
     
     
-//    QQmlApplicationEngine engine;
-//    const QUrl url(QStringLiteral("qrc:/main.qml"));
-//    QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
-//                     &app, [url](QObject *obj, const QUrl &objUrl) {
-//        if (!obj && url == objUrl)
-//            QCoreApplication::exit(-1);
-//    }, Qt::QueuedConnection);
-//    engine.load(url);
+    //! 声明式注入方式
+    appCon = McAnnotationApplicationContextPtr::create();
+    appCon->refresh();
+    QVariant var = appCon->getBeanToVariant("test");
+    test = var.value<IocTestPtr>();
+    qDebug() << test << test->m_interface << appCon->isSingleton("test");
+    test->m_interface->say();
+    test->m_interface.dynamicCast<Object>()->signal();
+    //!< end
     
-//    return app.exec();
+    
+    QQmlApplicationEngine engine;
+    const QUrl url(QStringLiteral("qrc:/main.qml"));
+    QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
+                     &app, [url](QObject *obj, const QUrl &objUrl) {
+        if (!obj && url == objUrl)
+            QCoreApplication::exit(-1);
+    }, Qt::QueuedConnection);
+    engine.load(url);
+    
+    return app.exec();
 }

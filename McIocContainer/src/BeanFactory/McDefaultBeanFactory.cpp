@@ -101,22 +101,24 @@ bool McDefaultBeanFactory::addPropertyValue(QObjectConstPtrRef bean
     //! 循环给定 bean 的属性集合
 	auto props = beanDefinition->getProperties();
 	for (auto itr = props.cbegin(); itr != props.cend(); ++itr) {
-		//! 根据给定属性名称获取 给定的bean中的属性对象
-        auto index = bean->metaObject()->indexOfProperty(itr.key().toLocal8Bit());
-        if(index == -1) {
-            qCritical() << QString("bean '%1' 没有找到属性名为 '%2' 的属性")
-                           .arg(bean->metaObject()->className(), itr.key());
-            return false;
-        }
-		auto metaProperty = bean->metaObject()->property(index);
-		//! 获取定义的属性中的对象
+        //! 获取定义的属性中的对象
 		auto value = itr.value();
         
 		//! 解析value
         value = d->converter->convert(this, value);
-        
         proValues.insert(itr.key(), value);
-        metaProperty.write(bean.data(), value);
+        
+		//! 根据给定属性名称获取 给定的bean中的属性对象
+        auto index = bean->metaObject()->indexOfProperty(itr.key().toLocal8Bit());
+        if(index == -1) {
+            qDebug() << QString("bean '%1' cannot found property named for '%2'. it will be a dynamic property")
+                           .arg(bean->metaObject()->className(), itr.key());
+            bean->setProperty(itr.key().toLocal8Bit(), value);
+            
+        }else{
+            auto metaProperty = bean->metaObject()->property(index);
+            metaProperty.write(bean.data(), value);
+        }
 	}
 	return true;
 }

@@ -30,6 +30,9 @@ public slots:
     void slot() {
         qDebug() << "slot";
     }
+    void slot2() {
+        qDebug() << "slot2";
+    }
     
 public:
     InterfacePtr m_interface;

@@ -7,7 +7,15 @@
             <slot name="slot()"></slot>
             <ConnectionType>DirectConnection | UniqueConnection</ConnectionType>
         </connect>
+        <connect sender=" inter">
+            <signal>signal2()</signal>
+            <receiver name="this"></receiver>
+            <slot name="slot2()"></slot>
+            <ConnectionType>DirectConnection | UniqueConnection</ConnectionType>
+        </connect>
         <property name="interface" ref="object"></property>
+        <property name="inter" ref="object"></property>
+        <property name="interStr" value="object"></property>
         <list name="str">
             <value>停封</value>
             <value>薄纸</value>
