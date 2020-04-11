@@ -33,6 +33,7 @@ public:
     
 signals:
     void signal();
+    void signal2();
     
 public slots:
     
