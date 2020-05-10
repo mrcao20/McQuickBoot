@@ -1,12 +1,12 @@
-#include "include/ApplicationContext/impl/McAnnotationApplicationContext.h"
+#include "McIoc/ApplicationContext/impl/McAnnotationApplicationContext.h"
 
 #include <qmetaobject.h>
 #include <QDebug>
 
-#include "include/BeanDefinitionReader/impl/McAnnotationBeanDefinitionReader.h"
-#include "include/BeanDefinition/impl/McRootBeanDefinition.h"
-#include "include/BeanFactory/impl/McBeanConnector.h"
-#include "include/McMacroGlobal.h"
+#include "McIoc/BeanDefinitionReader/impl/McAnnotationBeanDefinitionReader.h"
+#include "McIoc/BeanDefinition/impl/McRootBeanDefinition.h"
+#include "McIoc/BeanFactory/impl/McBeanConnector.h"
+#include "McIoc/McMacroGlobal.h"
 
 MC_DECL_PRIVATE_DATA(McAnnotationApplicationContext)
 /// 用来保存需要自动注入的bean的beanName和BeanDefinition

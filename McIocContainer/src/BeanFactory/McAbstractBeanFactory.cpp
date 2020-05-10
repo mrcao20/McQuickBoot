@@ -1,10 +1,10 @@
-#include "include/BeanFactory/impl/McAbstractBeanFactory.h"
+#include "McIoc/BeanFactory/impl/McAbstractBeanFactory.h"
 
 #include <QMutex>
 #include <QDebug>
 
-#include "include/BeanDefinition/impl/McRootBeanDefinition.h"
-#include "include/BeanFactory/impl/McBeanReference.h"
+#include "McIoc/BeanDefinition/impl/McRootBeanDefinition.h"
+#include "McIoc/BeanFactory/impl/McBeanReference.h"
 
 MC_DECL_PRIVATE_DATA(McAbstractBeanFactory)
 QHash<QString, IMcBeanDefinitionPtr> hash;

@@ -7,11 +7,11 @@
 
 #include <QDebug>
 
-#include "ApplicationContext/impl/McLocalPathApplicationContext.h"
-#include "ApplicationContext/impl/McAnnotationApplicationContext.h"
+#include "McIoc/ApplicationContext/impl/McLocalPathApplicationContext.h"
+#include "McIoc/ApplicationContext/impl/McAnnotationApplicationContext.h"
 #include "IocTest.h"
 #include <Object.h>
-#include <McIocBoot.h>
+#include <McBoot/McIocBoot.h>
 
 int main(int argc, char *argv[])
 {

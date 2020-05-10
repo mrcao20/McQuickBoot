@@ -1,6 +1,6 @@
 #include "IocTest.h"
 
-#include "ApplicationContext/McContainerGlobal.h"
+#include "McIoc/ApplicationContext/McContainerGlobal.h"
 
 MC_INIT(IocTest)
 MC_REGISTER_COMPONENT(MC_TYPELIST(IocTest))

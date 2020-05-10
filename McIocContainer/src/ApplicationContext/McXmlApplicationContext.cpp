@@ -1,9 +1,9 @@
-#include "include/ApplicationContext/impl/McXmlApplicationContext.h"
+#include "McIoc/ApplicationContext/impl/McXmlApplicationContext.h"
 
 #include <QIODevice>
 
-#include "include/BeanDefinitionReader/impl/McXmlBeanDefinitionReader.h"
-#include "include/PropertyParser/impl/McDefaultPropertyParser.h"
+#include "McIoc/BeanDefinitionReader/impl/McXmlBeanDefinitionReader.h"
+#include "McIoc/PropertyParser/impl/McDefaultPropertyParser.h"
 
 McXmlApplicationContext::McXmlApplicationContext(QObject *parent)
     : McReadableApplicationContext(parent)

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <McMacroGlobal.h>
+#include <McIoc/McMacroGlobal.h>
 
 #if defined(MCIOCBOOT_LIBRARY)
 #  define MCIOCBOOT_EXPORT Q_DECL_EXPORT

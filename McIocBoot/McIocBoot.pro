@@ -48,29 +48,31 @@ SOURCES += \
     src/Socket/McSession.cpp
 
 HEADERS +=  \
-    include/Controller/IMcControllerContainer.h \
-    include/Controller/impl/McControllerContainer.h \
-    include/Controller/impl/McQmlResponse.h \
-    include/Controller/impl/McRequestRunner.h \
-    include/Controller/impl/McResult.h \
-    include/McBootGlobal.h \
-    include/McBootMacroGlobal.h \
-    include/McBootVersion.h \
-    include/McIocBoot.h \
-    include/Model/McModelContainer.h \
-    include/Requestor/McQmlRequestor.h \
-    include/Socket/IMcQmlSocketContainer.h \
-    include/Socket/IMcSession.h \
-    include/Socket/impl/McInnerSocket.h \
-    include/Socket/impl/McQmlSocket.h \
-    include/Socket/impl/McQmlSocketContainer.h \
-    include/Socket/impl/McQmlSocketRunner.h \
-    include/Socket/impl/McSession.h
+    include/McBoot/Controller/IMcControllerContainer.h \
+    include/McBoot/Controller/impl/McControllerContainer.h \
+    include/McBoot/Controller/impl/McQmlResponse.h \
+    include/McBoot/Controller/impl/McRequestRunner.h \
+    include/McBoot/Controller/impl/McResult.h \
+    include/McBoot/McBootGlobal.h \
+    include/McBoot/McBootMacroGlobal.h \
+    include/McBoot/McBootVersion.h \
+    include/McBoot/McIocBoot.h \
+    include/McBoot/Model/McModelContainer.h \
+    include/McBoot/Requestor/McQmlRequestor.h \
+    include/McBoot/Socket/IMcQmlSocketContainer.h \
+    include/McBoot/Socket/IMcSession.h \
+    include/McBoot/Socket/impl/McInnerSocket.h \
+    include/McBoot/Socket/impl/McQmlSocket.h \
+    include/McBoot/Socket/impl/McQmlSocketContainer.h \
+    include/McBoot/Socket/impl/McQmlSocketRunner.h \
+    include/McBoot/Socket/impl/McSession.h
 
 unix {
     target.path = /usr/lib
     INSTALLS += target
 }
+
+INCLUDEPATH += $$PWD/include/
 
 DESTDIR = $$PWD/../bin
 MOC_DIR = $$PWD/../moc/McIocBoot

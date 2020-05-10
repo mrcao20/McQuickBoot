@@ -1,14 +1,14 @@
-#include "include/Requestor/McQmlRequestor.h"
+#include "McBoot/Requestor/McQmlRequestor.h"
 
 #include <QCoreApplication>
 #include <QThreadPool>
 #include <QQmlEngine>
 #include <QEvent>
 
-#include "include/Controller/impl/McQmlResponse.h"
-#include "include/Controller/impl/McRequestRunner.h"
-#include "include/Socket/IMcQmlSocketContainer.h"
-#include "include/Socket/impl/McQmlSocket.h"
+#include "McBoot/Controller/impl/McQmlResponse.h"
+#include "McBoot/Controller/impl/McRequestRunner.h"
+#include "McBoot/Socket/IMcQmlSocketContainer.h"
+#include "McBoot/Socket/impl/McQmlSocket.h"
 
 class McRunnerEvent : public QEvent {
     Q_GADGET

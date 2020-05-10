@@ -1,8 +1,8 @@
-#include "include/ApplicationContext/impl/McReadableApplicationContext.h"
+#include "McIoc/ApplicationContext/impl/McReadableApplicationContext.h"
 
-#include "include/BeanDefinitionReader/IMcBeanDefinitionReader.h"
-#include "include/BeanFactory/impl/McDefaultBeanFactory.h"
-#include "include/PropertyParser/impl/McDefaultPropertyConverter.h"
+#include "McIoc/BeanDefinitionReader/IMcBeanDefinitionReader.h"
+#include "McIoc/BeanFactory/impl/McDefaultBeanFactory.h"
+#include "McIoc/PropertyParser/impl/McDefaultPropertyConverter.h"
 
 MC_DECL_PRIVATE_DATA(McReadableApplicationContext)
 IMcBeanDefinitionReaderPtr beanDefinitionReader;

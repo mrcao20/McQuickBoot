@@ -1,9 +1,9 @@
-#include "include/PropertyParser/impl/McDefaultPropertyConverter.h"
+#include "McIoc/PropertyParser/impl/McDefaultPropertyConverter.h"
 
 #include <QDebug>
 
-#include "include/BeanFactory/impl/McBeanReference.h"
-#include "include/BeanFactory/IMcBeanReferenceResolver.h"
+#include "McIoc/BeanFactory/impl/McBeanReference.h"
+#include "McIoc/BeanFactory/IMcBeanReferenceResolver.h"
 
 McDefaultPropertyConverter::McDefaultPropertyConverter(QObject *parent)
     : McAbstarctPropertyConverter(parent)

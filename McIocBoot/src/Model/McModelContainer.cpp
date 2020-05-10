@@ -1,11 +1,11 @@
-#include "include/Model/McModelContainer.h"
+#include "McBoot/Model/McModelContainer.h"
 
 #include <QQmlEngine>
 #include <QtDebug>
 
-#include <ApplicationContext/IMcApplicationContext.h>
+#include <McIoc/ApplicationContext/IMcApplicationContext.h>
 
-#include "include/McIocBoot.h"
+#include "McBoot/McIocBoot.h"
 
 MC_DECL_PRIVATE_DATA(McModelContainer)
 MC_DECL_PRIVATE_DATA_END
