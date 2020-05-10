@@ -65,8 +65,20 @@ MC_BEAN_FINISHED
 void end() noexcept;
 ~~~
 如上，start函数将在bean被构造完成，但属性未被注入之前调用，end函数将在整个bean被完全构造之后调用。同时，如果C继承于B，B继承于A，并且三个类中都有被声明过的函数，那么它们都将会被调用，调用顺序为从超基类到子类。A\>B\>C。<br />
-同时增加一个当线程被移动后调用函数的tag MC_THREAD_FINISHED，被该tag声明的函数将在当前bean的线程被移动之后被调用。注意: 如果对象的生存线程未被移动过，那么该函数不会被调用，即: 需要在refresh或者getBean时指定一个与生成bean时的线程不同的线程。
-
+同时增加一个当线程被移动后调用函数的tag MC_THREAD_FINISHED，被该tag声明的函数将在当前bean的线程被移动之后被调用。注意: 如果对象的生存线程未被移动过，那么该函数不会被调用，即: 需要在refresh或者getBean时指定一个与生成bean时的线程不同的线程。<br />
+但是值得注意的是，由于QT元对象系统的限制，包括Q_INVOKABLE在内的所有tag都必须在返回值类型前面，即下面的用法是错误的
+~~~
+Q_INVOKABLE
+MC_BEAN_FINISHED
+virtual void end() noexcept;
+~~~
+这不会被元对象系统所识别，而需要将virtual调换一下位置，如下所示
+~~~
+virtual
+Q_INVOKABLE
+MC_BEAN_FINISHED
+void end() noexcept;
+~~~
 8. 提供一个接口IMcDeleteThreadWhenQuit，当一个实现至该接口的bean构造完成时会调用该接口中的deleteWhenQuit方法(只要实现了该接口就一定会调用)，同时提供一个默认的McDefaultDeleteThreadWhenQuit类，继承该类后，当bean被析构时会同时析构bean的生存线程，注意: 无论线程是否是主线程都会析构，所以如果需要实现复杂功能，需要自己实现IMcDeleteThreadWhenQuit接口。
 
 以上都可在Test代码中找到相应用法用例。
