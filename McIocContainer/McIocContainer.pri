@@ -31,6 +31,8 @@ HEADERS += \
     $$PWD/include/McIoc/PropertyParser/impl/McAbstractPropertyParser.h \
     $$PWD/include/McIoc/PropertyParser/impl/McDefaultPropertyConverter.h \
     $$PWD/include/McIoc/PropertyParser/impl/McDefaultPropertyParser.h \
+    $$PWD/include/McIoc/Thread/IMcDeleteThreadWhenQuit.h \
+    $$PWD/include/McIoc/Thread/impl/McDefaultDeleteThreadWhenQuit.h \
     $$PWD/include/McIoc/Utils/McScopedFunction.h \
     include/McIoc/McGlobal.h \
     include/McIoc/McIocVersion.h \
@@ -54,4 +56,5 @@ SOURCES += \
     $$PWD/src/PropertyParser/McAbstractPropertyParser.cpp \
     $$PWD/src/PropertyParser/McDefaultPropertyConverter.cpp \
     $$PWD/src/PropertyParser/McDefaultPropertyParser.cpp \
+    $$PWD/src/Thread/McDefaultDeleteThreadWhenQuit.cpp \
     src/McGlobal.cpp

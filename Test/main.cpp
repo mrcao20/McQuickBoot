@@ -12,6 +12,7 @@
 #include "IocTest.h"
 #include <Object.h>
 #include <McBoot/McIocBoot.h>
+#include "ThreadTest.h"
 
 int main(int argc, char *argv[])
 {
@@ -20,11 +21,11 @@ int main(int argc, char *argv[])
     
     QGuiApplication app(argc, argv);
     
-    
+    ThreadTest *t = new ThreadTest();
     //! XML注入方式
     IMcApplicationContextPtr appCon = McLocalPathApplicationContextPtr::create(
                 QStringList() << ":/myspring.xml" << ":/xmltest2.xml");
-    appCon->refresh();
+    appCon->refresh(t);
     auto test = appCon->getBean<IocTestPtr>("test");
     qDebug() << test->m_interface << test->m_str << test->m_interfaces
              << test->m_strMap << test->m_iMap;
@@ -32,13 +33,15 @@ int main(int argc, char *argv[])
     test->m_interface.dynamicCast<Object>()->signal();
     test.dynamicCast<QObject>()->property("inter").value<ObjectPtr>()->signal2();
     qDebug() << test.dynamicCast<QObject>()->property("interStr");
+    t->start();
     //!< end
     
-    
     //! 声明式注入方式
+    t = new ThreadTest();
+    t->start();
     appCon = McAnnotationApplicationContextPtr::create();
     appCon->refresh();
-    QVariant var = appCon->getBeanToVariant("test");
+    QVariant var = appCon->getBeanToVariant("test", t);
     test = var.value<IocTestPtr>();
     qDebug() << test << test->m_interface << appCon->isSingleton("test");
     test->m_interface->say();
