@@ -27,7 +27,7 @@ McIocBoot::McIocBoot(QObject *parent)
 McIocBoot::~McIocBoot() {
 }
 
-int McIocBoot::run(int argc, char *argv[]
+int McIocBoot::run(int argc, char *argv[], const QUrl &url
                    , const function<void(QCoreApplication *app, QJSEngine *)> &func) noexcept {
     
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -61,7 +61,6 @@ int McIocBoot::run(int argc, char *argv[]
         func(&app, &engine);
     }
     
-    const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &app, [url](QObject *obj, const QUrl &objUrl) {
         if (!obj && url == objUrl)
