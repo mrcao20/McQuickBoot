@@ -1,11 +1,11 @@
-#include "include/Controller/impl/McRequestRunner.h"
+#include "McBoot/Controller/impl/McRequestRunner.h"
 
 #include <QVariant>
 #include <QPointer>
 #include <QDebug>
 
-#include "include/Controller/impl/McQmlResponse.h"
-#include "include/Controller/IMcControllerContainer.h"
+#include "McBoot/Controller/impl/McQmlResponse.h"
+#include "McBoot/Controller/IMcControllerContainer.h"
 
 MC_DECL_PRIVATE_DATA(McRequestRunner)
 QPointer<McQmlResponse> response;

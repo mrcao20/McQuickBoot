@@ -1,6 +1,6 @@
 #pragma once
 
-#include "McGlobal.h"
+#include "McIoc/McGlobal.h"
 
 class Interface
 {

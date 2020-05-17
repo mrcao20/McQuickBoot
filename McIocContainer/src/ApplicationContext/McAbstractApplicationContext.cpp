@@ -1,7 +1,7 @@
-#include "include/ApplicationContext/impl/McAbstractApplicationContext.h"
+#include "McIoc/ApplicationContext/impl/McAbstractApplicationContext.h"
 
-#include "include/BeanFactory/IMcBeanFactory.h"
-#include "include/BeanDefinition/IMcBeanDefinition.h"
+#include "McIoc/BeanFactory/IMcBeanFactory.h"
+#include "McIoc/BeanDefinition/IMcBeanDefinition.h"
 
 MC_DECL_PRIVATE_DATA(McAbstractApplicationContext)
 IMcConfigurableBeanFactoryPtr configurableBeanFactory;

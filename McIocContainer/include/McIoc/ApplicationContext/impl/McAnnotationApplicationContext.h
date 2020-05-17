@@ -10,8 +10,10 @@ class MCIOCCONTAINER_EXPORT McAnnotationApplicationContext
     Q_OBJECT
 public:
     McAnnotationApplicationContext(IMcConfigurableBeanFactoryConstPtrRef factory
-        , IMcBeanDefinitionReaderConstPtrRef reader
-        , QObject *parent = nullptr);
+                                   , IMcBeanDefinitionReaderConstPtrRef reader
+                                   , QObject *parent = nullptr);
+    McAnnotationApplicationContext(IMcBeanDefinitionReaderConstPtrRef reader
+                                   , QObject *parent = nullptr);
     McAnnotationApplicationContext(QObject *parent = nullptr);
     
     ~McAnnotationApplicationContext() override;

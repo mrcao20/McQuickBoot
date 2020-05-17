@@ -1,4 +1,4 @@
-#include "include/BeanDefinitionReader/impl/McXmlBeanDefinitionReader.h"
+#include "McIoc/BeanDefinitionReader/impl/McXmlBeanDefinitionReader.h"
 
 #include <QCoreApplication>
 #include <QFile>
@@ -7,11 +7,11 @@
 #include <QLibrary>
 #include <QDebug>
 
-#include "include/BeanFactory/IMcBeanDefinitionRegistry.h"
-#include "include/BeanDefinition/impl/McRootBeanDefinition.h"
-#include "include/BeanFactory/impl/McBeanReference.h"
-#include "include/BeanFactory/impl/McBeanConnector.h"
-#include "include/PropertyParser/IMcPropertyParser.h"
+#include "McIoc/BeanFactory/IMcBeanDefinitionRegistry.h"
+#include "McIoc/BeanDefinition/impl/McRootBeanDefinition.h"
+#include "McIoc/BeanFactory/impl/McBeanReference.h"
+#include "McIoc/BeanFactory/impl/McBeanConnector.h"
+#include "McIoc/PropertyParser/IMcPropertyParser.h"
 
 MC_DECL_PRIVATE_DATA(McXmlBeanDefinitionReader)
 IMcPropertyParserPtr parser;

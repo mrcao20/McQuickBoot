@@ -1,4 +1,4 @@
-#include "include/PropertyParser/impl/McDefaultPropertyParser.h"
+#include "McIoc/PropertyParser/impl/McDefaultPropertyParser.h"
 
 #include <QCoreApplication>
 #include <QDomElement>
@@ -6,7 +6,7 @@
 #include <QDir>
 #include <QDebug>
 
-#include "include/BeanFactory/impl/McBeanReference.h"
+#include "McIoc/BeanFactory/impl/McBeanReference.h"
 
 McDefaultPropertyParser::McDefaultPropertyParser(QObject *parent)
     : McAbstractPropertyParser(parent)

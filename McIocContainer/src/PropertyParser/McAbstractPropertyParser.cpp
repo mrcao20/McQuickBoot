@@ -1,4 +1,4 @@
-#include "include/PropertyParser/impl/McAbstractPropertyParser.h"
+#include "McIoc/PropertyParser/impl/McAbstractPropertyParser.h"
 
 #include <QDomElement>
 #include <QDebug>

@@ -1,14 +1,15 @@
-#include "include/BeanFactory/impl/McDefaultBeanFactory.h"
+#include "McIoc/BeanFactory/impl/McDefaultBeanFactory.h"
 
 #include <QPluginLoader>
 #include <QMetaObject>
 #include <QMetaProperty>
 #include <QDebug>
 
-#include "include/BeanDefinition/IMcBeanDefinition.h"
-#include "include/PropertyParser/IMcPropertyParser.h"
-#include "include/BeanFactory/impl/McBeanConnector.h"
-#include "include/PropertyParser/IMcPropertyConverter.h"
+#include "McIoc/BeanDefinition/IMcBeanDefinition.h"
+#include "McIoc/PropertyParser/IMcPropertyParser.h"
+#include "McIoc/BeanFactory/impl/McBeanConnector.h"
+#include "McIoc/PropertyParser/IMcPropertyConverter.h"
+#include "McIoc/Thread/IMcDeleteThreadWhenQuit.h"
 
 MC_DECL_PRIVATE_DATA(McDefaultBeanFactory)
 IMcPropertyConverterPtr converter;
@@ -74,6 +75,10 @@ QVariant McDefaultBeanFactory::doCreate(
     if(!var.convert(QMetaType::type(typeName.toLocal8Bit()))) {
         qCritical() << QString("failed convert QObjectPtr to '%1'").arg(typeName);
         return QVariant();
+    }
+    auto destoryer = var.value<IMcDeleteThreadWhenQuitPtr>();
+    if(destoryer) {
+        destoryer->deleteWhenQuit();
     }
     return var;
 }

@@ -1,4 +1,4 @@
-#include "include/ApplicationContext/McContainerGlobal.h"
+#include "McIoc/ApplicationContext/McContainerGlobal.h"
 
 void mcConnect(const QString &beanName
             , const QString &sender

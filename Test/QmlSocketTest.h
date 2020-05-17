@@ -2,9 +2,9 @@
 
 #include <QObject>
 
-#include <McMacroGlobal.h>
-#include <ApplicationContext/McContainerGlobal.h>
-#include <Socket/IMcSession.h>
+#include <McIoc/McMacroGlobal.h>
+#include <McIoc/ApplicationContext/McContainerGlobal.h>
+#include <McBoot/Socket/IMcSession.h>
 
 class QmlSocketTest : public QObject {
     Q_OBJECT

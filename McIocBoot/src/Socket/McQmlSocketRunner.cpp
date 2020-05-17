@@ -1,12 +1,12 @@
-#include "include/Socket/impl/McQmlSocketRunner.h"
+#include "McBoot/Socket/impl/McQmlSocketRunner.h"
 
 #include <QCoreApplication>
 #include <QThread>
 #include <QJSValue>
 
-#include "include/Socket/impl/McInnerSocket.h"
-#include "include/Socket/impl/McSession.h"
-#include "include/Socket/impl/McQmlSocket.h"
+#include "McBoot/Socket/impl/McInnerSocket.h"
+#include "McBoot/Socket/impl/McSession.h"
+#include "McBoot/Socket/impl/McQmlSocket.h"
 
 McQmlSocketEvent::McQmlSocketEvent(int type, const QVariant &data)
     : QEvent(static_cast<QEvent::Type>(type))

@@ -1,11 +1,11 @@
-#include "include/BeanDefinitionReader/impl/McAnnotationBeanDefinitionReader.h"
+#include "McIoc/BeanDefinitionReader/impl/McAnnotationBeanDefinitionReader.h"
 
 #include <QMetaObject>
 #include <QMetaProperty>
 
-#include "include/BeanFactory/IMcBeanDefinitionRegistry.h"
-#include "include/BeanDefinition/IMcBeanDefinition.h"
-#include "include/BeanFactory/impl/McBeanReference.h"
+#include "McIoc/BeanFactory/IMcBeanDefinitionRegistry.h"
+#include "McIoc/BeanDefinition/IMcBeanDefinition.h"
+#include "McIoc/BeanFactory/impl/McBeanReference.h"
 
 MC_DECL_PRIVATE_DATA(McAnnotationBeanDefinitionReader)
 QHash<QString, IMcBeanDefinitionPtr> definitions;

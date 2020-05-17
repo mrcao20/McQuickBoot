@@ -1,6 +1,6 @@
-#include "include/BeanDefinitionReader/impl/McAbstractBeanDefinitionReader.h"
+#include "McIoc/BeanDefinitionReader/impl/McAbstractBeanDefinitionReader.h"
 
-#include "include/BeanFactory/IMcBeanDefinitionRegistry.h"
+#include "McIoc/BeanFactory/IMcBeanDefinitionRegistry.h"
 
 MC_DECL_PRIVATE_DATA(McAbstractBeanDefinitionReader)
 IMcBeanDefinitionRegistry *registry{nullptr};

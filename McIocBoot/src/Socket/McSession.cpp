@@ -1,4 +1,4 @@
-#include "include/Socket/impl/McSession.h"
+#include "McBoot/Socket/impl/McSession.h"
 
 #include <QQmlEngine>
 #include <QJsonObject>

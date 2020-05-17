@@ -1,4 +1,4 @@
-#include "include/BeanFactory/impl/McBeanReference.h"
+#include "McIoc/BeanFactory/impl/McBeanReference.h"
 
 MC_INIT(McBeanReference)
 MC_REGISTER_BEAN_FACTORY(McBeanReference)

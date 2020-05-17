@@ -1,6 +1,6 @@
-#include "include/PropertyParser/impl/McAbstarctPropertyConverter.h"
+#include "McIoc/PropertyParser/impl/McAbstarctPropertyConverter.h"
 
-#include "include/BeanFactory/impl/McBeanReference.h"
+#include "McIoc/BeanFactory/impl/McBeanReference.h"
 
 MC_DECL_PRIVATE_DATA(McAbstarctPropertyConverter)
 IMcBeanReferenceResolver *resolver;

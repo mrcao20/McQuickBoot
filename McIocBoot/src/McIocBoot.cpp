@@ -1,4 +1,4 @@
-#include "include/McIocBoot.h"
+#include "McBoot/McIocBoot.h"
 
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
@@ -6,13 +6,13 @@
 #include <QJSValue>
 #include <QDebug>
 
-#include <ApplicationContext/impl/McAnnotationApplicationContext.h>
-#include <BeanDefinition/IMcBeanDefinition.h>
+#include <McIoc/ApplicationContext/impl/McAnnotationApplicationContext.h>
+#include <McIoc/BeanDefinition/IMcBeanDefinition.h>
 
-#include "include/Controller/impl/McControllerContainer.h"
-#include "include/Model/McModelContainer.h"
-#include "include/Socket/impl/McQmlSocketContainer.h"
-#include "include/Requestor/McQmlRequestor.h"
+#include "McBoot/Controller/impl/McControllerContainer.h"
+#include "McBoot/Model/McModelContainer.h"
+#include "McBoot/Socket/impl/McQmlSocketContainer.h"
+#include "McBoot/Requestor/McQmlRequestor.h"
 
 MC_DECL_PRIVATE_DATA(McIocBoot)
 McAnnotationApplicationContextPtr context;

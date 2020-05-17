@@ -3,11 +3,11 @@
 #include <QThread>
 #include <QDebug>
 
-#include <ApplicationContext/McContainerGlobal.h>
-#include <Controller/impl/McResult.h>
+#include <McIoc/ApplicationContext/McContainerGlobal.h>
+#include <McBoot/Controller/impl/McResult.h>
 
 MC_INIT(InvokeTest)
-MC_REGISTER_COMPONENT(InvokeTest)
+MC_REGISTER_BEAN_FACTORY(InvokeTest)
 MC_INIT_END
 
 InvokeTest::InvokeTest(QObject *parent) 

@@ -1,4 +1,4 @@
-#include "include/Socket/impl/McQmlSocketContainer.h"
+#include "McBoot/Socket/impl/McQmlSocketContainer.h"
 
 #include <QCoreApplication>
 #include <QJSValue>
@@ -6,13 +6,13 @@
 #include <QMetaMethod>
 #include <QDebug>
 
-#include <ApplicationContext/IMcApplicationContext.h>
+#include <McIoc/ApplicationContext/IMcApplicationContext.h>
 
-#include "include/McIocBoot.h"
-#include "include/Socket/impl/McQmlSocket.h"
-#include "include/Socket/impl/McInnerSocket.h"
-#include "include/Socket/impl/McSession.h"
-#include "include/Socket/impl/McQmlSocketRunner.h"
+#include "McBoot/McIocBoot.h"
+#include "McBoot/Socket/impl/McQmlSocket.h"
+#include "McBoot/Socket/impl/McInnerSocket.h"
+#include "McBoot/Socket/impl/McSession.h"
+#include "McBoot/Socket/impl/McQmlSocketRunner.h"
 
 MC_DECL_PRIVATE_DATA(McQmlSocketContainer)
 QMap<QString, QObjectPtr> sockets;

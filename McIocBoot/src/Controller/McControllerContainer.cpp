@@ -1,14 +1,14 @@
-#include "include/Controller/impl/McControllerContainer.h"
+#include "McBoot/Controller/impl/McControllerContainer.h"
 
 #include <QMetaMethod>
 #include <QJsonObject>
 #include <QQmlEngine>
 #include <QDebug>
 
-#include <ApplicationContext/IMcApplicationContext.h>
+#include <McIoc/ApplicationContext/IMcApplicationContext.h>
 
-#include "include/McIocBoot.h"
-#include "include/Controller/impl/McResult.h"
+#include "McBoot/McIocBoot.h"
+#include "McBoot/Controller/impl/McResult.h"
 
 MC_DECL_PRIVATE_DATA(McControllerContainer)
 QMap<QString, QObjectPtr> controllers;	//!< 键为beanName，值为controller对象

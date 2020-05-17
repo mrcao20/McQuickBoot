@@ -1,6 +1,6 @@
 #include "Object.h"
 
-#include "ApplicationContext/McContainerGlobal.h"
+#include "McIoc/ApplicationContext/McContainerGlobal.h"
 
 MC_INIT(Tmp)
 MC_REGISTER_COMPONENT(Tmp)

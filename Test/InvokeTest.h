@@ -1,6 +1,6 @@
 #pragma once
 
-#include <McBootGlobal.h>
+#include <McBoot/McBootGlobal.h>
 
 #include "Object.h"
 

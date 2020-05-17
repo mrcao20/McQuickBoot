@@ -1,4 +1,4 @@
-#include "include/Controller/impl/McQmlResponse.h"
+#include "McBoot/Controller/impl/McQmlResponse.h"
 
 #include <QCoreApplication>
 #include <QVariant>
@@ -6,7 +6,7 @@
 #include <QJSEngine>
 #include <QEvent>
 
-#include <Utils/McScopedFunction.h>
+#include <McIoc/Utils/McScopedFunction.h>
 
 MC_DECL_PRIVATE_DATA(McQmlResponse)
 MC_PADDING_CLANG(7)

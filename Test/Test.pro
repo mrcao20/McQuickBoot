@@ -48,7 +48,8 @@ HEADERS += \
     InvokeTest.h \
     IocTest.h \
     Object.h \
-    QmlSocketTest.h
+    QmlSocketTest.h \
+    ThreadTest.h
 
 INCLUDEPATH += $$PWD/../McIocContainer/include
 DEPENDPATH += $$PWD/../McIocContainer/include

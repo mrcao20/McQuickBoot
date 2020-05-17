@@ -1,12 +1,12 @@
-#include "include/ApplicationContext/impl/McAnnotationApplicationContext.h"
+#include "McIoc/ApplicationContext/impl/McAnnotationApplicationContext.h"
 
 #include <qmetaobject.h>
 #include <QDebug>
 
-#include "include/BeanDefinitionReader/impl/McAnnotationBeanDefinitionReader.h"
-#include "include/BeanDefinition/impl/McRootBeanDefinition.h"
-#include "include/BeanFactory/impl/McBeanConnector.h"
-#include "include/McMacroGlobal.h"
+#include "McIoc/BeanDefinitionReader/impl/McAnnotationBeanDefinitionReader.h"
+#include "McIoc/BeanDefinition/impl/McRootBeanDefinition.h"
+#include "McIoc/BeanFactory/impl/McBeanConnector.h"
+#include "McIoc/McMacroGlobal.h"
 
 MC_DECL_PRIVATE_DATA(McAnnotationApplicationContext)
 /// 用来保存需要自动注入的bean的beanName和BeanDefinition
@@ -25,15 +25,63 @@ McAnnotationApplicationContext::McAnnotationApplicationContext(
         , QObject *parent)
     : McReadableApplicationContext(factory, reader, parent)
 {
-    MC_NEW_PRIVATE_DATA(McAnnotationApplicationContext)
+    MC_NEW_PRIVATE_DATA(McAnnotationApplicationContext);
+}
+
+McAnnotationApplicationContext::McAnnotationApplicationContext(
+        IMcBeanDefinitionReaderConstPtrRef reader
+        , QObject *parent)
+    : McReadableApplicationContext(reader, parent)
+{
+    MC_NEW_PRIVATE_DATA(McAnnotationApplicationContext);
 }
 
 McAnnotationApplicationContext::McAnnotationApplicationContext(QObject *parent)
-    : McReadableApplicationContext(
-          IMcBeanDefinitionReaderPtr(new McAnnotationBeanDefinitionReader(globalDefinitions()))
-          , parent)
+    : McReadableApplicationContext(parent)
 {
-    MC_NEW_PRIVATE_DATA(McAnnotationApplicationContext)
+    MC_NEW_PRIVATE_DATA(McAnnotationApplicationContext);
+    
+    for(int type = QMetaType::User; 
+        QMetaType::isRegistered(type); 
+        ++type) {
+        
+        auto metaObj = QMetaType::metaObjectForType(type);
+        if(!metaObj) {
+            continue;
+        }
+        auto beanNameIndex = metaObj->indexOfClassInfo(MC_BEANNAME);
+        if(beanNameIndex == -1) {
+            continue;
+        }
+        auto beanNameClassInfo = metaObj->classInfo(beanNameIndex);
+        QString beanName = beanNameClassInfo.value();
+        auto beanDefinition = globalDefinitions()[beanName];
+        if(!beanDefinition) {
+            beanDefinition = McRootBeanDefinitionPtr::create();
+            globalDefinitions()[beanName] = beanDefinition;
+        }
+        if(!beanDefinition->getClassName().isEmpty()) {
+            continue;
+        }
+        auto isSingleton = true;    //!< 默认为单例
+        auto singletonIndex = metaObj->indexOfClassInfo(MC_SINGLETON);
+        if(singletonIndex != -1) {
+            auto classInfo = metaObj->classInfo(singletonIndex);
+            bool isTrue = classInfo.value() == QString("true");
+            bool isFalse = classInfo.value() == QString("false");
+            if(!isTrue && !isFalse) {
+                qCritical() << "the singleton value for classInfo must be true or false of string";
+            }else{
+                isSingleton = isTrue ? true : false;
+            }
+        }
+        beanDefinition->setBeanMetaObject(metaObj);
+        beanDefinition->setClassName(metaObj->className());
+        beanDefinition->setSingleton(isSingleton);
+    }
+    
+    auto reader = McAnnotationBeanDefinitionReaderPtr::create(globalDefinitions());
+    setReader(reader);
 }
 
 McAnnotationApplicationContext::~McAnnotationApplicationContext() {

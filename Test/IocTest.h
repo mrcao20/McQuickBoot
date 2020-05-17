@@ -1,16 +1,17 @@
 #pragma once
 
-#include "McGlobal.h"
+#include "McIoc/McGlobal.h"
 
+#include <McIoc/Thread/impl/McDefaultDeleteThreadWhenQuit.h>
 #include <QDebug>
 
 #include "Interface.h"
 
-class IocTest : public QObject
+class IocTest : public QObject, public McDefaultDeleteThreadWhenQuit
 {
     Q_OBJECT
     MC_DECL_INIT(IocTest)
-    MC_DEFINE_TYPELIST(QObject)
+    MC_DEFINE_TYPELIST(QObject, MC_DECL_TYPELIST(McDefaultDeleteThreadWhenQuit))
     Q_CLASSINFO(MC_BEANNAME, "test")
     Q_CLASSINFO(MC_SINGLETON, "false")
     Q_CLASSINFO("interface", "obj")
