@@ -4,6 +4,8 @@
 
 #include <functional>
 
+#include <QUrl>
+
 QT_BEGIN_NAMESPACE
 class QCoreApplication;
 class QJSEngine;
@@ -21,7 +23,7 @@ public:
     explicit McIocBoot(QObject *parent = nullptr);
     ~McIocBoot() override;
     
-    static int run(int argc, char *argv[]
+    static int run(int argc, char *argv[], const QUrl &url = QUrl(QStringLiteral("qrc:/main.qml"))
                    , const function<void(QCoreApplication *app, QJSEngine *)> &func = nullptr) noexcept;
     
     void initBoot() noexcept;
