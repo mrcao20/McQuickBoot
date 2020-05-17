@@ -7,7 +7,7 @@
 #include <McBoot/Controller/impl/McResult.h>
 
 MC_INIT(InvokeTest)
-MC_REGISTER_COMPONENT(InvokeTest)
+MC_REGISTER_BEAN_FACTORY(InvokeTest)
 MC_INIT_END
 
 InvokeTest::InvokeTest(QObject *parent) 

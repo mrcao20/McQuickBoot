@@ -20,32 +20,32 @@ Window {
     }
     
     Component.onCompleted: {
-        var data = {
-            onOpen: function(){
-                console.log("qml onOpen aaaaaaaaa");
-                ws.send("bbbbbbbb");
-            },
-            isOpenSync: true,
-            onMessage: function(msg){
-                console.log("qml message", msg);
-            },
-            isMessageSync: true,
-            onClose: function() {
-                console.log("ccccccccc");
-            }
-        };
-        ws = $.qs("socket", data);
+//        var data = {
+//            onOpen: function(){
+//                console.log("qml onOpen aaaaaaaaa");
+//                ws.send("bbbbbbbb");
+//            },
+//            isOpenSync: true,
+//            onMessage: function(msg){
+//                console.log("qml message", msg);
+//            },
+//            isMessageSync: true,
+//            onClose: function() {
+//                console.log("ccccccccc");
+//            }
+//        };
+//        ws = $.qs("socket", data);
         
-        $.get("con1.invoke1").then(function(result) {
-            console.log("con1");
-            console.log(result, result.errMsg);
-        });
-        aaa({errMsg: "aaa"});
-        $.get("con.invoke2").syncThen(function(result){
-            console.log("con");
-            console.log(result, result.errMsg);
-        });
-        data = {
+//        $.get("con1.invoke1").then(function(result) {
+//            console.log("con1");
+//            console.log(result, result.errMsg);
+//        });
+//        aaa({errMsg: "aaa"});
+//        $.get("con.invoke2").syncThen(function(result){
+//            console.log("con");
+//            console.log(result, result.errMsg);
+//        });
+        var data = {
             o: {
                 text: "aaa",
                 t: {
