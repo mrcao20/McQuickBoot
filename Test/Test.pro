@@ -34,8 +34,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 DEFINES += QT_MESSAGELOGCONTEXT
 
-include(McIocContainer.pri)
-
 DESTDIR = $$PWD/../bin
 MOC_DIR = $$PWD/../moc/Test
 

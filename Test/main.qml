@@ -54,6 +54,8 @@ Window {
             }
         };
 
+        console.log($.__proto__.post);
+        console.log($);
         $.post("con.invoke3", data);
     }
 }

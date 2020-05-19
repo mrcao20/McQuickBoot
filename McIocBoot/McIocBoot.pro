@@ -82,6 +82,3 @@ else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocContaine
 
 INCLUDEPATH += $$PWD/../McIocContainer/include
 DEPENDPATH += $$PWD/../McIocContainer/include
-
-RESOURCES += \
-    qrc/Resource.qrc

@@ -45,7 +45,24 @@ void McIocBoot::init(QQmlApplicationEngine *engine) noexcept {
     //! engine的newQObject函数会将其参数所有权转移到其返回的QJSValue中
     QJSValue jsObj = engine->newQObject(requestor);
     engine->globalObject().setProperty("$", jsObj);
-    engine->importModule(":/Requestor.js");
+    QString data = R"(
+       $.__proto__.get = function(uri) {
+           return $.invoke(uri);
+       }
+       
+       $.__proto__.post = function(uri, body) {
+           return $.invoke(uri, body);
+       }
+       
+       $.__proto__.qs = function(uri, data) {
+           if(data === undefined) {
+               return $.addConnect(uri);
+           }else{
+               return $.addConnect(uri, data);
+           }
+       }
+    )";
+    engine->evaluate(data);
 }
 
 void McIocBoot::initBoot() noexcept {
