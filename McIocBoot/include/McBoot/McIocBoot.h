@@ -4,12 +4,11 @@
 
 #include <functional>
 
+#include <QGuiApplication>
+#include <QQmlApplicationEngine>
 #include <QUrl>
 
-QT_BEGIN_NAMESPACE
-class QCoreApplication;
-class QJSEngine;
-QT_END_NAMESPACE
+#include "Application/McSingleApplication.h"
 
 MC_FORWARD_DECL_CLASS(IMcApplicationContext);
 
@@ -23,8 +22,25 @@ public:
     explicit McIocBoot(QObject *parent = nullptr);
     ~McIocBoot() override;
     
+    static void init(QQmlApplicationEngine *engine) noexcept;
+    
+    template<typename T = QGuiApplication>
     static int run(int argc, char *argv[], const QUrl &url = QUrl(QStringLiteral("qrc:/main.qml"))
-                   , const function<void(QCoreApplication *app, QJSEngine *)> &func = nullptr) noexcept;
+            , const function<void(T *app, QQmlApplicationEngine *)> &func = nullptr) noexcept;
+    
+    /*!
+     * \brief singleRun
+     * 
+     * 单例运行应用程序，url指定的qml文件的objectName必须为mainApp
+     * \param argc
+     * \param argv
+     * \param url
+     * \param func
+     * \return 
+     */
+    template<typename T = McSingleApplication>
+    static int singleRun(int argc, char *argv[], const QUrl &url = QUrl(QStringLiteral("qrc:/main.qml"))
+            , const function<void(T *app, QQmlApplicationEngine *)> &func = nullptr) noexcept;
     
     void initBoot() noexcept;
     
@@ -39,4 +55,61 @@ private:
     MC_DECL_PRIVATE(McIocBoot)
 };
 
-MC_DECL_POINTER(McIocBoot)
+MC_DECL_POINTER(McIocBoot);
+
+template<typename T>
+int McIocBoot::run(int argc, char *argv[], const QUrl &url
+                   , const function<void(T *app, QQmlApplicationEngine *)> &func) noexcept {
+    
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+
+    T app(argc, argv);
+    
+    QQmlApplicationEngine engine;
+    
+    McIocBoot::init(&engine);
+    
+    if(func) {
+        func(&app, &engine);
+    }
+    
+    QObject::connect(&engine, &QQmlApplicationEngine::objectCreated
+                     , &app, [url](QObject *obj, const QUrl &objUrl) {
+        if (!obj && url == objUrl)
+            QCoreApplication::exit(-1);
+    }, Qt::QueuedConnection);
+    engine.load(url);
+
+    return app.exec();
+}
+
+template<typename T>
+int McIocBoot::singleRun(int argc, char *argv[], const QUrl &url
+                   , const function<void(T *app, QQmlApplicationEngine *)> &func) noexcept {
+    
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+
+    T app(argc, argv);
+    if(app.isRunning())
+        return 0;
+    
+    QQmlApplicationEngine engine;
+    
+    McIocBoot::init(&engine);
+    
+    if(func) {
+        func(&app, &engine);
+    }
+    
+    QObject::connect(&engine, &QQmlApplicationEngine::objectCreated
+                     , &app, [url, &app](QObject *obj, const QUrl &objUrl) {
+        if (!obj && url == objUrl)
+            QCoreApplication::exit(-1);
+        if (obj && obj->objectName() == "mainApp") {
+            app.setAppObj(obj);
+        }
+    }, Qt::QueuedConnection);
+    engine.load(url);
+
+    return app.exec();
+}

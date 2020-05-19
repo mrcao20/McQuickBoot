@@ -1,7 +1,5 @@
 #include "McBoot/McIocBoot.h"
 
-#include <QGuiApplication>
-#include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QJSValue>
 #include <QDebug>
@@ -27,13 +25,7 @@ McIocBoot::McIocBoot(QObject *parent)
 McIocBoot::~McIocBoot() {
 }
 
-int McIocBoot::run(int argc, char *argv[], const QUrl &url
-                   , const function<void(QCoreApplication *app, QJSEngine *)> &func) noexcept {
-    
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-
-    QGuiApplication app(argc, argv);
-    
+void McIocBoot::init(QQmlApplicationEngine *engine) noexcept {
     McIocBootPtr boot = McIocBootPtr::create();
     boot->initBoot();
     
@@ -46,29 +38,14 @@ int McIocBoot::run(int argc, char *argv[], const QUrl &url
     McQmlSocketContainerPtr socketContainer = McQmlSocketContainerPtr::create();
     socketContainer->init(boot);
     
-    QQmlApplicationEngine engine;
-    
-    McQmlRequestor *requestor = new McQmlRequestor(&engine); //!< 不需要设置父对象
+    McQmlRequestor *requestor = new McQmlRequestor(engine); //!< 不需要设置父对象
     requestor->setControllerContainer(controllerContainer);
     requestor->setSocketContainer(socketContainer);
     
     //! engine的newQObject函数会将其参数所有权转移到其返回的QJSValue中
-    QJSValue jsObj = engine.newQObject(requestor);
-    engine.globalObject().setProperty("$", jsObj);
-    engine.importModule(":/Requestor.js");
-    
-    if(func) {
-        func(&app, &engine);
-    }
-    
-    QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
-                     &app, [url](QObject *obj, const QUrl &objUrl) {
-        if (!obj && url == objUrl)
-            QCoreApplication::exit(-1);
-    }, Qt::QueuedConnection);
-    engine.load(url);
-
-    return app.exec();
+    QJSValue jsObj = engine->newQObject(requestor);
+    engine->globalObject().setProperty("$", jsObj);
+    engine->importModule(":/Requestor.js");
 }
 
 void McIocBoot::initBoot() noexcept {

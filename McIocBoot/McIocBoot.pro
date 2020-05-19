@@ -4,9 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += quick
-
-QT       -= gui
+QT += quick network
 
 CONFIG(debug, debug|release) {
     win32: TARGET = McIocBootd
@@ -34,6 +32,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    src/Application/McSingleApplication.cpp \
     src/Controller/McControllerContainer.cpp \
     src/Controller/McQmlResponse.cpp \
     src/Controller/McRequestRunner.cpp \
@@ -48,6 +47,7 @@ SOURCES += \
     src/Socket/McSession.cpp
 
 HEADERS +=  \
+    include/McBoot/Application/McSingleApplication.h \
     include/McBoot/Controller/IMcControllerContainer.h \
     include/McBoot/Controller/impl/McControllerContainer.h \
     include/McBoot/Controller/impl/McQmlResponse.h \
