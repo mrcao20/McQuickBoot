@@ -11,7 +11,7 @@ class Insterface {
 }
 -------------------
 class Object : public QObject, public Insterface{
-  MC_DEFINE_TYPELIST(QObject, MC_DECL_TYPELIST(Insterface)) // 由于QObject宏为QT自带，没有使用过MC_DEFINE_TYPELIST，所以只需要声明QObject足够，但是Insterface中使用了MC_DEFINE_TYPELIST宏，所以这里需要使用MC_DECL_TYPELIST宏额外指定
+  MC_DEFINE_TYPELIST(QObject, MC_DECL_TYPELIST(Insterface)) // 由于QObject宏为QT自带，没有使用过MC_DEFINE_TYPELIST，所以只需要声明QObject足够，但是Insterface中使用了MC_DEFINE_TYPELIST宏，所以这里需要使用MC_DECL_TYPELIST宏额外指定，但是一定要注意MC_DECL_TYPELIST宏中的类型一定是父类类型
 }
 ~~~
 以上主要用于定义类之间的层级关系
