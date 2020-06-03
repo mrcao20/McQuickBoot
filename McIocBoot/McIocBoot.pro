@@ -44,7 +44,8 @@ SOURCES += \
     src/Socket/McQmlSocket.cpp \
     src/Socket/McQmlSocketContainer.cpp \
     src/Socket/McQmlSocketRunner.cpp \
-    src/Socket/McSession.cpp
+    src/Socket/McSession.cpp \
+    src/Utils/McJsonUtils.cpp
 
 HEADERS +=  \
     include/McBoot/Application/McSingleApplication.h \
@@ -65,7 +66,8 @@ HEADERS +=  \
     include/McBoot/Socket/impl/McQmlSocket.h \
     include/McBoot/Socket/impl/McQmlSocketContainer.h \
     include/McBoot/Socket/impl/McQmlSocketRunner.h \
-    include/McBoot/Socket/impl/McSession.h
+    include/McBoot/Socket/impl/McSession.h \
+    include/McBoot/Utils/McJsonUtils.h
 
 unix {
     target.path = /usr/lib

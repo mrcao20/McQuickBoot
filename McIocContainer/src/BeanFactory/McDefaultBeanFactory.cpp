@@ -122,7 +122,11 @@ bool McDefaultBeanFactory::addPropertyValue(QObjectConstPtrRef bean
             
         }else{
             auto metaProperty = bean->metaObject()->property(index);
-            metaProperty.write(bean.data(), value);
+            if(!metaProperty.write(bean.data(), value)) {
+                qCritical("bean '%s' write property named for '%s' failure"
+                          , bean->metaObject()->className()
+                          , itr.key().toLocal8Bit().data());
+            }
         }
 	}
 	return true;

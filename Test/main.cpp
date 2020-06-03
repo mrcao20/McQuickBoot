@@ -10,12 +10,26 @@
 #include "McIoc/ApplicationContext/impl/McLocalPathApplicationContext.h"
 #include "McIoc/ApplicationContext/impl/McAnnotationApplicationContext.h"
 #include "IocTest.h"
+#include "InvokeTest.h"
 #include <Object.h>
 #include <McBoot/McIocBoot.h>
 #include "ThreadTest.h"
+#include <McBoot/Utils/McJsonUtils.h>
 
 int main(int argc, char *argv[])
 {
+//    QList<IocTestPtr> r;
+//    McJsonUtils::toJson(r);
+//    auto ft = QMetaType::typeFlags(QMetaType::type("QVector<InterfacePtr>"));
+//    auto ftt = QMetaType::typeFlags(QMetaType::type("InvokeTestPtr"));
+//    qDebug() << ft.testFlag(QMetaType::TypeFlag::PointerToQObject)
+//             << ft.testFlag(QMetaType::TypeFlag::SharedPointerToQObject)
+//             << ft.testFlag(QMetaType::TypeFlag::TrackingPointerToQObject)
+//             << ft.testFlag(QMetaType::TypeFlag::WasDeclaredAsMetaType);
+//    qDebug() << ftt.testFlag(QMetaType::TypeFlag::PointerToQObject)
+//             << ftt.testFlag(QMetaType::TypeFlag::SharedPointerToQObject)
+//             << ftt.testFlag(QMetaType::TypeFlag::TrackingPointerToQObject)
+//             << ftt.testFlag(QMetaType::TypeFlag::WasDeclaredAsMetaType);
     return McIocBoot::run(argc, argv);
 //    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     

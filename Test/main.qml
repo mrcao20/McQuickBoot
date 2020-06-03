@@ -14,38 +14,40 @@ Window {
             return;
         console.log("con", index++);
         console.log(result, result.errMsg);
-        $.get("con.invoke2").syncThen(aaa);
+        $.get("con.invoke2").syncThen(function(){
+            console.log("aaaaaaaaaa>>>>>>>>>");
+        });
 //        $.post("con.invoke3", data);
         console.log(Qt.formatDateTime(new Date(), "dddd-yyyy-MM-dd-MMM-hh-mm-ss"));
     }
     
     Component.onCompleted: {
-//        var data = {
-//            onOpen: function(){
-//                console.log("qml onOpen aaaaaaaaa");
-//                ws.send("bbbbbbbb");
-//            },
-//            isOpenSync: true,
-//            onMessage: function(msg){
-//                console.log("qml message", msg);
-//            },
-//            isMessageSync: true,
-//            onClose: function() {
-//                console.log("ccccccccc");
-//            }
-//        };
-//        ws = $.qs("socket", data);
-        
-//        $.get("con1.invoke1").then(function(result) {
-//            console.log("con1");
-//            console.log(result, result.errMsg);
-//        });
-//        aaa({errMsg: "aaa"});
-//        $.get("con.invoke2").syncThen(function(result){
-//            console.log("con");
-//            console.log(result, result.errMsg);
-//        });
         var data = {
+            onOpen: function(){
+                console.log("qml onOpen aaaaaaaaa");
+                ws.send("bbbbbbbb");
+            },
+            isOpenSync: true,
+            onMessage: function(msg){
+                console.log("qml message", msg);
+            },
+            isMessageSync: true,
+            onClose: function() {
+                console.log("ccccccccc");
+            }
+        };
+        ws = $.qs("socket", data);
+        
+        $.get("con1.invoke1").syncThen(function(result) {
+            console.log("con1");
+            console.log(">>>>>>>>>1.", result, result.errMsg);
+        });
+        aaa({errMsg: "aaa"});
+        $.get("con.invoke2").syncThen(function(result){
+            console.log("con");
+            console.log(">>>>>>>>>.", result, result.errMsg);
+        });
+        var data1 = {
             o: {
                 text: "aaa",
                 t: {
@@ -56,6 +58,6 @@ Window {
 
         console.log($.__proto__.post);
         console.log($);
-        $.post("con.invoke3", data);
+        $.post("con.invoke3", data1);
     }
 }
