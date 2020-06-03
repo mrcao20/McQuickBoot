@@ -139,5 +139,7 @@ void end() noexcept;
    1. C++端声明一个Component，并使用Q_CLASSINFO(MC_COMPONENT, MC_QML_SOCKET)附加额外属性。然后按照需求实现最多四个函数，并使用四种宏标志四个函数以接收各种消息，具体参照QmlSocketTest或者Java Spring WebSocket。注意：每一个函数的执行都是在另外的线程。
    2. QML端可以使用$.qs("beanName")来发起一个请求，该函数会返回一个对象，参照JS WebSocket。同时$.qs函数拥有第二个参数，可以直接指定onOpen等回调函数。同时因为部分界面操作不能在其他线程执行，所以$.qs的第二个参数中可以指定isOpenSync等参数来让某一个回调函数回到主线程后再执行。具体参照main.qml。
    3. 注意: $.qs的返回值必须赋值给某一特定变量，否则它可能会被QJSEngine的垃圾回收器给回收掉。
+## 2020-6-3重大注意事项
+$的所有请求(get/post/qs)全部需要使用syncThen方式，否则会出现抢资源的而导致不可预料的崩溃。
    
    
