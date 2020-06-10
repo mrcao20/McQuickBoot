@@ -135,6 +135,8 @@ void end() noexcept;
    
    7. Controller需要使用Q_CLASSINFO(MC_COMPONENT, MC_CONTROLLER)来声明
    8. 注意: 无论是$.get还是$.post亦或者是$.invoke的返回值都不允许赋值给其他变量，因为它们的返回值将在整个函数调用完毕时被析构。
+   9. 内部提供一个beanName为app的controller，用于提供一些默认的功能，对应类：McApplicationController
+   10. 提供invoke的同步请求接口syncInvoke，该函数的返回值即为controller的返回值，并且请求的线程为调用该函数的线程(通常为主线程)。
 - 增加QML到C++的长连接QmlSocket通信方式：
    1. C++端声明一个Component，并使用Q_CLASSINFO(MC_COMPONENT, MC_QML_SOCKET)附加额外属性。然后按照需求实现最多四个函数，并使用四种宏标志四个函数以接收各种消息，具体参照QmlSocketTest或者Java Spring WebSocket。注意：每一个函数的执行都是在另外的线程。
    2. QML端可以使用$.qs("beanName")来发起一个请求，该函数会返回一个对象，参照JS WebSocket。同时$.qs函数拥有第二个参数，可以直接指定onOpen等回调函数。同时因为部分界面操作不能在其他线程执行，所以$.qs的第二个参数中可以指定isOpenSync等参数来让某一个回调函数回到主线程后再执行。具体参照main.qml。
