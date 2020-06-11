@@ -3,8 +3,8 @@
 #include "McAbstractPropertyParser.h"
 
 class MCIOCCONTAINER_EXPORT McDefaultPropertyParser 
-        : public McAbstractPropertyParser {
-    
+        : public McAbstractPropertyParser 
+{
     Q_OBJECT
 public:
     explicit McDefaultPropertyParser(QObject *parent = nullptr);

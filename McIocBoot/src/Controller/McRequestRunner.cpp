@@ -19,26 +19,32 @@ McRequestRunner::McRequestRunner()
     MC_NEW_PRIVATE_DATA(McRequestRunner)
 }
 
-McRequestRunner::~McRequestRunner() {
+McRequestRunner::~McRequestRunner() 
+{
 }
 
-void McRequestRunner::setResponse(McQmlResponse *val) noexcept {
+void McRequestRunner::setResponse(McQmlResponse *val) noexcept 
+{
     d->response = val;
 }
 
-void McRequestRunner::setControllerContainer(IMcControllerContainerConstPtrRef val) noexcept {
+void McRequestRunner::setControllerContainer(IMcControllerContainerConstPtrRef val) noexcept 
+{
     d->controllerContainer = val;
 }
 
-void McRequestRunner::setUri(const QString &uri) noexcept {
+void McRequestRunner::setUri(const QString &uri) noexcept 
+{
     d->uri = uri;
 }
 
-void McRequestRunner::setBody(const QVariant &body) noexcept {
+void McRequestRunner::setBody(const QVariant &body) noexcept
+{
     d->body = body;
 }
 
-void McRequestRunner::run() {
+void McRequestRunner::run() 
+{
     auto body = d->controllerContainer->invoke(d->uri, d->body);
     if(d->response.isNull()) {  //!< Response可能被QML析构
         qCritical() << "response is null. it's maybe destroyed of qmlengine";

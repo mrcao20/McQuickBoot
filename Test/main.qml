@@ -59,5 +59,10 @@ Window {
         console.log($.__proto__.post);
         console.log($);
         $.post("con.invoke3", data1);
+        
+        $.get("app.dirPath").then(function(result){
+            console.log("dir path:", result)
+        });
+        console.log("file path:", $.syncInvoke("app.filePath"));
     }
 }

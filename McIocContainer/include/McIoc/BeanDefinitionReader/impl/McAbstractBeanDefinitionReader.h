@@ -6,7 +6,8 @@ MC_FORWARD_DECL_PRIVATE_DATA(McAbstractBeanDefinitionReader)
 
 class McAbstractBeanDefinitionReader
         : public QObject
-        , public IMcBeanDefinitionReader {
+        , public IMcBeanDefinitionReader 
+{
     
     Q_OBJECT
 public:

@@ -84,10 +84,11 @@ McAnnotationApplicationContext::McAnnotationApplicationContext(QObject *parent)
     setReader(reader);
 }
 
-McAnnotationApplicationContext::~McAnnotationApplicationContext() {
-}
+McAnnotationApplicationContext::~McAnnotationApplicationContext() 
+{}
 
-void McAnnotationApplicationContext::insertRegistry(const QString &typeName) noexcept {
+void McAnnotationApplicationContext::insertRegistry(const QString &typeName) noexcept 
+{
     Q_ASSERT(!typeName.isEmpty());
     auto isSingleton = true;    //!< 默认为单例
     //! 默认为类型名首字母小写
@@ -137,8 +138,8 @@ void McAnnotationApplicationContext::addConnect(
         , const QString &signal
         , const QString &receiver
         , const QString &slot
-        , Qt::ConnectionType type) noexcept {
-    
+        , Qt::ConnectionType type) noexcept 
+{
     auto beanDefinition = globalDefinitions()[beanName];
     if(!beanDefinition) {
         beanDefinition = McRootBeanDefinitionPtr::create();

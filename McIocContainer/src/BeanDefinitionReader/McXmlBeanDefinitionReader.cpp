@@ -38,17 +38,20 @@ McXmlBeanDefinitionReader::McXmlBeanDefinitionReader(
     d->devices = devices;
 }
 
-McXmlBeanDefinitionReader::~McXmlBeanDefinitionReader(){
+McXmlBeanDefinitionReader::~McXmlBeanDefinitionReader()
+{
 }
 
-void McXmlBeanDefinitionReader::doReadBeanDefinition() noexcept {
+void McXmlBeanDefinitionReader::doReadBeanDefinition() noexcept 
+{
     for(auto device : d->devices) {
         device->seek(0);
         readBeanDefinition(device);
     }
 }
 
-void McXmlBeanDefinitionReader::readBeanDefinition(QIODeviceConstPtrRef source) noexcept {
+void McXmlBeanDefinitionReader::readBeanDefinition(QIODeviceConstPtrRef source) noexcept 
+{
 	QDomDocument doc;
 	QString errorMsg;
 	int errorLine;
@@ -62,7 +65,8 @@ void McXmlBeanDefinitionReader::readBeanDefinition(QIODeviceConstPtrRef source) 
 	readBeanDefinition(doc);
 }
 
-void McXmlBeanDefinitionReader::readBeanDefinition(const QDomDocument &doc) noexcept {
+void McXmlBeanDefinitionReader::readBeanDefinition(const QDomDocument &doc) noexcept 
+{
 	QDomElement root = doc.documentElement();
 	if (root.isNull()) {
 		qCritical() << "XML Error: Root element is NULL.";
@@ -75,7 +79,8 @@ void McXmlBeanDefinitionReader::readBeanDefinition(const QDomDocument &doc) noex
 	readBeanDefinition(root.childNodes());
 }
 
-void McXmlBeanDefinitionReader::readBeanDefinition(const QDomNodeList &nodes) noexcept {
+void McXmlBeanDefinitionReader::readBeanDefinition(const QDomNodeList &nodes) noexcept 
+{
 	for (int i = 0; i < nodes.size(); ++i) {
 		QDomElement ele = nodes.at(i).toElement();
         if(ele.isNull()) {
@@ -121,8 +126,8 @@ void McXmlBeanDefinitionReader::readBeanDefinition(const QDomNodeList &nodes) no
 
 void McXmlBeanDefinitionReader::readBeanDefinition(
         const QDomNodeList &propNodes
-        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept {
-    
+        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept 
+{
 	for (int i = 0; i < propNodes.size(); ++i) {
 		QDomElement propEle = propNodes.at(i).toElement();
 		if (propEle.isNull())
@@ -137,8 +142,8 @@ void McXmlBeanDefinitionReader::readBeanDefinition(
 
 void McXmlBeanDefinitionReader::readBeanDefinitionForProperty(
         const QDomElement &propEle
-        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept {
-    
+        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept 
+{
     //! 获取给定元素的 name 属性
     QString propName = propEle.attribute("name");
     if (propName.isEmpty()) {
@@ -155,8 +160,8 @@ void McXmlBeanDefinitionReader::readBeanDefinitionForProperty(
 
 void McXmlBeanDefinitionReader::readBeanDefinitionForConnect(
         const QDomElement &propEle
-        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept {
-    
+        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept 
+{
     McBeanConnectorPtr connector = McBeanConnectorPtr::create();
     connector->setSender(MC_THIS);       //!< 如果没有指定sender，则默认为对象本身
     connector->setReceiver(MC_THIS);     //!< 如果没有指定receiver，则默认为对象本身
@@ -238,7 +243,8 @@ void McXmlBeanDefinitionReader::readBeanDefinitionForConnect(
     beanDefinition->addConnector(var);
 }
 
-Qt::ConnectionType McXmlBeanDefinitionReader::getConnectionType(const QString &typeStr) noexcept {
+Qt::ConnectionType McXmlBeanDefinitionReader::getConnectionType(const QString &typeStr) noexcept 
+{
     Qt::ConnectionType type = Qt::ConnectionType::AutoConnection;
     
     QStringList typeList = typeStr.simplified().split('|', QString::SkipEmptyParts);
@@ -270,7 +276,8 @@ Qt::ConnectionType McXmlBeanDefinitionReader::getConnectionType(const QString &t
     return type;
 }
 
-Qt::ConnectionType McXmlBeanDefinitionReader::connectionTypeStrToEnum(const QString &typeStr) noexcept {
+Qt::ConnectionType McXmlBeanDefinitionReader::connectionTypeStrToEnum(const QString &typeStr) noexcept 
+{
     auto type = typeStr.simplified();
     if(type == "AutoConnection") {
         return Qt::ConnectionType::AutoConnection;

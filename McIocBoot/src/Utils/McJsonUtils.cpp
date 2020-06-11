@@ -2,7 +2,8 @@
 
 #include <QMetaProperty>
 
-QJsonObject McJsonUtils::toJson(QObject *obj) noexcept {
+QJsonObject McJsonUtils::toJson(QObject *obj) noexcept 
+{
     if (!obj)
         return QJsonObject();
     QJsonObject jsonObj;
@@ -26,11 +27,13 @@ QJsonObject McJsonUtils::toJson(QObject *obj) noexcept {
     return jsonObj;
 }
 
-QJsonObject McJsonUtils::toJson(QObjectConstPtrRef obj) noexcept {
+QJsonObject McJsonUtils::toJson(QObjectConstPtrRef obj) noexcept 
+{
     return McJsonUtils::toJson(obj.data());
 }
 
-QJsonObject McJsonUtils::toJson(const QMap<QString, QObject *> &objs) noexcept {
+QJsonObject McJsonUtils::toJson(const QMap<QString, QObject *> &objs) noexcept 
+{
     QJsonObject result;
     for(auto key : objs.keys()) {
         result.insert(key, McJsonUtils::toJson(objs.value(key)));
@@ -38,7 +41,8 @@ QJsonObject McJsonUtils::toJson(const QMap<QString, QObject *> &objs) noexcept {
     return result;
 }
 
-QJsonObject McJsonUtils::toJson(const QMap<QString, QObjectPtr> &objs) noexcept {
+QJsonObject McJsonUtils::toJson(const QMap<QString, QObjectPtr> &objs) noexcept 
+{
     QJsonObject result;
     for(auto key : objs.keys()) {
         result.insert(key, McJsonUtils::toJson(objs.value(key)));
@@ -46,7 +50,8 @@ QJsonObject McJsonUtils::toJson(const QMap<QString, QObjectPtr> &objs) noexcept 
     return result;
 }
 
-QJsonObject McJsonUtils::toJson(void *gadget, const QMetaObject *mobj) noexcept {
+QJsonObject McJsonUtils::toJson(void *gadget, const QMetaObject *mobj) noexcept 
+{
     QJsonObject jsonObj;
     for (int i = 0; i < mobj->propertyCount(); ++i) {
         QMetaProperty pro = mobj->property(i);

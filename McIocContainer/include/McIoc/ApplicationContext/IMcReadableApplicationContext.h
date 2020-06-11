@@ -4,7 +4,8 @@
 
 MC_FORWARD_DECL_CLASS(IMcBeanDefinitionReader);
 
-class IMcReadableApplicationContext {
+class IMcReadableApplicationContext 
+{
 public:
     virtual ~IMcReadableApplicationContext() = default;
     

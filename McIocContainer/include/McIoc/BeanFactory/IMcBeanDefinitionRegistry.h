@@ -6,7 +6,8 @@
 
 MC_FORWARD_DECL_CLASS(IMcBeanDefinition)
 
-class IMcBeanDefinitionRegistry {
+class IMcBeanDefinitionRegistry 
+{
 public:
     virtual ~IMcBeanDefinitionRegistry() = default;
     

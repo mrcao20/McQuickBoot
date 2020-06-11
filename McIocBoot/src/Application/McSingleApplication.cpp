@@ -25,18 +25,22 @@ McSingleApplication::McSingleApplication(int& argc, char** argv) noexcept
 #endif // !_DEBUG
 }
 
-McSingleApplication::~McSingleApplication() noexcept {
+McSingleApplication::~McSingleApplication() noexcept 
+{
 }
 
-bool McSingleApplication::isRunning() noexcept {
+bool McSingleApplication::isRunning() noexcept 
+{
     return d->isRunning;
 }
 
-void McSingleApplication::setAppObj(QObject *obj) noexcept {
+void McSingleApplication::setAppObj(QObject *obj) noexcept 
+{
     d->mainApp = obj;
 }
 
-void McSingleApplication::slot_newLocalConnection() noexcept {
+void McSingleApplication::slot_newLocalConnection() noexcept 
+{
     QLocalSocket *socket = d->localServer->nextPendingConnection();
     if (socket) {
         qInfo() << "new app startup. cancel it. active this";
@@ -49,7 +53,8 @@ void McSingleApplication::slot_newLocalConnection() noexcept {
     }
 }
 
-void McSingleApplication::initLocalConnection() noexcept {
+void McSingleApplication::initLocalConnection() noexcept 
+{
     d->isRunning = false;
     
     QLocalSocket socket;
@@ -65,7 +70,8 @@ void McSingleApplication::initLocalConnection() noexcept {
     newLocalServer();
 }
 
-void McSingleApplication::newLocalServer() noexcept {
+void McSingleApplication::newLocalServer() noexcept 
+{
     d->localServer = new QLocalServer(this);
     connect(d->localServer, SIGNAL(newConnection()), this, SLOT(slot_newLocalConnection()));
     if (!d->localServer->listen(d->serverName)) {
@@ -80,7 +86,8 @@ void McSingleApplication::newLocalServer() noexcept {
     }
 }
 
-void McSingleApplication::activateWindow() noexcept {
+void McSingleApplication::activateWindow() noexcept 
+{
     if(d->mainApp) {
         QMetaObject::invokeMethod(d->mainApp, "activeApp");
     }

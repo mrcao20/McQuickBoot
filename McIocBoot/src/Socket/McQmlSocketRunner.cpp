@@ -13,7 +13,8 @@ McQmlSocketEvent::McQmlSocketEvent(int type, const QVariant &data)
     , m_data(data)
 {}
 
-McQmlSocketEvent::~McQmlSocketEvent() {
+McQmlSocketEvent::~McQmlSocketEvent() 
+{
 }
 
 MC_DECL_PRIVATE_DATA(McQmlSocketRunner)
@@ -32,7 +33,8 @@ McQmlSocketRunner::McQmlSocketRunner(QObject *parent)
     d->thread.start();
 }
 
-McQmlSocketRunner::~McQmlSocketRunner() {
+McQmlSocketRunner::~McQmlSocketRunner() 
+{
     d->thread.quit();
     //! 由于当前对象本身就是处于另外的线程，所以这里直接使用死循环等待线程结束
     while(!d->thread.isFinished()) {
@@ -40,20 +42,24 @@ McQmlSocketRunner::~McQmlSocketRunner() {
     }
 }
 
-void McQmlSocketRunner::setSocket(McQmlSocket *socket) noexcept {
+void McQmlSocketRunner::setSocket(McQmlSocket *socket) noexcept 
+{
     d->socket = socket;
 }
 
-void McQmlSocketRunner::setSession(McSessionConstPtrRef session) noexcept {
+void McQmlSocketRunner::setSession(McSessionConstPtrRef session) noexcept 
+{
     d->session = session;
 }
 
-void McQmlSocketRunner::setInnerSocket(McInnerSocketConstPtrRef innerSocket) noexcept {
+void McQmlSocketRunner::setInnerSocket(McInnerSocketConstPtrRef innerSocket) noexcept 
+{
     d->innerSocket = innerSocket;
 }
 
 //! 全部采用直接连接，然后发送事件给自身，让线程回到自身线程再处理，同时每个请求都需要根据请求先后顺序执行
-void McQmlSocketRunner::run() noexcept {
+void McQmlSocketRunner::run() noexcept 
+{
     connect(d->socket, &McQmlSocket::send, this, [this](const QJSValue &msg){
         QVariant var;
         var.setValue(msg);
@@ -75,7 +81,8 @@ void McQmlSocketRunner::run() noexcept {
     }
 }
 
-void McQmlSocketRunner::customEvent(QEvent *event) {
+void McQmlSocketRunner::customEvent(QEvent *event) 
+{
     int type = event->type();
     switch (type) {
     case McQmlSocketEvent::SocketInitEvent:

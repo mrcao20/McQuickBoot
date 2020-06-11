@@ -13,8 +13,11 @@
 #include "McBoot/Requestor/McQmlRequestor.h"
 
 MC_DECL_PRIVATE_DATA(McIocBoot)
+static QQmlEngine *engine;
 McAnnotationApplicationContextPtr context;
 MC_DECL_PRIVATE_DATA_END
+
+QQmlEngine *MC_PRIVATE_DATA_NAME(McIocBoot)::engine = nullptr;
 
 McIocBoot::McIocBoot(QObject *parent)
     : QObject(parent)
@@ -22,10 +25,14 @@ McIocBoot::McIocBoot(QObject *parent)
     MC_NEW_PRIVATE_DATA(McIocBoot)
 }
 
-McIocBoot::~McIocBoot() {
+McIocBoot::~McIocBoot() 
+{
 }
 
-void McIocBoot::init(QQmlApplicationEngine *engine) noexcept {
+void McIocBoot::init(QQmlApplicationEngine *engine) noexcept 
+{
+    MC_PRIVATE_DATA_NAME(McIocBoot)::engine = engine;
+    
     McIocBootPtr boot = McIocBootPtr::create();
     boot->initBoot();
     
@@ -61,11 +68,40 @@ void McIocBoot::init(QQmlApplicationEngine *engine) noexcept {
                return $.addConnect(uri, data);
            }
        }
+       String.prototype.format = function(args) {
+           if(arguments.length <= 0) {
+               return this;
+           }
+
+           var result = this;
+           if(arguments.length == 1 && typeof(args) == 'object') {
+               for(var key in args) {
+                   if(args[key] !== undefined) {
+                       var reg = new RegExp('({' + key + '})', 'g');
+                       result = result.replace(reg, args[key]);
+                   }
+               }
+           }else{
+               for(var i = 0; i < arguments.length; ++i) {
+                   if(arguments[i] !== undefined) {
+                       reg = new RegExp('({)' + i + '(})', 'g');
+                       result = result.replace(reg, arguments[i]);
+                   }
+               }
+           }
+           return result;
+       }
     )";
     engine->evaluate(data);
 }
 
-void McIocBoot::initBoot() noexcept {
+QQmlEngine *McIocBoot::engine() noexcept
+{
+    return MC_PRIVATE_DATA_NAME(McIocBoot)::engine;
+}
+
+void McIocBoot::initBoot() noexcept 
+{
     if (d->context) {
 		qInfo() << "The container has been initialized";
 		return;
@@ -74,11 +110,13 @@ void McIocBoot::initBoot() noexcept {
     d->context->refresh();  //!< 预加载bean
 }
 
-QSharedPointer<IMcApplicationContext> McIocBoot::getApplicationContext() const noexcept {
+QSharedPointer<IMcApplicationContext> McIocBoot::getApplicationContext() const noexcept 
+{
     return d->context;
 }
 
-QList<QString> McIocBoot::getComponents(const QString &componentType) noexcept {
+QList<QString> McIocBoot::getComponents(const QString &componentType) noexcept 
+{
     auto context = getApplicationContext();
 	if (!context) {
 		qCritical() << "Please call initContainer to initialize container first";
@@ -95,7 +133,8 @@ QList<QString> McIocBoot::getComponents(const QString &componentType) noexcept {
 	return components;
 }
 
-bool McIocBoot::isComponentType(const QMetaObject *metaObj, const QString &type) noexcept {
+bool McIocBoot::isComponentType(const QMetaObject *metaObj, const QString &type) noexcept 
+{
     if(!metaObj) {
         return false;
     }

@@ -5,12 +5,14 @@
 #include <QQmlEngine>
 #include <QEvent>
 
+#include "McBoot/Controller/IMcControllerContainer.h"
 #include "McBoot/Controller/impl/McQmlResponse.h"
 #include "McBoot/Controller/impl/McRequestRunner.h"
 #include "McBoot/Socket/IMcQmlSocketContainer.h"
 #include "McBoot/Socket/impl/McQmlSocket.h"
 
-class McRunnerEvent : public QEvent {
+class McRunnerEvent : public QEvent 
+{
     Q_GADGET
 public:
     McRunnerEvent(McRequestRunner *runner)
@@ -20,14 +22,16 @@ public:
     
     ~McRunnerEvent() override;
     
-    McRequestRunner *runner() const {return m_runner;}
+    McRequestRunner *runner() const 
+    { return m_runner; }
     
 private:
     MC_PADDING_CLANG(4)
     McRequestRunner *m_runner{nullptr};
 };
 
-McRunnerEvent::~McRunnerEvent() {
+McRunnerEvent::~McRunnerEvent() 
+{
 }
 
 MC_DECL_PRIVATE_DATA(McQmlRequestor)
@@ -48,59 +52,80 @@ McQmlRequestor::McQmlRequestor(QJSEngine *jsEngine, QObject *parent)
     setMaxThreadCount(10);     //!< 默认线程数量
 }
 
-McQmlRequestor::~McQmlRequestor() {
+McQmlRequestor::~McQmlRequestor() 
+{
 }
 
-qint64 McQmlRequestor::maxThreadCount() const noexcept {
+qint64 McQmlRequestor::maxThreadCount() const noexcept 
+{
     return d->threadPool->maxThreadCount();
 }
 
-void McQmlRequestor::setMaxThreadCount(int val) noexcept {
+void McQmlRequestor::setMaxThreadCount(int val) noexcept 
+{
     d->threadPool->setMaxThreadCount(val);
 }
 
-void McQmlRequestor::setControllerContainer(IMcControllerContainerConstPtrRef val) noexcept {
+void McQmlRequestor::setControllerContainer(IMcControllerContainerConstPtrRef val) noexcept 
+{
     d->controllerContainer = val;
 }
 
-void McQmlRequestor::setSocketContainer(IMcQmlSocketContainerConstPtrRef val) noexcept {
+void McQmlRequestor::setSocketContainer(IMcQmlSocketContainerConstPtrRef val) noexcept 
+{
     d->qmlSocketContainer = val;
 }
 
-McQmlResponse *McQmlRequestor::invoke(const QString &uri) noexcept {
+McQmlResponse *McQmlRequestor::invoke(const QString &uri) noexcept 
+{
     auto response = new McQmlResponse(d->jsEngine);
     QQmlEngine::setObjectOwnership(response, QQmlEngine::CppOwnership);
     run(response, uri, QVariant());
     return response;    //!< 没有指定父对象，该对象将在整个请求完毕时被析构
 }
 
-McQmlResponse *McQmlRequestor::invoke(const QString &uri, const QJsonObject &data) noexcept {
+McQmlResponse *McQmlRequestor::invoke(const QString &uri, const QJsonObject &data) noexcept 
+{
     auto response = new McQmlResponse(d->jsEngine);
     QQmlEngine::setObjectOwnership(response, QQmlEngine::CppOwnership);
     run(response, uri, data);
     return response;    //!< 没有指定父对象，该对象将在整个请求完毕时被析构
 }
 
-McQmlSocket *McQmlRequestor::addConnect(const QString &uri) noexcept {
+QVariant McQmlRequestor::syncInvoke(const QString &uri) noexcept
+{
+    return d->controllerContainer->invoke(uri);
+}
+
+QVariant McQmlRequestor::syncInvoke(const QString &uri, const QJsonObject &data) noexcept
+{
+    return d->controllerContainer->invoke(uri, data);
+}
+
+McQmlSocket *McQmlRequestor::addConnect(const QString &uri) noexcept 
+{
     auto qs = d->qmlSocketContainer->addConnect(uri);
     QQmlEngine::setObjectOwnership(qs, QQmlEngine::JavaScriptOwnership);
     return qs;
 }
 
-McQmlSocket *McQmlRequestor::addConnect(const QString &uri, const QJSValue &data) noexcept {
+McQmlSocket *McQmlRequestor::addConnect(const QString &uri, const QJSValue &data) noexcept 
+{
     auto qs = d->qmlSocketContainer->addConnect(uri, data);
     QQmlEngine::setObjectOwnership(qs, QQmlEngine::JavaScriptOwnership);
     return qs;
 }
 
-void McQmlRequestor::customEvent(QEvent *event) {
+void McQmlRequestor::customEvent(QEvent *event) 
+{
     if(event->type() == QEvent::Type::User + 1) {
         McRunnerEvent *e = static_cast<McRunnerEvent *>(event);
         d->threadPool->start(e->runner());
     }
 }
 
-void McQmlRequestor::run(McQmlResponse *response, const QString &uri, const QVariant &body) noexcept {
+void McQmlRequestor::run(McQmlResponse *response, const QString &uri, const QVariant &body) noexcept 
+{
     McRequestRunner *runner = new McRequestRunner();
     runner->setAutoDelete(true);
     runner->setResponse(response);

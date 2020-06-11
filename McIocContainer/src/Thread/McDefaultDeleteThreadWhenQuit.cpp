@@ -6,11 +6,13 @@ MC_DECL_PRIVATE_DATA(McDefaultDeleteThreadWhenQuit)
 QThread *thread{nullptr};
 MC_DECL_PRIVATE_DATA_END
 
-McDefaultDeleteThreadWhenQuit::McDefaultDeleteThreadWhenQuit() noexcept {
+McDefaultDeleteThreadWhenQuit::McDefaultDeleteThreadWhenQuit() noexcept 
+{
     MC_NEW_PRIVATE_DATA(McDefaultDeleteThreadWhenQuit);
 }
 
-McDefaultDeleteThreadWhenQuit::~McDefaultDeleteThreadWhenQuit() {
+McDefaultDeleteThreadWhenQuit::~McDefaultDeleteThreadWhenQuit() 
+{
     if(d->thread) {
         d->thread->quit();
         if(d->thread->thread() != QThread::currentThread()) {
@@ -24,7 +26,8 @@ McDefaultDeleteThreadWhenQuit::~McDefaultDeleteThreadWhenQuit() {
     }
 }
 
-void McDefaultDeleteThreadWhenQuit::deleteWhenQuit() noexcept {
+void McDefaultDeleteThreadWhenQuit::deleteWhenQuit() noexcept 
+{
     QObject *obj = dynamic_cast<QObject *>(this);
     Q_ASSERT_X(obj
                , "McDefaultDeleteThreadWhenQuit"

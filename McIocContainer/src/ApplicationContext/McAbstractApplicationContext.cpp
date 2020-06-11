@@ -16,45 +16,50 @@ McAbstractApplicationContext::McAbstractApplicationContext(
     d->configurableBeanFactory = factory;
 }
 
-McAbstractApplicationContext::~McAbstractApplicationContext(){
-}
+McAbstractApplicationContext::~McAbstractApplicationContext()
+{}
 
 QObjectPtr McAbstractApplicationContext::getBean(
-        const QString &name, QThread *thread) noexcept {
-    
+        const QString &name, QThread *thread) noexcept 
+{
     return d->configurableBeanFactory->getBean(name, thread);
 }
 
 QVariant McAbstractApplicationContext::getBeanToVariant(
-        const QString &name, QThread *thread) noexcept {
-    
+        const QString &name, QThread *thread) noexcept 
+{
     return d->configurableBeanFactory->getBeanToVariant(name, thread);
 }
 
-bool McAbstractApplicationContext::containsBean(const QString &name) noexcept {
+bool McAbstractApplicationContext::containsBean(const QString &name) noexcept
+{
     return d->configurableBeanFactory->containsBean(name);
 }
 
-bool McAbstractApplicationContext::isSingleton(const QString &name) noexcept {
+bool McAbstractApplicationContext::isSingleton(const QString &name) noexcept 
+{
     return d->configurableBeanFactory->isSingleton(name);
 }
 
 void McAbstractApplicationContext::registerBeanDefinition(
         const QString &name
-        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept {
-    
+        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept 
+{
     d->configurableBeanFactory->registerBeanDefinition(name, beanDefinition);
 }
 
-bool McAbstractApplicationContext::isContained(const QString &name) noexcept {
+bool McAbstractApplicationContext::isContained(const QString &name) noexcept 
+{
     return d->configurableBeanFactory->isContained(name);
 }
 
-QHash<QString, IMcBeanDefinitionPtr> McAbstractApplicationContext::getBeanDefinitions() noexcept {
+QHash<QString, IMcBeanDefinitionPtr> McAbstractApplicationContext::getBeanDefinitions() noexcept 
+{
     return d->configurableBeanFactory->getBeanDefinitions();
 }
 
-void McAbstractApplicationContext::refresh(QThread *thread) noexcept {
+void McAbstractApplicationContext::refresh(QThread *thread) noexcept 
+{
     doRefresh();
     
     auto beanDefinitions = getBeanDefinitions();

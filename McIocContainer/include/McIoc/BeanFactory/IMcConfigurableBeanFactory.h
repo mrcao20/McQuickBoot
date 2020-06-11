@@ -5,7 +5,8 @@
 
 class IMcConfigurableBeanFactory
         : public IMcBeanFactory
-        , public IMcBeanDefinitionRegistry {
+        , public IMcBeanDefinitionRegistry 
+{
     
 public:
     virtual ~IMcConfigurableBeanFactory() = default;

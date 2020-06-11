@@ -6,7 +6,8 @@ MC_FORWARD_DECL_PRIVATE_DATA(McModelContainer);
 
 MC_FORWARD_DECL_CLASS(McIocBoot);
 
-class MCIOCBOOT_EXPORT McModelContainer : public QObject {
+class MCIOCBOOT_EXPORT McModelContainer : public QObject 
+{
     Q_OBJECT
 public:
 	explicit McModelContainer(QObject *parent = nullptr);

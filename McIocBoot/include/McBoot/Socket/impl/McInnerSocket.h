@@ -6,7 +6,8 @@ MC_FORWARD_DECL_PRIVATE_DATA(McInnerSocket);
 
 MC_FORWARD_DECL_CLASS(IMcSession);
 
-class MCIOCBOOT_EXPORT McInnerSocket : public QObject {
+class MCIOCBOOT_EXPORT McInnerSocket : public QObject 
+{
     Q_OBJECT
 public:
     explicit McInnerSocket(QObject *parent = nullptr);

@@ -4,7 +4,8 @@
 
 MC_FORWARD_DECL_PRIVATE_DATA(McResult);
 
-class MCIOCBOOT_EXPORT McResult : public QObject {
+class MCIOCBOOT_EXPORT McResult : public QObject 
+{
     Q_OBJECT
     MC_DECL_INIT(McResult)
     Q_PROPERTY(bool success READ isSuccess)
@@ -23,14 +24,16 @@ public:
     QVariant result() const noexcept;
     void setResult(const QVariant &val) noexcept;
     
-    static McResult *ok(const QVariant &val) noexcept {
+    static McResult *ok(const QVariant &val) noexcept 
+    {
         McResult *result = new McResult();
         result->setSuccess(true);
         result->setResult(val);
         return result;
     }
     
-    static McResult *fail(const QString &val) noexcept {
+    static McResult *fail(const QString &val) noexcept 
+    {
         McResult *result = new McResult();
         result->setSuccess(false);
         result->setErrMsg(val);

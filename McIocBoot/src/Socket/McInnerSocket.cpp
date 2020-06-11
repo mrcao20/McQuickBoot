@@ -17,30 +17,37 @@ McInnerSocket::McInnerSocket(QObject *parent)
     MC_NEW_PRIVATE_DATA(McInnerSocket)
 }
 
-McInnerSocket::~McInnerSocket() {
+McInnerSocket::~McInnerSocket() 
+{
 }
 
-void McInnerSocket::setInnerSocketObj(QObjectConstPtrRef obj) noexcept {
+void McInnerSocket::setInnerSocketObj(QObjectConstPtrRef obj) noexcept 
+{
     d->innerSocketObj = obj;
 }
 
-void McInnerSocket::setOnOpen(const QMetaMethod &method) noexcept {
+void McInnerSocket::setOnOpen(const QMetaMethod &method) noexcept 
+{
     d->onOpen = method;
 }
 
-void McInnerSocket::setOnClose(const QMetaMethod &method) noexcept {
+void McInnerSocket::setOnClose(const QMetaMethod &method) noexcept 
+{
     d->onClose = method;
 }
 
-void McInnerSocket::setOnError(const QMetaMethod &method) noexcept {
+void McInnerSocket::setOnError(const QMetaMethod &method) noexcept 
+{
     d->onError = method;
 }
 
-void McInnerSocket::setOnMessage(const QMetaMethod &method) noexcept {
+void McInnerSocket::setOnMessage(const QMetaMethod &method) noexcept 
+{
     d->onMessage = method;
 }
 
-void McInnerSocket::opened(IMcSessionConstPtrRef session) noexcept {
+void McInnerSocket::opened(IMcSessionConstPtrRef session) noexcept 
+{
     auto method = d->onOpen;
     
     if(!method.isValid()) {
@@ -65,7 +72,8 @@ void McInnerSocket::opened(IMcSessionConstPtrRef session) noexcept {
     invoke(method, arguments);
 }
 
-void McInnerSocket::closed(IMcSessionConstPtrRef session) noexcept {
+void McInnerSocket::closed(IMcSessionConstPtrRef session) noexcept 
+{
     auto method = d->onClose;
     
     if(!method.isValid()) {
@@ -90,7 +98,8 @@ void McInnerSocket::closed(IMcSessionConstPtrRef session) noexcept {
     invoke(method, arguments);
 }
 
-void McInnerSocket::errored(IMcSessionConstPtrRef session, const QString &errMsg) noexcept {
+void McInnerSocket::errored(IMcSessionConstPtrRef session, const QString &errMsg) noexcept 
+{
     auto method = d->onError;
     
     if(!method.isValid()) {
@@ -117,7 +126,8 @@ void McInnerSocket::errored(IMcSessionConstPtrRef session, const QString &errMsg
     invoke(method, arguments);
 }
 
-void McInnerSocket::receivedMsg(IMcSessionConstPtrRef session, const QVariant &msg) noexcept {
+void McInnerSocket::receivedMsg(IMcSessionConstPtrRef session, const QVariant &msg) noexcept 
+{
     auto method = d->onMessage;
     
     if(!method.isValid()) {
@@ -150,8 +160,8 @@ void McInnerSocket::receivedMsg(IMcSessionConstPtrRef session, const QVariant &m
 }
 
 void McInnerSocket::invoke(const QMetaMethod &method
-                           , const QVector<QGenericArgument> &args) noexcept {
-    
+                           , const QVector<QGenericArgument> &args) noexcept 
+{
     method.invoke(d->innerSocketObj.data(),
             Qt::DirectConnection, 
             args.at(0),

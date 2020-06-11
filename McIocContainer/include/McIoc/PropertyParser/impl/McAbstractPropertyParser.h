@@ -4,8 +4,8 @@
 
 class McAbstractPropertyParser
         : public QObject
-        , public IMcPropertyParser {
-    
+        , public IMcPropertyParser 
+{
     Q_OBJECT
 public:
     explicit McAbstractPropertyParser(QObject *parent = nullptr);

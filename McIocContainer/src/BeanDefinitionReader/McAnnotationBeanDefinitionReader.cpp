@@ -21,10 +21,12 @@ McAnnotationBeanDefinitionReader::McAnnotationBeanDefinitionReader(
     d->definitions = definitions;
 }
 
-McAnnotationBeanDefinitionReader::~McAnnotationBeanDefinitionReader() {
+McAnnotationBeanDefinitionReader::~McAnnotationBeanDefinitionReader() 
+{
 }
 
-void McAnnotationBeanDefinitionReader::doReadBeanDefinition() noexcept {
+void McAnnotationBeanDefinitionReader::doReadBeanDefinition() noexcept 
+{
     QHashIterator<decltype (d->definitions)::key_type
             , decltype (d->definitions)::mapped_type> iterator(d->definitions);
     while (iterator.hasNext()) {
@@ -37,8 +39,8 @@ void McAnnotationBeanDefinitionReader::doReadBeanDefinition() noexcept {
 
 void McAnnotationBeanDefinitionReader::inject(
         const QString& beanName
-        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept {
-    
+        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept 
+{
 	const QMetaObject *metaObj = beanDefinition->getBeanMetaObject();
 	Q_ASSERT(metaObj != nullptr);
 	injectProperty(metaObj, beanDefinition);
@@ -47,8 +49,8 @@ void McAnnotationBeanDefinitionReader::inject(
 
 void McAnnotationBeanDefinitionReader::injectProperty(
         const QMetaObject *metaObj
-        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept {
-    
+        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept 
+{
 	int count = metaObj->propertyCount();
 	for (int i = 0; i < count; ++i) {
 		QMetaProperty prop = metaObj->property(i);

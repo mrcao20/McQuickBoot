@@ -8,7 +8,8 @@ McAbstractPropertyParser::McAbstractPropertyParser(QObject *parent)
 {
 }
 
-QVariant McAbstractPropertyParser::parse(const QDomElement &ele) const noexcept {
+QVariant McAbstractPropertyParser::parse(const QDomElement &ele) const noexcept 
+{
     QDomElement childEle;
     if((childEle = ele).tagName() == "list"
              || !(childEle = ele.firstChildElement("list")).isNull()) {

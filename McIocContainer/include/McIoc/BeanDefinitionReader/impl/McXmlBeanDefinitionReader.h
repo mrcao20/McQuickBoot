@@ -14,7 +14,8 @@ MC_FORWARD_DECL_CLASS(IMcPropertyParser)
 
 MC_FORWARD_DECL_PRIVATE_DATA(McXmlBeanDefinitionReader)
 
-class MCIOCCONTAINER_EXPORT McXmlBeanDefinitionReader : public McAbstractBeanDefinitionReader {
+class MCIOCCONTAINER_EXPORT McXmlBeanDefinitionReader : public McAbstractBeanDefinitionReader 
+{
     Q_OBJECT
     using McAbstractBeanDefinitionReader::readBeanDefinition;
 public:

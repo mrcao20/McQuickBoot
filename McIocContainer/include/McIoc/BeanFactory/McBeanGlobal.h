@@ -45,7 +45,8 @@ namespace McPrivate {
 template <typename...> struct McTypeList;
 
 template <typename T, typename... U>
-struct McTypeList<T, U...> {
+struct McTypeList<T, U...> 
+{
     using Head = T;
     using Tails = McTypeList<U...>;
 };
@@ -55,10 +56,12 @@ template <>
 struct McTypeList<> {};
 
 template<typename From, typename To>
-struct McRegisterConverterHelper {
+struct McRegisterConverterHelper 
+{
     using FromPtr = QSharedPointer<From>;
     using ToPtr = QSharedPointer<To>;
-    static void registerConverter(){
+    static void registerConverter()
+    {
         if (!QMetaType::hasRegisteredConverterFunction<FromPtr, ToPtr>()) {
             QMetaType::registerConverter<FromPtr, ToPtr>();
         }
@@ -66,8 +69,10 @@ struct McRegisterConverterHelper {
 };
 
 template<typename From, typename... Tos>
-struct McRegisterConverterHelper<From, McPrivate::McTypeList<Tos...>> {
-    static void registerConverter(){
+struct McRegisterConverterHelper<From, McPrivate::McTypeList<Tos...>> 
+{
+    static void registerConverter()
+    {
         using TypeList = McPrivate::McTypeList<Tos...>;
         McRegisterConverterHelper<From, typename TypeList::Head>::registerConverter();
         McRegisterConverterHelper<From, typename TypeList::Tails>::registerConverter();
@@ -75,26 +80,30 @@ struct McRegisterConverterHelper<From, McPrivate::McTypeList<Tos...>> {
 };
 
 template<typename From>
-struct McRegisterConverterHelper<From, QObject> {
-    static void registerConverter(){
-    }
+struct McRegisterConverterHelper<From, QObject> 
+{
+    static void registerConverter()
+    {}
 };
 
 template<typename From>
-struct McRegisterConverterHelper<From, McPrivate::McTypeList<>> {
-    static void registerConverter(){
-    }
+struct McRegisterConverterHelper<From, McPrivate::McTypeList<>> 
+{
+    static void registerConverter()
+    {}
 };
 
 }
 
 template<typename From, typename To>
-To mcConverterQSharedPointerObject(const From &from) {
+To mcConverterQSharedPointerObject(const From &from) 
+{
     return from.template objectCast<typename To::Type>();
 }
 
 template<typename T>
-void mcRegisterBeanFactory(const char *typeName, const char *constRefTypeName) {
+void mcRegisterBeanFactory(const char *typeName, const char *constRefTypeName)
+{
     Q_ASSERT(typeName != nullptr && constRefTypeName != nullptr);
     using TPtr = QSharedPointer<T>;
     using QObjectPtr = QSharedPointer<QObject>;
@@ -110,7 +119,8 @@ void mcRegisterBeanFactory(const char *typeName, const char *constRefTypeName) {
 }
 
 template<typename From, typename To>
-void mcRegisterBeanFactory(const char *typeName, const char *constRefTypeName) {
+void mcRegisterBeanFactory(const char *typeName, const char *constRefTypeName) 
+{
     mcRegisterBeanFactory<From>(typeName, constRefTypeName);
     Q_STATIC_ASSERT_X(!std::is_pointer<To>::value, "mcRegisterBeanFactory's template type must not be a pointer type");
     McPrivate::McRegisterConverterHelper<From, To>::registerConverter();
@@ -119,7 +129,8 @@ void mcRegisterBeanFactory(const char *typeName, const char *constRefTypeName) {
 namespace McPrivate {
 
 template<typename From, typename To>
-To mcConverterList(const From &from) {
+To mcConverterList(const From &from) 
+{
 	To to;
 	for (const auto &f : from) {
         to << f.template value<typename To::value_type>();
@@ -128,7 +139,8 @@ To mcConverterList(const From &from) {
 }
 
 template<typename From, typename To>
-To mcConverterMap(const From &from) {
+To mcConverterMap(const From &from) 
+{
 	To to;
     using keyType = typename To::key_type;
     using mappedType = typename To::mapped_type;
@@ -143,14 +155,16 @@ To mcConverterMap(const From &from) {
 }
 
 template<typename From, typename To>
-void mcRegisterListConverter() {
+void mcRegisterListConverter() 
+{
 	if (QMetaType::hasRegisteredConverterFunction(qMetaTypeId<From>(), qMetaTypeId<To>()))
 		return;
 	QMetaType::registerConverter<From, To>(McPrivate::mcConverterList<From, To>);
 }
 
 template<typename T>
-void mcRegisterListConverter(const char *typeName) {
+void mcRegisterListConverter(const char *typeName) 
+{
     if(QMetaType::type(typeName) == QMetaType::UnknownType) {
         qRegisterMetaType<T>(typeName);
     }
@@ -158,14 +172,16 @@ void mcRegisterListConverter(const char *typeName) {
 }
 
 template<typename From, typename To>
-void mcRegisterMapConverter() {
+void mcRegisterMapConverter() 
+{
 	if (QMetaType::hasRegisteredConverterFunction(qMetaTypeId<From>(), qMetaTypeId<To>()))
 		return;
 	QMetaType::registerConverter<From, To>(McPrivate::mcConverterMap<From, To>);
 }
 
 template<typename T>
-void mcRegisterMapConverter(const char *typeName) {
+void mcRegisterMapConverter(const char *typeName) 
+{
     if(QMetaType::type(typeName) == QMetaType::UnknownType) {
         qRegisterMetaType<T>(typeName);
     }

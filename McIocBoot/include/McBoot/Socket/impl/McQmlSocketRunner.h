@@ -5,10 +5,12 @@
 #include <QEvent>
 #include <QVariant>
 
-class McQmlSocketEvent : public QEvent {
+class McQmlSocketEvent : public QEvent 
+{
     Q_GADGET
 public:
-    enum McQmlSocketEventType {
+    enum McQmlSocketEventType 
+    {
         SocketInitEvent = QEvent::Type::User + 1,
         QmlSocketErrorEvent,
         QmlSocketSendEvent,
@@ -34,7 +36,8 @@ MC_FORWARD_DECL_CLASS(McInnerSocket)
 
 class McQmlSocket;
 
-class MCIOCBOOT_EXPORT McQmlSocketRunner : public QObject {
+class MCIOCBOOT_EXPORT McQmlSocketRunner : public QObject 
+{
     Q_OBJECT
 public:
     McQmlSocketRunner(QObject *parent = nullptr);

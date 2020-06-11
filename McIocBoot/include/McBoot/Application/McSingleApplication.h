@@ -18,7 +18,8 @@ MC_FORWARD_DECL_PRIVATE_DATA(McSingleApplication);
  * 单例gui应用程序，使用QLocalServer实现，程序运行之初需要设置一个关联
  * 整个应用程序的单例object，如果程序正在运行则会调用该对象中的activeApp函数
  */
-class MCIOCBOOT_EXPORT McSingleApplication : public QGuiApplication {
+class MCIOCBOOT_EXPORT McSingleApplication : public QGuiApplication 
+{
     Q_OBJECT
 public:
     McSingleApplication(int& argc, char** argv) noexcept;

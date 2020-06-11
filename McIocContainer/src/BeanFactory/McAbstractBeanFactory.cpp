@@ -18,17 +18,20 @@ McAbstractBeanFactory::McAbstractBeanFactory(QObject *parent)
     MC_NEW_PRIVATE_DATA(McAbstractBeanFactory)
 }
 
-McAbstractBeanFactory::~McAbstractBeanFactory() {
+McAbstractBeanFactory::~McAbstractBeanFactory() 
+{
 }
 
-QObjectPtr McAbstractBeanFactory::getBean(const QString &name, QThread *thread) noexcept {
+QObjectPtr McAbstractBeanFactory::getBean(const QString &name, QThread *thread) noexcept 
+{
     auto var = getBeanToVariant(name, thread);
     if(!var.isValid())
         return QObjectPtr();
     return var.value<QObjectPtr>();
 }
 
-QVariant McAbstractBeanFactory::getBeanToVariant(const QString &name, QThread *thread)  noexcept {
+QVariant McAbstractBeanFactory::getBeanToVariant(const QString &name, QThread *thread)  noexcept 
+{
     QMutexLocker locker(&d->mtx);
     d->targetThread = thread;
     auto beanDefinition = d->hash.value(name);
@@ -49,12 +52,14 @@ QVariant McAbstractBeanFactory::getBeanToVariant(const QString &name, QThread *t
     return beanVar;
 }
 
-bool McAbstractBeanFactory::containsBean(const QString &name) noexcept {
+bool McAbstractBeanFactory::containsBean(const QString &name) noexcept 
+{
     QMutexLocker locker(&d->mtx);
     return d->hash.contains(name);
 }
 
-bool McAbstractBeanFactory::isSingleton(const QString &name) noexcept {
+bool McAbstractBeanFactory::isSingleton(const QString &name) noexcept 
+{
     QMutexLocker locker(&d->mtx);
     if(!d->hash.contains(name)) {
         return false;
@@ -64,30 +69,34 @@ bool McAbstractBeanFactory::isSingleton(const QString &name) noexcept {
 }
 
 void McAbstractBeanFactory::registerBeanDefinition(
-        const QString &name, IMcBeanDefinitionConstPtrRef beanDefinition) noexcept {
-    
+        const QString &name, IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
+{
     QMutexLocker locker(&d->mtx);
     //! 如果存在则替换
     d->hash.insert(name, beanDefinition);
 }
 
-bool McAbstractBeanFactory::isContained(const QString &name) noexcept {
+bool McAbstractBeanFactory::isContained(const QString &name) noexcept 
+{
     return containsBean(name);
 }
 
-QHash<QString, IMcBeanDefinitionPtr> McAbstractBeanFactory::getBeanDefinitions() noexcept {
+QHash<QString, IMcBeanDefinitionPtr> McAbstractBeanFactory::getBeanDefinitions() noexcept 
+{
     QMutexLocker locker(&d->mtx);
     return d->hash;
 }
 
-QObjectPtr McAbstractBeanFactory::resolveBeanReference(McBeanReferenceConstPtrRef beanRef) noexcept {
+QObjectPtr McAbstractBeanFactory::resolveBeanReference(McBeanReferenceConstPtrRef beanRef) noexcept 
+{
     auto var = resolveBeanReferenceToQVariant(beanRef);
     if(!var.isValid())
         return QObjectPtr();
     return var.value<QObjectPtr>();
 }
 
-QVariant McAbstractBeanFactory::resolveBeanReferenceToQVariant(McBeanReferenceConstPtrRef beanRef) noexcept {
+QVariant McAbstractBeanFactory::resolveBeanReferenceToQVariant(McBeanReferenceConstPtrRef beanRef) noexcept 
+{
     if (!beanRef) {
         qCritical() << "beanReference not exists";
         return QVariant();

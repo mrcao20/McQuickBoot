@@ -13,7 +13,8 @@ McDefaultPropertyParser::McDefaultPropertyParser(QObject *parent)
 {
 }
 
-QVariant McDefaultPropertyParser::parseValue(const QDomElement &ele) const noexcept {
+QVariant McDefaultPropertyParser::parseValue(const QDomElement &ele) const noexcept 
+{
     if(ele.hasAttribute("value")) {
         return ele.attribute("value");
     }else{
@@ -21,7 +22,8 @@ QVariant McDefaultPropertyParser::parseValue(const QDomElement &ele) const noexc
     }
 }
 
-QVariant McDefaultPropertyParser::parseRef(const QDomElement &ele) const noexcept {
+QVariant McDefaultPropertyParser::parseRef(const QDomElement &ele) const noexcept 
+{
     McBeanReferencePtr ref = McBeanReferencePtr::create();
     if(ele.hasAttribute("ref")) {
         ref->setName(ele.attribute("ref"));
@@ -33,7 +35,8 @@ QVariant McDefaultPropertyParser::parseRef(const QDomElement &ele) const noexcep
     return QVariant::fromValue(ref);
 }
 
-QVariant McDefaultPropertyParser::parseList(const QDomElement &ele) const noexcept {
+QVariant McDefaultPropertyParser::parseList(const QDomElement &ele) const noexcept 
+{
     QVariantList list;
     
     if(ele.hasAttribute("plugins")) {
@@ -64,7 +67,8 @@ QVariant McDefaultPropertyParser::parseList(const QDomElement &ele) const noexce
     return list;
 }
 
-QVariant McDefaultPropertyParser::parseMap(const QDomElement &ele) const noexcept {
+QVariant McDefaultPropertyParser::parseMap(const QDomElement &ele) const noexcept 
+{
     QMap<QVariant, QVariant> map;
     
 	auto childNodes = ele.childNodes();
@@ -111,7 +115,8 @@ QVariant McDefaultPropertyParser::parseMap(const QDomElement &ele) const noexcep
     return QVariant::fromValue(map);
 }
 
-QVariantList McDefaultPropertyParser::getList(const QString &dirPath) const noexcept {
+QVariantList McDefaultPropertyParser::getList(const QString &dirPath) const noexcept 
+{
     QVariantList list;
     
     QDir dir(dirPath);

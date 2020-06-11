@@ -2,7 +2,8 @@
 
 #include "../McGlobal.h"
 
-class IMcRefreshableApplicationContext {
+class IMcRefreshableApplicationContext 
+{
 public:
     virtual ~IMcRefreshableApplicationContext() = default;
     

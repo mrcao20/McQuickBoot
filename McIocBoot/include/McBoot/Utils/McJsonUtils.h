@@ -16,7 +16,8 @@
  * @note 如果类C继承至QObject，同时实现至接口I，而类A中包含接口I，则无法转换，
  * 但是包含类C或QObject则可转换
  */
-class MCIOCBOOT_EXPORT McJsonUtils {
+class MCIOCBOOT_EXPORT McJsonUtils 
+{
 public:
     static QJsonObject toJson(QObject *obj) noexcept;
     static QJsonObject toJson(QObjectConstPtrRef obj) noexcept;
@@ -30,7 +31,8 @@ public:
 };
 
 template<typename T>
-QJsonArray McJsonUtils::toJson(const QList<QSharedPointer<T>> &objs) noexcept {
+QJsonArray McJsonUtils::toJson(const QList<QSharedPointer<T>> &objs) noexcept 
+{
     QList<QObjectPtr> results;
     for(auto obj : objs) {
         results.append(obj);
@@ -43,7 +45,8 @@ QJsonArray McJsonUtils::toJson(const QList<QSharedPointer<T>> &objs) noexcept {
 }
 
 template<typename T>
-QJsonArray McJsonUtils::toJson(const QList<T *> &objs) noexcept {
+QJsonArray McJsonUtils::toJson(const QList<T *> &objs) noexcept 
+{
     QList<QObject *> results;
     for(auto obj : objs) {
         results.append(obj);

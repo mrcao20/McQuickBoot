@@ -6,8 +6,8 @@ MC_FORWARD_DECL_PRIVATE_DATA(McAbstarctPropertyConverter);
 
 class McAbstarctPropertyConverter
         : public QObject
-        , public IMcPropertyConverter {
-    
+        , public IMcPropertyConverter 
+{
     Q_OBJECT
 public:
     explicit McAbstarctPropertyConverter(QObject *parent = nullptr);

@@ -7,7 +7,8 @@
  * 
  * 当从IOC容器中实例化一个实现至本接口的对象时，会调用本接口的deleteWhenQuit方法
  */
-class IMcDeleteThreadWhenQuit {
+class IMcDeleteThreadWhenQuit 
+{
     MC_DEFINE_TYPELIST()
 public:
     virtual ~IMcDeleteThreadWhenQuit() = default;

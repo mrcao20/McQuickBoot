@@ -10,7 +10,8 @@ McDefaultPropertyConverter::McDefaultPropertyConverter(QObject *parent)
 {
 }
 
-QVariant McDefaultPropertyConverter::convertRef(const QVariant &value) const noexcept {
+QVariant McDefaultPropertyConverter::convertRef(const QVariant &value) const noexcept 
+{
     
     auto ref = value.value<McBeanReferencePtr>();
     if (!ref) {	//!< 判断是否能够成功转换
@@ -28,7 +29,8 @@ QVariant McDefaultPropertyConverter::convertRef(const QVariant &value) const noe
     return objVar;
 }
 
-QVariant McDefaultPropertyConverter::convertList(const QVariant &value) const noexcept {
+QVariant McDefaultPropertyConverter::convertList(const QVariant &value) const noexcept 
+{
     QVariantList result;
     
     auto list = value.value<QVariantList>();
@@ -40,7 +42,8 @@ QVariant McDefaultPropertyConverter::convertList(const QVariant &value) const no
     return result;
 }
 
-QVariant McDefaultPropertyConverter::convertMap(const QVariant &value) const noexcept {
+QVariant McDefaultPropertyConverter::convertMap(const QVariant &value) const noexcept 
+{
     QMap<QVariant, QVariant> result;
     
     auto map = value.value<QMap<QVariant, QVariant>>();

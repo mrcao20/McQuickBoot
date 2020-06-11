@@ -9,8 +9,8 @@ MC_FORWARD_DECL_CLASS(McInnerSocket);
 
 class MCIOCBOOT_EXPORT McQmlSocketContainer 
         : public QObject
-        , public IMcQmlSocketContainer {
-    
+        , public IMcQmlSocketContainer 
+{
     Q_OBJECT
 public:
     McQmlSocketContainer(QObject *parent = nullptr);

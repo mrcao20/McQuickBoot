@@ -3,8 +3,8 @@
 #include "McAbstarctPropertyConverter.h"
 
 class MCIOCCONTAINER_EXPORT McDefaultPropertyConverter
-        : public McAbstarctPropertyConverter {
-    
+        : public McAbstarctPropertyConverter 
+{
     Q_OBJECT
 public:
     explicit McDefaultPropertyConverter(QObject *parent = nullptr);

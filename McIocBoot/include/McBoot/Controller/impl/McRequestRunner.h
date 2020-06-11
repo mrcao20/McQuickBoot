@@ -10,7 +10,8 @@ MC_FORWARD_DECL_CLASS(IMcControllerContainer);
 
 class McQmlResponse;
 
-class MCIOCBOOT_EXPORT McRequestRunner : public QRunnable {
+class MCIOCBOOT_EXPORT McRequestRunner : public QRunnable 
+{
 public:
     McRequestRunner();
     ~McRequestRunner() override;

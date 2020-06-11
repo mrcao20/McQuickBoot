@@ -8,7 +8,8 @@ QT_END_NAMESPACE
 
 class IMcBeanReferenceResolver;
 
-class IMcPropertyConverter {
+class IMcPropertyConverter 
+{
 public:
     virtual ~IMcPropertyConverter() = default;
     

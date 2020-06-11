@@ -14,8 +14,8 @@ MC_FORWARD_DECL_PRIVATE_DATA(McControllerContainer);
 
 class MCIOCBOOT_EXPORT McControllerContainer 
         : public QObject
-        , public IMcControllerContainer {
-    
+        , public IMcControllerContainer 
+{
 	Q_OBJECT
 public:
 	explicit McControllerContainer(QObject *parent = nullptr);
@@ -24,11 +24,10 @@ public:
     void init(McIocBootConstPtrRef boot) noexcept;
     
     QVariant invoke(const QString &uri, const QVariant &body) noexcept override;
+    QVariant invoke(const QString &uri) noexcept override;
+	QVariant invoke(const QString &uri, const QJsonObject &data) noexcept override;
 
 private:
-    QVariant invoke(const QString &uri) noexcept;
-	QVariant invoke(const QString &uri, const QJsonObject &data) noexcept;
-    
     bool splitBeanAndFunc(const QString &uri
                           , QObjectPtr &bean
                           , QString &func

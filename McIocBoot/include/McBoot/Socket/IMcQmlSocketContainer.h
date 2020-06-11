@@ -8,7 +8,8 @@ QT_END_NAMESPACE
 
 class McQmlSocket;
 
-class IMcQmlSocketContainer {
+class IMcQmlSocketContainer 
+{
 public:
     virtual ~IMcQmlSocketContainer() = default;
     

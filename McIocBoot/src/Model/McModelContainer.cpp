@@ -15,10 +15,12 @@ McModelContainer::McModelContainer(QObject *parent)
 {
 }
 
-McModelContainer::~McModelContainer() {
+McModelContainer::~McModelContainer() 
+{
 }
 
-void McModelContainer::init(McIocBootConstPtrRef boot) noexcept {
+void McModelContainer::init(McIocBootConstPtrRef boot) noexcept 
+{
     auto appCtx = boot->getApplicationContext();
 	auto beanNames = boot->getComponents(MC_MODEL);
     for (const auto &beanName : beanNames) {

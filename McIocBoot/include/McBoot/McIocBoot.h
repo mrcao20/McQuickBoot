@@ -16,17 +16,20 @@ MC_FORWARD_DECL_PRIVATE_DATA(McIocBoot);
 
 using std::function;
 
-class MCIOCBOOT_EXPORT McIocBoot : public QObject {
+class MCIOCBOOT_EXPORT McIocBoot : public QObject 
+{
     Q_OBJECT
 public:
     explicit McIocBoot(QObject *parent = nullptr);
     ~McIocBoot() override;
     
     static void init(QQmlApplicationEngine *engine) noexcept;
+    static QQmlEngine *engine() noexcept;
     
     template<typename T = QGuiApplication>
     static int run(int argc, char *argv[], const QUrl &url = QUrl(QStringLiteral("qrc:/main.qml"))
-            , const function<void(T *app, QQmlApplicationEngine *)> &func = nullptr) noexcept;
+            , const function<void(T *app, QQmlApplicationEngine *)> &func = nullptr
+            , const function<void(T *app)> &prefunc = nullptr) noexcept;
     
     /*!
      * \brief singleRun
@@ -40,7 +43,8 @@ public:
      */
     template<typename T = McSingleApplication>
     static int singleRun(int argc, char *argv[], const QUrl &url = QUrl(QStringLiteral("qrc:/main.qml"))
-            , const function<void(T *app, QQmlApplicationEngine *)> &func = nullptr) noexcept;
+            , const function<void(T *app, QQmlApplicationEngine *)> &func = nullptr
+            , const function<void(T *app)> &prefunc = nullptr) noexcept;
     
     void initBoot() noexcept;
     
@@ -59,11 +63,16 @@ MC_DECL_POINTER(McIocBoot);
 
 template<typename T>
 int McIocBoot::run(int argc, char *argv[], const QUrl &url
-                   , const function<void(T *app, QQmlApplicationEngine *)> &func) noexcept {
-    
+                   , const function<void(T *app, QQmlApplicationEngine *)> &func
+                   , const function<void(T *app)> &prefunc) noexcept 
+{
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     T app(argc, argv);
+    
+    if(prefunc) {
+        prefunc(&app);
+    }
     
     QQmlApplicationEngine engine;
     
@@ -85,13 +94,18 @@ int McIocBoot::run(int argc, char *argv[], const QUrl &url
 
 template<typename T>
 int McIocBoot::singleRun(int argc, char *argv[], const QUrl &url
-                   , const function<void(T *app, QQmlApplicationEngine *)> &func) noexcept {
-    
+                         , const function<void(T *app, QQmlApplicationEngine *)> &func
+                         , const function<void(T *app)> &prefunc) noexcept 
+{
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     T app(argc, argv);
     if(app.isRunning())
         return 0;
+    
+    if(prefunc) {
+        prefunc(&app);
+    }
     
     QQmlApplicationEngine engine;
     

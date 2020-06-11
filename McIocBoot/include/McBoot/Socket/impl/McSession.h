@@ -8,8 +8,8 @@ QT_END_NAMESPACE
 
 class MCIOCBOOT_EXPORT McSession 
         : public QObject
-        , public IMcSession {
-    
+        , public IMcSession 
+{
     Q_OBJECT
     MC_DECL_INIT(McSession)
     MC_DEFINE_TYPELIST(QObject, MC_DECL_TYPELIST(IMcSession))

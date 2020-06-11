@@ -8,18 +8,22 @@ QT_BEGIN_NAMESPACE
 class QThread;
 QT_END_NAMESPACE
 
-class IMcBeanFactory {
+class IMcBeanFactory 
+{
 public:
     template<typename T>
-    struct TypeSelector {
+    struct TypeSelector 
+    {
         typedef QSharedPointer<T> Type;
     };
     template<typename T>
-    struct TypeSelector<T *> {
+    struct TypeSelector<T *> 
+    {
         typedef QSharedPointer<T> Type;
     };
     template<typename T>
-    struct TypeSelector<QSharedPointer<T>> {
+    struct TypeSelector<QSharedPointer<T>> 
+    {
         typedef QSharedPointer<T> Type;
     };
     
@@ -34,8 +38,8 @@ public:
     template<typename T>
     typename TypeSelector<T>::Type getBean(
             const QString &name
-            , QThread *thread = nullptr) noexcept {
-        
+            , QThread *thread = nullptr) noexcept 
+    {
         QVariant var = getBeanToVariant(name, thread);
         return var.value<typename TypeSelector<T>::Type>();
     }

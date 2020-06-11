@@ -9,7 +9,8 @@ QT_END_NAMESPACE
 
 MC_FORWARD_DECL_PRIVATE_DATA(McQmlResponse);
 
-class MCIOCBOOT_EXPORT McQmlResponse : public QObject {
+class MCIOCBOOT_EXPORT McQmlResponse : public QObject 
+{
     Q_OBJECT
     MC_DECL_INIT(McQmlResponse)
 public:

@@ -12,14 +12,17 @@ McAbstractBeanDefinitionReader::McAbstractBeanDefinitionReader(QObject *parent)
     MC_NEW_PRIVATE_DATA(McAbstractBeanDefinitionReader);
 }
 
-McAbstractBeanDefinitionReader::~McAbstractBeanDefinitionReader(){
+McAbstractBeanDefinitionReader::~McAbstractBeanDefinitionReader()
+{
 }
 
-IMcBeanDefinitionRegistry *McAbstractBeanDefinitionReader::registry() const noexcept {
+IMcBeanDefinitionRegistry *McAbstractBeanDefinitionReader::registry() const noexcept 
+{
     return  d->registry;
 }
 
-void McAbstractBeanDefinitionReader::readBeanDefinition(IMcBeanDefinitionRegistry *registry) noexcept {
+void McAbstractBeanDefinitionReader::readBeanDefinition(IMcBeanDefinitionRegistry *registry) noexcept 
+{
     d->registry = registry;
     doReadBeanDefinition();
 }

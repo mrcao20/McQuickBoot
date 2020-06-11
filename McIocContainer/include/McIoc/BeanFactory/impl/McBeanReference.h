@@ -2,15 +2,20 @@
 
 #include "../../McGlobal.h"
 
-class MCIOCCONTAINER_EXPORT McBeanReference : public QObject {
+class MCIOCCONTAINER_EXPORT McBeanReference : public QObject 
+{
     Q_OBJECT
     MC_DECL_INIT(McBeanReference)
 public:
-    QString getName() const noexcept {return m_name;}
-    void setName(const QString &name) noexcept {m_name = name;}
+    QString getName() const noexcept 
+    { return m_name; }
+    void setName(const QString &name) noexcept 
+    { m_name = name; }
 
-    QString getPluginPath() const noexcept {return m_pluginPath;}
-    void setPluginPath(const QString &pluginPath) noexcept {m_pluginPath = pluginPath;}
+    QString getPluginPath() const noexcept 
+    { return m_pluginPath; }
+    void setPluginPath(const QString &pluginPath) noexcept 
+    { m_pluginPath = pluginPath; }
     
 private:
     QString m_name;						//!< 被引用bean的名称

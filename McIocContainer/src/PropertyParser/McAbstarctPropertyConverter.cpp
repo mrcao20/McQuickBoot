@@ -12,12 +12,13 @@ McAbstarctPropertyConverter::McAbstarctPropertyConverter(QObject *parent)
     MC_NEW_PRIVATE_DATA(McAbstarctPropertyConverter)
 }
 
-McAbstarctPropertyConverter::~McAbstarctPropertyConverter() {
+McAbstarctPropertyConverter::~McAbstarctPropertyConverter() 
+{
 }
 
 QVariant McAbstarctPropertyConverter::convert(IMcBeanReferenceResolver *resolver
-                 , const QVariant &value) const noexcept {
-    
+                 , const QVariant &value) const noexcept 
+{
     d->resolver = resolver;
     if(value.canConvert<McBeanReferencePtr>()) {
         return convertRef(value);
@@ -30,6 +31,7 @@ QVariant McAbstarctPropertyConverter::convert(IMcBeanReferenceResolver *resolver
     }
 }
 
-IMcBeanReferenceResolver *McAbstarctPropertyConverter::resolver() const noexcept {
+IMcBeanReferenceResolver *McAbstarctPropertyConverter::resolver() const noexcept 
+{
     return d->resolver;
 }

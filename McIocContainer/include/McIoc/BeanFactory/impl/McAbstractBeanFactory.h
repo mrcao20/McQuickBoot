@@ -8,7 +8,8 @@ MC_FORWARD_DECL_PRIVATE_DATA(McAbstractBeanFactory);
 class MCIOCCONTAINER_EXPORT McAbstractBeanFactory
         : public QObject
         , public IMcConfigurableBeanFactory
-        , public IMcBeanReferenceResolver {
+        , public IMcBeanReferenceResolver 
+{
     
     Q_OBJECT
 public:
