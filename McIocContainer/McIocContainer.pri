@@ -25,6 +25,7 @@ HEADERS += \
     $$PWD/include/McIoc/BeanFactory/impl/McBeanConnector.h \
     $$PWD/include/McIoc/BeanFactory/impl/McBeanReference.h \
     $$PWD/include/McIoc/BeanFactory/impl/McDefaultBeanFactory.h \
+    $$PWD/include/McIoc/BeanFactory/impl/McMetaTypeId.h \
     $$PWD/include/McIoc/PropertyParser/IMcPropertyConverter.h \
     $$PWD/include/McIoc/PropertyParser/IMcPropertyParser.h \
     $$PWD/include/McIoc/PropertyParser/impl/McAbstarctPropertyConverter.h \
@@ -52,6 +53,7 @@ SOURCES += \
     $$PWD/src/BeanFactory/McBeanConnector.cpp \
     $$PWD/src/BeanFactory/McBeanReference.cpp \
     $$PWD/src/BeanFactory/McDefaultBeanFactory.cpp \
+    $$PWD/src/BeanFactory/McMetaTypeId.cpp \
     $$PWD/src/PropertyParser/McAbstarctPropertyConverter.cpp \
     $$PWD/src/PropertyParser/McAbstractPropertyParser.cpp \
     $$PWD/src/PropertyParser/McDefaultPropertyConverter.cpp \

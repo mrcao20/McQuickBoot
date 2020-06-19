@@ -4,6 +4,7 @@
 #include <QVariant>
 
 #include "../McMacroGlobal.h"
+#include "impl/McMetaTypeId.h"
 
 #define MC_DECL_METATYPE(Class) \
     MC_DECL_POINTER(Class) \
@@ -114,8 +115,8 @@ void mcRegisterBeanFactory(const char *typeName, const char *constRefTypeName)
     if (!QMetaType::hasRegisteredConverterFunction<QObjectPtr, TPtr>()) {
         QMetaType::registerConverter<QObjectPtr, TPtr>(mcConverterQSharedPointerObject<QObjectPtr, TPtr>);
     }
-    qRegisterMetaType<T*>(typeName);
-    qRegisterMetaType<TPtr>(constRefTypeName);
+    McMetaTypeId::addQObjectPointerIds(qRegisterMetaType<T*>(typeName));
+    McMetaTypeId::addSharedPointerId(qRegisterMetaType<TPtr>(constRefTypeName));
 }
 
 template<typename From, typename To>
@@ -127,6 +128,25 @@ void mcRegisterBeanFactory(const char *typeName, const char *constRefTypeName)
 }
 
 namespace McPrivate {
+
+template<typename T>
+struct TypeSelector 
+{
+    typedef T BaseType; 
+    typedef QSharedPointer<T> Type;
+};
+template<typename T>
+struct TypeSelector<T *> 
+{
+    typedef T BaseType;
+    typedef QSharedPointer<T> Type;
+};
+template<typename T>
+struct TypeSelector<QSharedPointer<T>> 
+{
+    typedef T BaseType;
+    typedef QSharedPointer<T> Type;
+};
 
 template<typename From, typename To>
 To mcConverterList(const From &from) 
@@ -152,6 +172,41 @@ To mcConverterMap(const From &from)
 	return to;
 }
 
+template<typename T, int =
+    QtPrivate::IsSharedPointerToTypeDerivedFromQObject<T>::Value ? QMetaType::SharedPointerToQObject :
+    QtPrivate::IsPointerToTypeDerivedFromQObject<T>::Value ? QMetaType::PointerToQObject : 0>
+struct McMetaTypeIdHelper
+{
+    static int metaTypeId()
+    {
+        return qMetaTypeId<T>();
+    }
+};
+
+template<typename T>
+struct McMetaTypeIdHelper<T, QMetaType::SharedPointerToQObject>
+{
+    static int metaTypeId()
+    {
+        typedef typename T::Type ObjType;
+        auto className = ObjType::staticMetaObject.className();
+        mcRegisterBeanFactory<ObjType>(className, QString("%1ConstPtrRef").arg(className).toLocal8Bit());
+        return QMetaType::type(className);
+    }
+};
+
+template<typename T>
+struct McMetaTypeIdHelper<T, QMetaType::PointerToQObject>
+{
+    static int metaTypeId()
+    {
+        typedef typename std::remove_pointer<T>::type ObjType;
+        auto className = ObjType::staticMetaObject.className();
+        mcRegisterBeanFactory<ObjType>(className, QString("%1ConstPtrRef").arg(className).toLocal8Bit());
+        return QMetaType::type(className);
+    }
+};
+
 }
 
 template<typename From, typename To>
@@ -159,31 +214,51 @@ void mcRegisterListConverter()
 {
 	if (QMetaType::hasRegisteredConverterFunction(qMetaTypeId<From>(), qMetaTypeId<To>()))
 		return;
+    QVariant var;
+    var.setValue(From());
+    if(var.canConvert<To>()) {
+        return;
+    }
 	QMetaType::registerConverter<From, To>(McPrivate::mcConverterList<From, To>);
 }
 
 template<typename T>
-void mcRegisterListConverter(const char *typeName) 
+void mcRegisterListConverter(const char *typeName)
 {
-    if(QMetaType::type(typeName) == QMetaType::UnknownType) {
-        qRegisterMetaType<T>(typeName);
+    auto id = QMetaType::type(typeName);
+    if(id == QMetaType::UnknownType) {
+        id = qRegisterMetaType<T>(typeName);
     }
+    typedef typename T::value_type ValueType;
+    int valueId = McPrivate::McMetaTypeIdHelper<ValueType>::metaTypeId();
+    McMetaTypeId::addSequentialId(id, valueId);
 	mcRegisterListConverter<QVariantList, T>();
 }
 
 template<typename From, typename To>
-void mcRegisterMapConverter() 
+void mcRegisterMapConverter()
 {
 	if (QMetaType::hasRegisteredConverterFunction(qMetaTypeId<From>(), qMetaTypeId<To>()))
 		return;
+    QVariant var;
+    var.setValue(From());
+    if(var.canConvert<To>()) {
+        return;
+    }
 	QMetaType::registerConverter<From, To>(McPrivate::mcConverterMap<From, To>);
 }
 
 template<typename T>
-void mcRegisterMapConverter(const char *typeName) 
+void mcRegisterMapConverter(const char *typeName)
 {
-    if(QMetaType::type(typeName) == QMetaType::UnknownType) {
-        qRegisterMetaType<T>(typeName);
+    auto id = QMetaType::type(typeName);
+    if(id == QMetaType::UnknownType) {
+        id = qRegisterMetaType<T>(typeName);
     }
+    typedef typename T::key_type KeyType;
+    typedef typename T::mapped_type ValueType;
+    int keyId = McPrivate::McMetaTypeIdHelper<KeyType>::metaTypeId();
+    int valueId = McPrivate::McMetaTypeIdHelper<ValueType>::metaTypeId();
+    McMetaTypeId::addAssociativeId(id, keyId, valueId);
 	mcRegisterMapConverter<QMap<QVariant, QVariant>, T>();
 }

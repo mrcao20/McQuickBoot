@@ -2,6 +2,7 @@
 
 #include <QQmlContext>
 #include <QJSValue>
+#include <QGlobalStatic>
 #include <QDebug>
 
 #include <McIoc/ApplicationContext/impl/McAnnotationApplicationContext.h>
@@ -13,11 +14,10 @@
 #include "McBoot/Requestor/McQmlRequestor.h"
 
 MC_DECL_PRIVATE_DATA(McIocBoot)
-static QQmlEngine *engine;
 McAnnotationApplicationContextPtr context;
 MC_DECL_PRIVATE_DATA_END
 
-QQmlEngine *MC_PRIVATE_DATA_NAME(McIocBoot)::engine = nullptr;
+Q_GLOBAL_STATIC_WITH_ARGS(QQmlEngine *, mcEngine, (nullptr))
 
 McIocBoot::McIocBoot(QObject *parent)
     : QObject(parent)
@@ -31,7 +31,7 @@ McIocBoot::~McIocBoot()
 
 void McIocBoot::init(QQmlApplicationEngine *engine) noexcept 
 {
-    MC_PRIVATE_DATA_NAME(McIocBoot)::engine = engine;
+    *mcEngine = engine;
     
     McIocBootPtr boot = McIocBootPtr::create();
     boot->initBoot();
@@ -97,7 +97,7 @@ void McIocBoot::init(QQmlApplicationEngine *engine) noexcept
 
 QQmlEngine *McIocBoot::engine() noexcept
 {
-    return MC_PRIVATE_DATA_NAME(McIocBoot)::engine;
+    return *mcEngine;
 }
 
 void McIocBoot::initBoot() noexcept 

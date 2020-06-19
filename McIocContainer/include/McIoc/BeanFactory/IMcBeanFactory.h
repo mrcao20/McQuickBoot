@@ -11,22 +11,6 @@ QT_END_NAMESPACE
 class IMcBeanFactory 
 {
 public:
-    template<typename T>
-    struct TypeSelector 
-    {
-        typedef QSharedPointer<T> Type;
-    };
-    template<typename T>
-    struct TypeSelector<T *> 
-    {
-        typedef QSharedPointer<T> Type;
-    };
-    template<typename T>
-    struct TypeSelector<QSharedPointer<T>> 
-    {
-        typedef QSharedPointer<T> Type;
-    };
-    
     virtual ~IMcBeanFactory() = default;
     
     /*!
@@ -36,12 +20,12 @@ public:
      * 提供此函数仅用于提供一种方便的向目标类型转换的方式
      */
     template<typename T>
-    typename TypeSelector<T>::Type getBean(
+    typename McPrivate::TypeSelector<T>::Type getBean(
             const QString &name
             , QThread *thread = nullptr) noexcept 
     {
         QVariant var = getBeanToVariant(name, thread);
-        return var.value<typename TypeSelector<T>::Type>();
+        return var.value<typename McPrivate::TypeSelector<T>::Type>();
     }
     /*!
      * \brief getBean

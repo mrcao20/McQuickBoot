@@ -1,23 +1,21 @@
 #include "McIoc/ApplicationContext/impl/McAnnotationApplicationContext.h"
 
-#include <qmetaobject.h>
+#include <QMetaClassInfo>
+#include <QGlobalStatic>
 #include <QDebug>
 
 #include "McIoc/BeanDefinitionReader/impl/McAnnotationBeanDefinitionReader.h"
 #include "McIoc/BeanDefinition/impl/McRootBeanDefinition.h"
 #include "McIoc/BeanFactory/impl/McBeanConnector.h"
+#include "McIoc/BeanFactory/impl/McMetaTypeId.h"
 #include "McIoc/McMacroGlobal.h"
 
 MC_DECL_PRIVATE_DATA(McAnnotationApplicationContext)
-/// 用来保存需要自动注入的bean的beanName和BeanDefinition
-static QHash<QString, IMcBeanDefinitionPtr> autowiredRegistry;
 MC_DECL_PRIVATE_DATA_END
 
-QHash<QString, IMcBeanDefinitionPtr> 
-    MC_PRIVATE_DATA_NAME(McAnnotationApplicationContext)::autowiredRegistry 
-        = QHash<QString, IMcBeanDefinitionPtr>();
-
-#define globalDefinitions() (MC_PRIVATE_DATA_NAME(McAnnotationApplicationContext)::autowiredRegistry)
+/// 用来保存需要自动注入的bean的beanName和BeanDefinition
+typedef QHash<QString, IMcBeanDefinitionPtr> McBeanDefinitionContainter; 
+Q_GLOBAL_STATIC(McBeanDefinitionContainter, mcAutowiredRegistry)
 
 McAnnotationApplicationContext::McAnnotationApplicationContext(
         IMcConfigurableBeanFactoryConstPtrRef factory
@@ -41,24 +39,22 @@ McAnnotationApplicationContext::McAnnotationApplicationContext(QObject *parent)
 {
     MC_NEW_PRIVATE_DATA(McAnnotationApplicationContext);
     
-    for(int type = QMetaType::User; 
-        QMetaType::isRegistered(type); 
-        ++type) {
-        
+    auto ar = mcAutowiredRegistry();
+    auto qobjectMetaTypeIds = McMetaTypeId::qobjectPointerIds();
+    for(auto type : qobjectMetaTypeIds) {
+        Q_ASSERT_X(QMetaType::isRegistered(type), "McAnnotationApplicationContext", "type not registered");
         auto metaObj = QMetaType::metaObjectForType(type);
-        if(!metaObj) {
-            continue;
-        }
+        Q_ASSERT_X(metaObj, "McAnnotationApplicationContext", "cannot get meta object");
         auto beanNameIndex = metaObj->indexOfClassInfo(MC_BEANNAME);
         if(beanNameIndex == -1) {
             continue;
         }
         auto beanNameClassInfo = metaObj->classInfo(beanNameIndex);
         QString beanName = beanNameClassInfo.value();
-        auto beanDefinition = globalDefinitions()[beanName];
+        auto beanDefinition = (*ar)[beanName];
         if(!beanDefinition) {
             beanDefinition = McRootBeanDefinitionPtr::create();
-            globalDefinitions()[beanName] = beanDefinition;
+            (*ar)[beanName] = beanDefinition;
         }
         if(!beanDefinition->getClassName().isEmpty()) {
             continue;
@@ -80,7 +76,7 @@ McAnnotationApplicationContext::McAnnotationApplicationContext(QObject *parent)
         beanDefinition->setSingleton(isSingleton);
     }
     
-    auto reader = McAnnotationBeanDefinitionReaderPtr::create(globalDefinitions());
+    auto reader = McAnnotationBeanDefinitionReaderPtr::create((*ar));
     setReader(reader);
 }
 
@@ -117,10 +113,11 @@ void McAnnotationApplicationContext::insertRegistry(const QString &typeName) noe
         beanName = classInfo.value();
     }
     
-    auto beanDefinition = globalDefinitions()[beanName];
+    auto ar = mcAutowiredRegistry();
+    auto beanDefinition = (*ar)[beanName];
     if(!beanDefinition) {
         beanDefinition = McRootBeanDefinitionPtr::create();
-        globalDefinitions()[beanName] = beanDefinition;
+        (*ar)[beanName] = beanDefinition;
     }
     if(!beanDefinition->getClassName().isEmpty()) {
         qCritical() << "injected fail. the beanName is exists. it's typeName is" << beanDefinition->getClassName()
@@ -140,10 +137,11 @@ void McAnnotationApplicationContext::addConnect(
         , const QString &slot
         , Qt::ConnectionType type) noexcept 
 {
-    auto beanDefinition = globalDefinitions()[beanName];
+    auto ar = mcAutowiredRegistry();
+    auto beanDefinition = (*ar)[beanName];
     if(!beanDefinition) {
         beanDefinition = McRootBeanDefinitionPtr::create();
-        globalDefinitions()[beanName] = beanDefinition;
+        (*ar)[beanName] = beanDefinition;
     }
     McBeanConnectorPtr connector = McBeanConnectorPtr::create();
     connector->setSender(sender);
