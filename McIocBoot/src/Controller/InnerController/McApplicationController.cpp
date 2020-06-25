@@ -7,7 +7,7 @@ MC_DECL_PRIVATE_DATA(McApplicationController)
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McApplicationController)
-MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(McApplicationController));
+MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(McApplicationController))
 MC_INIT_END
 
 McApplicationController::McApplicationController() noexcept

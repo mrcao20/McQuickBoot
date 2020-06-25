@@ -7,6 +7,8 @@
 class Tmp : public QObject {
     Q_OBJECT
     MC_DECL_INIT(Tmp)
+    MC_DEFINE_TYPELIST(QObject)
+    Q_CLASSINFO(MC_BEANNAME, "tmp")
     Q_PROPERTY(QString aaa MEMBER m_aaa)
 public:
     Q_INVOKABLE Tmp(){}

@@ -3,7 +3,7 @@
 #include "McIoc/ApplicationContext/McContainerGlobal.h"
 
 MC_INIT(IocTest)
-MC_REGISTER_COMPONENT(MC_TYPELIST(IocTest))
+MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(IocTest))
 mcConnect("test", "interface", "signal()", "this", "slot()");
 MC_REGISTER_LIST_CONVERTER(QVector<InterfacePtr>)
 MC_REGISTER_LIST_CONVERTER(QList<QString>)

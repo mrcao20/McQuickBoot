@@ -46,15 +46,15 @@ QVariant McControllerContainer::invoke(const QString &uri, const QVariant &body)
     case QMetaType::Type::QJsonObject:
         return invoke(uri, body.toJsonObject());
     default:
-        return fail("请求体为不支持的类型");
+        return fail("this body is not support type");
     }
 }
 
 QVariant McControllerContainer::invoke(const QString &uri) noexcept 
 {
-    auto list = uri.split('?', QString::SkipEmptyParts);
+    auto list = uri.split('?', Qt::SkipEmptyParts);
     if (list.isEmpty())
-        return fail("访问路径不存在");
+        return fail("access path not exists");
     QObjectPtr bean;
     QString func;
     QVariant errRet;
@@ -86,13 +86,13 @@ bool McControllerContainer::splitBeanAndFunc(
         , QString &func
         , QVariant &errRet) noexcept 
 {
-    auto beanAndFunc = uri.split('.', QString::SkipEmptyParts);
+    auto beanAndFunc = uri.split('.', Qt::SkipEmptyParts);
     if (beanAndFunc.size() != 2) {
-        errRet = fail("访问路径不存在");
+        errRet = fail("access path not exists");
         return false;
     }
     if(!d->controllers.contains(beanAndFunc.at(0))) {
-        errRet = fail("访问路径不存在");
+        errRet = fail("access path not exists");
         return false;
     }
     bean = d->controllers[beanAndFunc.at(0)];
@@ -115,15 +115,15 @@ QVariant McControllerContainer::invokeForUri(
             continue;
         return invokeForArgs(bean, method, args);
     }
-    return fail("请求参数错误");
+    return fail("access arguments error");
 }
 
 QMap<QString, QVariant> McControllerContainer::splitParam(const QString &param) noexcept 
 {
     QMap<QString, QVariant> args;
-    QStringList params = param.split('&', QString::SkipEmptyParts);
+    QStringList params = param.split('&', Qt::SkipEmptyParts);
     for (const auto &p : params) {
-        QStringList nameAndValue = p.split('=', QString::SkipEmptyParts);
+        QStringList nameAndValue = p.split('=', Qt::SkipEmptyParts);
         if(nameAndValue.isEmpty())
             continue;
         QString key = nameAndValue.at(0);
@@ -212,7 +212,7 @@ QVariant McControllerContainer::invokeForArgs(
     if(returnType == QMetaType::Type::UnknownType) {
         qCritical() << "if you want to return a model to QML. the return type "
                        "must be QObject* or QAbstractItemModel*";
-        return fail("无法在元对象系统中找到该返回值类型");
+        return fail("cannot found this return type from meta object system");
     }
     QVariant returnValue;
     QGenericReturnArgument returnArg;
@@ -255,7 +255,7 @@ QVariant McControllerContainer::invokeForArgs(
                        arguments.at(7),
                        arguments.at(8),
                        arguments.at(9)))
-        return fail("函数调用失败");
+        return fail("failed invoke function");
     
     if(strcmp(method.typeName(), "McResult*") == 0) {
         McResult *result = returnValue.value<McResult *>();
@@ -281,7 +281,7 @@ QVariantList McControllerContainer::makeValues(const QMetaMethod &method
     QList<QByteArray> paramNames = method.parameterNames(); //!< 和类型名数量一定相等
     QList<QByteArray> paramTypes = method.parameterTypes();
     if(paramTypes.size() > maxParamSize) {
-        *errMsg = fail(QString("函数参数个数不能大于%1").arg(maxParamSize));
+        *errMsg = fail(QString("argument for function cannot more than %1").arg(maxParamSize));
         *ok = false;
         return QVariantList();
     }
@@ -313,7 +313,7 @@ QVariant McControllerContainer::makeObjectValue(
     
     int typeId = QMetaType::type(objTypeName);
     if (typeId == QMetaType::UnknownType) {
-        qCritical() << QString("类型名为%1的类没有注册!").arg(objTypeName.data());
+        qCritical("this class for type '%s' is not register", objTypeName.data());
         return QVariant();
     }
     const QMetaObject *mobj = QMetaType::metaObjectForType(typeId);
@@ -328,7 +328,7 @@ QVariant McControllerContainer::makeObjectValue(
         auto value = args[name];
         value = makeObjectValue(pro.typeName(), value);
         if (!pro.write(obj, value))
-            qCritical() << QString("类%1中的属性%2无法动态写入值").arg(objTypeName.data(), pro.name());
+            qCritical("cannot dynamic write value to property '%s' for class '%s'", objTypeName.data(), pro.name());
     }
     QObjectPtr objPtr(obj);
     QVariant var;

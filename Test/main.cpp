@@ -18,6 +18,7 @@
 
 int main(int argc, char *argv[])
 {
+    qDebug() << ">>>>>>>>>>:::::" << MC_FIRST_TYPE_NAME(aaa, bbb);
 //    QList<IocTestPtr> r;
 //    McJsonUtils::toJson(r);
 //    auto ft = QMetaType::typeFlags(QMetaType::type("QVector<InterfacePtr>"));

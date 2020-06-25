@@ -8,7 +8,8 @@
 
 #define MC_DECL_METATYPE(Class) \
     MC_DECL_POINTER(Class) \
-    Q_DECLARE_METATYPE(Class##Ptr)
+    Q_DECLARE_METATYPE(Class##Ptr) \
+    Q_DECLARE_METATYPE(Class*)
 
 #define MC_DECL_INIT(Class) \
     static const int Class##_Static_Init;

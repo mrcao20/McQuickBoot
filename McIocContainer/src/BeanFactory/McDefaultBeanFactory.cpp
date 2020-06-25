@@ -1,4 +1,4 @@
-#include "McIoc/BeanFactory/impl/McDefaultBeanFactory.h"
+﻿#include "McIoc/BeanFactory/impl/McDefaultBeanFactory.h"
 
 #include <QPluginLoader>
 #include <QMetaObject>
@@ -143,8 +143,7 @@ bool McDefaultBeanFactory::addObjectConnect(QObjectConstPtrRef bean
     for(auto connector : connectors) {
         McBeanConnectorPtr con = connector.value<McBeanConnectorPtr>();
         if(!con) {
-            qCritical() << QString("bean '%1' 存在一个connector，但不能转换为McBeanConnectorPtr")
-                           .arg(bean->metaObject()->className());
+            qCritical("has a connector, but cannot convert to McBeanConnectorPtr for bean '%s'", bean->metaObject()->className());
             return false;
         }
         QObjectPtr sender = nullptr;
@@ -162,12 +161,12 @@ bool McDefaultBeanFactory::addObjectConnect(QObjectConstPtrRef bean
         
         QString signalStr = con->getSignal();
         if(signalStr.isEmpty()) {
-            qCritical() << "信号名不能为空";
+            qCritical() << "signal is not exists";
             return false;
         }
         int signalIndex = signalMetaObj->indexOfSignal(signalStr.toLocal8Bit());
         if(signalIndex == -1) {
-            qCritical() << QString("bean '%1' 不存在名为 '%2' 的信号").arg(signalMetaObj->className(), signalStr);
+            qCritical("not exists signal named '%s' for bean '%s'", signalMetaObj->className(), qPrintable(signalStr));
             return false;
         }
         signal = signalMetaObj->method(signalIndex);
@@ -181,12 +180,12 @@ bool McDefaultBeanFactory::addObjectConnect(QObjectConstPtrRef bean
         
         QString slotStr = con->getSlot();
         if(slotStr.isEmpty()) {
-            qCritical() << "槽名不能为空";
+            qCritical() << "slot is not exists";
             return false;
         }
         int slotIndex = slotMetaObj->indexOfMethod(slotStr.toLocal8Bit());
         if(slotIndex == -1) {
-            qCritical() << QString("bean '%1' 不存在名为 '%2' 的槽").arg(slotMetaObj->className(), slotStr);
+            qCritical("not exists slot named '%s' for bean '%s'", slotMetaObj->className(), qPrintable(slotStr));
             return false;
         }
         slot = slotMetaObj->method(slotIndex);
@@ -207,8 +206,8 @@ QObjectPtr McDefaultBeanFactory::getPropertyObject(QObjectConstPtrRef bean
         obj = bean;
     }else{
         if(!proValues.contains(proName)) {
-            qCritical() << QString("bean '%1' 没有找到属性名为 '%2' 的属性")
-                           .arg(bean->metaObject()->className(), proName);
+            qCritical("not found property named '%s' for bean '%s'"
+                      , bean->metaObject()->className(), qPrintable(proName));
             return nullptr;
         }
         auto varPro = proValues[proName];

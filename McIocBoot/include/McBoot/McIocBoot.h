@@ -27,7 +27,7 @@ public:
     static QQmlEngine *engine() noexcept;
     
     template<typename T = QGuiApplication>
-    static int run(int argc, char *argv[], const QUrl &url = QUrl(QStringLiteral("qrc:/main.qml"))
+    static int run(int argc, char *argv[], const QUrl &url = QUrl("qrc:/main.qml")
             , const function<void(T *app, QQmlApplicationEngine *)> &func = nullptr
             , const function<void(T *app)> &prefunc = nullptr) noexcept;
     
@@ -42,7 +42,7 @@ public:
      * \return 
      */
     template<typename T = McSingleApplication>
-    static int singleRun(int argc, char *argv[], const QUrl &url = QUrl(QStringLiteral("qrc:/main.qml"))
+    static int singleRun(int argc, char *argv[], const QUrl &url = QUrl("qrc:/main.qml")
             , const function<void(T *app, QQmlApplicationEngine *)> &func = nullptr
             , const function<void(T *app)> &prefunc = nullptr) noexcept;
     
