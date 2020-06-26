@@ -16,9 +16,32 @@
 #include "ThreadTest.h"
 #include <McBoot/Utils/McJsonUtils.h>
 
+#ifdef Q_CC_GNU
+static void  __attribute__((constructor)) before(void) 
+{
+	qDebug() << "before";
+}
+
+static void  __attribute__((destructor)) after(void) 
+{
+	qDebug() << "after";
+}
+#elif Q_CC_MSVC
+#define SECNAME ".CRT$XCG"
+#pragma section(SECNAME,long,read)
+int foo()
+{
+    qDebug() << "before";
+    return 0;
+}
+__declspec(allocate(SECNAME)) _PIFV dummy[] = { foo };
+#endif
+
+#define BB(par) MC_FIRST_TYPE_NAME((par))
+
 int main(int argc, char *argv[])
 {
-    qDebug() << ">>>>>>>>>>:::::" << MC_FIRST_TYPE_NAME(aaa, bbb);
+    qDebug() << ">>>>>>>>>>:::::" << BB(MC_TYPELIST(IocTest));
 //    QList<IocTestPtr> r;
 //    McJsonUtils::toJson(r);
 //    auto ft = QMetaType::typeFlags(QMetaType::type("QVector<InterfacePtr>"));

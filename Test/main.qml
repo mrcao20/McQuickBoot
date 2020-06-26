@@ -60,7 +60,7 @@ Window {
         console.log($);
         $.post("con.invoke3", data1);
         
-        $.get("app.dirPath").then(function(result){
+        $.get("app.dirPath").syncThen(function(result){
             console.log("dir path:", result)
         });
         console.log("file path:", $.syncInvoke("app.filePath"));
