@@ -6,8 +6,6 @@ MC_INIT(Tmp)
 MC_REGISTER_BEAN_FACTORY(Tmp)
 MC_INIT_END
 
-typedef QHash<QString, QList<TmpPtr>> THash;
-typedef QHash<QString, THash> TTHash;
 MC_INIT(Object)
 MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(Object))
 MC_REGISTER_LIST_CONVERTER(QList<QList<TmpPtr>>)

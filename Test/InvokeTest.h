@@ -32,6 +32,7 @@ public:
 
 class McResult;
 
+#include <QJsonObject>
 class InvokeTest : public ClassTestB
 {
     Q_OBJECT
@@ -45,6 +46,7 @@ public:
     Q_INVOKABLE void invoke1() noexcept;
     Q_INVOKABLE McResult *invoke2() noexcept;
     Q_INVOKABLE void invoke3(const ObjectPtr &o) noexcept;
+    Q_INVOKABLE QJsonObject invoke4() noexcept;
     
     Q_INVOKABLE
     MC_BEAN_START

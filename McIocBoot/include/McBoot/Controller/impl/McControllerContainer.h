@@ -9,6 +9,8 @@ class QMetaMethod;
 QT_END_NAMESPACE
 
 MC_FORWARD_DECL_CLASS(McIocBoot)
+MC_FORWARD_DECL_CLASS(McSequentialMetaId)
+MC_FORWARD_DECL_CLASS(McAssociativeMetaId)
 
 MC_FORWARD_DECL_PRIVATE_DATA(McControllerContainer);
 
@@ -53,7 +55,13 @@ private:
                             , int maxParamSize
                             , QVariant *errMsg = nullptr
                             , bool *ok = nullptr) noexcept;
+    QVariant makeValue(const QByteArray &typeName, const QVariant &arg) noexcept;
     
+    QVariant makePlanValue(const QByteArray &typeName, const QVariant &arg) noexcept;
+    QVariant makeListValue(const QVariant &arg
+                           , McSequentialMetaIdConstPtrRef seqMetaId) noexcept;
+    QVariant makeMapValue(const QVariant &arg
+                          , McAssociativeMetaIdConstPtrRef assMetaId) noexcept;
     QVariant makeObjectValue(const QByteArray &typeName, const QVariant &arg) noexcept;
     bool isSharedPointerObject(const QByteArray &typeName, QByteArray &objTypeName) noexcept;
     

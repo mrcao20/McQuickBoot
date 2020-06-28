@@ -50,8 +50,19 @@ Window {
         var data1 = {
             o: {
                 text: "aaa",
-                t: {
-                    aaa: "bbb"
+                t: [{
+                        aaa: "bbbb"
+                    },
+                    {
+                        aaa: "ccccc"
+                    }
+                ],
+                tt: {
+                    999: [
+                        {
+                            aaa: "qqqq"
+                        }
+                    ]
                 }
             }
         };
@@ -64,5 +75,12 @@ Window {
             console.log("dir path:", result)
         });
         console.log("file path:", $.syncInvoke("app.filePath"));
+        
+        $.get("con.invoke4").syncThen(function(result) {
+            console.log("invoke4>>>>>>>>>", JSON.stringify(result));
+            $.post("con.invoke3", {
+                       o: result
+                   });
+        });
     }
 }

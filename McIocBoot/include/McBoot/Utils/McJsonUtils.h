@@ -19,14 +19,17 @@
 class MCIOCBOOT_EXPORT McJsonUtils 
 {
 public:
+    static QJsonValue toJson(const QVariant &var) noexcept;
     static QJsonObject toJson(QObject *obj) noexcept;
     static QJsonObject toJson(QObjectConstPtrRef obj) noexcept;
     template<typename T>
     static QJsonArray toJson(const QList<QSharedPointer<T>> &objs) noexcept;
     template<typename T>
     static QJsonArray toJson(const QList<T *> &objs) noexcept;
+    static QJsonArray toJson(const QVariantList &vars) noexcept;
     static QJsonObject toJson(const QMap<QString, QObject *> &objs) noexcept;
     static QJsonObject toJson(const QMap<QString, QObjectPtr> &objs) noexcept;
+    static QJsonObject toJson(const QVariantMap &objs) noexcept;
 	static QJsonObject toJson(void *gadget, const QMetaObject *mobj) noexcept;
 };
 
