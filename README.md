@@ -14,7 +14,19 @@ class Object : public QObject, public Insterface{
   MC_DEFINE_TYPELIST(QObject, MC_DECL_TYPELIST(Insterface)) // 由于QObject宏为QT自带，没有使用过MC_DEFINE_TYPELIST，所以只需要声明QObject足够，但是Insterface中使用了MC_DEFINE_TYPELIST宏，所以这里需要使用MC_DECL_TYPELIST宏额外指定，但是一定要注意MC_DECL_TYPELIST宏中的类型一定是父类类型
 }
 ~~~
-以上主要用于定义类之间的层级关系
+以上主要用于定义类之间的层级关系。   
+值得注意的是，由于MSVC的特殊性，Object的所有父类都应该使用MC_DECL_METATYPE宏声明，例如上面的QObject和Insterface，由于本容器中已经对QObject声明过，故此处无需再次声明。假如你继承至QWidget，那么你需要单独使用MC_DECL_METATYPE宏声明此类，但是又由于QT框架中可能已经使用Q_DECLARE_METATYPE(QWidget*)声明过，所以可能会出现重定义的编译错误，那么此时就需要将MC_DECL_METATYPE宏改为MC_DECL_POINTER和Q_DECLARE_METATYPE两个宏单独声明，具体参照McGlobal中对QObject的声明
+~~~
+//! 由于QT框架已经调用过Q_DECLARE_METATYPE(QObject*)，所以此处不能使用MC_DECL_METATYPE宏，而改为以下两个宏
+MC_DECL_POINTER(QObject);
+Q_DECLARE_METATYPE(QObjectPtr);
+~~~
+或者如果你能确定你不会从Object动态转换到QWidget，那么MC_DEFINE_TYPELIST宏中也可以不声明QWidget，并且也不再需要使用MC_DECL_METATYPE宏来声明
+~~~
+class Object : public QWidget, public Insterface{
+  MC_DEFINE_TYPELIST(MC_DECL_TYPELIST(Insterface))  //!< 确定不会从Object转换到QWidget，所以此处只声明Insterface即可
+}
+~~~
 
 2. 使用MC_DECL_INIT、MC_INIT和MC_INIT_END三个宏在类中向QT元对象系统注册所需数据: 
 ~~~
