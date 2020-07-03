@@ -30,6 +30,8 @@ public:
     }
 };
 
+MC_DECL_METATYPE(ClassTestB)
+
 class McResult;
 
 #include <QJsonObject>

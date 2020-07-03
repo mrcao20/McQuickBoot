@@ -9,6 +9,7 @@
 #include "BeanFactory/McBeanGlobal.h"
 
 MC_DECL_POINTER(QObject);
+Q_DECLARE_METATYPE(QObjectPtr);
 
 /*!
  * \brief mcWaitForExecFunc，执行一个函数，当该函数返回true时或timeout超时时返回

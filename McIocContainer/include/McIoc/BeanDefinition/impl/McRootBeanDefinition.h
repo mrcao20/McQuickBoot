@@ -29,13 +29,20 @@ public:
     void setClassName(const QString &name) noexcept override 
     {
         m_className = name;
-        if(!m_beanMetaObject) {
-            auto type = QMetaType::type(m_className.toLocal8Bit());
+        if(m_beanMetaObject != nullptr) {
+            return;
+        }
+        auto type = QMetaType::type(m_className.toLocal8Bit());
+        if(type == QMetaType::UnknownType) {
+            if(m_className.endsWith("*")) {
+                return;
+            }
+            type = QMetaType::type((m_className + "*").toLocal8Bit());
             if(type == QMetaType::UnknownType) {
                 return;
             }
-            m_beanMetaObject = QMetaType::metaObjectForType(type);
         }
+        m_beanMetaObject = QMetaType::metaObjectForType(type);
     }
 
     QString getPluginPath() const noexcept override 
