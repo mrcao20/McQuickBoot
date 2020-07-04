@@ -19,7 +19,11 @@ QVariant McAbstractPropertyParser::parse(const QDomElement &ele) const noexcept
              || !(childEle = ele.firstChildElement("map")).isNull()) {
         
         return parseMap(childEle);
-    } else if((childEle = ele).tagName() == "value"
+    } else if((childEle = ele).tagName() == "enum"
+              || !(childEle = ele.firstChildElement("enum")).isNull()) {
+         
+         return parseEnum(childEle);
+     } else if((childEle = ele).tagName() == "value"
              || (childEle = ele).hasAttribute("value") 
              || !(childEle = ele.firstChildElement("value")).isNull()) {
          

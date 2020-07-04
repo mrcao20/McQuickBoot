@@ -308,9 +308,9 @@ QVariant McControllerContainer::makeValue(
     if(flags.testFlag(QMetaType::TypeFlag::SharedPointerToQObject)
             || flags.testFlag(QMetaType::TypeFlag::PointerToQObject)) {
         return makeObjectValue(typeName, arg);
-    } else if(seqMetaTypeIds.contains(type)) {
+    } else if(seqMetaTypeIds.contains(type) && seqMetaTypeIds.value(type)->valueId >= QMetaType::User) {
         return makeListValue(arg, seqMetaTypeIds.value(type));
-    } else if(assMetaTypeIds.contains(type)) {
+    } else if(assMetaTypeIds.contains(type) && assMetaTypeIds.value(type)->valueId >= QMetaType::User) {
         return makeMapValue(arg, assMetaTypeIds.value(type));
     } else {
         return makePlanValue(typeName, arg);

@@ -22,65 +22,65 @@ Window {
     }
     
     Component.onCompleted: {
-        var data = {
-            onOpen: function(){
-                console.log("qml onOpen aaaaaaaaa");
-                ws.send("bbbbbbbb");
-            },
-            isOpenSync: true,
-            onMessage: function(msg){
-                console.log("qml message", msg);
-            },
-            isMessageSync: true,
-            onClose: function() {
-                console.log("ccccccccc");
-            }
-        };
-        ws = $.qs("socket", data);
+//        var data = {
+//            onOpen: function(){
+//                console.log("qml onOpen aaaaaaaaa");
+//                ws.send("bbbbbbbb");
+//            },
+//            isOpenSync: true,
+//            onMessage: function(msg){
+//                console.log("qml message", msg);
+//            },
+//            isMessageSync: true,
+//            onClose: function() {
+//                console.log("ccccccccc");
+//            }
+//        };
+//        ws = $.qs("socket", data);
         
-        $.get("con1.invoke1").syncThen(function(result) {
-            console.log("con1");
-            console.log(">>>>>>>>>1.", result, result.errMsg);
-        });
-        aaa({errMsg: "aaa"});
-        $.get("con.invoke2").syncThen(function(result){
-            console.log("con");
-            console.log(">>>>>>>>>.", result, result.errMsg);
-        });
-        var data1 = {
-            o: {
-                text: "aaa",
-                t: [{
-                        aaa: "bbbb"
-                    },
-                    {
-                        aaa: "ccccc"
-                    }
-                ],
-                tt: {
-                    999: [
-                        {
-                            aaa: "qqqq"
-                        }
-                    ]
-                }
-            }
-        };
+//        $.get("con1.invoke1").syncThen(function(result) {
+//            console.log("con1");
+//            console.log(">>>>>>>>>1.", result, result.errMsg);
+//        });
+//        aaa({errMsg: "aaa"});
+//        $.get("con.invoke2").syncThen(function(result){
+//            console.log("con");
+//            console.log(">>>>>>>>>.", result, result.errMsg);
+//        });
+//        var data1 = {
+//            o: {
+//                text: "aaa",
+//                t: [{
+//                        aaa: "bbbb"
+//                    },
+//                    {
+//                        aaa: "ccccc"
+//                    }
+//                ],
+//                tt: {
+//                    999: [
+//                        {
+//                            aaa: "qqqq"
+//                        }
+//                    ]
+//                }
+//            }
+//        };
 
-        console.log($.__proto__.post);
-        console.log($);
-        $.post("con.invoke3", data1);
+//        console.log($.__proto__.post);
+//        console.log($);
+//        $.post("con.invoke3", data1);
         
-        $.get("app.dirPath").syncThen(function(result){
-            console.log("dir path:", result)
-        });
-        console.log("file path:", $.syncInvoke("app.filePath"));
+//        $.get("app.dirPath").syncThen(function(result){
+//            console.log("dir path:", result)
+//        });
+//        console.log("file path:", $.syncInvoke("app.filePath"));
         
-        $.get("con.invoke4").syncThen(function(result) {
-            console.log("invoke4>>>>>>>>>", JSON.stringify(result));
-            $.post("con.invoke3", {
-                       o: result
-                   });
-        });
+//        $.get("con.invoke4").syncThen(function(result) {
+//            console.log("invoke4>>>>>>>>>", JSON.stringify(result));
+//            $.post("con.invoke3", {
+//                       o: result
+//                   });
+//        });
     }
 }

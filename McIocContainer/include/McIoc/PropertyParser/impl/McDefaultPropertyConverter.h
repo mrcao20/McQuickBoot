@@ -11,6 +11,7 @@ public:
     
 protected:
     QVariant convertRef(const QVariant &value) const noexcept override;
+    QVariant convertEnum(const QVariant &value) const noexcept override;
     QVariant convertList(const QVariant &value) const noexcept override;
     QVariant convertMap(const QVariant &value) const noexcept override;
 };

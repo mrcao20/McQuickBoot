@@ -7,6 +7,7 @@
 #include <QDebug>
 
 #include "McIoc/BeanFactory/impl/McBeanReference.h"
+#include "McIoc/BeanFactory/impl/McBeanEnum.h"
 
 McDefaultPropertyParser::McDefaultPropertyParser(QObject *parent)
     : McAbstractPropertyParser(parent)
@@ -113,6 +114,54 @@ QVariant McDefaultPropertyParser::parseMap(const QDomElement &ele) const noexcep
 	}
     
     return QVariant::fromValue(map);
+}
+
+QVariant McDefaultPropertyParser::parseEnum(const QDomElement &ele) const noexcept
+{
+    McBeanEnumPtr e = McBeanEnumPtr::create();
+    if(ele.hasAttribute("scope")) {
+        e->setScope(ele.attribute("scope"));
+    }
+    if(ele.hasAttribute("type")) {
+        e->setType(ele.attribute("type"));
+    }
+    if(ele.hasAttribute("value")) {
+        e->setValue(ele.attribute("value"));
+    }
+    auto childNodes = ele.childNodes();
+    for(int i = 0; i < childNodes.length(); ++i) {
+        auto childNode = childNodes.at(i);
+        auto childEle = childNode.toElement();
+        if(childEle.isNull()) {
+            continue;
+        }
+        if(childEle.tagName() == "scope") {
+            if(childEle.hasAttribute("name")) {
+                e->setScope(childEle.attribute("name"));
+            }
+            auto text = childEle.text().simplified();
+            if(!text.isEmpty()) {
+                e->setScope(text);
+            }
+        } else if(childEle.tagName() == "type") {
+            if(childEle.hasAttribute("name")) {
+                e->setType(childEle.attribute("name"));
+            }
+            auto text = childEle.text().simplified();
+            if(!text.isEmpty()) {
+                e->setType(text);
+            }
+        } else if(childEle.tagName() == "value") {
+            if(childEle.hasAttribute("name")) {
+                e->setValue(childEle.attribute("name"));
+            }
+            auto text = childEle.text().simplified();
+            if(!text.isEmpty()) {
+                e->setValue(text);
+            }
+        }
+    }
+    return QVariant::fromValue(e);
 }
 
 QVariantList McDefaultPropertyParser::getList(const QString &dirPath) const noexcept 

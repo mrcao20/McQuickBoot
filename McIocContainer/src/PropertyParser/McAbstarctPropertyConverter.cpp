@@ -1,6 +1,7 @@
 #include "McIoc/PropertyParser/impl/McAbstarctPropertyConverter.h"
 
 #include "McIoc/BeanFactory/impl/McBeanReference.h"
+#include "McIoc/BeanFactory/impl/McBeanEnum.h"
 
 MC_DECL_PRIVATE_DATA(McAbstarctPropertyConverter)
 IMcBeanReferenceResolver *resolver;
@@ -22,11 +23,13 @@ QVariant McAbstarctPropertyConverter::convert(IMcBeanReferenceResolver *resolver
     d->resolver = resolver;
     if(value.canConvert<McBeanReferencePtr>()) {
         return convertRef(value);
-    }else if(value.canConvert<QVariantList>()) {
+    } else if(value.canConvert<McBeanEnumPtr>()) {
+        return convertEnum(value);
+    } else if(value.canConvert<QVariantList>()) {
         return convertList(value);
-    }else if(value.canConvert<QMap<QVariant, QVariant>>()) {
+    } else if(value.canConvert<QMap<QVariant, QVariant>>()) {
         return convertMap(value);
-    }else{
+    } else{
         return value;
     }
 }

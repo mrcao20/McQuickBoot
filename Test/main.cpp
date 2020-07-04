@@ -41,7 +41,7 @@ __declspec(allocate(SECNAME)) _PIFV dummy[] = { foo };
 
 int main(int argc, char *argv[])
 {
-    qDebug() << ">>>>>>>>>>:::::" << BB(MC_TYPELIST(IocTest));
+//    qDebug() << ">>>>>>>>>>:::::" << BB(MC_TYPELIST(IocTest));
 //    QList<IocTestPtr> r;
 //    McJsonUtils::toJson(r);
 //    auto ft = QMetaType::typeFlags(QMetaType::type("QVector<InterfacePtr>"));
@@ -54,6 +54,10 @@ int main(int argc, char *argv[])
 //             << ftt.testFlag(QMetaType::TypeFlag::SharedPointerToQObject)
 //             << ftt.testFlag(QMetaType::TypeFlag::TrackingPointerToQObject)
 //             << ftt.testFlag(QMetaType::TypeFlag::WasDeclaredAsMetaType);
+//    auto mo = QMetaType::metaObjectForType(QMetaType::type("IocTest"));
+//    auto me = mo->enumerator(mo->indexOfEnumerator("EEE"));
+//    qDebug() << me.enumName();
+//    qDebug() << me.keysToValue("A | B");
 //    return McIocBoot::run(argc, argv);
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     
@@ -66,7 +70,8 @@ int main(int argc, char *argv[])
     appCon->refresh(t);
     auto test = appCon->getBean<IocTestPtr>("test");
     qDebug() << test->m_interface << test->m_str << test->m_interfaces
-             << test->m_strMap << test->m_iMap << test->m_innerBean << test->m_innerBean.objectCast<Object>()->m_text;
+             << test->m_strMap << test->m_iMap << test->m_innerBean << test->m_innerBean.objectCast<Object>()->m_text
+             << test->m_eee << test->m_align;
     test->m_interface->say();
     test->m_interface.dynamicCast<Object>()->signal();
     test.dynamicCast<QObject>()->property("inter").value<ObjectPtr>()->signal2();

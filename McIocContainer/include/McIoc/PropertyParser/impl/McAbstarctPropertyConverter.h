@@ -20,6 +20,7 @@ protected:
     IMcBeanReferenceResolver *resolver() const noexcept;
     
     virtual QVariant convertRef(const QVariant &value) const noexcept = 0;
+    virtual QVariant convertEnum(const QVariant &value) const noexcept = 0;
     virtual QVariant convertList(const QVariant &value) const noexcept = 0;
     virtual QVariant convertMap(const QVariant &value) const noexcept = 0;
     

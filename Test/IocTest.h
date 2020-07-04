@@ -23,7 +23,14 @@ class IocTest : public QObject, public McDefaultDeleteThreadWhenQuit
     Q_PROPERTY(QStringMap strMap MEMBER m_strMap)
     using IHash = QHash<QString, InterfacePtr>;
     Q_PROPERTY(IHash iMap MEMBER m_iMap)
+    Q_PROPERTY(EEE eee MEMBER m_eee)
+    Q_PROPERTY(Qt::AlignmentFlag align MEMBER m_align)
 public:
+    enum EEE {
+        A = 1,
+        B
+    };
+    Q_ENUM(EEE)
     Q_INVOKABLE explicit IocTest(QObject *parent = nullptr);
     
 signals:
@@ -43,6 +50,8 @@ public:
     QVector<InterfacePtr> m_interfaces;
     QMap<QString, QString> m_strMap;
     QHash<QString, InterfacePtr> m_iMap;
+    EEE m_eee;
+    Qt::AlignmentFlag m_align;
 };
 
 MC_DECL_METATYPE(IocTest)
