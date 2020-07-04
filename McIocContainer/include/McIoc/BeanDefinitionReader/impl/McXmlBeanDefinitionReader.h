@@ -34,6 +34,7 @@ private:
     void readBeanDefinition(QIODeviceConstPtrRef source) noexcept;
     void readBeanDefinition(const QDomDocument &doc) noexcept;
     void readBeanDefinition(const QDomNodeList &nodes) noexcept;
+    bool parseBeanClass(const QDomElement &ele, IMcBeanDefinitionConstPtrRef beanDefinition) noexcept;
     void readBeanDefinition(const QDomNodeList &propNodes
                             , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept;
     void readBeanDefinitionForProperty(const QDomElement &propEle

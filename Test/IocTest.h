@@ -16,6 +16,7 @@ class IocTest : public QObject, public McDefaultDeleteThreadWhenQuit
     Q_CLASSINFO(MC_SINGLETON, "false")
     Q_CLASSINFO("interface", "obj")
     Q_PROPERTY(InterfacePtr interface MEMBER m_interface)
+    Q_PROPERTY(QObjectPtr innerBean MEMBER m_innerBean)
     Q_PROPERTY(QList<QString> str MEMBER m_str)
     Q_PROPERTY(QVector<InterfacePtr> interfaces MEMBER m_interfaces)
     using QStringMap = QMap<QString, QString>;
@@ -37,6 +38,7 @@ public slots:
     
 public:
     InterfacePtr m_interface;
+    QObjectPtr m_innerBean;
     QList<QString> m_str;
     QVector<InterfacePtr> m_interfaces;
     QMap<QString, QString> m_strMap;

@@ -16,6 +16,12 @@
         <property name="interface" ref="object"></property>
         <property name="inter" ref="object"></property>
         <property name="interStr" value="object"></property>
+		<property name="innerBean">
+			<!-- 未指定name，容器提供默认的唯一name。未指定isSingleton，继承上一级bean的isSingleton -->
+			<bean class="Object">
+				<property name="text" value="Inner Bean"></property>
+			</bean>
+		</property>
         <list name="str">
             <value>停封</value>
             <value>薄纸</value>
