@@ -173,6 +173,14 @@ void McXmlBeanDefinitionReader::readBeanDefinitionForProperty(
                 className = fileInfo.baseName();
             }
             beanName = QString("__mc__%1_%2").arg(className, propName);
+            auto tmpBeanName = beanName;
+            int index = 1;
+            while(registry()->isContained(tmpBeanName)) {
+                tmpBeanName = beanName;
+                tmpBeanName.append('_');
+                tmpBeanName.append(QString::number(index++));
+            }
+            beanName = tmpBeanName;
         }
         bool isSingleton = beanDefinition->isSingleton();
         if(childEle.hasAttribute("isSingleton")) {

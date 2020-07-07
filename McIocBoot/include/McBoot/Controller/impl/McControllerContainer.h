@@ -9,8 +9,8 @@ class QMetaMethod;
 QT_END_NAMESPACE
 
 MC_FORWARD_DECL_CLASS(McIocBoot)
-MC_FORWARD_DECL_CLASS(McSequentialMetaId)
-MC_FORWARD_DECL_CLASS(McAssociativeMetaId)
+MC_FORWARD_DECL_STRUCT(McSequentialMetaId)
+MC_FORWARD_DECL_STRUCT(McAssociativeMetaId)
 
 MC_FORWARD_DECL_PRIVATE_DATA(McControllerContainer);
 

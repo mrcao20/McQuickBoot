@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
+	<!-- <bean name="test2" class="IocTest"> -->
+		<!-- <property name="innerBean"> -->
+			未指定name，容器提供默认的唯一name。未指定isSingleton，继承上一级bean的isSingleton
+			注意：bean标签只能放在property标签中，不能是property的任何子标签
+			<!-- <bean class="Object"> -->
+				<!-- <property name="text" value="Inner Bean2"></property> -->
+			<!-- </bean> -->
+		<!-- </property> -->
+	<!-- </bean> -->
     <bean name="test" class="IocTest">
         <connect sender=" interface">
             <signal>signal()</signal>

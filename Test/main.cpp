@@ -76,6 +76,10 @@ int main(int argc, char *argv[])
     test->m_interface.dynamicCast<Object>()->signal();
     test.dynamicCast<QObject>()->property("inter").value<ObjectPtr>()->signal2();
     qDebug() << test.dynamicCast<QObject>()->property("interStr");
+    
+//    auto test2 = appCon->getBean<IocTestPtr>("test2");
+//    qDebug() << test2->m_innerBean.objectCast<Object>()->m_text;
+    
     t->start();
     //!< end
     
