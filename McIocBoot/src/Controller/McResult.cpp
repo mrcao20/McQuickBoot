@@ -17,29 +17,36 @@ McResult::McResult(QObject *parent)
     MC_NEW_PRIVATE_DATA(McResult)
 }
 
-McResult::~McResult() {
+McResult::~McResult() 
+{
 }
 
-bool McResult::isSuccess() const noexcept {
+bool McResult::isSuccess() const noexcept 
+{
     return d->isSuccess;
 }
 
-void McResult::setSuccess(bool val) noexcept {
+void McResult::setSuccess(bool val) noexcept 
+{
     d->isSuccess = val;
 }
 
-QString McResult::errMsg() const noexcept {
+QString McResult::errMsg() const noexcept 
+{
     return d->errMsg;
 }
 
-void McResult::setErrMsg(const QString &val) noexcept {
+void McResult::setErrMsg(const QString &val) noexcept 
+{
     d->errMsg = val;
 }
 
-QVariant McResult::result() const noexcept {
+QVariant McResult::result() const noexcept 
+{
     return d->result;
 }
 
-void McResult::setResult(const QVariant &val) noexcept {
+void McResult::setResult(const QVariant &val) noexcept 
+{
     d->result = val;
 }

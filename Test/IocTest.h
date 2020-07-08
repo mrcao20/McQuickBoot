@@ -16,13 +16,21 @@ class IocTest : public QObject, public McDefaultDeleteThreadWhenQuit
     Q_CLASSINFO(MC_SINGLETON, "false")
     Q_CLASSINFO("interface", "obj")
     Q_PROPERTY(InterfacePtr interface MEMBER m_interface)
+    Q_PROPERTY(QObjectPtr innerBean MEMBER m_innerBean)
     Q_PROPERTY(QList<QString> str MEMBER m_str)
     Q_PROPERTY(QVector<InterfacePtr> interfaces MEMBER m_interfaces)
     using QStringMap = QMap<QString, QString>;
     Q_PROPERTY(QStringMap strMap MEMBER m_strMap)
     using IHash = QHash<QString, InterfacePtr>;
     Q_PROPERTY(IHash iMap MEMBER m_iMap)
+    Q_PROPERTY(EEE eee MEMBER m_eee)
+    Q_PROPERTY(Qt::AlignmentFlag align MEMBER m_align)
 public:
+    enum EEE {
+        A = 1,
+        B
+    };
+    Q_ENUM(EEE)
     Q_INVOKABLE explicit IocTest(QObject *parent = nullptr);
     
 signals:
@@ -37,10 +45,13 @@ public slots:
     
 public:
     InterfacePtr m_interface;
+    QObjectPtr m_innerBean;
     QList<QString> m_str;
     QVector<InterfacePtr> m_interfaces;
     QMap<QString, QString> m_strMap;
     QHash<QString, InterfacePtr> m_iMap;
+    EEE m_eee;
+    Qt::AlignmentFlag m_align;
 };
 
 MC_DECL_METATYPE(IocTest)

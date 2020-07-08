@@ -5,7 +5,8 @@
 MC_FORWARD_DECL_PRIVATE_DATA(McAnnotationApplicationContext);
 
 class MCIOCCONTAINER_EXPORT McAnnotationApplicationContext 
-        : public McReadableApplicationContext {
+        : public McReadableApplicationContext 
+{
     
     Q_OBJECT
 public:

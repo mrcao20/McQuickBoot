@@ -6,10 +6,12 @@
 #include <QEvent>
 #include <QDebug>
 
-class QmlSocketEvent : public QEvent {
+class QmlSocketEvent : public QEvent 
+{
     Q_GADGET
 public:
-    enum QmlSocketEventType {
+    enum QmlSocketEventType
+    {
         OpenEvent = QEvent::Type::User + 1,
         CloseEvent,
         ErrorEvent,
@@ -23,14 +25,16 @@ public:
     {}
     ~QmlSocketEvent() override;
     
-    QVariant data() const {return m_data;}
+    QVariant data() const 
+    { return m_data; }
     
 private:
     MC_PADDING_CLANG(4)
     QVariant m_data;
 };
 
-QmlSocketEvent::~QmlSocketEvent(){
+QmlSocketEvent::~QmlSocketEvent()
+{
 }
 
 MC_DECL_PRIVATE_DATA(McQmlSocket)
@@ -55,31 +59,37 @@ McQmlSocket::McQmlSocket(QObject *parent)
     MC_NEW_PRIVATE_DATA(McQmlSocket)
 }
 
-McQmlSocket::~McQmlSocket() {
+McQmlSocket::~McQmlSocket() 
+{
     close();
 }
 
-void McQmlSocket::onOpen(const QJSValue &callback, bool isSync) noexcept {
+void McQmlSocket::onOpen(const QJSValue &callback, bool isSync) noexcept 
+{
     d->onOpen = callback;
     d->isOpenSync = isSync;
 }
 
-void McQmlSocket::onClose(const QJSValue &callback, bool isSync) noexcept {
+void McQmlSocket::onClose(const QJSValue &callback, bool isSync) noexcept 
+{
     d->onClose = callback;
     d->isCloseSync = isSync;
 }
 
-void McQmlSocket::onError(const QJSValue &callback, bool isSync) noexcept {
+void McQmlSocket::onError(const QJSValue &callback, bool isSync) noexcept 
+{
     d->onError = callback;
     d->isErrorSync = isSync;
 }
 
-void McQmlSocket::onMessage(const QJSValue &callback, bool isSync) noexcept {
+void McQmlSocket::onMessage(const QJSValue &callback, bool isSync) noexcept 
+{
     d->onMessage = callback;
     d->isMessageSync = isSync;
 }
 
-void McQmlSocket::opened() noexcept {
+void McQmlSocket::opened() noexcept 
+{
     if(d->isOpenSync) {
         qApp->postEvent(this, new QmlSocketEvent(QmlSocketEvent::OpenEvent, ""));
     }else{
@@ -87,7 +97,8 @@ void McQmlSocket::opened() noexcept {
     }
 }
 
-void McQmlSocket::closed() noexcept {
+void McQmlSocket::closed() noexcept 
+{
     if(d->isCloseSync) {
         qApp->postEvent(this, new QmlSocketEvent(QmlSocketEvent::CloseEvent, ""));
     }else{
@@ -95,7 +106,8 @@ void McQmlSocket::closed() noexcept {
     }
 }
 
-void McQmlSocket::errored(const QString &errMsg) noexcept {
+void McQmlSocket::errored(const QString &errMsg) noexcept 
+{
     if(d->isErrorSync) {
         qApp->postEvent(this, new QmlSocketEvent(QmlSocketEvent::ErrorEvent, errMsg));
     }else{
@@ -103,7 +115,8 @@ void McQmlSocket::errored(const QString &errMsg) noexcept {
     }
 }
 
-void McQmlSocket::receivedMsg(const QVariant &msg) noexcept {
+void McQmlSocket::receivedMsg(const QVariant &msg) noexcept 
+{
     if(d->isMessageSync) {
         qApp->postEvent(this, new QmlSocketEvent(QmlSocketEvent::MessageEvent, msg));
     }else{
@@ -112,7 +125,8 @@ void McQmlSocket::receivedMsg(const QVariant &msg) noexcept {
     
 }
 
-void McQmlSocket::customEvent(QEvent *event) {
+void McQmlSocket::customEvent(QEvent *event) 
+{
     int type = event->type();
     switch (type) {
     case QmlSocketEvent::OpenEvent:
@@ -136,28 +150,32 @@ void McQmlSocket::customEvent(QEvent *event) {
     }
 }
 
-void McQmlSocket::open_helper() noexcept {
+void McQmlSocket::open_helper() noexcept 
+{
     if(!d->onOpen.isCallable()) {
         return;
     }
     d->onOpen.call();
 }
 
-void McQmlSocket::close_helper() noexcept {
+void McQmlSocket::close_helper() noexcept 
+{
     if(!d->onClose.isCallable()) {
         return;
     }
     d->onClose.call();
 }
 
-void McQmlSocket::error_helper(const QString &errMsg) noexcept {
+void McQmlSocket::error_helper(const QString &errMsg) noexcept 
+{
     if(!d->onError.isCallable()) {
         return;
     }
     d->onError.call(QJSValueList() << QJSValue(errMsg));
 }
 
-void McQmlSocket::message_helper(const QVariant &msg) noexcept {
+void McQmlSocket::message_helper(const QVariant &msg) noexcept 
+{
     if(!d->onMessage.isCallable()) {
         return;
     }

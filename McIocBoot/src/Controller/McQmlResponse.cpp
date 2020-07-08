@@ -28,10 +28,12 @@ McQmlResponse::McQmlResponse(QJSEngine *jsEngine, QObject *parent)
     d->jsEngine = jsEngine;
 }
 
-McQmlResponse::~McQmlResponse() {
+McQmlResponse::~McQmlResponse() 
+{
 }
 
-void McQmlResponse::setBody(const QVariant &var) noexcept {
+void McQmlResponse::setBody(const QVariant &var) noexcept 
+{
     d->body = var;
     
     if(d->isSyncCall) {
@@ -43,25 +45,29 @@ void McQmlResponse::setBody(const QVariant &var) noexcept {
     callCallback();
 }
 
-McQmlResponse *McQmlResponse::then(const QJSValue &callback) noexcept {
+McQmlResponse *McQmlResponse::then(const QJSValue &callback) noexcept 
+{
     d->callback = callback;
     d->isSyncCall = false;
     return this;
 }
 
-McQmlResponse *McQmlResponse::syncThen(const QJSValue &callback) noexcept {
+McQmlResponse *McQmlResponse::syncThen(const QJSValue &callback) noexcept 
+{
     d->callback = callback;
     d->isSyncCall = true;
     return this;
 }
 
-void McQmlResponse::customEvent(QEvent *event) {
+void McQmlResponse::customEvent(QEvent *event) 
+{
     if(event->type() == QEvent::Type::User + 1) {
         callCallback();
     }
 }
 
-void McQmlResponse::callCallback() noexcept {
+void McQmlResponse::callCallback() noexcept 
+{
     McScopedFunction func([this](){
         this->deleteLater();
     });

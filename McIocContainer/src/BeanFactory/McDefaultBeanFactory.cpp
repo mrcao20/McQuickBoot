@@ -1,4 +1,4 @@
-#include "McIoc/BeanFactory/impl/McDefaultBeanFactory.h"
+﻿#include "McIoc/BeanFactory/impl/McDefaultBeanFactory.h"
 
 #include <QPluginLoader>
 #include <QMetaObject>
@@ -25,13 +25,14 @@ McDefaultBeanFactory::McDefaultBeanFactory(
     d->converter = converter;
 }
 
-McDefaultBeanFactory::~McDefaultBeanFactory() {
+McDefaultBeanFactory::~McDefaultBeanFactory() 
+{
 }
 
 QVariant McDefaultBeanFactory::doCreate(
         IMcBeanDefinitionConstPtrRef beanDefinition
-        , QThread *thread) noexcept {
-    
+        , QThread *thread) noexcept 
+{
     QVariant var;
     QObjectPtr bean;
     auto pluginPath = beanDefinition->getPluginPath();
@@ -83,7 +84,8 @@ QVariant McDefaultBeanFactory::doCreate(
     return var;
 }
 
-void McDefaultBeanFactory::callTagFunction(QObjectConstPtrRef bean, const char *tag) noexcept {
+void McDefaultBeanFactory::callTagFunction(QObjectConstPtrRef bean, const char *tag) noexcept 
+{
     auto mo = bean->metaObject();
     for(int i = 0; i < mo->methodCount(); ++i) {
         auto method = mo->method(i);
@@ -95,14 +97,15 @@ void McDefaultBeanFactory::callTagFunction(QObjectConstPtrRef bean, const char *
     }
 }
 
-void McDefaultBeanFactory::callStartFunction(QObjectConstPtrRef bean) noexcept {
+void McDefaultBeanFactory::callStartFunction(QObjectConstPtrRef bean) noexcept 
+{
     callTagFunction(bean, MC_MACRO_STR(MC_BEAN_START));
 }
 
 bool McDefaultBeanFactory::addPropertyValue(QObjectConstPtrRef bean
                       , IMcBeanDefinitionConstPtrRef beanDefinition
-                      , QVariantMap &proValues) noexcept {
-    
+                      , QVariantMap &proValues) noexcept 
+{
     //! 循环给定 bean 的属性集合
 	auto props = beanDefinition->getProperties();
 	for (auto itr = props.cbegin(); itr != props.cend(); ++itr) {
@@ -122,7 +125,11 @@ bool McDefaultBeanFactory::addPropertyValue(QObjectConstPtrRef bean
             
         }else{
             auto metaProperty = bean->metaObject()->property(index);
-            metaProperty.write(bean.data(), value);
+            if(!metaProperty.write(bean.data(), value)) {
+                qCritical("bean '%s' write property named for '%s' failure"
+                          , bean->metaObject()->className()
+                          , itr.key().toLocal8Bit().data());
+            }
         }
 	}
 	return true;
@@ -130,14 +137,13 @@ bool McDefaultBeanFactory::addPropertyValue(QObjectConstPtrRef bean
 
 bool McDefaultBeanFactory::addObjectConnect(QObjectConstPtrRef bean
                       , IMcBeanDefinitionConstPtrRef beanDefinition
-                      , const QVariantMap &proValues) noexcept {
-    
+                      , const QVariantMap &proValues) noexcept 
+{
     auto connectors = beanDefinition->getConnectors();
     for(auto connector : connectors) {
         McBeanConnectorPtr con = connector.value<McBeanConnectorPtr>();
         if(!con) {
-            qCritical() << QString("bean '%1' 存在一个connector，但不能转换为McBeanConnectorPtr")
-                           .arg(bean->metaObject()->className());
+            qCritical("has a connector, but cannot convert to McBeanConnectorPtr for bean '%s'", bean->metaObject()->className());
             return false;
         }
         QObjectPtr sender = nullptr;
@@ -155,12 +161,12 @@ bool McDefaultBeanFactory::addObjectConnect(QObjectConstPtrRef bean
         
         QString signalStr = con->getSignal();
         if(signalStr.isEmpty()) {
-            qCritical() << "信号名不能为空";
+            qCritical() << "signal is not exists";
             return false;
         }
         int signalIndex = signalMetaObj->indexOfSignal(signalStr.toLocal8Bit());
         if(signalIndex == -1) {
-            qCritical() << QString("bean '%1' 不存在名为 '%2' 的信号").arg(signalMetaObj->className(), signalStr);
+            qCritical("not exists signal named '%s' for bean '%s'", signalMetaObj->className(), qPrintable(signalStr));
             return false;
         }
         signal = signalMetaObj->method(signalIndex);
@@ -174,12 +180,12 @@ bool McDefaultBeanFactory::addObjectConnect(QObjectConstPtrRef bean
         
         QString slotStr = con->getSlot();
         if(slotStr.isEmpty()) {
-            qCritical() << "槽名不能为空";
+            qCritical() << "slot is not exists";
             return false;
         }
         int slotIndex = slotMetaObj->indexOfMethod(slotStr.toLocal8Bit());
         if(slotIndex == -1) {
-            qCritical() << QString("bean '%1' 不存在名为 '%2' 的槽").arg(slotMetaObj->className(), slotStr);
+            qCritical("not exists slot named '%s' for bean '%s'", slotMetaObj->className(), qPrintable(slotStr));
             return false;
         }
         slot = slotMetaObj->method(slotIndex);
@@ -193,15 +199,15 @@ bool McDefaultBeanFactory::addObjectConnect(QObjectConstPtrRef bean
 
 QObjectPtr McDefaultBeanFactory::getPropertyObject(QObjectConstPtrRef bean
                            , const QString &proName
-                           , const QVariantMap &proValues) noexcept {
-    
+                           , const QVariantMap &proValues) noexcept 
+{
     QObjectPtr obj = nullptr;
     if(proName == MC_THIS) {
         obj = bean;
     }else{
         if(!proValues.contains(proName)) {
-            qCritical() << QString("bean '%1' 没有找到属性名为 '%2' 的属性")
-                           .arg(bean->metaObject()->className(), proName);
+            qCritical("not found property named '%s' for bean '%s'"
+                      , bean->metaObject()->className(), qPrintable(proName));
             return nullptr;
         }
         auto varPro = proValues[proName];
@@ -210,10 +216,12 @@ QObjectPtr McDefaultBeanFactory::getPropertyObject(QObjectConstPtrRef bean
     return obj;
 }
 
-void McDefaultBeanFactory::callFinishedFunction(QObjectConstPtrRef bean) noexcept {
+void McDefaultBeanFactory::callFinishedFunction(QObjectConstPtrRef bean) noexcept 
+{
     callTagFunction(bean, MC_MACRO_STR(MC_BEAN_FINISHED));
 }
 
-void McDefaultBeanFactory::callThreadFinishedFunction(QObjectConstPtrRef bean) noexcept {
+void McDefaultBeanFactory::callThreadFinishedFunction(QObjectConstPtrRef bean) noexcept 
+{
     callTagFunction(bean, MC_MACRO_STR(MC_THREAD_FINISHED));
 }

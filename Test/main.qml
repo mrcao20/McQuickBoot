@@ -14,7 +14,9 @@ Window {
             return;
         console.log("con", index++);
         console.log(result, result.errMsg);
-        $.get("con.invoke2").syncThen(aaa);
+        $.get("con.invoke2").syncThen(function(){
+            console.log("aaaaaaaaaa>>>>>>>>>");
+        });
 //        $.post("con.invoke3", data);
         console.log(Qt.formatDateTime(new Date(), "dddd-yyyy-MM-dd-MMM-hh-mm-ss"));
     }
@@ -36,24 +38,49 @@ Window {
 //        };
 //        ws = $.qs("socket", data);
         
-//        $.get("con1.invoke1").then(function(result) {
+//        $.get("con1.invoke1").syncThen(function(result) {
 //            console.log("con1");
-//            console.log(result, result.errMsg);
+//            console.log(">>>>>>>>>1.", result, result.errMsg);
 //        });
 //        aaa({errMsg: "aaa"});
 //        $.get("con.invoke2").syncThen(function(result){
 //            console.log("con");
-//            console.log(result, result.errMsg);
+//            console.log(">>>>>>>>>.", result, result.errMsg);
 //        });
-        var data = {
-            o: {
-                text: "aaa",
-                t: {
-                    aaa: "bbb"
-                }
-            }
-        };
+//        var data1 = {
+//            o: {
+//                text: "aaa",
+//                t: [{
+//                        aaa: "bbbb"
+//                    },
+//                    {
+//                        aaa: "ccccc"
+//                    }
+//                ],
+//                tt: {
+//                    999: [
+//                        {
+//                            aaa: "qqqq"
+//                        }
+//                    ]
+//                }
+//            }
+//        };
 
-        $.post("con.invoke3", data);
+//        console.log($.__proto__.post);
+//        console.log($);
+//        $.post("con.invoke3", data1);
+        
+//        $.get("app.dirPath").syncThen(function(result){
+//            console.log("dir path:", result)
+//        });
+//        console.log("file path:", $.syncInvoke("app.filePath"));
+        
+//        $.get("con.invoke4").syncThen(function(result) {
+//            console.log("invoke4>>>>>>>>>", JSON.stringify(result));
+//            $.post("con.invoke3", {
+//                       o: result
+//                   });
+//        });
     }
 }

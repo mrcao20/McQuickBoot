@@ -11,7 +11,8 @@
 
 //! 需要自动注入的类，则需要调用此函数，否则直接调用mcRegisterBeanFactory
 template<typename T>
-void mcRegisterComponent(const char *typeName, const char *constRefTypeName) {
+void mcRegisterComponent(const char *typeName, const char *constRefTypeName) 
+{
     Q_ASSERT(typeName != nullptr && constRefTypeName != nullptr);
 	mcRegisterBeanFactory<T>(typeName, constRefTypeName);
     McAnnotationApplicationContext::insertRegistry(typeName);
@@ -19,7 +20,8 @@ void mcRegisterComponent(const char *typeName, const char *constRefTypeName) {
 
 //! 需要自动注入的类，则需要调用此函数，否则直接调用mcRegisterBeanFactory
 template<typename From, typename To>
-void mcRegisterComponent(const char *typeName, const char *constRefTypeName) {
+void mcRegisterComponent(const char *typeName, const char *constRefTypeName) 
+{
     Q_ASSERT(typeName != nullptr && constRefTypeName != nullptr);
 	mcRegisterBeanFactory<From, To>(typeName, constRefTypeName);
     McAnnotationApplicationContext::insertRegistry(typeName);

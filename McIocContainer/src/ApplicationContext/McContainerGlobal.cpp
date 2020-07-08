@@ -5,7 +5,7 @@ void mcConnect(const QString &beanName
             , const QString &signal
             , const QString &receiver
             , const QString &slot
-            , Qt::ConnectionType type) noexcept {
-    
+            , Qt::ConnectionType type) noexcept 
+{
     McAnnotationApplicationContext::addConnect(beanName, sender, signal, receiver, slot, type);
 }

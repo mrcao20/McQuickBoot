@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
+	<!-- <bean name="test2" class="IocTest"> -->
+		<!-- <property name="innerBean"> -->
+			未指定name，容器提供默认的唯一name。未指定isSingleton，继承上一级bean的isSingleton
+			注意：bean标签只能放在property标签中，不能是property的任何子标签
+			<!-- <bean class="Object"> -->
+				<!-- <property name="text" value="Inner Bean2"></property> -->
+			<!-- </bean> -->
+		<!-- </property> -->
+	<!-- </bean> -->
     <bean name="test" class="IocTest">
         <connect sender=" interface">
             <signal>signal()</signal>
@@ -16,6 +25,23 @@
         <property name="interface" ref="object"></property>
         <property name="inter" ref="object"></property>
         <property name="interStr" value="object"></property>
+		<property name="innerBean">
+			<!-- 未指定name，容器提供默认的唯一name。未指定isSingleton，继承上一级bean的isSingleton -->
+			<!-- 注意：bean标签只能放在property标签中，不能是property的任何子标签 -->
+			<bean class="Object">
+				<property name="text" value="Inner Bean"></property>
+			</bean>
+		</property>
+		<property name="eee">
+			<!-- enum标签可以放在property、list和map标签中 -->
+			<enum scope="IocTest" type="EEE" value="A | B"></enum>
+		</property>
+		<property name="align">
+			<enum scope="Qt">
+				<type name="AlignmentFlag"></type>
+				<value>AlignLeft | AlignRight</value>
+			</enum>
+		</property>
         <list name="str">
             <value>停封</value>
             <value>薄纸</value>

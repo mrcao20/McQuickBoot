@@ -18,7 +18,8 @@ MC_FORWARD_DECL_CLASS(IMcQmlSocketContainer);
 class McQmlResponse;
 class McQmlSocket;
 
-class MCIOCBOOT_EXPORT McQmlRequestor : public QObject {
+class MCIOCBOOT_EXPORT McQmlRequestor : public QObject 
+{
     Q_OBJECT
 public:
     explicit McQmlRequestor(QJSEngine *jsEngine, QObject *parent = nullptr);
@@ -31,6 +32,8 @@ public:
     
     Q_INVOKABLE McQmlResponse *invoke(const QString &uri) noexcept;
 	Q_INVOKABLE McQmlResponse *invoke(const QString &uri, const QJsonObject &data) noexcept;
+    Q_INVOKABLE QVariant syncInvoke(const QString &uri) noexcept;
+    Q_INVOKABLE QVariant syncInvoke(const QString &uri, const QJsonObject &data) noexcept;
     Q_INVOKABLE McQmlSocket *addConnect(const QString &uri) noexcept;
     Q_INVOKABLE McQmlSocket *addConnect(const QString &uri, const QJSValue &data) noexcept;
     

@@ -14,7 +14,8 @@ MC_FORWARD_DECL_CLASS(IMcPropertyParser)
 
 MC_FORWARD_DECL_PRIVATE_DATA(McXmlBeanDefinitionReader)
 
-class MCIOCCONTAINER_EXPORT McXmlBeanDefinitionReader : public McAbstractBeanDefinitionReader {
+class MCIOCCONTAINER_EXPORT McXmlBeanDefinitionReader : public McAbstractBeanDefinitionReader 
+{
     Q_OBJECT
     using McAbstractBeanDefinitionReader::readBeanDefinition;
 public:
@@ -33,6 +34,7 @@ private:
     void readBeanDefinition(QIODeviceConstPtrRef source) noexcept;
     void readBeanDefinition(const QDomDocument &doc) noexcept;
     void readBeanDefinition(const QDomNodeList &nodes) noexcept;
+    bool parseBeanClass(const QDomElement &ele, IMcBeanDefinitionConstPtrRef beanDefinition) noexcept;
     void readBeanDefinition(const QDomNodeList &propNodes
                             , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept;
     void readBeanDefinitionForProperty(const QDomElement &propEle

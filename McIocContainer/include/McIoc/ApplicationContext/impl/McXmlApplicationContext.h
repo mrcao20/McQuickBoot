@@ -9,7 +9,8 @@ QT_END_NAMESPACE
 MC_FORWARD_DECL_CLASS(IMcBeanDefinitionReader);
 
 class MCIOCCONTAINER_EXPORT McXmlApplicationContext 
-        : public McReadableApplicationContext {
+        : public McReadableApplicationContext 
+{
     
     Q_OBJECT
 public:

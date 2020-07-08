@@ -40,14 +40,17 @@ McXmlApplicationContext::McXmlApplicationContext(
 {
 }
 
-McXmlApplicationContext::~McXmlApplicationContext(){
+McXmlApplicationContext::~McXmlApplicationContext()
+{
 }
 
-void McXmlApplicationContext::setDevice(QIODeviceConstPtrRef device) noexcept {
+void McXmlApplicationContext::setDevice(QIODeviceConstPtrRef device) noexcept 
+{
     setDevices(QList<QIODevicePtr>() << device);
 }
 
-void McXmlApplicationContext::setDevices(const QList<QIODevicePtr> &devices) noexcept {
+void McXmlApplicationContext::setDevices(const QList<QIODevicePtr> &devices) noexcept 
+{
     setReader(McXmlBeanDefinitionReaderPtr::create(
                   McDefaultPropertyParserPtr::create(), devices));
 }

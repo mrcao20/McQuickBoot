@@ -6,7 +6,8 @@ MC_FORWARD_DECL_PRIVATE_DATA(McDefaultBeanFactory);
 
 MC_FORWARD_DECL_CLASS(IMcPropertyConverter);
 
-class MCIOCCONTAINER_EXPORT McDefaultBeanFactory : public McAbstractBeanFactory {
+class MCIOCCONTAINER_EXPORT McDefaultBeanFactory : public McAbstractBeanFactory 
+{
     Q_OBJECT
 public:
     explicit McDefaultBeanFactory(

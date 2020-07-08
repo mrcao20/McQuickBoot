@@ -4,8 +4,8 @@
 
 class McAbstractPropertyParser
         : public QObject
-        , public IMcPropertyParser {
-    
+        , public IMcPropertyParser 
+{
     Q_OBJECT
 public:
     explicit McAbstractPropertyParser(QObject *parent = nullptr);
@@ -17,6 +17,7 @@ protected:
     virtual QVariant parseRef(const QDomElement &ele) const noexcept = 0;
     virtual QVariant parseList(const QDomElement &ele) const noexcept = 0;
     virtual QVariant parseMap(const QDomElement &ele) const noexcept = 0;
+    virtual QVariant parseEnum(const QDomElement &ele) const noexcept = 0;
 };
 
 MC_DECL_POINTER(McAbstractPropertyParser)

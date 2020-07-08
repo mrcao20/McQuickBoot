@@ -6,7 +6,8 @@ MC_FORWARD_DECL_PRIVATE_DATA(McAbstractApplicationContext);
 
 class MCIOCCONTAINER_EXPORT McAbstractApplicationContext
         : public QObject
-        , public IMcApplicationContext {
+        , public IMcApplicationContext 
+{
                      
     Q_OBJECT
 public:

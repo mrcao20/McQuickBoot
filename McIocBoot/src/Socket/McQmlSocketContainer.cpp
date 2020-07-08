@@ -24,10 +24,12 @@ McQmlSocketContainer::McQmlSocketContainer(QObject *parent)
     MC_NEW_PRIVATE_DATA(McQmlSocketContainer)
 }
 
-McQmlSocketContainer::~McQmlSocketContainer() {
+McQmlSocketContainer::~McQmlSocketContainer() 
+{
 }
 
-void McQmlSocketContainer::init(McIocBootConstPtrRef boot) noexcept {
+void McQmlSocketContainer::init(McIocBootConstPtrRef boot) noexcept 
+{
     auto appCtx = boot->getApplicationContext();
 	auto beanNames = boot->getComponents(MC_QML_SOCKET);
     for (const auto &beanName : beanNames) {
@@ -40,7 +42,8 @@ void McQmlSocketContainer::init(McIocBootConstPtrRef boot) noexcept {
     }
 }
 
-McQmlSocket *McQmlSocketContainer::addConnect(const QString &uri) noexcept {
+McQmlSocket *McQmlSocketContainer::addConnect(const QString &uri) noexcept 
+{
     auto qs = new McQmlSocket();
     
     addConnect(qs, uri);
@@ -48,7 +51,8 @@ McQmlSocket *McQmlSocketContainer::addConnect(const QString &uri) noexcept {
     return qs;
 }
 
-McQmlSocket *McQmlSocketContainer::addConnect(const QString &uri, const QJSValue &data) noexcept {
+McQmlSocket *McQmlSocketContainer::addConnect(const QString &uri, const QJSValue &data) noexcept 
+{
     auto qs = new McQmlSocket();
     bool isSync = data.hasProperty("isOpenSync") ? data.property("isOpenSync").toBool() : false;
     if(data.hasProperty("onOpen"))
@@ -68,7 +72,8 @@ McQmlSocket *McQmlSocketContainer::addConnect(const QString &uri, const QJSValue
     return qs;
 }
 
-void McQmlSocketContainer::addConnect(McQmlSocket *socket, const QString &uri) noexcept {
+void McQmlSocketContainer::addConnect(McQmlSocket *socket, const QString &uri) noexcept 
+{
     McSessionPtr session = McSessionPtr::create();
     McQmlSocketRunner *runner = new McQmlSocketRunner();
     
@@ -90,7 +95,8 @@ void McQmlSocketContainer::addConnect(McQmlSocket *socket, const QString &uri) n
     }
 }
 
-McInnerSocketPtr McQmlSocketContainer::getMethods(QObjectConstPtrRef bean) noexcept {
+McInnerSocketPtr McQmlSocketContainer::getMethods(QObjectConstPtrRef bean) noexcept 
+{
     if(!bean) {
         return McInnerSocketPtr();
     }

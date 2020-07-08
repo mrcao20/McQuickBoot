@@ -5,7 +5,8 @@
 
 class IMcApplicationContext
         : public IMcConfigurableBeanFactory
-        , public IMcRefreshableApplicationContext {
+        , public IMcRefreshableApplicationContext 
+{
     
 public:
     ~IMcApplicationContext() override = default;

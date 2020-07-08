@@ -43,16 +43,17 @@ McReadableApplicationContext::McReadableApplicationContext(
 {
 }
 
-McReadableApplicationContext::~McReadableApplicationContext() {
-}
+McReadableApplicationContext::~McReadableApplicationContext() 
+{}
 
-void McReadableApplicationContext::readBeans() noexcept {
+void McReadableApplicationContext::readBeans() noexcept 
+{
     d->beanDefinitionReader->readBeanDefinition(this);
 }
 
 void McReadableApplicationContext::setReader(
-        IMcBeanDefinitionReaderConstPtrRef reader) noexcept {
-    
+        IMcBeanDefinitionReaderConstPtrRef reader) noexcept 
+{
     d->beanDefinitionReader = reader;
     
     /* 默认不调用此函数，即context默认仍然为懒加载，在IOCBoot中默认调用此函数来达到其
@@ -62,6 +63,7 @@ void McReadableApplicationContext::setReader(
     readBeans();
 }
 
-void McReadableApplicationContext::doRefresh() noexcept {
+void McReadableApplicationContext::doRefresh() noexcept 
+{
     readBeans();
 }

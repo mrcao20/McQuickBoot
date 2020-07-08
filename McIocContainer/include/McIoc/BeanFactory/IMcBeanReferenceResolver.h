@@ -4,7 +4,8 @@
 
 MC_FORWARD_DECL_CLASS(McBeanReference)
 
-class IMcBeanReferenceResolver {
+class IMcBeanReferenceResolver 
+{
 public:
     virtual ~IMcBeanReferenceResolver() = default;
     

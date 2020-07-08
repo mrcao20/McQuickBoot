@@ -34,8 +34,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 DEFINES += QT_MESSAGELOGCONTEXT
 
-include(McIocContainer.pri)
-
 DESTDIR = $$PWD/../bin
 MOC_DIR = $$PWD/../moc/Test
 
@@ -62,3 +60,8 @@ else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocBootd
 
 INCLUDEPATH += $$PWD/../McIocBoot/include
 DEPENDPATH += $$PWD/../McIocBoot/include
+
+msvc {
+    QMAKE_CFLAGS += /utf-8
+    QMAKE_CXXFLAGS += /utf-8
+}

@@ -3,8 +3,8 @@
 #include "McAbstractPropertyParser.h"
 
 class MCIOCCONTAINER_EXPORT McDefaultPropertyParser 
-        : public McAbstractPropertyParser {
-    
+        : public McAbstractPropertyParser 
+{
     Q_OBJECT
 public:
     explicit McDefaultPropertyParser(QObject *parent = nullptr);
@@ -14,6 +14,7 @@ protected:
     QVariant parseRef(const QDomElement &ele) const noexcept override;
     QVariant parseList(const QDomElement &ele) const noexcept override;
     QVariant parseMap(const QDomElement &ele) const noexcept override;
+    QVariant parseEnum(const QDomElement &ele) const noexcept override;
     
 private:
     QVariantList getList(const QString &dirPath) const noexcept;

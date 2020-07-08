@@ -3,7 +3,8 @@
 #include "McXmlApplicationContext.h"
 
 class MCIOCCONTAINER_EXPORT McLocalPathApplicationContext 
-        : public McXmlApplicationContext {
+        : public McXmlApplicationContext 
+{
     
     Q_OBJECT
 public:

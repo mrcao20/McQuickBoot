@@ -4,7 +4,7 @@
 #include <QJsonObject>
 
 MC_INIT(QmlSocketTest)
-MC_REGISTER_COMPONENT(QmlSocketTest)
+MC_REGISTER_BEAN_FACTORY(QmlSocketTest)
 MC_INIT_END
 
 QmlSocketTest::QmlSocketTest(QObject *parent)

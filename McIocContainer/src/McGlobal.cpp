@@ -4,7 +4,8 @@
 #include <QTimer>
 #include <QElapsedTimer>
 
-bool mcWaitForExecFunc(const std::function<bool()> &func, qint64 timeout) noexcept {
+bool mcWaitForExecFunc(const std::function<bool()> &func, qint64 timeout) noexcept 
+{
     QEventLoop loop;
     QTimer timer;
     timer.setInterval(100);

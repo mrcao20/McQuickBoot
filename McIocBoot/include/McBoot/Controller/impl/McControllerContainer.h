@@ -9,13 +9,15 @@ class QMetaMethod;
 QT_END_NAMESPACE
 
 MC_FORWARD_DECL_CLASS(McIocBoot)
+MC_FORWARD_DECL_STRUCT(McSequentialMetaId)
+MC_FORWARD_DECL_STRUCT(McAssociativeMetaId)
 
 MC_FORWARD_DECL_PRIVATE_DATA(McControllerContainer);
 
 class MCIOCBOOT_EXPORT McControllerContainer 
         : public QObject
-        , public IMcControllerContainer {
-    
+        , public IMcControllerContainer 
+{
 	Q_OBJECT
 public:
 	explicit McControllerContainer(QObject *parent = nullptr);
@@ -24,11 +26,10 @@ public:
     void init(McIocBootConstPtrRef boot) noexcept;
     
     QVariant invoke(const QString &uri, const QVariant &body) noexcept override;
+    QVariant invoke(const QString &uri) noexcept override;
+	QVariant invoke(const QString &uri, const QJsonObject &data) noexcept override;
 
 private:
-    QVariant invoke(const QString &uri) noexcept;
-	QVariant invoke(const QString &uri, const QJsonObject &data) noexcept;
-    
     bool splitBeanAndFunc(const QString &uri
                           , QObjectPtr &bean
                           , QString &func
@@ -54,7 +55,13 @@ private:
                             , int maxParamSize
                             , QVariant *errMsg = nullptr
                             , bool *ok = nullptr) noexcept;
+    QVariant makeValue(const QByteArray &typeName, const QVariant &arg) noexcept;
     
+    QVariant makePlanValue(const QByteArray &typeName, const QVariant &arg) noexcept;
+    QVariant makeListValue(const QVariant &arg
+                           , McSequentialMetaIdConstPtrRef seqMetaId) noexcept;
+    QVariant makeMapValue(const QVariant &arg
+                          , McAssociativeMetaIdConstPtrRef assMetaId) noexcept;
     QVariant makeObjectValue(const QByteArray &typeName, const QVariant &arg) noexcept;
     bool isSharedPointerObject(const QByteArray &typeName, QByteArray &objTypeName) noexcept;
     

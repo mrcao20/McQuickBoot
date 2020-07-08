@@ -6,8 +6,8 @@ MC_FORWARD_DECL_PRIVATE_DATA(McAbstarctPropertyConverter);
 
 class McAbstarctPropertyConverter
         : public QObject
-        , public IMcPropertyConverter {
-    
+        , public IMcPropertyConverter 
+{
     Q_OBJECT
 public:
     explicit McAbstarctPropertyConverter(QObject *parent = nullptr);
@@ -20,6 +20,7 @@ protected:
     IMcBeanReferenceResolver *resolver() const noexcept;
     
     virtual QVariant convertRef(const QVariant &value) const noexcept = 0;
+    virtual QVariant convertEnum(const QVariant &value) const noexcept = 0;
     virtual QVariant convertList(const QVariant &value) const noexcept = 0;
     virtual QVariant convertMap(const QVariant &value) const noexcept = 0;
     

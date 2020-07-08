@@ -38,17 +38,20 @@ McXmlBeanDefinitionReader::McXmlBeanDefinitionReader(
     d->devices = devices;
 }
 
-McXmlBeanDefinitionReader::~McXmlBeanDefinitionReader(){
+McXmlBeanDefinitionReader::~McXmlBeanDefinitionReader()
+{
 }
 
-void McXmlBeanDefinitionReader::doReadBeanDefinition() noexcept {
+void McXmlBeanDefinitionReader::doReadBeanDefinition() noexcept 
+{
     for(auto device : d->devices) {
         device->seek(0);
         readBeanDefinition(device);
     }
 }
 
-void McXmlBeanDefinitionReader::readBeanDefinition(QIODeviceConstPtrRef source) noexcept {
+void McXmlBeanDefinitionReader::readBeanDefinition(QIODeviceConstPtrRef source) noexcept 
+{
 	QDomDocument doc;
 	QString errorMsg;
 	int errorLine;
@@ -62,7 +65,8 @@ void McXmlBeanDefinitionReader::readBeanDefinition(QIODeviceConstPtrRef source) 
 	readBeanDefinition(doc);
 }
 
-void McXmlBeanDefinitionReader::readBeanDefinition(const QDomDocument &doc) noexcept {
+void McXmlBeanDefinitionReader::readBeanDefinition(const QDomDocument &doc) noexcept 
+{
 	QDomElement root = doc.documentElement();
 	if (root.isNull()) {
 		qCritical() << "XML Error: Root element is NULL.";
@@ -75,7 +79,8 @@ void McXmlBeanDefinitionReader::readBeanDefinition(const QDomDocument &doc) noex
 	readBeanDefinition(root.childNodes());
 }
 
-void McXmlBeanDefinitionReader::readBeanDefinition(const QDomNodeList &nodes) noexcept {
+void McXmlBeanDefinitionReader::readBeanDefinition(const QDomNodeList &nodes) noexcept 
+{
 	for (int i = 0; i < nodes.size(); ++i) {
 		QDomElement ele = nodes.at(i).toElement();
         if(ele.isNull()) {
@@ -92,37 +97,45 @@ void McXmlBeanDefinitionReader::readBeanDefinition(const QDomNodeList &nodes) no
                 || ele.attribute("isSingleton") == "true";
         //! 创建一个bean定义对象
         McRootBeanDefinitionPtr beanDefinition = McRootBeanDefinitionPtr::create();
-		if (ele.hasAttribute("class"))	//!< 如果指定的class，则通过class创建对象
-			//! 设置bean 定义对象的 全限定类名
-			beanDefinition->setClassName(ele.attribute("class"));
-        else if(ele.hasAttribute("plugin")){    //!< 如果指定的是plugin，则通过插件创建对象
-            QString pluginPath = ele.attribute("plugin");
-            pluginPath = QDir::toNativeSeparators(pluginPath);
-            if(pluginPath.startsWith(QString("%1%2").arg(".", QDir::separator()))) {
-                pluginPath = pluginPath.remove(0, 1);   //!< 移除最前面的.
-                pluginPath = qApp->applicationDirPath() + pluginPath;   //!< 补全为全路径
-            }
-            if(!QLibrary::isLibrary(pluginPath)){
-                qCritical() << pluginPath << "is not a plugin. please check!!!";
-                return;
-            }
-            beanDefinition->setPluginPath(pluginPath);
-            isSingleton = true;     //!< 插件必须是单例
-        }else{
-            qCritical() << "bean must be class or plugin, please check!!!";
+        beanDefinition->setSingleton(isSingleton);
+        if(!parseBeanClass(ele, beanDefinition)) {
             return;
         }
-        beanDefinition->setSingleton(isSingleton);
 		readBeanDefinition(ele.childNodes(), beanDefinition);
 		//! 向注册容器 添加bean名称和bean定义. 如果存在则替换
 		registry()->registerBeanDefinition(name, beanDefinition);
 	}
 }
 
+bool McXmlBeanDefinitionReader::parseBeanClass(const QDomElement &ele, IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
+{
+    if (ele.hasAttribute("class"))	//!< 如果指定的class，则通过class创建对象
+        //! 设置bean 定义对象的 全限定类名
+        beanDefinition->setClassName(ele.attribute("class"));
+    else if(ele.hasAttribute("plugin")){    //!< 如果指定的是plugin，则通过插件创建对象
+        QString pluginPath = ele.attribute("plugin");
+        pluginPath = QDir::toNativeSeparators(pluginPath);
+        if(pluginPath.startsWith(QString("%1%2").arg(".", QDir::separator()))) {
+            pluginPath = pluginPath.remove(0, 1);   //!< 移除最前面的.
+            pluginPath = qApp->applicationDirPath() + pluginPath;   //!< 补全为全路径
+        }
+        if(!QLibrary::isLibrary(pluginPath)){
+            qCritical() << pluginPath << "is not a plugin. please check!!!";
+            return false;
+        }
+        beanDefinition->setPluginPath(pluginPath);
+        beanDefinition->setSingleton(true);     //!< 插件必须是单例
+    }else{
+        qCritical() << "bean must be class or plugin, please check!!!";
+        return false;
+    }
+    return true;
+}
+
 void McXmlBeanDefinitionReader::readBeanDefinition(
         const QDomNodeList &propNodes
-        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept {
-    
+        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept 
+{
 	for (int i = 0; i < propNodes.size(); ++i) {
 		QDomElement propEle = propNodes.at(i).toElement();
 		if (propEle.isNull())
@@ -137,8 +150,8 @@ void McXmlBeanDefinitionReader::readBeanDefinition(
 
 void McXmlBeanDefinitionReader::readBeanDefinitionForProperty(
         const QDomElement &propEle
-        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept {
-    
+        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept 
+{
     //! 获取给定元素的 name 属性
     QString propName = propEle.attribute("name");
     if (propName.isEmpty()) {
@@ -146,7 +159,47 @@ void McXmlBeanDefinitionReader::readBeanDefinitionForProperty(
         return;
     }
     
-    QVariant value = d->parser->parse(propEle);
+    QVariant value;
+    QDomElement childEle;
+    if((childEle = propEle).tagName() == "bean"
+             || !(childEle = propEle.firstChildElement("bean")).isNull()) {
+        
+        McBeanReferencePtr ref = McBeanReferencePtr::create();
+        QString beanName = childEle.attribute("name");
+        if(beanName.isEmpty()) {
+            QString className = beanDefinition->getClassName();
+            if(className.isEmpty()) {
+                QFileInfo fileInfo(beanDefinition->getPluginPath());
+                className = fileInfo.baseName();
+            }
+            beanName = QString("__mc__%1_%2").arg(className, propName);
+            auto tmpBeanName = beanName;
+            int index = 1;
+            while(registry()->isContained(tmpBeanName)) {
+                tmpBeanName = beanName;
+                tmpBeanName.append('_');
+                tmpBeanName.append(QString::number(index++));
+            }
+            beanName = tmpBeanName;
+        }
+        bool isSingleton = beanDefinition->isSingleton();
+        if(childEle.hasAttribute("isSingleton")) {
+            isSingleton = childEle.attribute("isSingleton") == "true" ? true : false;
+        }
+        //! 创建子bean
+        McRootBeanDefinitionPtr childBeanDefinition = McRootBeanDefinitionPtr::create();
+        childBeanDefinition->setSingleton(isSingleton);
+        if(!parseBeanClass(childEle, childBeanDefinition)) {
+            return;
+        }
+		readBeanDefinition(childEle.childNodes(), childBeanDefinition);
+		//! 向注册容器 添加bean名称和bean定义. 如果存在则替换
+		registry()->registerBeanDefinition(beanName, childBeanDefinition);
+        ref->setName(beanName);
+        value.setValue(ref);
+    } else {
+        value = d->parser->parse(propEle);
+    }
     if(value.isValid())
         beanDefinition->addProperty(propName, value);
     else
@@ -155,8 +208,8 @@ void McXmlBeanDefinitionReader::readBeanDefinitionForProperty(
 
 void McXmlBeanDefinitionReader::readBeanDefinitionForConnect(
         const QDomElement &propEle
-        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept {
-    
+        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept 
+{
     McBeanConnectorPtr connector = McBeanConnectorPtr::create();
     connector->setSender(MC_THIS);       //!< 如果没有指定sender，则默认为对象本身
     connector->setReceiver(MC_THIS);     //!< 如果没有指定receiver，则默认为对象本身
@@ -238,10 +291,16 @@ void McXmlBeanDefinitionReader::readBeanDefinitionForConnect(
     beanDefinition->addConnector(var);
 }
 
-Qt::ConnectionType McXmlBeanDefinitionReader::getConnectionType(const QString &typeStr) noexcept {
+Qt::ConnectionType McXmlBeanDefinitionReader::getConnectionType(const QString &typeStr) noexcept 
+{
     Qt::ConnectionType type = Qt::ConnectionType::AutoConnection;
     
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+    QStringList typeList = typeStr.simplified().split('|', Qt::SkipEmptyParts);
+#else
     QStringList typeList = typeStr.simplified().split('|', QString::SkipEmptyParts);
+#endif
+    
     if(typeList.size() > 2) {
         qCritical() << "请按照QObject::connect的要求设置ConnectionType";
         return type;
@@ -270,7 +329,8 @@ Qt::ConnectionType McXmlBeanDefinitionReader::getConnectionType(const QString &t
     return type;
 }
 
-Qt::ConnectionType McXmlBeanDefinitionReader::connectionTypeStrToEnum(const QString &typeStr) noexcept {
+Qt::ConnectionType McXmlBeanDefinitionReader::connectionTypeStrToEnum(const QString &typeStr) noexcept 
+{
     auto type = typeStr.simplified();
     if(type == "AutoConnection") {
         return Qt::ConnectionType::AutoConnection;

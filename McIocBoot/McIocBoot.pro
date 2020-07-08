@@ -4,9 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += quick
-
-QT       -= gui
+QT += quick network
 
 CONFIG(debug, debug|release) {
     win32: TARGET = McIocBootd
@@ -34,6 +32,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    src/Application/McSingleApplication.cpp \
+    src/Controller/InnerController/McApplicationController.cpp \
     src/Controller/McControllerContainer.cpp \
     src/Controller/McQmlResponse.cpp \
     src/Controller/McRequestRunner.cpp \
@@ -45,10 +45,13 @@ SOURCES += \
     src/Socket/McQmlSocket.cpp \
     src/Socket/McQmlSocketContainer.cpp \
     src/Socket/McQmlSocketRunner.cpp \
-    src/Socket/McSession.cpp
+    src/Socket/McSession.cpp \
+    src/Utils/McJsonUtils.cpp
 
 HEADERS +=  \
+    include/McBoot/Application/McSingleApplication.h \
     include/McBoot/Controller/IMcControllerContainer.h \
+    include/McBoot/Controller/InnerController/McApplicationController.h \
     include/McBoot/Controller/impl/McControllerContainer.h \
     include/McBoot/Controller/impl/McQmlResponse.h \
     include/McBoot/Controller/impl/McRequestRunner.h \
@@ -65,7 +68,8 @@ HEADERS +=  \
     include/McBoot/Socket/impl/McQmlSocket.h \
     include/McBoot/Socket/impl/McQmlSocketContainer.h \
     include/McBoot/Socket/impl/McQmlSocketRunner.h \
-    include/McBoot/Socket/impl/McSession.h
+    include/McBoot/Socket/impl/McSession.h \
+    include/McBoot/Utils/McJsonUtils.h
 
 unix {
     target.path = /usr/lib
@@ -83,5 +87,7 @@ else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocContaine
 INCLUDEPATH += $$PWD/../McIocContainer/include
 DEPENDPATH += $$PWD/../McIocContainer/include
 
-RESOURCES += \
-    qrc/Resource.qrc
+msvc {
+    QMAKE_CFLAGS += /utf-8
+    QMAKE_CXXFLAGS += /utf-8
+}

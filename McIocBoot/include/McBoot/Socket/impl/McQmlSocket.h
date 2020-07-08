@@ -8,7 +8,8 @@ QT_END_NAMESPACE
 
 MC_FORWARD_DECL_PRIVATE_DATA(McQmlSocket);
 
-class MCIOCBOOT_EXPORT McQmlSocket : public QObject {
+class MCIOCBOOT_EXPORT McQmlSocket : public QObject 
+{
     Q_OBJECT
     MC_DECL_INIT(McQmlSocket)
 public:

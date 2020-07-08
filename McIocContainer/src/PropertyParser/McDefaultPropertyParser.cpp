@@ -7,13 +7,15 @@
 #include <QDebug>
 
 #include "McIoc/BeanFactory/impl/McBeanReference.h"
+#include "McIoc/BeanFactory/impl/McBeanEnum.h"
 
 McDefaultPropertyParser::McDefaultPropertyParser(QObject *parent)
     : McAbstractPropertyParser(parent)
 {
 }
 
-QVariant McDefaultPropertyParser::parseValue(const QDomElement &ele) const noexcept {
+QVariant McDefaultPropertyParser::parseValue(const QDomElement &ele) const noexcept 
+{
     if(ele.hasAttribute("value")) {
         return ele.attribute("value");
     }else{
@@ -21,7 +23,8 @@ QVariant McDefaultPropertyParser::parseValue(const QDomElement &ele) const noexc
     }
 }
 
-QVariant McDefaultPropertyParser::parseRef(const QDomElement &ele) const noexcept {
+QVariant McDefaultPropertyParser::parseRef(const QDomElement &ele) const noexcept 
+{
     McBeanReferencePtr ref = McBeanReferencePtr::create();
     if(ele.hasAttribute("ref")) {
         ref->setName(ele.attribute("ref"));
@@ -33,7 +36,8 @@ QVariant McDefaultPropertyParser::parseRef(const QDomElement &ele) const noexcep
     return QVariant::fromValue(ref);
 }
 
-QVariant McDefaultPropertyParser::parseList(const QDomElement &ele) const noexcept {
+QVariant McDefaultPropertyParser::parseList(const QDomElement &ele) const noexcept 
+{
     QVariantList list;
     
     if(ele.hasAttribute("plugins")) {
@@ -64,7 +68,8 @@ QVariant McDefaultPropertyParser::parseList(const QDomElement &ele) const noexce
     return list;
 }
 
-QVariant McDefaultPropertyParser::parseMap(const QDomElement &ele) const noexcept {
+QVariant McDefaultPropertyParser::parseMap(const QDomElement &ele) const noexcept 
+{
     QMap<QVariant, QVariant> map;
     
 	auto childNodes = ele.childNodes();
@@ -111,7 +116,56 @@ QVariant McDefaultPropertyParser::parseMap(const QDomElement &ele) const noexcep
     return QVariant::fromValue(map);
 }
 
-QVariantList McDefaultPropertyParser::getList(const QString &dirPath) const noexcept {
+QVariant McDefaultPropertyParser::parseEnum(const QDomElement &ele) const noexcept
+{
+    McBeanEnumPtr e = McBeanEnumPtr::create();
+    if(ele.hasAttribute("scope")) {
+        e->setScope(ele.attribute("scope"));
+    }
+    if(ele.hasAttribute("type")) {
+        e->setType(ele.attribute("type"));
+    }
+    if(ele.hasAttribute("value")) {
+        e->setValue(ele.attribute("value"));
+    }
+    auto childNodes = ele.childNodes();
+    for(int i = 0; i < childNodes.length(); ++i) {
+        auto childNode = childNodes.at(i);
+        auto childEle = childNode.toElement();
+        if(childEle.isNull()) {
+            continue;
+        }
+        if(childEle.tagName() == "scope") {
+            if(childEle.hasAttribute("name")) {
+                e->setScope(childEle.attribute("name"));
+            }
+            auto text = childEle.text().simplified();
+            if(!text.isEmpty()) {
+                e->setScope(text);
+            }
+        } else if(childEle.tagName() == "type") {
+            if(childEle.hasAttribute("name")) {
+                e->setType(childEle.attribute("name"));
+            }
+            auto text = childEle.text().simplified();
+            if(!text.isEmpty()) {
+                e->setType(text);
+            }
+        } else if(childEle.tagName() == "value") {
+            if(childEle.hasAttribute("name")) {
+                e->setValue(childEle.attribute("name"));
+            }
+            auto text = childEle.text().simplified();
+            if(!text.isEmpty()) {
+                e->setValue(text);
+            }
+        }
+    }
+    return QVariant::fromValue(e);
+}
+
+QVariantList McDefaultPropertyParser::getList(const QString &dirPath) const noexcept 
+{
     QVariantList list;
     
     QDir dir(dirPath);

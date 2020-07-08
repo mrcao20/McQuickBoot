@@ -8,27 +8,32 @@ McAbstractPropertyParser::McAbstractPropertyParser(QObject *parent)
 {
 }
 
-QVariant McAbstractPropertyParser::parse(const QDomElement &ele) const noexcept {
+QVariant McAbstractPropertyParser::parse(const QDomElement &ele) const noexcept 
+{
     QDomElement childEle;
     if((childEle = ele).tagName() == "list"
              || !(childEle = ele.firstChildElement("list")).isNull()) {
         
         return parseList(childEle);
-    }else if((childEle = ele).tagName() == "map"
+    } else if((childEle = ele).tagName() == "map"
              || !(childEle = ele.firstChildElement("map")).isNull()) {
         
         return parseMap(childEle);
-    }else if((childEle = ele).tagName() == "value"
+    } else if((childEle = ele).tagName() == "enum"
+              || !(childEle = ele.firstChildElement("enum")).isNull()) {
+         
+         return parseEnum(childEle);
+     } else if((childEle = ele).tagName() == "value"
              || (childEle = ele).hasAttribute("value") 
              || !(childEle = ele.firstChildElement("value")).isNull()) {
          
          return parseValue(childEle);
-    }else if((childEle = ele).tagName() == "ref"
+    } else if((childEle = ele).tagName() == "ref"
              || (childEle = ele).hasAttribute("ref") 
              || !(childEle = ele.firstChildElement("ref")).isNull()) {
         
         return parseRef(childEle);
-    }else{
+    } else{
         qWarning("the tag for '%s' cannot parse!!\n", qPrintable(ele.tagName()));
         return QVariant();
     }

@@ -23,14 +23,18 @@ HEADERS += \
     $$PWD/include/McIoc/BeanFactory/McBeanGlobal.h \
     $$PWD/include/McIoc/BeanFactory/impl/McAbstractBeanFactory.h \
     $$PWD/include/McIoc/BeanFactory/impl/McBeanConnector.h \
+    $$PWD/include/McIoc/BeanFactory/impl/McBeanEnum.h \
     $$PWD/include/McIoc/BeanFactory/impl/McBeanReference.h \
     $$PWD/include/McIoc/BeanFactory/impl/McDefaultBeanFactory.h \
+    $$PWD/include/McIoc/BeanFactory/impl/McMetaTypeId.h \
     $$PWD/include/McIoc/PropertyParser/IMcPropertyConverter.h \
     $$PWD/include/McIoc/PropertyParser/IMcPropertyParser.h \
     $$PWD/include/McIoc/PropertyParser/impl/McAbstarctPropertyConverter.h \
     $$PWD/include/McIoc/PropertyParser/impl/McAbstractPropertyParser.h \
     $$PWD/include/McIoc/PropertyParser/impl/McDefaultPropertyConverter.h \
     $$PWD/include/McIoc/PropertyParser/impl/McDefaultPropertyParser.h \
+    $$PWD/include/McIoc/Signal/IMcSignal.h \
+    $$PWD/include/McIoc/Slot/IMcSlot.h \
     $$PWD/include/McIoc/Thread/IMcDeleteThreadWhenQuit.h \
     $$PWD/include/McIoc/Thread/impl/McDefaultDeleteThreadWhenQuit.h \
     $$PWD/include/McIoc/Utils/McScopedFunction.h \
@@ -50,8 +54,10 @@ SOURCES += \
     $$PWD/src/BeanDefinitionReader/McXmlBeanDefinitionReader.cpp \
     $$PWD/src/BeanFactory/McAbstractBeanFactory.cpp \
     $$PWD/src/BeanFactory/McBeanConnector.cpp \
+    $$PWD/src/BeanFactory/McBeanEnum.cpp \
     $$PWD/src/BeanFactory/McBeanReference.cpp \
     $$PWD/src/BeanFactory/McDefaultBeanFactory.cpp \
+    $$PWD/src/BeanFactory/McMetaTypeId.cpp \
     $$PWD/src/PropertyParser/McAbstarctPropertyConverter.cpp \
     $$PWD/src/PropertyParser/McAbstractPropertyParser.cpp \
     $$PWD/src/PropertyParser/McDefaultPropertyConverter.cpp \

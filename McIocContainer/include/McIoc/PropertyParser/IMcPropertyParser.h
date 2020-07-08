@@ -6,7 +6,8 @@ QT_BEGIN_NAMESPACE
 class QDomElement;
 QT_END_NAMESPACE
 
-class IMcPropertyParser {
+class IMcPropertyParser 
+{
 public:
     virtual ~IMcPropertyParser() = default;
     
