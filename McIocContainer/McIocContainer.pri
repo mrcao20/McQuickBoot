@@ -33,6 +33,8 @@ HEADERS += \
     $$PWD/include/McIoc/PropertyParser/impl/McAbstractPropertyParser.h \
     $$PWD/include/McIoc/PropertyParser/impl/McDefaultPropertyConverter.h \
     $$PWD/include/McIoc/PropertyParser/impl/McDefaultPropertyParser.h \
+    $$PWD/include/McIoc/Signal/IMcSignal.h \
+    $$PWD/include/McIoc/Slot/IMcSlot.h \
     $$PWD/include/McIoc/Thread/IMcDeleteThreadWhenQuit.h \
     $$PWD/include/McIoc/Thread/impl/McDefaultDeleteThreadWhenQuit.h \
     $$PWD/include/McIoc/Utils/McScopedFunction.h \
