@@ -3,6 +3,8 @@
 #include <QEventLoop>
 #include <QTimer>
 #include <QElapsedTimer>
+#include <QDir>
+#include <QCoreApplication>
 
 bool mcWaitForExecFunc(const std::function<bool()> &func, qint64 timeout) noexcept 
 {
@@ -29,4 +31,15 @@ bool mcWaitForExecFunc(const std::function<bool()> &func, qint64 timeout) noexce
     timer.start();
     loop.exec();
     return ret;
+}
+
+QString mcToAbsolutePath(const QString &path) noexcept
+{
+    QString dstPath = QDir::toNativeSeparators(path);
+    if(dstPath.startsWith(QString("%1%2%3").arg("file:///", ".", QDir::separator()))
+            || dstPath.startsWith(QString("%1%2%3").arg("file:///", "..", QDir::separator()))) {
+        dstPath.remove("file:///");
+        dstPath = "file:///" + qApp->applicationDirPath() + QDir::separator() + dstPath;
+    }
+    return dstPath;
 }

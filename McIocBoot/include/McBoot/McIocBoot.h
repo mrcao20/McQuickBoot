@@ -9,6 +9,11 @@
 #include <QUrl>
 
 #include "Application/McSingleApplication.h"
+#include "Application/McSingleCoreApplication.h"
+
+QT_BEGIN_NAMESPACE
+class QQuickView;
+QT_END_NAMESPACE
 
 MC_FORWARD_DECL_CLASS(IMcApplicationContext);
 
@@ -25,9 +30,10 @@ public:
     
     static void init(QQmlApplicationEngine *engine) noexcept;
     static QQmlEngine *engine() noexcept;
+    static QQuickView *createQuickView(const QString &source, QWindow *parent = nullptr) noexcept;
     
     template<typename T = QGuiApplication>
-    static int run(int argc, char *argv[], const QUrl &url = QUrl("qrc:/main.qml")
+    static int run(int argc, char *argv[], const QString &path = "qrc:/main.qml"
             , const function<void(T *app, QQmlApplicationEngine *)> &func = nullptr
             , const function<void(T *app)> &prefunc = nullptr) noexcept;
     
@@ -42,10 +48,10 @@ public:
      * \return 
      */
     template<typename T = McSingleApplication>
-    static int singleRun(int argc, char *argv[], const QUrl &url = QUrl("qrc:/main.qml")
+    static int singleRun(int argc, char *argv[], const QString &path = "qrc:/main.qml"
             , const function<void(T *app, QQmlApplicationEngine *)> &func = nullptr
             , const function<void(T *app)> &prefunc = nullptr) noexcept;
-    
+ 
     void initBoot() noexcept;
     
     IMcApplicationContextPtr getApplicationContext() const noexcept;
@@ -62,7 +68,7 @@ private:
 MC_DECL_POINTER(McIocBoot);
 
 template<typename T>
-int McIocBoot::run(int argc, char *argv[], const QUrl &url
+int McIocBoot::run(int argc, char *argv[], const QString &path
                    , const function<void(T *app, QQmlApplicationEngine *)> &func
                    , const function<void(T *app)> &prefunc) noexcept 
 {
@@ -82,6 +88,8 @@ int McIocBoot::run(int argc, char *argv[], const QUrl &url
         func(&app, &engine);
     }
     
+    QString dstPath = mcToAbsolutePath(path);
+    QUrl url(dstPath);
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated
                      , &app, [url](QObject *obj, const QUrl &objUrl) {
         if (!obj && url == objUrl)
@@ -93,7 +101,7 @@ int McIocBoot::run(int argc, char *argv[], const QUrl &url
 }
 
 template<typename T>
-int McIocBoot::singleRun(int argc, char *argv[], const QUrl &url
+int McIocBoot::singleRun(int argc, char *argv[], const QString &path
                          , const function<void(T *app, QQmlApplicationEngine *)> &func
                          , const function<void(T *app)> &prefunc) noexcept 
 {
@@ -115,6 +123,8 @@ int McIocBoot::singleRun(int argc, char *argv[], const QUrl &url
         func(&app, &engine);
     }
     
+    QString dstPath = mcToAbsolutePath(path);
+    QUrl url(dstPath);
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated
                      , &app, [url, &app](QObject *obj, const QUrl &objUrl) {
         if (!obj && url == objUrl)

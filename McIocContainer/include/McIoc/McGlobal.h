@@ -24,3 +24,12 @@ Q_DECLARE_METATYPE(QObjectPtr);
 MCIOCCONTAINER_EXPORT bool mcWaitForExecFunc(
         const std::function<bool()> &func
         , qint64 timeout = -1) noexcept;
+
+/*!
+ * \brief mcToAbsolutePath
+ * 
+ * 如果path为file:///开头的相对路径，那么转为绝对路径。其他格式不变
+ * \param path
+ * \return 
+ */
+MCIOCCONTAINER_EXPORT QString mcToAbsolutePath(const QString &path) noexcept;

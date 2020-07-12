@@ -33,6 +33,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     src/Application/McSingleApplication.cpp \
+    src/Application/McSingleCoreApplication.cpp \
     src/Controller/InnerController/McApplicationController.cpp \
     src/Controller/McControllerContainer.cpp \
     src/Controller/McQmlResponse.cpp \
@@ -50,6 +51,7 @@ SOURCES += \
 
 HEADERS +=  \
     include/McBoot/Application/McSingleApplication.h \
+    include/McBoot/Application/McSingleCoreApplication.h \
     include/McBoot/Controller/IMcControllerContainer.h \
     include/McBoot/Controller/InnerController/McApplicationController.h \
     include/McBoot/Controller/impl/McControllerContainer.h \
