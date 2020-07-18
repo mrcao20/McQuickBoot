@@ -36,7 +36,8 @@
 #define MC_DECL_PRIVATE_DATA_END };
 
 #define MC_DECL_PRIVATE(Class) \
-    QScopedPointer<Class##Data> d;
+    QScopedPointer<Class##Data> d; \
+    friend struct Class##Data;
 
 #define MC_NEW_PRIVATE_DATA(Class) \
     d.reset(new Class##Data());

@@ -6,7 +6,13 @@
 #include <QDir>
 #include <QCoreApplication>
 
-bool mcWaitForExecFunc(const std::function<bool()> &func, qint64 timeout) noexcept 
+McCustomEvent::~McCustomEvent() noexcept
+{
+}
+
+namespace Mc {
+
+bool waitForExecFunc(const std::function<bool()> &func, qint64 timeout) noexcept 
 {
     QEventLoop loop;
     QTimer timer;
@@ -33,7 +39,7 @@ bool mcWaitForExecFunc(const std::function<bool()> &func, qint64 timeout) noexce
     return ret;
 }
 
-QString mcToAbsolutePath(const QString &path) noexcept
+QString toAbsolutePath(const QString &path) noexcept
 {
     QString dstPath = QDir::toNativeSeparators(path);
     if(dstPath.startsWith(QString("%1%2%3").arg("file:///", ".", QDir::separator()))
@@ -42,4 +48,6 @@ QString mcToAbsolutePath(const QString &path) noexcept
         dstPath = "file:///" + qApp->applicationDirPath() + QDir::separator() + dstPath;
     }
     return dstPath;
+}
+
 }

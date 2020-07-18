@@ -4,12 +4,42 @@
 
 #include <QSharedPointer>
 #include <QObject>
+#include <QEvent>
 
 #include "McIocVersion.h"
 #include "BeanFactory/McBeanGlobal.h"
 
 MC_DECL_POINTER(QObject);
 Q_DECLARE_METATYPE(QObjectPtr);
+
+class MCIOCCONTAINER_EXPORT McCustomEvent : public QEvent {
+public:
+    McCustomEvent(int type, const QVariant &data) noexcept
+        : QEvent(static_cast<QEvent::Type>(type))
+        , m_data(data)
+    {}
+    ~McCustomEvent() noexcept;
+    
+    QVariant data() const noexcept {
+        return m_data;
+    }
+    void setData(const QVariant &val) noexcept {
+        m_data = val;
+    }
+    
+private:
+    QVariant m_data;
+};
+
+namespace Mc {
+
+template<typename Container>
+bool isContains(int index, const Container &container) {
+	if (index >= 0 && index < container.size())
+		return true;
+	return false;
+}
+
 
 /*!
  * \brief mcWaitForExecFunc，执行一个函数，当该函数返回true时或timeout超时时返回
@@ -21,7 +51,7 @@ Q_DECLARE_METATYPE(QObjectPtr);
  * \param timeout 超时时长，单位: ms
  * \return 返回函数执行结果
  */
-MCIOCCONTAINER_EXPORT bool mcWaitForExecFunc(
+MCIOCCONTAINER_EXPORT bool waitForExecFunc(
         const std::function<bool()> &func
         , qint64 timeout = -1) noexcept;
 
@@ -32,4 +62,6 @@ MCIOCCONTAINER_EXPORT bool mcWaitForExecFunc(
  * \param path
  * \return 
  */
-MCIOCCONTAINER_EXPORT QString mcToAbsolutePath(const QString &path) noexcept;
+MCIOCCONTAINER_EXPORT QString toAbsolutePath(const QString &path) noexcept;
+
+}

@@ -108,7 +108,7 @@ QQuickView *McIocBoot::createQuickView(const QString &source, QWindow *parent) n
         return nullptr;
     }
     QQuickView *view = new QQuickView(engine(), parent);
-    view->setSource(QUrl(mcToAbsolutePath(source)));
+    view->setSource(QUrl(Mc::toAbsolutePath(source)));
     return  view;
 }
 

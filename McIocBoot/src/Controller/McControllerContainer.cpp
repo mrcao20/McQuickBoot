@@ -194,7 +194,9 @@ void McControllerContainer::removeDuplication(
             continue;
         argNames.removeOne(paramNames.at(i));
         paramNames.removeAt(i);
-        paramTypes.removeAt(i);
+        if(!paramTypes.isEmpty()) {
+            paramTypes.removeAt(i);
+        }
         --i;
     }
 }

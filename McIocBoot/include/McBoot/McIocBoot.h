@@ -88,7 +88,7 @@ int McIocBoot::run(int argc, char *argv[], const QString &path
         func(&app, &engine);
     }
     
-    QString dstPath = mcToAbsolutePath(path);
+    QString dstPath = Mc::toAbsolutePath(path);
     QUrl url(dstPath);
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated
                      , &app, [url](QObject *obj, const QUrl &objUrl) {
@@ -123,7 +123,7 @@ int McIocBoot::singleRun(int argc, char *argv[], const QString &path
         func(&app, &engine);
     }
     
-    QString dstPath = mcToAbsolutePath(path);
+    QString dstPath = Mc::toAbsolutePath(path);
     QUrl url(dstPath);
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated
                      , &app, [url, &app](QObject *obj, const QUrl &objUrl) {
