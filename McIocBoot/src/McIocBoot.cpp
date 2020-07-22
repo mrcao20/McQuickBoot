@@ -3,6 +3,7 @@
 #include <QQmlContext>
 #include <QJSValue>
 #include <QGlobalStatic>
+#include <QQuickView>
 #include <QDebug>
 
 #include <McIoc/ApplicationContext/impl/McAnnotationApplicationContext.h>
@@ -98,6 +99,17 @@ void McIocBoot::init(QQmlApplicationEngine *engine) noexcept
 QQmlEngine *McIocBoot::engine() noexcept
 {
     return *mcEngine;
+}
+
+QQuickView *McIocBoot::createQuickView(const QString &source, QWindow *parent) noexcept
+{
+    if(McIocBoot::engine() == nullptr) {
+        qCritical("engine is null. you must be call function init or run before");
+        return nullptr;
+    }
+    QQuickView *view = new QQuickView(engine(), parent);
+    view->setSource(QUrl(Mc::toAbsolutePath(source)));
+    return  view;
 }
 
 void McIocBoot::initBoot() noexcept 

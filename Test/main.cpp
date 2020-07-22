@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 //    auto me = mo->enumerator(mo->indexOfEnumerator("EEE"));
 //    qDebug() << me.enumName();
 //    qDebug() << me.keysToValue("A | B");
-//    return McIocBoot::run(argc, argv);
+//    return McIocBoot::singleRun(argc, argv);
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     
     QGuiApplication app(argc, argv);
