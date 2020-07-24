@@ -1,5 +1,7 @@
 # McIocBoot
-基于QT元对象系统封装出来的以IOC容器为核心的框架
+基于QT元对象系统封装出来的以IOC容器为核心的框架  
+QT版本：5.12以上  
+编译器：MINGW，MSVC
 
 # Usage
 目前Ioc Container部分包含声明式注入和XML文件注入两种方式，但无论是那种注入方式都需要使用QSharedPointer动态指针的形式，并且需要使用MC_DECL_POINTER宏将QSharedPointer\<Class\>重新定义为ClassPtr的形式使用，否则无法识别。
