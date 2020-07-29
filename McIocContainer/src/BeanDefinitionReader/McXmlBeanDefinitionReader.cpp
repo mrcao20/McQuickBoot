@@ -115,9 +115,9 @@ bool McXmlBeanDefinitionReader::parseBeanClass(const QDomElement &ele, IMcBeanDe
     else if(ele.hasAttribute("plugin")){    //!< 如果指定的是plugin，则通过插件创建对象
         QString pluginPath = ele.attribute("plugin");
         pluginPath = QDir::toNativeSeparators(pluginPath);
-        if(pluginPath.startsWith(QString("%1%2").arg(".", QDir::separator()))) {
-            pluginPath = pluginPath.remove(0, 1);   //!< 移除最前面的.
-            pluginPath = qApp->applicationDirPath() + pluginPath;   //!< 补全为全路径
+        if(pluginPath.startsWith(QString("%1%2").arg(".", QDir::separator()))
+                || pluginPath.startsWith(QString("%1%2").arg("..", QDir::separator()))) {
+            pluginPath = qApp->applicationDirPath() + "/" + pluginPath;   //!< 补全为全路径
         }
         if(!QLibrary::isLibrary(pluginPath)){
             qCritical() << pluginPath << "is not a plugin. please check!!!";

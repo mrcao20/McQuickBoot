@@ -43,9 +43,9 @@ QVariant McDefaultPropertyParser::parseList(const QDomElement &ele) const noexce
     if(ele.hasAttribute("plugins")) {
         QString pluginsPath = ele.attribute("plugins").simplified();
         pluginsPath = QDir::toNativeSeparators(pluginsPath);
-        if(pluginsPath.startsWith(QString("%1%2").arg(".", QDir::separator()))) {
-            pluginsPath = pluginsPath.remove(0, 1);   // 移除最前面的.
-            pluginsPath = qApp->applicationDirPath() + pluginsPath;   // 补全为全路径
+        if(pluginsPath.startsWith(QString("%1%2").arg(".", QDir::separator()))
+                || pluginsPath.startsWith(QString("%1%2").arg("..", QDir::separator()))) {
+            pluginsPath = qApp->applicationDirPath() + "/" + pluginsPath;   //!< 补全为全路径
         }
         list = getList(pluginsPath);
     }
