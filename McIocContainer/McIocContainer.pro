@@ -7,16 +7,14 @@
 QT -= gui
 QT += xml
 
-CONFIG(debug, debug|release) {
-    win32: TARGET = McIocContainerd
-    else:unix: TARGET = McIocContainer
-} else {
-    win32: TARGET = McIocContainer
-    else:unix: TARGET = McIocContainer
+CONFIG += c++11
 
+TARGET = McIocContainer
+TARGET = $$qt5LibraryTarget($$TARGET)
+
+CONFIG(release, debug|release) {
     DEFINES += QT_MESSAGELOGCONTEXT
 }
-
 
 TEMPLATE = lib
 

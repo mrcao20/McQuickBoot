@@ -76,3 +76,7 @@
 #define MC_RECEIVER "receiver"
 #define MC_SLOT "slot"
 #define MC_CONNECTION_TYPE "ConnectionType"
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
+#define qInfo QMessageLogger(QT_MESSAGELOG_FILE, QT_MESSAGELOG_LINE, QT_MESSAGELOG_FUNC).debug
+#endif

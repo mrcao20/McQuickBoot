@@ -9,8 +9,8 @@
 #include "McIocVersion.h"
 #include "BeanFactory/McBeanGlobal.h"
 
-MC_DECL_POINTER(QObject);
-Q_DECLARE_METATYPE(QObjectPtr);
+MC_DECL_POINTER(QObject)
+Q_DECLARE_METATYPE(QObjectPtr)
 
 class MCIOCCONTAINER_EXPORT McCustomEvent : public QEvent {
 public:

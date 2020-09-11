@@ -5,8 +5,8 @@ SUBDIRS += McIocContainer
 SUBDIRS += McIocBoot
 McIocBoot.depends += McIocContainer
 
-SUBDIRS += Test
-Test.depends += McIocContainer McIocBoot
+SUBDIRS += McLogQt
+McLogQt.depends += McIocContainer
 
-SUBDIRS += IocTest
-IocTest.depends += McIocContainer
+SUBDIRS += Examples
+Examples.depends += McIocContainer McIocBoot McLogQt

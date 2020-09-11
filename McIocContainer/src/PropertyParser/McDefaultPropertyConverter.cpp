@@ -40,7 +40,11 @@ QVariant McDefaultPropertyConverter::convertEnum(const QVariant &value) const no
     }
     const QMetaObject *mo = nullptr;
     if(e->scope() == "Qt") {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
         mo = qt_getQtMetaObject();
+#else
+        mo = &staticQtMetaObject;
+#endif
     } else {
         mo = QMetaType::metaObjectForType(QMetaType::type(qPrintable(e->scope())));
     }

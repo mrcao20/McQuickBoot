@@ -1,4 +1,4 @@
-﻿#include "McIoc/BeanFactory/impl/McDefaultBeanFactory.h"
+#include "McIoc/BeanFactory/impl/McDefaultBeanFactory.h"
 
 #include <QPluginLoader>
 #include <QMetaObject>
@@ -146,9 +146,9 @@ bool McDefaultBeanFactory::addObjectConnect(QObjectConstPtrRef bean
             qCritical("has a connector, but cannot convert to McBeanConnectorPtr for bean '%s'", bean->metaObject()->className());
             return false;
         }
-        QObjectPtr sender = nullptr;
+        QObjectPtr sender;
         QMetaMethod signal;
-        QObjectPtr receiver = nullptr;
+        QObjectPtr receiver;
         QMetaMethod slot;
         Qt::ConnectionType type;
         
@@ -201,14 +201,14 @@ QObjectPtr McDefaultBeanFactory::getPropertyObject(QObjectConstPtrRef bean
                            , const QString &proName
                            , const QVariantMap &proValues) noexcept 
 {
-    QObjectPtr obj = nullptr;
+    QObjectPtr obj;
     if(proName == MC_THIS) {
         obj = bean;
     }else{
         if(!proValues.contains(proName)) {
             qCritical("not found property named '%s' for bean '%s'"
                       , bean->metaObject()->className(), qPrintable(proName));
-            return nullptr;
+            return QObjectPtr();
         }
         auto varPro = proValues[proName];
         obj = varPro.value<QObjectPtr>();

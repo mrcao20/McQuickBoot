@@ -6,13 +6,12 @@
 
 QT += quick network
 
-CONFIG(debug, debug|release) {
-    win32: TARGET = McIocBootd
-    else:unix: TARGET = McIocBoot
-} else {
-    win32: TARGET = McIocBoot
-    else:unix: TARGET = McIocBoot
+CONFIG += c++11
 
+TARGET = McIocBoot
+TARGET = $$qt5LibraryTarget($$TARGET)
+
+CONFIG(release, debug|release) {
     DEFINES += QT_MESSAGELOGCONTEXT
 }
 
@@ -31,65 +30,29 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-SOURCES += \
-    src/Application/McSingleApplication.cpp \
-    src/Application/McSingleCoreApplication.cpp \
-    src/Controller/InnerController/McApplicationController.cpp \
-    src/Controller/McControllerContainer.cpp \
-    src/Controller/McQmlResponse.cpp \
-    src/Controller/McRequestRunner.cpp \
-    src/Controller/McResult.cpp \
-    src/McIocBoot.cpp \
-    src/Model/McModelContainer.cpp \
-    src/Requestor/McQmlRequestor.cpp \
-    src/Socket/McInnerSocket.cpp \
-    src/Socket/McQmlSocket.cpp \
-    src/Socket/McQmlSocketContainer.cpp \
-    src/Socket/McQmlSocketRunner.cpp \
-    src/Socket/McSession.cpp \
-    src/Utils/McJsonUtils.cpp
-
-HEADERS +=  \
-    include/McBoot/Application/McSingleApplication.h \
-    include/McBoot/Application/McSingleCoreApplication.h \
-    include/McBoot/Controller/IMcControllerContainer.h \
-    include/McBoot/Controller/InnerController/McApplicationController.h \
-    include/McBoot/Controller/impl/McControllerContainer.h \
-    include/McBoot/Controller/impl/McQmlResponse.h \
-    include/McBoot/Controller/impl/McRequestRunner.h \
-    include/McBoot/Controller/impl/McResult.h \
-    include/McBoot/McBootGlobal.h \
-    include/McBoot/McBootMacroGlobal.h \
-    include/McBoot/McBootVersion.h \
-    include/McBoot/McIocBoot.h \
-    include/McBoot/Model/McModelContainer.h \
-    include/McBoot/Requestor/McQmlRequestor.h \
-    include/McBoot/Socket/IMcQmlSocketContainer.h \
-    include/McBoot/Socket/IMcSession.h \
-    include/McBoot/Socket/impl/McInnerSocket.h \
-    include/McBoot/Socket/impl/McQmlSocket.h \
-    include/McBoot/Socket/impl/McQmlSocketContainer.h \
-    include/McBoot/Socket/impl/McQmlSocketRunner.h \
-    include/McBoot/Socket/impl/McSession.h \
-    include/McBoot/Utils/McJsonUtils.h
+include(McIocBoot.pri)
 
 unix {
     target.path = /usr/lib
     INSTALLS += target
 }
 
-INCLUDEPATH += $$PWD/include/
-
 DESTDIR = $$PWD/../bin
 MOC_DIR = $$PWD/../moc/McIocBoot
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocContainer
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocContainerd
+win32 {
+    msvc {
+        QMAKE_CFLAGS += /utf-8
+        QMAKE_CXXFLAGS += /utf-8
+        
+        CONFIG(release, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocContainer
+        else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocContainerd
+    } else {
+        LIBS += -L$$PWD/../bin/ -lMcIocContainer
+    }
+} else:unix:!macx {
+    LIBS += -L$$PWD/../bin/ -lMcIocContainer
+}
 
 INCLUDEPATH += $$PWD/../McIocContainer/include
 DEPENDPATH += $$PWD/../McIocContainer/include
-
-msvc {
-    QMAKE_CFLAGS += /utf-8
-    QMAKE_CXXFLAGS += /utf-8
-}
