@@ -30,13 +30,7 @@ QString McRollingFileAppender::backupDirPath() const noexcept
 
 void McRollingFileAppender::setBackupDirPath(const QString &val) noexcept 
 {
-    d->backupDirPath = QDir::toNativeSeparators(val);
-    QString sep = ".";
-    sep += QDir::separator();
-    if(d->backupDirPath.startsWith(sep)) {
-        d->backupDirPath.remove(0, 1);
-        d->backupDirPath = qApp->applicationDirPath() + d->backupDirPath;
-    }
+    d->backupDirPath = Mc::toAbsolutePath(val);
 }
 
 QString McRollingFileAppender::backupDirPattern() const noexcept 

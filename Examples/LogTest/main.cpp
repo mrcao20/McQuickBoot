@@ -9,6 +9,7 @@
 #include <QRegularExpressionMatch>
 #include <QtConcurrent>
 #include <QSettings>
+#include <QUrl>
 
 #include "McLog/McLogManager.h"
 #include "McLog/Configurator/McXMLConfigurator.h"
@@ -24,6 +25,8 @@ int main(int argc, char *argv[])
     
     QGuiApplication app(argc, argv);
     
+    QUrl u("file:///./a");
+    qDebug() << "u:" << u.isLocalFile();
     //! 必须开启IOC支持
     auto path = qApp->applicationDirPath() + "/logqt.xml";
     McXMLConfigurator::configure(path);

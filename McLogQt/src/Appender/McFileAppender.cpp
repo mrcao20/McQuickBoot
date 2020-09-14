@@ -35,13 +35,7 @@ QString McFileAppender::dirPath() const noexcept
 
 void McFileAppender::setDirPath(const QString &val) noexcept 
 {
-    d->dirPath = QDir::toNativeSeparators(val);
-    QString sep = ".";
-    sep += QDir::separator();
-    if(d->dirPath.startsWith(sep)) {
-        d->dirPath.remove(0, 1);
-        d->dirPath = qApp->applicationDirPath() + d->dirPath;
-    }
+    d->dirPath = Mc::toAbsolutePath(val);
 }
 
 QString McFileAppender::fileNamePattern() const noexcept 

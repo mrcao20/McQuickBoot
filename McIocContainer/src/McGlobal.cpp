@@ -5,6 +5,7 @@
 #include <QElapsedTimer>
 #include <QDir>
 #include <QCoreApplication>
+#include <QUrl>
 
 McCustomEvent::~McCustomEvent() noexcept
 {
@@ -42,10 +43,23 @@ bool waitForExecFunc(const std::function<bool()> &func, qint64 timeout) noexcept
 QString toAbsolutePath(const QString &path) noexcept
 {
     QString dstPath = QDir::toNativeSeparators(path);
-    if(dstPath.startsWith(QString("%1%2%3").arg("file:///", ".", QDir::separator()))
-            || dstPath.startsWith(QString("%1%2%3").arg("file:///", "..", QDir::separator()))) {
-        dstPath.remove("file:///");
-        dstPath = "file:///" + qApp->applicationDirPath() + QDir::separator() + dstPath;
+    QString sepDot = ".";
+    QString sepDotDot = "..";
+    sepDot += QDir::separator();
+    sepDotDot += QDir::separator();
+    if(dstPath.startsWith(sepDot) || dstPath.startsWith(sepDotDot)) {
+        dstPath = qApp->applicationDirPath() + QDir::separator() + dstPath;
+    } else {
+        QUrl url(path);
+        if(url.isLocalFile()) {
+            dstPath = url.toLocalFile();
+            dstPath = QDir::toNativeSeparators(dstPath);
+            if(!QDir::isAbsolutePath(dstPath)) {
+                dstPath = qApp->applicationDirPath() + QDir::separator() + dstPath;
+            }
+            url = QUrl::fromLocalFile(dstPath);
+        }
+        dstPath = url.toString();
     }
     return dstPath;
 }
