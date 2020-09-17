@@ -12,6 +12,10 @@ static bool isDefaultCategory(const char *category)
     return !category || strcmp(category, "default") == 0;
 }
 
+#ifndef QT_HAS_INCLUDE
+#  define QT_HAS_INCLUDE(x) 0
+#endif
+
 #ifndef QT_BOOTSTRAPPED
 #if defined(Q_OS_LINUX) && (defined(__GLIBC__) || QT_HAS_INCLUDE(<sys/syscall.h>))
 #  include <sys/syscall.h>
@@ -488,7 +492,9 @@ QString format(McMessagePatternPtr pattern, QtMsgType type, const QMessageLogCon
         } else if (token == typeTokenC) {
             switch (type) {
             case QtDebugMsg:   message.append(QLatin1String("debug")); break;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
             case QtInfoMsg:    message.append(QLatin1String("info")); break;
+#endif
             case QtWarningMsg: message.append(QLatin1String("warning")); break;
             case QtCriticalMsg:message.append(QLatin1String("critical")); break;
             case QtFatalMsg:   message.append(QLatin1String("fatal")); break;
@@ -527,20 +533,34 @@ QString format(McMessagePatternPtr pattern, QtMsgType type, const QMessageLogCon
             timeArgsIdx++;
             if (timeFormat == QLatin1String("process")) {
                     quint64 ms = static_cast<quint64>(pattern->timer.elapsed());
-                    message.append(QString::asprintf("%6d.%03d", uint(ms / 1000), uint(ms % 1000)));
+                    message.append(
+# if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
+                                QString::asprintf
+# else
+                                QString().sprintf
+# endif
+                                   ("%6d.%03d", uint(ms / 1000), uint(ms % 1000)));
             } else if (timeFormat ==  QLatin1String("boot")) {
                 // just print the milliseconds since the elapsed timer reference
                 // like the Linux kernel does
                 QElapsedTimer now;
                 now.start();
                 uint ms = static_cast<uint>(now.msecsSinceReference());
-                message.append(QString::asprintf("%6d.%03d", uint(ms / 1000), uint(ms % 1000)));
+                message.append(
+# if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
+                            QString::asprintf
+# else
+                            QString().sprintf
+# endif
+                               ("%6d.%03d", uint(ms / 1000), uint(ms % 1000)));
+#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
 #if QT_CONFIG(datestring)
             } else if (timeFormat.isEmpty()) {
                     message.append(QDateTime::currentDateTime().toString(Qt::ISODate));
             } else {
                 message.append(QDateTime::currentDateTime().toString(timeFormat));
 #endif // QT_CONFIG(datestring)
+#endif
             }
 #endif // !QT_BOOTSTRAPPED
         } else if (token == ifCategoryTokenC) {
@@ -550,7 +570,9 @@ QString format(McMessagePatternPtr pattern, QtMsgType type, const QMessageLogCon
         } else if (token == if##LEVEL##TokenC) { \
             skip = type != Qt##LEVEL##Msg;
         HANDLE_IF_TOKEN(Debug)
+# if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
         HANDLE_IF_TOKEN(Info)
+# endif
         HANDLE_IF_TOKEN(Warning)
         HANDLE_IF_TOKEN(Critical)
         HANDLE_IF_TOKEN(Fatal)

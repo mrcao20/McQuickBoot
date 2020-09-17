@@ -100,6 +100,7 @@ QJsonObject McJsonUtils::toJson(const QVariantMap &objs) noexcept
     return jsonObj;
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
 QJsonObject McJsonUtils::toJson(void *gadget, const QMetaObject *mobj) noexcept 
 {
     QJsonObject jsonObj;
@@ -113,3 +114,4 @@ QJsonObject McJsonUtils::toJson(void *gadget, const QMetaObject *mobj) noexcept
     }
     return jsonObj;
 }
+#endif

@@ -36,12 +36,12 @@
 			<!-- enum标签可以放在property、list和map标签中 -->
 			<enum scope="IocTest" type="EEE" value="A | B"></enum>
 		</property>
-		<property name="align">
-			<enum scope="Qt">
-				<type name="AlignmentFlag"></type>
-				<value>AlignLeft | AlignRight</value>
-			</enum>
-		</property>
+		<!-- <property name="align"> -->
+			<!-- <enum scope="Qt"> -->
+				<!-- <type name="AlignmentFlag"></type> -->
+				<!-- <value>AlignLeft | AlignRight</value> -->
+			<!-- </enum> -->
+		<!-- </property> -->
         <list name="str">
             <value>停封</value>
             <value>薄纸</value>

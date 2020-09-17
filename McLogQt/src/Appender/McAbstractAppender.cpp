@@ -197,9 +197,11 @@ QList<QtMsgType> McAbstractAppender::initThreshold(const QString &val) const noe
         auto type = strToEnum(level);
         
         types.append(static_cast<QtMsgType>(type));
+#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
         if (level == LEVEL_INFO)
             return types;
         types.append(QtMsgType::QtInfoMsg);
+#endif
         if (level == LEVEL_FATAL)
             return types;
         types.append(QtMsgType::QtFatalMsg);
@@ -229,7 +231,9 @@ int McAbstractAppender::strToEnum(const QString &val) const noexcept
         return QtMsgType::QtCriticalMsg;
     else if (type == LEVEL_FATAL)
         return QtMsgType::QtFatalMsg;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
     else if(type == LEVEL_INFO)
         return QtMsgType::QtInfoMsg;
+#endif
     return -1;
 }

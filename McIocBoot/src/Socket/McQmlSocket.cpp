@@ -5,6 +5,10 @@
 #include <QJSEngine>
 #include <QEvent>
 #include <QDebug>
+#if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
+#include <QQmlEngine>
+#include <QQmlContext>
+#endif
 
 class QmlSocketEvent : public QEvent 
 {
@@ -17,7 +21,11 @@ public:
         ErrorEvent,
         MessageEvent
     };
+#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
     Q_ENUM(QmlSocketEventType)
+#else
+    Q_ENUMS(QmlSocketEventType)
+#endif
     
     QmlSocketEvent(int type, const QVariant &data)
         : QEvent(static_cast<QEvent::Type>(type))
@@ -179,7 +187,11 @@ void McQmlSocket::message_helper(const QVariant &msg) noexcept
     if(!d->onMessage.isCallable()) {
         return;
     }
+#if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
+    auto engine = QQmlEngine::contextForObject(this)->engine();
+#else
     auto engine = qjsEngine(this);
+#endif
     if(!engine) {
         qCritical() << "not found js engine";
         return;

@@ -59,7 +59,9 @@ int main(int argc, char *argv[])
 //    qDebug() << me.enumName();
 //    qDebug() << me.keysToValue("A | B");
 //    return McIocBoot::singleRun(argc, argv);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#endif
     
     QGuiApplication app(argc, argv);
     
