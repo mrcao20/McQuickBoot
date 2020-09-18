@@ -10,19 +10,25 @@ class McAppenderEvent : public QEvent
 public:
     static const QEvent::Type eventType;
     
-    McAppenderEvent(const QString &msg)
+    McAppenderEvent(QtMsgType type, const QString &msg)
         : QEvent(static_cast<QEvent::Type>(eventType))
+        , m_type(type)
         , m_msg(msg)
     {}
     ~McAppenderEvent() override;
+    
+    QtMsgType type() const noexcept
+    { return m_type; }
+    QMessageLogContext *context() noexcept
+    { return &m_context; }
     QString msg() const noexcept 
     { return m_msg; }
     
 private:
+    QtMsgType m_type;
+    QMessageLogContext m_context;
     QString m_msg;
 };
-
-MC_FORWARD_DECL_CLASS(IMcLayout);
 
 MC_FORWARD_DECL_PRIVATE_DATA(McAbstractAppender);
 
@@ -31,19 +37,14 @@ class MCLOGQT_EXPORT McAbstractAppender
         , public IMcConfigurableAppender
         , public IMcWritableAppender
 {
-    
     Q_OBJECT
     MC_DECL_INIT(McAbstractAppender)
     MC_DEFINE_TYPELIST(QObject, MC_DECL_TYPELIST(IMcConfigurableAppender), MC_DECL_TYPELIST(IMcWritableAppender))
-    Q_PROPERTY(IMcLayoutPtr layout READ layout WRITE setLayout)
     Q_PROPERTY(QString threshold READ threshold WRITE setThreshold)
     Q_PROPERTY(bool immediateFlush READ immediateFlush WRITE setImmediateFlush)
 public:
     McAbstractAppender();
     ~McAbstractAppender() override;
-    
-    IMcLayoutPtr layout() const noexcept;
-    void setLayout(IMcLayoutConstPtrRef val) noexcept;
     
     QString threshold() const noexcept override;
     void setThreshold(const QString &val) noexcept override;
@@ -67,12 +68,11 @@ public:
     void threadFinished() noexcept;
     
 protected:
-    virtual void flush() noexcept = 0;
+    virtual
+    Q_INVOKABLE
+    void doAppend(QtMsgType type, const QMessageLogContext &context, const QString &str) noexcept = 0;
     
     void customEvent(QEvent *event) override;
-    
-private:
-    Q_INVOKABLE void append_helper(const QByteArray &msg) noexcept;
     
 private:
     QList<QtMsgType> initThreshold(const QString &val) const noexcept;

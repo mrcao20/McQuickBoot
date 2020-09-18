@@ -14,7 +14,12 @@ McFileDeviceAppender::~McFileDeviceAppender()
 {
 }
 
-void McFileDeviceAppender::flush() noexcept 
+void McFileDeviceAppender::writeBefore() noexcept
+{
+    
+}
+
+void McFileDeviceAppender::writeAfter() noexcept 
 {
     auto fileDevice = device().staticCast<QFileDevice>();
     

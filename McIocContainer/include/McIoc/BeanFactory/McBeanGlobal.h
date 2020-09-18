@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QCoreApplication>
 #include <QMetaType>
 #include <QVariant>
 
@@ -15,9 +16,11 @@
     static const int Class##_Static_Init;
 
 #define MC_INIT(Class) \
-    const int Class::Class##_Static_Init = []() -> int {
+    const int Class::Class##_Static_Init = []() -> int { \
+        qAddPreRoutine([](){
 
 #define MC_INIT_END \
+    }); \
     return 0;}();
 
 #define MC_DEFINE_TYPELIST(...) \

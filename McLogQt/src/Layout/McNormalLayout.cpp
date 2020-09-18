@@ -9,7 +9,10 @@ void McNormalLayout::finished() noexcept
     McPatternLayout::finished();
     
     QString pattern = "[%{time yyyy-MM-dd hh:mm:ss,zzz}][%{category}]"
-                      "[%{if-debug}DEBUG]:   %{endif}%{if-info}INFO]:    %{endif}"
+                      "[%{if-debug}DEBUG]:   %{endif}"
+#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
+                      "%{if-info}INFO]:    %{endif}"
+#endif
                       "%{if-warning}WARN]:    %{endif}%{if-critical}CRITICAL]:%{endif}"
                       "%{if-fatal}FATAL]:   %{endif} "
                       "%{message}  [File:%{file}] [Line:%{line}] [Function:%{function}]";

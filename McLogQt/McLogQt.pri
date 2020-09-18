@@ -18,7 +18,9 @@ SOURCES += \
     $$PWD/src/Logger/McLogger.cpp \
     $$PWD/src/McLogManager.cpp \
     $$PWD/src/Repository/McLoggerRepository.cpp \
-    $$PWD/src/Utils/McDeleteThreadWhenQuit.cpp
+    $$PWD/src/Utils/McDeleteThreadWhenQuit.cpp \
+    $$PWD/src/Appender/McAbstractFormatAppender.cpp \
+    $$PWD/src/Utils/McMessagePattern.cpp
 
 HEADERS += \
     $$PWD/include/McLog/Appender/IMcAppender.h \
@@ -47,4 +49,6 @@ HEADERS += \
     $$PWD/include/McLog/McLogVersion.h \
     $$PWD/include/McLog/Repository/IMcLoggerRepository.h \
     $$PWD/include/McLog/Repository/impl/McLoggerRepository.h \
-    $$PWD/include/McLog/Utils/McDeleteThreadWhenQuit.h
+    $$PWD/include/McLog/Utils/McDeleteThreadWhenQuit.h \
+    $$PWD/include/McLog/Appender/impl/McAbstractFormatAppender.h \
+    $$PWD/include/McLog/Utils/McMessagePattern.h

@@ -3,8 +3,7 @@
 #include <QCoreApplication>
 #include <QIODevice>
 #include <QThread>
-
-#include "McLog/Layout/impl/McNormalLayout.h"
+#include <qlogging.h>
 
 #define LEVEL_DEBUG "debug"
 #define LEVEL_WARN "warn"
@@ -20,7 +19,6 @@ McAppenderEvent::~McAppenderEvent()
 }
 
 MC_DECL_PRIVATE_DATA(McAbstractAppender)
-IMcLayoutPtr layout;
 QString threshold;                  //!< 全小写
 QList<QtMsgType> types;
 QIODevicePtr device;
@@ -40,16 +38,6 @@ McAbstractAppender::~McAbstractAppender()
 {
     if(!d->device.isNull() && d->device->isOpen())
         d->device->close();
-}
-
-IMcLayoutPtr McAbstractAppender::layout() const noexcept 
-{
-    return d->layout;
-}
-
-void McAbstractAppender::setLayout(IMcLayoutConstPtrRef val) noexcept 
-{
-    d->layout = val;
 }
 
 QString McAbstractAppender::threshold() const noexcept 
@@ -79,30 +67,27 @@ void McAbstractAppender::append(QtMsgType type, const QMessageLogContext &contex
     if(!d->types.contains(type)) {
         return;
     }
-    auto l = layout();
-    if(l.isNull()) {
-        MC_PRINT_ERR("the appender not set layout. category: %s\n", context.category);
-        return;
-    }
-    //! 如果没有定义QT_MESSAGELOGCONTEXT
-    if (context.file == nullptr
-        && context.line == 0
-        && context.function == nullptr) {
-        MC_PRINT_ERR("in release, need to manual define QT_MESSAGELOGCONTEXT\n");
-    }
-    auto message = l->format(type, context, str);
     
     if(d->immediateFlush) {
         if(thread() == QThread::currentThread()) {
-            append_helper(message.toLocal8Bit());
+            doAppend(type, context, str);
         }else{
             QMetaObject::invokeMethod(this
-                                      , "append_helper"
+                                      , "doAppend"
                                       , Qt::BlockingQueuedConnection
-                                      , Q_ARG(QByteArray, message.toLocal8Bit()));
+                                      , Q_ARG(QtMsgType, type)
+                                      , Q_ARG(QMessageLogContext, context)
+                                      , Q_ARG(QString, str));
         }
     }else{
-        qApp->postEvent(this, new McAppenderEvent(message));
+        auto e = new McAppenderEvent(type, str);
+        auto ctx = e->context();
+        ctx->version = context.version;
+        ctx->line = context.line;
+        ctx->file = context.file;
+        ctx->function = context.function;
+        ctx->category = context.category;
+        qApp->postEvent(this, e);
     }
 }
 
@@ -118,39 +103,18 @@ void McAbstractAppender::setDevice(QIODeviceConstPtrRef device) noexcept
 
 void McAbstractAppender::finished() noexcept 
 {
-    if(layout().isNull()) {
-        auto l = McNormalLayoutPtr::create();
-        l->finished();
-        setLayout(l);
-    }
 }
 
 void McAbstractAppender::threadFinished() noexcept 
 {
-    auto l = layout();  //!< 一定存在
-    auto pl = l.staticCast<McPatternLayout>();  //!< 一定成功
-    if(pl->thread() != thread()) {
-        pl->moveToThread(thread());
-    }
 }
 
 void McAbstractAppender::customEvent(QEvent *event) 
 {
     if(event->type() == McAppenderEvent::eventType) {
         auto e = static_cast<McAppenderEvent *>(event);
-        append_helper(e->msg().toLocal8Bit());
+        doAppend(e->type(), *e->context(), e->msg());
     }
-}
-
-void McAbstractAppender::append_helper(const QByteArray &msg) noexcept 
-{
-    auto out = device();
-    if(out.isNull() || !out->isOpen()) {
-        return;
-    }
-    out->write(msg);
-    out->write("\n", 1);
-    flush();
 }
 
 QList<QtMsgType> McAbstractAppender::initThreshold(const QString &val) const noexcept 

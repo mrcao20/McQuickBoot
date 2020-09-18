@@ -28,12 +28,16 @@ McQmlResponse::McQmlResponse(QJSEngine *jsEngine, QObject *parent)
     d->jsEngine = jsEngine;
 }
 
-McQmlResponse::~McQmlResponse() 
+McQmlResponse::~McQmlResponse()
 {
 }
 
 void McQmlResponse::setBody(const QVariant &var) noexcept 
 {
+    //! 2020-9-18
+    //! 由于js为单线程语言，只能在创建该对象的线程中调用回调函数
+    d->isSyncCall = true;
+    
     d->body = var;
     
     if(d->isSyncCall) {
