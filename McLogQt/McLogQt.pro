@@ -53,7 +53,7 @@ contains(DEFINES, MC_NO_IOC) {
             CONFIG(release, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocContainer
             else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocContainerd
         } else {
-            equals(QT_MAJOR_VERSION, 5):lessThan(QT_MINOR_VERSION, 5) {
+            equals(QT_MAJOR_VERSION, 5):lessThan(QT_MINOR_VERSION, 9) {
                 CONFIG(release, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocContainer
                 else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocContainerd
             } else {

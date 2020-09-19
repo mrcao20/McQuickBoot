@@ -46,7 +46,7 @@ win32 {
         else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocContainerd \
             -L$$PWD/../../bin/ -lMcLogQtd
     } else {
-        equals(QT_MAJOR_VERSION, 5):lessThan(QT_MINOR_VERSION, 5) {
+        equals(QT_MAJOR_VERSION, 5):lessThan(QT_MINOR_VERSION, 9) {
             CONFIG(release, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocContainer \
                 -L$$PWD/../../bin/ -lMcLogQt
             else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocContainerd \
