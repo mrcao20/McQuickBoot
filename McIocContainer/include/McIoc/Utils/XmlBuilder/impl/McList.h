@@ -13,6 +13,7 @@ public:
     ~McList() override;
     
     void addContent(IMcPropertyContentConstPtrRef val) noexcept;
+    void addContent(const QString &val) noexcept;
     
     QDomElement toDomElement(QDomDocument &doc) const noexcept override;
     

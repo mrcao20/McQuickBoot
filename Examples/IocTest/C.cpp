@@ -44,7 +44,8 @@ void C::a() noexcept
              << "m_mtexts:" << m_mtexts
              << "m_hrs:" << m_hrs
              << "obj thread:" << thread()
-             << "cur thread:" << QThread::currentThread();
+             << "cur thread:" << QThread::currentThread()
+             << "align" << m_align;
     emit signal_send();
 }
 

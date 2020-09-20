@@ -48,6 +48,14 @@ int main(int argc, char *argv[])
     c->setSlot("slot_recv()");
     c->setConnectionType("DirectConnection | UniqueConnection");
     
+    McEnumPtr en = McEnumPtr::create();
+    en->setScope("Qt");
+    en->setType("AlignmentFlag");
+    en->setValue("AlignLeft");
+    McPropertyPtr pp1 = McPropertyPtr::create();
+    pp1->setContent("align", en);
+    b->addContent(pp1);
+    
     McRefPtr ref = McRefPtr::create();
     ref->setBeanName("r");
     McPropertyPtr p3 = McPropertyPtr::create();
@@ -59,6 +67,13 @@ int main(int argc, char *argv[])
     McPropertyPtr p1 = McPropertyPtr::create();
     b->addContent(p1);
     p1->setContent("hrs", m);
+    
+    McListPtr ll = McListPtr::create();
+    ll->addContent("停封");
+    McPropertyPtr pp2 = McPropertyPtr::create();
+    pp2->setContent("texts", ll);
+    b->addContent(pp2);
+    
     auto doc = bc.toDomDocument();
     qDebug() << doc.toString(4);
     QFile file(qApp->applicationDirPath() + "/test.xml");

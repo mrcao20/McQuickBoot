@@ -56,6 +56,7 @@ class C : public QObject, public IB
     Q_PROPERTY(StringMap mtexts MEMBER m_mtexts)
     typedef QHash<QString, RPtr> RHash; 
     Q_PROPERTY(RHash hrs MEMBER m_hrs)
+    Q_PROPERTY(Qt::AlignmentFlag align MEMBER m_align)
 public:
     Q_INVOKABLE C(){}
     
@@ -95,6 +96,7 @@ signals:
     void signal_send();
     
 private:
+    Qt::AlignmentFlag m_align;
     QString m_text;                     //!< 普通字符串
     RPtr m_r;                           //!< 对象
     QList<QString> m_texts;             //!< 字符串列表
