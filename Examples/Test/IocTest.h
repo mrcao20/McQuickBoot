@@ -24,13 +24,19 @@ class IocTest : public QObject, public McDefaultDeleteThreadWhenQuit
     using IHash = QHash<QString, InterfacePtr>;
     Q_PROPERTY(IHash iMap MEMBER m_iMap)
     Q_PROPERTY(EEE eee MEMBER m_eee)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
     Q_PROPERTY(Qt::AlignmentFlag align MEMBER m_align)
+#endif
 public:
     enum EEE {
         A = 1,
         B
     };
+#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
     Q_ENUM(EEE)
+#else
+    Q_ENUMS(EEE)
+#endif
     Q_INVOKABLE explicit IocTest(QObject *parent = nullptr);
     
 signals:

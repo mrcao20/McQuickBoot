@@ -53,7 +53,13 @@ QVariant McControllerContainer::invoke(const QString &uri, const QVariant &body)
 
 QVariant McControllerContainer::invoke(const QString &uri) noexcept 
 {
-    auto list = uri.split('?', Qt::SkipEmptyParts);
+    auto list = uri.split('?', 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+                          Qt::SkipEmptyParts
+#else
+                          QString::SkipEmptyParts
+#endif
+                          );
     if (list.isEmpty())
         return fail("access path not exists");
     QObjectPtr bean;
@@ -87,7 +93,13 @@ bool McControllerContainer::splitBeanAndFunc(
         , QString &func
         , QVariant &errRet) noexcept 
 {
-    auto beanAndFunc = uri.split('.', Qt::SkipEmptyParts);
+    auto beanAndFunc = uri.split('.', 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+                                 Qt::SkipEmptyParts
+#else
+                                 QString::SkipEmptyParts
+#endif
+                                 );
     if (beanAndFunc.size() != 2) {
         errRet = fail("access path not exists");
         return false;
@@ -122,9 +134,21 @@ QVariant McControllerContainer::invokeForUri(
 QMap<QString, QVariant> McControllerContainer::splitParam(const QString &param) noexcept 
 {
     QMap<QString, QVariant> args;
-    QStringList params = param.split('&', Qt::SkipEmptyParts);
+    QStringList params = param.split('&', 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+                                     Qt::SkipEmptyParts
+#else
+                                     QString::SkipEmptyParts
+#endif
+                                     );
     for (const auto &p : params) {
-        QStringList nameAndValue = p.split('=', Qt::SkipEmptyParts);
+        QStringList nameAndValue = p.split('=', 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+                                           Qt::SkipEmptyParts
+#else
+                                           QString::SkipEmptyParts
+#endif
+                                           );
         if(nameAndValue.isEmpty())
             continue;
         QString key = nameAndValue.at(0);

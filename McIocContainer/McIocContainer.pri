@@ -40,7 +40,20 @@ HEADERS += \
     $$PWD/include/McIoc/Utils/McScopedFunction.h \
     include/McIoc/McGlobal.h \
     include/McIoc/McIocVersion.h \
-    include/McIoc/McMacroGlobal.h
+    include/McIoc/McMacroGlobal.h \
+    $$PWD/include/McIoc/Utils/XmlBuilder/impl/McBean.h \
+    $$PWD/include/McIoc/Utils/XmlBuilder/impl/McBeanCollection.h \
+    $$PWD/include/McIoc/Utils/XmlBuilder/impl/McProperty.h \
+    $$PWD/include/McIoc/Utils/XmlBuilder/IMcXml.h \
+    $$PWD/include/McIoc/Utils/XmlBuilder/IMcBean.h \
+    $$PWD/include/McIoc/Utils/XmlBuilder/IMcBeanContent.h \
+    $$PWD/include/McIoc/Utils/XmlBuilder/IMcPropertyContent.h \
+    $$PWD/include/McIoc/Utils/XmlBuilder/impl/McConnect.h \
+    $$PWD/include/McIoc/Utils/XmlBuilder/impl/McEnum.h \
+    $$PWD/include/McIoc/Utils/XmlBuilder/impl/McValue.h \
+    $$PWD/include/McIoc/Utils/XmlBuilder/impl/McMap.h \
+    $$PWD/include/McIoc/Utils/XmlBuilder/impl/McList.h \
+    $$PWD/include/McIoc/Utils/XmlBuilder/impl/McRef.h
 
 SOURCES += \
     $$PWD/src/ApplicationContext/McAbstractApplicationContext.cpp \
@@ -63,4 +76,13 @@ SOURCES += \
     $$PWD/src/PropertyParser/McDefaultPropertyConverter.cpp \
     $$PWD/src/PropertyParser/McDefaultPropertyParser.cpp \
     $$PWD/src/Thread/McDefaultDeleteThreadWhenQuit.cpp \
-    src/McGlobal.cpp
+    src/McGlobal.cpp \
+    $$PWD/src/Utils/XmlBuilder/McBeanCollection.cpp \
+    $$PWD/src/Utils/XmlBuilder/McBean.cpp \
+    $$PWD/src/Utils/XmlBuilder/McProperty.cpp \
+    $$PWD/src/Utils/XmlBuilder/McConnect.cpp \
+    $$PWD/src/Utils/XmlBuilder/McEnum.cpp \
+    $$PWD/src/Utils/XmlBuilder/McList.cpp \
+    $$PWD/src/Utils/XmlBuilder/McMap.cpp \
+    $$PWD/src/Utils/XmlBuilder/McRef.cpp \
+    $$PWD/src/Utils/XmlBuilder/McValue.cpp

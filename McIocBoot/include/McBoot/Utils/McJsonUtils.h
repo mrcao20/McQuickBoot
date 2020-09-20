@@ -30,7 +30,9 @@ public:
     static QJsonObject toJson(const QMap<QString, QObject *> &objs) noexcept;
     static QJsonObject toJson(const QMap<QString, QObjectPtr> &objs) noexcept;
     static QJsonObject toJson(const QVariantMap &objs) noexcept;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
 	static QJsonObject toJson(void *gadget, const QMetaObject *mobj) noexcept;
+#endif
 };
 
 template<typename T>

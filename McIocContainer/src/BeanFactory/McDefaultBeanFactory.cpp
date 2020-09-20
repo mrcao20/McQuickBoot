@@ -125,6 +125,9 @@ bool McDefaultBeanFactory::addPropertyValue(QObjectConstPtrRef bean
             
         }else{
             auto metaProperty = bean->metaObject()->property(index);
+#if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
+            value.convert(QMetaType::type(metaProperty.typeName()));
+#endif
             if(!metaProperty.write(bean.data(), value)) {
                 qCritical("bean '%s' write property named for '%s' failure"
                           , bean->metaObject()->className()

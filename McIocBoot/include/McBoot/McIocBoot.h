@@ -72,7 +72,9 @@ int McIocBoot::run(int argc, char *argv[], const QString &path
                    , const function<void(T *app, QQmlApplicationEngine *)> &func
                    , const function<void(T *app)> &prefunc) noexcept 
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#endif
 
     T app(argc, argv);
     
@@ -105,7 +107,9 @@ int McIocBoot::singleRun(int argc, char *argv[], const QString &path
                          , const function<void(T *app, QQmlApplicationEngine *)> &func
                          , const function<void(T *app)> &prefunc) noexcept 
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#endif
 
     T app(argc, argv);
     if(app.isRunning())

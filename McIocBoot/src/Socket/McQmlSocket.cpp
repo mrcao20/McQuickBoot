@@ -5,6 +5,10 @@
 #include <QJSEngine>
 #include <QEvent>
 #include <QDebug>
+#if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
+#include <QQmlEngine>
+#include <QQmlContext>
+#endif
 
 class QmlSocketEvent : public QEvent 
 {
@@ -17,7 +21,11 @@ public:
         ErrorEvent,
         MessageEvent
     };
+#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
     Q_ENUM(QmlSocketEventType)
+#else
+    Q_ENUMS(QmlSocketEventType)
+#endif
     
     QmlSocketEvent(int type, const QVariant &data)
         : QEvent(static_cast<QEvent::Type>(type))
@@ -90,6 +98,10 @@ void McQmlSocket::onMessage(const QJSValue &callback, bool isSync) noexcept
 
 void McQmlSocket::opened() noexcept 
 {
+    //! 2020-9-18
+    //! 由于js为单线程语言，只能在创建该对象的线程中调用回调函数
+    d->isOpenSync = true;
+    
     if(d->isOpenSync) {
         qApp->postEvent(this, new QmlSocketEvent(QmlSocketEvent::OpenEvent, ""));
     }else{
@@ -99,6 +111,10 @@ void McQmlSocket::opened() noexcept
 
 void McQmlSocket::closed() noexcept 
 {
+    //! 2020-9-18
+    //! 由于js为单线程语言，只能在创建该对象的线程中调用回调函数
+    d->isCloseSync = true;
+    
     if(d->isCloseSync) {
         qApp->postEvent(this, new QmlSocketEvent(QmlSocketEvent::CloseEvent, ""));
     }else{
@@ -108,6 +124,10 @@ void McQmlSocket::closed() noexcept
 
 void McQmlSocket::errored(const QString &errMsg) noexcept 
 {
+    //! 2020-9-18
+    //! 由于js为单线程语言，只能在创建该对象的线程中调用回调函数
+    d->isErrorSync = true;
+    
     if(d->isErrorSync) {
         qApp->postEvent(this, new QmlSocketEvent(QmlSocketEvent::ErrorEvent, errMsg));
     }else{
@@ -117,6 +137,10 @@ void McQmlSocket::errored(const QString &errMsg) noexcept
 
 void McQmlSocket::receivedMsg(const QVariant &msg) noexcept 
 {
+    //! 2020-9-18
+    //! 由于js为单线程语言，只能在创建该对象的线程中调用回调函数
+    d->isMessageSync = true;
+    
     if(d->isMessageSync) {
         qApp->postEvent(this, new QmlSocketEvent(QmlSocketEvent::MessageEvent, msg));
     }else{
@@ -179,7 +203,11 @@ void McQmlSocket::message_helper(const QVariant &msg) noexcept
     if(!d->onMessage.isCallable()) {
         return;
     }
+#if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
+    auto engine = QQmlEngine::contextForObject(this)->engine();
+#else
     auto engine = qjsEngine(this);
+#endif
     if(!engine) {
         qCritical() << "not found js engine";
         return;

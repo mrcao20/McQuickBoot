@@ -19,7 +19,11 @@ public:
         InnerSocketSendEvent,
         InnerSocketCloseEvent
     };
+#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
     Q_ENUM(McQmlSocketEventType)
+#else
+    Q_ENUMS(McQmlSocketEventType)
+#endif
     
     McQmlSocketEvent(int type, const QVariant &data);
     ~McQmlSocketEvent() override;

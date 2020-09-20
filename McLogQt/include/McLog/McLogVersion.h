@@ -6,7 +6,7 @@
 #define MC_LOG_MAJOR 1 // version when you make big feature changes.
 #define MC_LOG_MINOR 0 // version when you make small feature changes.
 #define MC_LOG_PATCH 0 // version when you make backwards-compatible bug fixes.
-#define MC_LOG_INTERNAL 1 // MC_LOG_INTERNAL version for perpurse like feature test, bug fix test,development, et
+#define MC_LOG_INTERNAL 3 // MC_LOG_INTERNAL version for perpurse like feature test, bug fix test,development, et
 
 #ifdef QT_DEBUG
 #define MC_LOG_VERSION_STR (QString::number(MC_LOG_MAJOR) + "." + QString::number(MC_LOG_MINOR) + "." + QString::number(MC_LOG_PATCH) + "." + QString::number(MC_LOG_INTERNAL))

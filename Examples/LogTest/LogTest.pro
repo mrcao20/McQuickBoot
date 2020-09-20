@@ -46,8 +46,15 @@ win32 {
         else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocContainerd \
             -L$$PWD/../../bin/ -lMcLogQtd
     } else {
-        LIBS += -L$$PWD/../../bin/ -lMcIocContainer \
-            -L$$PWD/../../bin/ -lMcLogQt
+        equals(QT_MAJOR_VERSION, 5):lessThan(QT_MINOR_VERSION, 9) {
+            CONFIG(release, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocContainer \
+                -L$$PWD/../../bin/ -lMcLogQt
+            else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocContainerd \
+                -L$$PWD/../../bin/ -lMcLogQtd
+        } else {
+            LIBS += -L$$PWD/../../bin/ -lMcIocContainer \
+                -L$$PWD/../../bin/ -lMcLogQt
+        }
     }
 } else:unix:!macx {
     LIBS += -L$$PWD/../../bin/ -lMcIocContainer \

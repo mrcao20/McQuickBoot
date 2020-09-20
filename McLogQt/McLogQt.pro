@@ -8,6 +8,7 @@ QT       -= gui
 
 TARGET = McLogQt
 TARGET = $$qt5LibraryTarget($$TARGET)
+CONFIG += c++11
 
 CONFIG(release, debug|release) {
     DEFINES += QT_MESSAGELOGCONTEXT
@@ -52,7 +53,12 @@ contains(DEFINES, MC_NO_IOC) {
             CONFIG(release, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocContainer
             else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocContainerd
         } else {
-            LIBS += -L$$PWD/../bin/ -lMcIocContainer
+            equals(QT_MAJOR_VERSION, 5):lessThan(QT_MINOR_VERSION, 9) {
+                CONFIG(release, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocContainer
+                else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocContainerd
+            } else {
+                LIBS += -L$$PWD/../bin/ -lMcIocContainer
+            }
         }
     } else:unix:!macx {
         LIBS += -L$$PWD/../bin/ -lMcIocContainer
