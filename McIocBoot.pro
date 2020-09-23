@@ -1,6 +1,7 @@
 TEMPLATE = subdirs
 
-SUBDIRS += McIocContainer
+SUBDIRS += McIocContainer \
+    McYaml
 
 SUBDIRS += McIocBoot
 McIocBoot.depends += McIocContainer
