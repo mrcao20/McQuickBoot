@@ -39,6 +39,8 @@ CONFIG(release, debug|release) {
     DEFINES += QT_MESSAGELOGCONTEXT
 }
 
+include($$PWD/../../McYaml/McYamlDepend.pri)
+
 win32 {
     msvc {
         QMAKE_CFLAGS += /utf-8

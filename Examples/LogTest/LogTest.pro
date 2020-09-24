@@ -36,36 +36,29 @@ CONFIG(release, debug|release) {
     DEFINES += QT_MESSAGELOGCONTEXT
 }
 
+include($$PWD/../../McLogQt/McLogQtDepend.pri)
+
 win32 {
     msvc {
         QMAKE_CFLAGS += /utf-8
         QMAKE_CXXFLAGS += /utf-8
         
-        CONFIG(release, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocContainer \
-            -L$$PWD/../../bin/ -lMcLogQt
-        else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocContainerd \
-            -L$$PWD/../../bin/ -lMcLogQtd
+        CONFIG(release, debug|release): LIBS += -L$$PWD/../../bin/ -lMcLogQt
+        else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcLogQtd
     } else {
         equals(QT_MAJOR_VERSION, 5):lessThan(QT_MINOR_VERSION, 9) {
-            CONFIG(release, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocContainer \
-                -L$$PWD/../../bin/ -lMcLogQt
-            else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocContainerd \
-                -L$$PWD/../../bin/ -lMcLogQtd
+            CONFIG(release, debug|release): LIBS += -L$$PWD/../../bin/ -lMcLogQt
+            else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcLogQtd
         } else {
-            LIBS += -L$$PWD/../../bin/ -lMcIocContainer \
-                -L$$PWD/../../bin/ -lMcLogQt
+            LIBS += -L$$PWD/../../bin/ -lMcLogQt
         }
     }
 } else:unix:!macx {
-    LIBS += -L$$PWD/../../bin/ -lMcIocContainer \
-        -L$$PWD/../../bin/ -lMcLogQt
+    LIBS += -L$$PWD/../../bin/ -lMcLogQt
 }
 
 INCLUDEPATH += $$PWD/../../McLogQt/include
 DEPENDPATH += $$PWD/../../McLogQt/include
-
-INCLUDEPATH += $$PWD/../../McIocContainer/include
-DEPENDPATH += $$PWD/../../McIocContainer/include
 
 # 将/替换为\\才能正确识别路径
 SrcConfigPath = $$PWD/logqt.xml

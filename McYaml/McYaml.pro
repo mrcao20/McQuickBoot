@@ -36,6 +36,7 @@ unix {
 }
 
 include(McYaml.pri)
+include(McYamlDepend.pri)
 
 DESTDIR = $$PWD/../bin
 MOC_DIR = $$PWD/../moc/McYaml
@@ -47,6 +48,3 @@ msvc {
 
 QMAKE_CXXFLAGS_RELEASE = $$QMAKE_CFLAGS_RELEASE_WITH_DEBUGINFO
 QMAKE_LFLAGS_RELEASE = $$QMAKE_LFLAGS_RELEASE_WITH_DEBUGINFO
-
-INCLUDEPATH += D:/Soft/source/yaml-cpp_530/include
-LIBS += D:/Soft/source/yaml-cpp_530/bin/yaml-cpp.dll

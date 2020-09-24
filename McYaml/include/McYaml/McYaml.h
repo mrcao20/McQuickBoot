@@ -30,13 +30,13 @@
 class MCYAML_EXPORT McYaml
 {
 public:
-    void registerYaml() noexcept;
+    static void registerYaml() noexcept;
     
-    inline QSettings::Format format() const noexcept
+    static inline QSettings::Format format() noexcept
     { return m_format; }
     
 private:
-    QSettings::Format m_format{QSettings::InvalidFormat};
+    static QSettings::Format m_format;
 };
 
 namespace YAML {
