@@ -1,13 +1,18 @@
 TEMPLATE = subdirs
 
 SUBDIRS += McIocContainer \
-    McYaml
+    McYaml \
+    McIocBoot \
+    McLogQt \
+    Examples
 
-SUBDIRS += McIocBoot
-McIocBoot.depends += McIocContainer
+#SUBDIRS += McIocBoot
+#McIocBoot.depends += McIocContainer
 
-SUBDIRS += McLogQt
-McLogQt.depends += McIocContainer
+#SUBDIRS += McLogQt
+#McLogQt.depends += McIocContainer
 
-SUBDIRS += Examples
-Examples.depends += McIocContainer McIocBoot McLogQt
+#SUBDIRS += Examples
+#Examples.depends += McIocContainer McIocBoot McLogQt
+
+CONFIG += ordered
