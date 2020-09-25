@@ -1,8 +1,5 @@
 win32 {
     msvc {
-        QMAKE_CFLAGS += /utf-8
-        QMAKE_CXXFLAGS += /utf-8
-        
         CONFIG(release, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocContainer
         else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocContainerd
     } else {

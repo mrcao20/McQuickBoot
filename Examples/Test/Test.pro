@@ -49,13 +49,11 @@ HEADERS += \
     QmlSocketTest.h \
     ThreadTest.h
     
+include($$PWD/../../common.pri)
 include($$PWD/../../McIocBoot/McIocBootDepend.pri)
 
 win32 {
     msvc {
-        QMAKE_CFLAGS += /utf-8
-        QMAKE_CXXFLAGS += /utf-8
-        
         CONFIG(release, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocBoot
         else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocBootd
     } else {

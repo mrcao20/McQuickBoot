@@ -32,17 +32,11 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 DESTDIR = $$PWD/../../bin/Examples
 MOC_DIR = $$PWD/../../moc/Examples/LogTest
 
-CONFIG(release, debug|release) {
-    DEFINES += QT_MESSAGELOGCONTEXT
-}
-
+include($$PWD/../../common.pri)
 include($$PWD/../../McLogQt/McLogQtDepend.pri)
 
 win32 {
     msvc {
-        QMAKE_CFLAGS += /utf-8
-        QMAKE_CXXFLAGS += /utf-8
-        
         CONFIG(release, debug|release): LIBS += -L$$PWD/../../bin/ -lMcLogQt
         else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcLogQtd
     } else {

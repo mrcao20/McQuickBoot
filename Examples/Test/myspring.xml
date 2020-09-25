@@ -14,13 +14,13 @@
             <signal>signal()</signal>
             <receiver name="this"></receiver>
             <slot name="slot()"></slot>
-            <ConnectionType>DirectConnection | UniqueConnection</ConnectionType>
+            <type>DirectConnection | UniqueConnection</type>
         </connect>
         <connect sender=" inter">
             <signal>signal2()</signal>
             <receiver name="this"></receiver>
             <slot name="slot2()"></slot>
-            <ConnectionType>DirectConnection | UniqueConnection</ConnectionType>
+            <type>DirectConnection | UniqueConnection</type>
         </connect>
         <property name="interface" ref="object"></property>
         <property name="inter" ref="object"></property>

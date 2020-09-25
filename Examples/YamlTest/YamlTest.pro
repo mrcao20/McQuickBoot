@@ -35,17 +35,11 @@ FORMS    += MainWindow.ui
 DESTDIR = $$PWD/../../bin/Examples
 MOC_DIR = $$PWD/../../moc/Examples/YamlTest
 
-CONFIG(release, debug|release) {
-    DEFINES += QT_MESSAGELOGCONTEXT
-}
-
+include($$PWD/../../common.pri)
 include($$PWD/../../McYaml/McYamlDepend.pri)
 
 win32 {
     msvc {
-        QMAKE_CFLAGS += /utf-8
-        QMAKE_CXXFLAGS += /utf-8
-        
         CONFIG(release, debug|release): LIBS += -L$$PWD/../../bin/ -lMcYaml
         else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcYamld
     } else {

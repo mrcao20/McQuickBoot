@@ -66,7 +66,13 @@ struct convert<QVariant>
     static Node encode(const QVariant& rhs)
     {
         if(rhs.canConvert<QVariantMap>()) {
-            return Node(rhs.toMap());
+            QVariantMap map = rhs.toMap();
+            if(map.size() == 1) {
+                auto pair = qMakePair(map.firstKey(), map.first());
+                return Node(pair);
+            } else {
+                return Node(map);
+            }
         } else if(rhs.canConvert<QVariantList>()) {
             return Node(rhs.toList());
         } else {
@@ -85,7 +91,13 @@ struct convert<QVariant>
         } else if (node.IsSequence()) {
             rhs = node.as<QVariantList>();
         } else if (node.IsMap()) {
-            rhs = node.as<QVariantMap>();
+            auto map = node.as<QVariantMap>();
+            if(map.size() == 1) {
+                auto pair = qMakePair(map.firstKey(), map.first());
+                rhs.setValue(pair);
+            } else {
+                rhs = map;
+            }
         }
         return true;
     }

@@ -13,7 +13,8 @@ int main(int argc, char *argv[])
     QSettings set(path, McYaml::format());
     set.beginGroup("logger");
     set.beginGroup("default");
-    set.setValue("a", "b");
+    qDebug() << set.childKeys();
+    qDebug() << set.value("threshold");
     set.endGroup();
     set.endGroup();
     

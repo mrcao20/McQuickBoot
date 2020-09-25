@@ -11,10 +11,6 @@ CONFIG += c++11
 TARGET = McYaml
 TARGET = $$qt5LibraryTarget($$TARGET)
 
-CONFIG(release, debug|release) {
-    DEFINES += QT_MESSAGELOGCONTEXT
-}
-
 TEMPLATE = lib
 
 DEFINES += MCYAML_LIBRARY
@@ -35,16 +31,9 @@ unix {
     INSTALLS += target
 }
 
-include(McYaml.pri)
-include(McYamlDepend.pri)
+include($$PWD/../common.pri)
+include($$PWD/McYaml.pri)
+include($$PWD/McYamlDepend.pri)
 
 DESTDIR = $$PWD/../bin
 MOC_DIR = $$PWD/../moc/McYaml
-
-msvc {
-    QMAKE_CFLAGS += /utf-8
-    QMAKE_CXXFLAGS += /utf-8
-}
-
-QMAKE_CXXFLAGS_RELEASE = $$QMAKE_CFLAGS_RELEASE_WITH_DEBUGINFO
-QMAKE_LFLAGS_RELEASE = $$QMAKE_LFLAGS_RELEASE_WITH_DEBUGINFO

@@ -90,6 +90,6 @@ QSettings::Format McYaml::m_format = QSettings::InvalidFormat;
 
 void McYaml::registerYaml() noexcept
 {
-    m_format = QSettings::registerFormat("yaml", McPrivate::readYamlFile
+    m_format = QSettings::registerFormat("yml", McPrivate::readYamlFile
                                          , McPrivate::writeYamlFile);
 }

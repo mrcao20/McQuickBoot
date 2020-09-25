@@ -53,7 +53,8 @@ HEADERS += \
     $$PWD/include/McIoc/Utils/XmlBuilder/impl/McValue.h \
     $$PWD/include/McIoc/Utils/XmlBuilder/impl/McMap.h \
     $$PWD/include/McIoc/Utils/XmlBuilder/impl/McList.h \
-    $$PWD/include/McIoc/Utils/XmlBuilder/impl/McRef.h
+    $$PWD/include/McIoc/Utils/XmlBuilder/impl/McRef.h \
+    $$PWD/include/McIoc/BeanDefinitionReader/impl/McSettingBeanDefinitionReader.h
 
 SOURCES += \
     $$PWD/src/ApplicationContext/McAbstractApplicationContext.cpp \
@@ -85,4 +86,5 @@ SOURCES += \
     $$PWD/src/Utils/XmlBuilder/McList.cpp \
     $$PWD/src/Utils/XmlBuilder/McMap.cpp \
     $$PWD/src/Utils/XmlBuilder/McRef.cpp \
-    $$PWD/src/Utils/XmlBuilder/McValue.cpp
+    $$PWD/src/Utils/XmlBuilder/McValue.cpp \
+    $$PWD/src/BeanDefinitionReader/McSettingBeanDefinitionReader.cpp

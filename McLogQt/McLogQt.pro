@@ -10,16 +10,9 @@ TARGET = McLogQt
 TARGET = $$qt5LibraryTarget($$TARGET)
 CONFIG += c++11
 
-CONFIG(release, debug|release) {
-    DEFINES += QT_MESSAGELOGCONTEXT
-}
-
 TEMPLATE = lib
 
 DEFINES += MCLOGQT_LIBRARY
-
-# 去掉IOC容器的依赖部分
-#DEFINES += MC_NO_IOC
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
@@ -37,11 +30,10 @@ unix {
     INSTALLS += target
 }
 
-include(McLogQt.pri)
-include(McLogQtDepend.pri)
+# 在最上面
+include($$PWD/../common.pri)
+include($$PWD/McLogQt.pri)
+include($$PWD/McLogQtDepend.pri)
 
 DESTDIR = $$PWD/../bin
 MOC_DIR = $$PWD/../moc/McLogQt
-
-QMAKE_CXXFLAGS_RELEASE = $$QMAKE_CFLAGS_RELEASE_WITH_DEBUGINFO
-QMAKE_LFLAGS_RELEASE = $$QMAKE_LFLAGS_RELEASE_WITH_DEBUGINFO

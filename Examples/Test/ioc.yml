@@ -1,0 +1,40 @@
+object: 
+    Class: Object
+    text: "Hello World!"
+innerObject: 
+    Class: Object
+    text: "Inner Bean"
+test: 
+    Class: IocTest
+    Connect: 
+        Sender: interface
+        Signal: "signal()"
+        Receiver: this
+        Slot: slot()
+        Type: "DirectConnection | UniqueConnection"
+    Connect: 
+        Sender: inter
+        Signal: "signal2()"
+        Receiver: this
+        Slot: slot2()
+        Type: "DirectConnection | UniqueConnection"
+    interface: $object
+    inter: $object
+    interStr: $object
+    innerBean: $innerObject
+    eee: 3
+    str: 
+        - 停封
+        - 薄纸
+        - 关系
+    interfaces: 
+        - $object
+        - $object
+        - $innerObject
+    strMap:
+        - jack: 杰克
+        - rose: 肉丝
+    iMap: 
+        - jack: $object
+        - rose: $object
+        
