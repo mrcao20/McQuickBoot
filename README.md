@@ -55,7 +55,7 @@ MC_DECL_METATYPE(Class)
 Q_PROPERTY(InterfacePtr interface MEMBER m_interface) // 注意这里的类型为Interface后接上Ptr，而不是QSharedPointer<Interface>
 ~~~
 同样的，你可以调用Q_CLASSINFO("interface", "obj")将interface属性指向beanN为obj的bean，如果不调用，那么将直接以属性名interface查找bean，并且需要在后面将USER字段置为true: Q_PROPERTY(InterfacePtr interface MEMBER m_interface USER true)。<br />
-同样的，如果你没有调用过QMetaType::unregisterType函数，那么你可以不用调用MC_REGISTER_COMPONENT宏，只需要调用MC_REGISTER_BEAN_FACTORY宏将类注册到元对象中，并使用Q_CLASSINFO(MC_BEANNAME, "obj")宏声明一个beanName，McAnnotationApplicationContext就会在构造时自动查找所有注册到元对象中的类进而进行注入，前提是你从来都没有调用过QMetaType::unregisterType函数或者没有在McAnnotationApplicationContext构造之前调用。
+同样的，如果你没有调用过QMetaType::unregisterType函数，那么你可以不用调用MC_REGISTER_COMPONENT宏，只需要调用MC_REGISTER_BEAN_FACTORY宏将类注册到元对象中，并使用Q_CLASSINFO(MC_COMPONENT, MC_COMPONENT)将其声明为一个Component(注意：这里的第二个参数可以是任意值，比如IocBoot中可以是MC_CONTROLLER，只要第一个参数正确即可)，McAnnotationApplicationContext就会在构造时自动查找所有注册到元对象中的类进而进行注入，前提是你从来都没有调用过QMetaType::unregisterType函数或者没有在McAnnotationApplicationContext构造之前调用。
 
 5. 可以在MC_INIT和MC_INIT_END之间使用Mc::Ioc::connect("test", "interface", "signal()", "this", "slot()")为某一个bean连接信号和槽
    - 第一个参数为beanName
