@@ -8,7 +8,6 @@ QT       -= gui
 
 TARGET = McLogQt
 TARGET = $$qt5LibraryTarget($$TARGET)
-CONFIG += c++11
 
 TEMPLATE = lib
 

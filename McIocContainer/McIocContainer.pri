@@ -54,7 +54,9 @@ HEADERS += \
     $$PWD/include/McIoc/Utils/XmlBuilder/impl/McMap.h \
     $$PWD/include/McIoc/Utils/XmlBuilder/impl/McList.h \
     $$PWD/include/McIoc/Utils/XmlBuilder/impl/McRef.h \
-    $$PWD/include/McIoc/BeanDefinitionReader/impl/McSettingBeanDefinitionReader.h
+    $$PWD/include/McIoc/BeanDefinitionReader/impl/McSettingBeanDefinitionReader.h \
+    $$PWD/include/McIoc/ApplicationContext/impl/McSettingApplicationContext.h \
+    $$PWD/include/McIoc/ApplicationContext/impl/McIniSettingApplicationContext.h
 
 SOURCES += \
     $$PWD/src/ApplicationContext/McAbstractApplicationContext.cpp \
@@ -87,4 +89,12 @@ SOURCES += \
     $$PWD/src/Utils/XmlBuilder/McMap.cpp \
     $$PWD/src/Utils/XmlBuilder/McRef.cpp \
     $$PWD/src/Utils/XmlBuilder/McValue.cpp \
-    $$PWD/src/BeanDefinitionReader/McSettingBeanDefinitionReader.cpp
+    $$PWD/src/BeanDefinitionReader/McSettingBeanDefinitionReader.cpp \
+    $$PWD/src/ApplicationContext/McSettingApplicationContext.cpp \
+    $$PWD/src/ApplicationContext/McIniSettingApplicationContext.cpp
+
+!contains(DEFINES, MC_NO_YAML) {
+    HEADERS +=$$PWD/include/McIoc/ApplicationContext/impl/McYamlSettingApplicationContext.h
+
+    SOURCES += $$PWD/src/ApplicationContext/McYamlSettingApplicationContext.cpp
+}

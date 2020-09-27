@@ -16,3 +16,5 @@ win32 {
 
 INCLUDEPATH += $$PWD/../McIocContainer/include
 DEPENDPATH += $$PWD/../McIocContainer/include
+
+include($$PWD/../McIocContainer/McIocContainerDepend.pri)

@@ -6,6 +6,7 @@
 #include <QDebug>
 
 #include "Interface.h"
+#include "Object.h"
 
 class IocTest : public QObject, public McDefaultDeleteThreadWhenQuit
 {

@@ -1,7 +1,7 @@
 QT -= gui
 QT += xml
 
-CONFIG += c++11 console
+CONFIG += console
 CONFIG -= app_bundle
 
 TEMPLATE += fakelib

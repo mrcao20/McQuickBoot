@@ -1,4 +1,6 @@
+# object为beanName，Class指定类名，Plugin指定插件路径，Singleton指定是否单例
 object: 
+    Singleton: true
     Class: Object
     text: "Hello World!"
 innerObject: 
@@ -6,22 +8,25 @@ innerObject:
     text: "Inner Bean"
 test: 
     Class: IocTest
-    Connect: 
-        Sender: interface
-        Signal: "signal()"
-        Receiver: this
-        Slot: slot()
-        Type: "DirectConnection | UniqueConnection"
-    Connect: 
-        Sender: inter
-        Signal: "signal2()"
-        Receiver: this
-        Slot: slot2()
-        Type: "DirectConnection | UniqueConnection"
+    Connects: 
+        - Sender: interface
+          Signal: "signal()"
+          Receiver: this
+          Slot: slot()
+          Type: "DirectConnection | UniqueConnection"
+        - Sender: inter
+          Signal: "signal2()"
+          Receiver: this
+          Slot: slot2()
+          Type: "DirectConnection | UniqueConnection"
     interface: $object
     inter: $object
     interStr: $object
-    innerBean: $innerObject
+    innerBean: 
+        # 同XML不一样，内部类没有Singleton属性，同时不能指定beanName
+        # 如果不指定Class，那么容器会自动指定类名为属性的类型
+        Class: Object
+        text: "Inner Bean"
     eee: 3
     str: 
         - 停封

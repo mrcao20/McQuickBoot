@@ -9,7 +9,6 @@ class MCIOCCONTAINER_EXPORT McReadableApplicationContext
         : public McAbstractApplicationContext
         , public IMcReadableApplicationContext 
 {
-    
     Q_OBJECT
 public:
     explicit McReadableApplicationContext(QObject *parent = nullptr);

@@ -6,8 +6,6 @@
 
 QT       -= gui
 
-CONFIG += c++11
-
 TARGET = McYaml
 TARGET = $$qt5LibraryTarget($$TARGET)
 

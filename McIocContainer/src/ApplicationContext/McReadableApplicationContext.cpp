@@ -44,7 +44,8 @@ McReadableApplicationContext::McReadableApplicationContext(
 }
 
 McReadableApplicationContext::~McReadableApplicationContext() 
-{}
+{
+}
 
 void McReadableApplicationContext::readBeans() noexcept 
 {

@@ -7,6 +7,15 @@
 #include <QCoreApplication>
 #include <QUrl>
 
+namespace McPrivate {
+
+MC_INIT(McGlobal)
+McMetaTypeId::addQObjectPointerIds(qRegisterMetaType<QObject *>("QObject"));
+McMetaTypeId::addSharedPointerId(qRegisterMetaType<QObjectPtr>(MC_MACRO_STR(QObjectConstPtrRef)));
+MC_INIT_END
+
+}
+
 McCustomEvent::~McCustomEvent() noexcept
 {
 }

@@ -9,6 +9,7 @@
 
 #include "McIoc/ApplicationContext/impl/McLocalPathApplicationContext.h"
 #include "McIoc/ApplicationContext/impl/McAnnotationApplicationContext.h"
+#include "McIoc/ApplicationContext/impl/McYamlSettingApplicationContext.h"
 #include "IocTest.h"
 #include "InvokeTest.h"
 #include <Object.h>
@@ -65,10 +66,17 @@ int main(int argc, char *argv[])
     
     QGuiApplication app(argc, argv);
     
+    auto mo = &IocTest::staticMetaObject;
+    auto pro = mo->property(mo->indexOfProperty("innerBean"));
+    qDebug() << "bbbbbbbbbbb>" << pro.userType() << pro.typeName()
+             << QMetaType::type("QObject");
+    
     ThreadTest *t = new ThreadTest();
     //! XML注入方式
-    IMcApplicationContextPtr appCon = McLocalPathApplicationContextPtr::create(
-                QStringList() << ":/myspring.xml" << ":/xmltest2.xml");
+//    IMcApplicationContextPtr appCon = McLocalPathApplicationContextPtr::create(
+//                QStringList() << ":/myspring.xml" << ":/xmltest2.xml");
+    IMcApplicationContextPtr appCon = McYamlSettingApplicationContextPtr::create(
+                ":/ioc.yml");
     appCon->refresh(t);
     auto test = appCon->getBean<IocTestPtr>("test");
     qDebug() << test->m_interface << test->m_str << test->m_interfaces

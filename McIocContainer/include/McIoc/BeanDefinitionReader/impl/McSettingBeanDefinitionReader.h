@@ -6,9 +6,9 @@ QT_BEGIN_NAMESPACE
 MC_FORWARD_DECL_CLASS(QSettings);
 QT_END_NAMESPACE
 
-MC_FORWARD_DECL_CLASS(IMcBeanDefinition)
+MC_FORWARD_DECL_CLASS(IMcBeanDefinition);
 
-MC_FORWARD_DECL_PRIVATE_DATA(McSettingBeanDefinitionReader)
+MC_FORWARD_DECL_PRIVATE_DATA(McSettingBeanDefinitionReader);
 
 class MCIOCCONTAINER_EXPORT McSettingBeanDefinitionReader : public McAbstractBeanDefinitionReader 
 {
@@ -16,16 +16,21 @@ class MCIOCCONTAINER_EXPORT McSettingBeanDefinitionReader : public McAbstractBea
     using McAbstractBeanDefinitionReader::readBeanDefinition;
 public:
     explicit McSettingBeanDefinitionReader(
-        QSettingsConstPtrRef settings
-        , QObject *parent = nullptr);
+        QSettingsConstPtrRef setting, QObject *parent = nullptr);
+    explicit McSettingBeanDefinitionReader(
+        const QList<QSettingsPtr> &settings, QObject *parent = nullptr);
     virtual ~McSettingBeanDefinitionReader() override;
 
 protected:
     void doReadBeanDefinition() noexcept override;
-
+    
 private:
-    Qt::ConnectionType getConnectionType(const QString &typeStr) noexcept;
-    Qt::ConnectionType connectionTypeStrToEnum(const QString &typeStr) noexcept;
+    IMcBeanDefinitionPtr buildBeanDefinition(QSettingsConstPtrRef setting) noexcept;
+    void readBeanDefinitionForProperty(QSettingsConstPtrRef setting
+                                       , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept;
+    void readBeanDefinitionForConnect(QSettingsConstPtrRef setting
+                                      , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept;
+    QVariant parseProperty(const QVariant &var) noexcept;
 
 private:
 	MC_DECL_PRIVATE(McSettingBeanDefinitionReader)

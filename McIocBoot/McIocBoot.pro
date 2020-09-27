@@ -6,8 +6,6 @@
 
 QT += quick network
 
-CONFIG += c++11
-
 TARGET = McIocBoot
 TARGET = $$qt5LibraryTarget($$TARGET)
 

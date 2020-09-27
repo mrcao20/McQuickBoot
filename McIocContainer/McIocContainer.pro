@@ -7,8 +7,6 @@
 QT -= gui
 QT += xml
 
-CONFIG += c++11
-
 TARGET = McIocContainer
 TARGET = $$qt5LibraryTarget($$TARGET)
 
@@ -34,6 +32,7 @@ unix {
 
 include($$PWD/../common.pri)
 include($$PWD/McIocContainer.pri)
+include($$PWD/McIocContainerDepend.pri)
 
 DESTDIR = $$PWD/../bin
 MOC_DIR = $$PWD/../moc/McIocContainer

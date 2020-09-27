@@ -20,3 +20,5 @@ contains(DEFINES, MC_NO_IOC) {
     INCLUDEPATH += $$PWD/../McIocContainer/include
     DEPENDPATH += $$PWD/../McIocContainer/include
 }
+
+include($$PWD/../McIocContainer/McIocContainerDepend.pri)

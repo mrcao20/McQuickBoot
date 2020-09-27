@@ -29,6 +29,7 @@
 
 class MCYAML_EXPORT McYaml
 {
+    static int InitYaml;
 public:
     static void registerYaml() noexcept;
     

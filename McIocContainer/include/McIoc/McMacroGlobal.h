@@ -77,6 +77,19 @@
 #define MC_SLOT "slot"
 #define MC_CONNECTION_TYPE "type"
 
+//! QSetting Config
+#define MC_QSETTING_CLASS "Class"
+#define MC_QSETTING_PLUGIN "Plugin"
+#define MC_QSETTING_SINGLETON "Singleton"
+#define MC_QSETTING_CONNECTS "Connects"
+#define MC_QSETTING_SENDER "Sender"
+#define MC_QSETTING_SINGAL "Signal"
+#define MC_QSETTING_RECEIVER "Receiver"
+#define MC_QSETTING_SLOT "Slot"
+#define MC_QSETTING_TYPE "Type"
+#define MC_QSETTING_REF_TAG "$"
+//!< QSetting Config
+
 #if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
 #define qInfo QMessageLogger(QT_MESSAGELOG_FILE, QT_MESSAGELOG_LINE, QT_MESSAGELOG_FUNC).debug
 #endif
