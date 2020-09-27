@@ -61,6 +61,8 @@
 
 
 //! Q_CLASSINFO
+#define MC_COMPONENT "Component"
+
 #define MC_SINGLETON "isSingleton"
 #define MC_BEANNAME "beanName"
 //!< Q_CLASSINFO

@@ -39,49 +39,75 @@ McAnnotationApplicationContext::McAnnotationApplicationContext(QObject *parent)
 {
     MC_NEW_PRIVATE_DATA(McAnnotationApplicationContext);
     
-    auto ar = mcAutowiredRegistry();
-    auto qobjectMetaTypeIds = McMetaTypeId::qobjectPointerIds();
-    for(auto type : qobjectMetaTypeIds) {
-        Q_ASSERT_X(QMetaType::isRegistered(type), "McAnnotationApplicationContext", "type not registered");
-        auto metaObj = QMetaType::metaObjectForType(type);
-        Q_ASSERT_X(metaObj, "McAnnotationApplicationContext", "cannot get meta object");
-        auto beanNameIndex = metaObj->indexOfClassInfo(MC_BEANNAME);
-        if(beanNameIndex == -1) {
-            continue;
+    //! 确保只会被调用一次，并且调用时间在QCoreApplication之后
+    static int init = [](){
+        auto ar = mcAutowiredRegistry();
+        auto qobjectMetaTypeIds = McMetaTypeId::qobjectPointerIds();
+        for(auto type : qobjectMetaTypeIds) {
+            Q_ASSERT_X(QMetaType::isRegistered(type), "McAnnotationApplicationContext", "type not registered");
+            auto metaObj = QMetaType::metaObjectForType(type);
+            Q_ASSERT_X(metaObj, "McAnnotationApplicationContext", "cannot get meta object");
+            auto componentIndex = metaObj->indexOfClassInfo(MC_COMPONENT);
+            if(componentIndex == -1) {
+                continue;
+            }
+            
+            QString beanName;
+            auto beanNameIndex = metaObj->indexOfClassInfo(MC_BEANNAME);
+            if(beanNameIndex == -1) {
+                beanName = metaObj->className();
+                Q_ASSERT(!beanName.isEmpty());
+                auto firstChar = beanName.at(0);
+                firstChar = firstChar.toLower();
+                beanName.remove(0, 1);
+                beanName = firstChar + beanName;
+            } else {
+                auto beanNameClassInfo = metaObj->classInfo(beanNameIndex);
+                beanName = beanNameClassInfo.value();
+            }
+            auto beanDefinition = (*ar)[beanName];
+            if(!beanDefinition) {
+                beanDefinition = McRootBeanDefinitionPtr::create();
+                (*ar)[beanName] = beanDefinition;
+            }
+            if(!beanDefinition->getClassName().isEmpty()) {
+                continue;
+            }
+            auto isSingleton = true;    //!< 默认为单例
+            auto singletonIndex = metaObj->indexOfClassInfo(MC_SINGLETON);
+            if(singletonIndex != -1) {
+                auto classInfo = metaObj->classInfo(singletonIndex);
+                bool isTrue = classInfo.value() == QString("true");
+                bool isFalse = classInfo.value() == QString("false");
+                if(!isTrue && !isFalse) {
+                    qCritical() << "the singleton value for classInfo must be true or false of string";
+                }else{
+                    isSingleton = isTrue ? true : false;
+                }
+            }
+            beanDefinition->setBeanMetaObject(metaObj);
+            beanDefinition->setClassName(metaObj->className());
+            beanDefinition->setSingleton(isSingleton);
         }
-        auto beanNameClassInfo = metaObj->classInfo(beanNameIndex);
-        QString beanName = beanNameClassInfo.value();
-        auto beanDefinition = (*ar)[beanName];
-        if(!beanDefinition) {
-            beanDefinition = McRootBeanDefinitionPtr::create();
-            (*ar)[beanName] = beanDefinition;
-        }
-        if(!beanDefinition->getClassName().isEmpty()) {
-            continue;
-        }
-        auto isSingleton = true;    //!< 默认为单例
-        auto singletonIndex = metaObj->indexOfClassInfo(MC_SINGLETON);
-        if(singletonIndex != -1) {
-            auto classInfo = metaObj->classInfo(singletonIndex);
-            bool isTrue = classInfo.value() == QString("true");
-            bool isFalse = classInfo.value() == QString("false");
-            if(!isTrue && !isFalse) {
-                qCritical() << "the singleton value for classInfo must be true or false of string";
-            }else{
-                isSingleton = isTrue ? true : false;
+        
+        for(auto itr = ar->cbegin(), end = ar->cend(); itr != end;) {
+            if(itr.value()->getBeanMetaObject() == nullptr) {
+                itr = ar->erase(itr);
+            } else {
+                ++itr;
             }
         }
-        beanDefinition->setBeanMetaObject(metaObj);
-        beanDefinition->setClassName(metaObj->className());
-        beanDefinition->setSingleton(isSingleton);
-    }
-    
-    auto reader = McAnnotationBeanDefinitionReaderPtr::create((*ar));
+        return 0;
+    }();
+    Q_UNUSED(init)
+
+    auto reader = McAnnotationBeanDefinitionReaderPtr::create(*mcAutowiredRegistry);
     setReader(reader);
 }
 
 McAnnotationApplicationContext::~McAnnotationApplicationContext() 
-{}
+{
+}
 
 void McAnnotationApplicationContext::insertRegistry(const QString &typeName) noexcept 
 {

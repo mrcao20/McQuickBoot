@@ -22,8 +22,6 @@
 
 
 //! Q_CLASSINFO
-#define MC_COMPONENT "Component"
-
 #define MC_CONTROLLER "Controller"
 #define MC_MODEL "Model"
 #define MC_QML_SOCKET "QmlSocket"
