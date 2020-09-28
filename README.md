@@ -50,12 +50,12 @@ class Class {
 MC_DECL_METATYPE(Class)
 ~~~
 
-4. 在第2点中的MC_REGISTER_COMPONENT即为声明式注入，调用此宏之后IOC容器就能查找并生成该对象。同时在头文件中调用Q_CLASSINFO(MC_BEANNAME, "obj")为该类指定一个beanName，如上面的例子指定的目标beanName为obj，如果不调用该宏，那么系统默认生成一个以类名首字母小写为名的beanName。同时可以调用Q_CLASSINFO(MC_SINGLETON, "false")为该类指定是否为单例生成，如果不调用，默认为单例。此后就可以在另一个注入到系统中的类中获取到该类的实例了:
+4. 在第2点中的MC_REGISTER_COMPONENT即为声明式注入，调用此宏之后IOC容器就能查找并生成该对象。同时在头文件中调用MC_BEANNAME("obj")为该类指定一个beanName，如上面的例子指定的目标beanName为obj，如果不调用该宏，那么系统默认生成一个以类名首字母小写为名的beanName。同时可以调用MC_SINGLETON(false)为该类指定是否为单例生成，如果不调用，默认为单例。此后就可以在另一个注入到系统中的类中获取到该类的实例了:
 ~~~
 Q_PROPERTY(InterfacePtr interface MEMBER m_interface) // 注意这里的类型为Interface后接上Ptr，而不是QSharedPointer<Interface>
 ~~~
 同样的，你可以调用Q_CLASSINFO("interface", "obj")将interface属性指向beanN为obj的bean，如果不调用，那么将直接以属性名interface查找bean，并且需要在后面将USER字段置为true: Q_PROPERTY(InterfacePtr interface MEMBER m_interface USER true)。<br />
-同样的，如果你没有调用过QMetaType::unregisterType函数，那么你可以不用调用MC_REGISTER_COMPONENT宏，只需要调用MC_REGISTER_BEAN_FACTORY宏将类注册到元对象中，并使用Q_CLASSINFO(MC_COMPONENT, MC_COMPONENT)将其声明为一个Component(注意：这里的第二个参数可以是任意值，比如IocBoot中可以是MC_CONTROLLER，只要第一个参数正确即可)，McAnnotationApplicationContext就会在构造时自动查找所有注册到元对象中的类进而进行注入，前提是你从来都没有调用过QMetaType::unregisterType函数或者没有在McAnnotationApplicationContext构造之前调用。
+同样的，如果你没有调用过QMetaType::unregisterType函数，那么你可以不用调用MC_REGISTER_COMPONENT宏，只需要调用MC_REGISTER_BEAN_FACTORY宏将类注册到元对象中，并使用MC_COMPONENT将其声明为一个Component，McAnnotationApplicationContext就会在构造时自动查找所有注册到元对象中的类进而进行注入，前提是你从来都没有调用过QMetaType::unregisterType函数或者没有在McAnnotationApplicationContext构造之前调用。
 
 5. 可以在MC_INIT和MC_INIT_END之间使用Mc::Ioc::connect("test", "interface", "signal()", "this", "slot()")为某一个bean连接信号和槽
    - 第一个参数为beanName
@@ -148,12 +148,12 @@ void end() noexcept;
    ~~~
    上面beanName为mcRegisterBeanFactory注册时的参数，funcName为Controller的函数，param1、param2、param3为函数的参数名，其后的值为将要赋值的参数值，其中param3将会被构造成一个QSharedPointer\<QObject\>
    
-   7. Controller需要使用Q_CLASSINFO(MC_COMPONENT, MC_CONTROLLER)来声明
+   7. Controller需要使用MC_CONTROLLER来声明
    8. 注意: 无论是$.get还是$.post亦或者是$.invoke的返回值都不允许赋值给其他变量，因为它们的返回值将在整个函数调用完毕时被析构。
    9. 内部提供一个beanName为app的controller，用于提供一些默认的功能，对应类：McApplicationController
    10. 提供invoke的同步请求接口syncInvoke，该函数的返回值即为controller的返回值，并且请求的线程为调用该函数的线程(通常为主线程)。
 - 增加QML到C++的长连接QmlSocket通信方式：
-   1. C++端声明一个Component，并使用Q_CLASSINFO(MC_COMPONENT, MC_QML_SOCKET)附加额外属性。然后按照需求实现最多四个函数，并使用四种宏标志四个函数以接收各种消息，具体参照QmlSocketTest或者Java Spring WebSocket。注意：每一个函数的执行都是在另外的线程。
+   1. C++端声明一个Component，并使用MC_QML_SOCKET附加额外属性。然后按照需求实现最多四个函数，并使用四种宏标志四个函数以接收各种消息，具体参照QmlSocketTest或者Java Spring WebSocket。注意：每一个函数的执行都是在另外的线程。
    2. QML端可以使用$.qs("beanName")来发起一个请求，该函数会返回一个对象，参照JS WebSocket。同时$.qs函数拥有第二个参数，可以直接指定onOpen等回调函数。同时因为部分界面操作不能在其他线程执行，所以$.qs的第二个参数中可以指定isOpenSync等参数来让某一个回调函数回到主线程后再执行。具体参照main.qml。
    3. 注意: $.qs的返回值必须赋值给某一特定变量，否则它可能会被QJSEngine的垃圾回收器给回收掉。
 ## 2020-6-3重大注意事项
