@@ -42,7 +42,7 @@ void McBean::addContent(IMcBeanContentConstPtrRef content) noexcept
 
 QDomElement McBean::toDomElement(QDomDocument &doc) const noexcept
 {
-    QDomElement bean = doc.createElement(MC_BEAN);
+    QDomElement bean = doc.createElement(MC_BEAN_TAG);
     if(!d->beanName.isEmpty()) {
         bean.setAttribute("name", d->beanName);
     }

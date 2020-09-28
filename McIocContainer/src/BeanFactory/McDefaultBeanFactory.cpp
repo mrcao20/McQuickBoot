@@ -205,7 +205,7 @@ QObjectPtr McDefaultBeanFactory::getPropertyObject(QObjectConstPtrRef bean
                            , const QVariantMap &proValues) noexcept 
 {
     QObjectPtr obj;
-    if(proName == MC_THIS) {
+    if(proName == MC_THIS_TAG) {
         obj = bean;
     }else{
         if(!proValues.contains(proName)) {

@@ -22,7 +22,7 @@ McModelContainer::~McModelContainer()
 void McModelContainer::init(McIocBootConstPtrRef boot) noexcept 
 {
     auto appCtx = boot->getApplicationContext();
-	auto beanNames = boot->getComponents(MC_MODEL);
+	auto beanNames = boot->getComponents(MC_MODEL_TAG);
     for (const auto &beanName : beanNames) {
         auto obj = appCtx->getBean(beanName);
         if(!obj) {

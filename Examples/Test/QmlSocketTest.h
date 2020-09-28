@@ -8,8 +8,8 @@
 
 class QmlSocketTest : public QObject {
     Q_OBJECT
-    Q_CLASSINFO(MC_COMPONENT, MC_QML_SOCKET)
-    Q_CLASSINFO(MC_BEANNAME, "socket")
+    MC_QML_SOCKET
+    Q_CLASSINFO(MC_BEANNAME_TAG, "socket")
     MC_DECL_INIT(QmlSocketTest)
     MC_DEFINE_TYPELIST(QObject)
 public:

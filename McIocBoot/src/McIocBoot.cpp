@@ -171,7 +171,7 @@ bool McIocBoot::isComponent(const QMetaObject *metaObj) noexcept
     int classInfoCount = metaObj->classInfoCount();
 	for (int i = 0; i < classInfoCount; ++i) {
 		auto classInfo = metaObj->classInfo(i);
-		if (qstrcmp(classInfo.name(), MC_COMPONENT) != 0)
+		if (qstrcmp(classInfo.name(), MC_COMPONENT_TAG) != 0)
 			continue;
 		return true;
 	}
@@ -186,7 +186,7 @@ bool McIocBoot::isComponentType(const QMetaObject *metaObj, const QString &type)
 	int classInfoCount = metaObj->classInfoCount();
 	for (int i = 0; i < classInfoCount; ++i) {
 		auto classInfo = metaObj->classInfo(i);
-		if (qstrcmp(classInfo.name(), MC_COMPONENT) != 0)
+		if (qstrcmp(classInfo.name(), MC_COMPONENT_TAG) != 0)
 			continue;
 		return classInfo.value() == type;
 	}

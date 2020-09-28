@@ -47,13 +47,13 @@ McAnnotationApplicationContext::McAnnotationApplicationContext(QObject *parent)
             Q_ASSERT_X(QMetaType::isRegistered(type), "McAnnotationApplicationContext", "type not registered");
             auto metaObj = QMetaType::metaObjectForType(type);
             Q_ASSERT_X(metaObj, "McAnnotationApplicationContext", "cannot get meta object");
-            auto componentIndex = metaObj->indexOfClassInfo(MC_COMPONENT);
+            auto componentIndex = metaObj->indexOfClassInfo(MC_COMPONENT_TAG);
             if(componentIndex == -1) {
                 continue;
             }
             
             QString beanName;
-            auto beanNameIndex = metaObj->indexOfClassInfo(MC_BEANNAME);
+            auto beanNameIndex = metaObj->indexOfClassInfo(MC_BEANNAME_TAG);
             if(beanNameIndex == -1) {
                 beanName = metaObj->className();
                 Q_ASSERT(!beanName.isEmpty());
@@ -74,7 +74,7 @@ McAnnotationApplicationContext::McAnnotationApplicationContext(QObject *parent)
                 continue;
             }
             auto isSingleton = true;    //!< 默认为单例
-            auto singletonIndex = metaObj->indexOfClassInfo(MC_SINGLETON);
+            auto singletonIndex = metaObj->indexOfClassInfo(MC_SINGLETON_TAG);
             if(singletonIndex != -1) {
                 auto classInfo = metaObj->classInfo(singletonIndex);
                 bool isTrue = classInfo.value() == QString("true");
@@ -122,8 +122,8 @@ void McAnnotationApplicationContext::insertRegistry(const QString &typeName) noe
     }
     //! type存在，metaObj一定不为null
     auto metaObj = QMetaType::metaObjectForType(type);
-    auto singletonIndex = metaObj->indexOfClassInfo(MC_SINGLETON);
-    auto beanNameIndex = metaObj->indexOfClassInfo(MC_BEANNAME);
+    auto singletonIndex = metaObj->indexOfClassInfo(MC_SINGLETON_TAG);
+    auto beanNameIndex = metaObj->indexOfClassInfo(MC_BEANNAME_TAG);
     if(singletonIndex != -1) {
         auto classInfo = metaObj->classInfo(singletonIndex);
         bool isTrue = classInfo.value() == QString("true");

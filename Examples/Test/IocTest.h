@@ -13,9 +13,9 @@ class IocTest : public QObject, public McDefaultDeleteThreadWhenQuit
     Q_OBJECT
     MC_DECL_INIT(IocTest)
     MC_DEFINE_TYPELIST(QObject, MC_DECL_TYPELIST(McDefaultDeleteThreadWhenQuit))
-    Q_CLASSINFO(MC_COMPONENT, MC_COMPONENT)
-    Q_CLASSINFO(MC_BEANNAME, "test")
-    Q_CLASSINFO(MC_SINGLETON, "false")
+    MC_COMPONENT
+    MC_BEANNAME("test")
+    MC_SINGLETON(false)
     Q_CLASSINFO("interface", "obj")
     Q_PROPERTY(InterfacePtr interface MEMBER m_interface)
     Q_PROPERTY(QObjectPtr innerBean MEMBER m_innerBean)

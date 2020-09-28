@@ -40,8 +40,8 @@ class InvokeTest : public ClassTestB
     Q_OBJECT
     MC_DECL_INIT(InvokeTest)
     MC_DEFINE_TYPELIST(ClassTestB)
-    Q_CLASSINFO(MC_COMPONENT, MC_CONTROLLER)
-    Q_CLASSINFO(MC_BEANNAME, "con")
+    MC_CONTROLLER
+    MC_BEANNAME("con")
 public:
     Q_INVOKABLE explicit InvokeTest(QObject *parent = nullptr);
     

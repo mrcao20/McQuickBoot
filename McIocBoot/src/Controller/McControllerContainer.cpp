@@ -28,7 +28,7 @@ McControllerContainer::~McControllerContainer()
 void McControllerContainer::init(const QSharedPointer<McIocBoot> &boot) noexcept 
 {
     auto appCtx = boot->getApplicationContext();
-	auto beanNames = boot->getComponents(MC_CONTROLLER);
+	auto beanNames = boot->getComponents(MC_CONTROLLER_TAG);
     for (const auto &beanName : beanNames) {
         auto obj = appCtx->getBean(beanName);
         if(!obj) {

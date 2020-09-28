@@ -29,3 +29,10 @@ SOURCES += main.cpp\
 HEADERS  += MainWindow.h
 
 FORMS    += MainWindow.ui
+
+# 将/替换为\\才能正确识别路径
+SrcConfigPath = $$PWD/boot.yml
+SrcConfigPath = $$replace(SrcConfigPath, /, \\)
+DstConfigPath = $$PWD/../../bin/Examples/
+DstConfigPath = $$replace(DstConfigPath, /, \\)
+QMAKE_POST_LINK += copy /y $$SrcConfigPath $$DstConfigPath

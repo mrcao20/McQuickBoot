@@ -33,7 +33,7 @@ void McProperty::setContent(const QString &name, const QString &value) noexcept
 
 QDomElement McProperty::toDomElement(QDomDocument &doc) const noexcept
 {
-    QDomElement p = doc.createElement(MC_PROPERTY);
+    QDomElement p = doc.createElement(MC_PROPERTY_TAG);
     p.setAttribute("name", d->name);
     p.appendChild(d->content->toDomElement(doc));
     return p;
