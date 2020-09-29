@@ -19,8 +19,11 @@ class MCIOCBOOT_EXPORT McControllerContainer
         , public IMcControllerContainer 
 {
 	Q_OBJECT
+    MC_DECL_INIT(McControllerContainer)
+    MC_COMPONENT
+    MC_BEANNAME("controllerContainer")
 public:
-	explicit McControllerContainer(QObject *parent = nullptr);
+	Q_INVOKABLE explicit McControllerContainer(QObject *parent = nullptr);
 	~McControllerContainer() override;
 
     void init(McIocBootConstPtrRef boot) noexcept;
@@ -72,4 +75,4 @@ private:
 	MC_DECL_PRIVATE(McControllerContainer)
 };
 
-MC_DECL_POINTER(McControllerContainer)
+MC_DECL_METATYPE(McControllerContainer)

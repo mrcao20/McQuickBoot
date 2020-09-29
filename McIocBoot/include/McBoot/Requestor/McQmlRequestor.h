@@ -14,6 +14,7 @@ MC_FORWARD_DECL_PRIVATE_DATA(McQmlRequestor);
 
 MC_FORWARD_DECL_CLASS(IMcControllerContainer);
 MC_FORWARD_DECL_CLASS(IMcQmlSocketContainer);
+MC_FORWARD_DECL_CLASS(McQmlRequestorConfig);
 
 class McQmlResponse;
 class McQmlSocket;
@@ -21,8 +22,12 @@ class McQmlSocket;
 class MCIOCBOOT_EXPORT McQmlRequestor : public QObject 
 {
     Q_OBJECT
+    MC_DECL_INIT(McQmlRequestor)
+    MC_COMPONENT
+    MC_BEANNAME("requestor")
+    Q_PRIVATE_PROPERTY(d, McQmlRequestorConfigPtr requestorConfig MEMBER requestorConfig USER true)
 public:
-    explicit McQmlRequestor(QJSEngine *jsEngine, QObject *parent = nullptr);
+    Q_INVOKABLE explicit McQmlRequestor(QObject *parent = nullptr);
     ~McQmlRequestor() override;
 
     qint64 maxThreadCount() const noexcept;
@@ -41,10 +46,15 @@ protected:
     void customEvent(QEvent *event) override;
     
 private:
+    Q_INVOKABLE
+    MC_BEAN_FINISHED
+    void finished() noexcept;
+    
+private:
     void run(McQmlResponse *response, const QString &uri, const QVariant &body) noexcept;
     
 private:
     MC_DECL_PRIVATE(McQmlRequestor)
 };
 
-MC_DECL_POINTER(McQmlRequestor)
+MC_DECL_METATYPE(McQmlRequestor)

@@ -10,6 +10,7 @@
 #include "McBoot/Controller/impl/McRequestRunner.h"
 #include "McBoot/Socket/IMcQmlSocketContainer.h"
 #include "McBoot/Socket/impl/McQmlSocket.h"
+#include "McBoot/Configuration/McQmlRequestorConfig.h"
 
 class McRunnerEvent : public QEvent 
 {
@@ -34,22 +35,23 @@ McRunnerEvent::~McRunnerEvent()
 {
 }
 
+MC_INIT(McQmlRequestor)
+MC_REGISTER_BEAN_FACTORY(McQmlRequestor)
+MC_INIT_END
+
 MC_DECL_PRIVATE_DATA(McQmlRequestor)
 QSharedPointer<QThreadPool> threadPool;
 IMcControllerContainerPtr controllerContainer;
 IMcQmlSocketContainerPtr qmlSocketContainer;
-QJSEngine *jsEngine{nullptr};
+McQmlRequestorConfigPtr requestorConfig;
 MC_DECL_PRIVATE_DATA_END
 
-McQmlRequestor::McQmlRequestor(QJSEngine *jsEngine, QObject *parent)
+McQmlRequestor::McQmlRequestor(QObject *parent)
     : QObject(parent)
 {
     MC_NEW_PRIVATE_DATA(McQmlRequestor);
     
-    d->jsEngine = jsEngine;
     d->threadPool = QSharedPointer<QThreadPool>::create();
-    
-    setMaxThreadCount(10);     //!< 默认线程数量
 }
 
 McQmlRequestor::~McQmlRequestor() 
@@ -78,7 +80,7 @@ void McQmlRequestor::setSocketContainer(IMcQmlSocketContainerConstPtrRef val) no
 
 McQmlResponse *McQmlRequestor::invoke(const QString &uri) noexcept 
 {
-    auto response = new McQmlResponse(d->jsEngine);
+    auto response = new McQmlResponse();
     QQmlEngine::setObjectOwnership(response, QQmlEngine::CppOwnership);
     run(response, uri, QVariant());
     return response;    //!< 没有指定父对象，该对象将在整个请求完毕时被析构
@@ -86,7 +88,7 @@ McQmlResponse *McQmlRequestor::invoke(const QString &uri) noexcept
 
 McQmlResponse *McQmlRequestor::invoke(const QString &uri, const QJsonObject &data) noexcept 
 {
-    auto response = new McQmlResponse(d->jsEngine);
+    auto response = new McQmlResponse();
     QQmlEngine::setObjectOwnership(response, QQmlEngine::CppOwnership);
     run(response, uri, data);
     return response;    //!< 没有指定父对象，该对象将在整个请求完毕时被析构
@@ -124,6 +126,11 @@ void McQmlRequestor::customEvent(QEvent *event)
     }
 }
 
+void McQmlRequestor::finished() noexcept
+{
+    setMaxThreadCount(d->requestorConfig->maxThreadCount());
+}
+
 void McQmlRequestor::run(McQmlResponse *response, const QString &uri, const QVariant &body) noexcept 
 {
     McRequestRunner *runner = new McRequestRunner();
@@ -134,3 +141,5 @@ void McQmlRequestor::run(McQmlResponse *response, const QString &uri, const QVar
     runner->setBody(body);
     qApp->postEvent(this, new McRunnerEvent(runner));
 }
+
+#include "moc_McQmlRequestor.cpp"

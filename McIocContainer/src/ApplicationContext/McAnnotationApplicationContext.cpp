@@ -40,6 +40,7 @@ McAnnotationApplicationContext::McAnnotationApplicationContext(QObject *parent)
     MC_NEW_PRIVATE_DATA(McAnnotationApplicationContext);
     
     //! 确保只会被调用一次，并且调用时间在QCoreApplication之后
+    //! C++11之后编译器必须保证静态局部变量的初始化的线程安全性
     static int init = [](){
         auto ar = mcAutowiredRegistry();
         auto qobjectMetaTypeIds = McMetaTypeId::qobjectPointerIds();
@@ -90,13 +91,14 @@ McAnnotationApplicationContext::McAnnotationApplicationContext(QObject *parent)
             beanDefinition->setSingleton(isSingleton);
         }
         
-        for(auto itr = ar->cbegin(), end = ar->cend(); itr != end;) {
-            if(itr.value()->getBeanMetaObject() == nullptr) {
-                itr = ar->erase(itr);
-            } else {
-                ++itr;
-            }
-        }
+        //! 如果没有MetaObject而使用了Connect，直接崩溃
+//        for(auto itr = ar->cbegin(), end = ar->cend(); itr != end;) {
+//            if(itr.value()->getBeanMetaObject() == nullptr) {
+//                itr = ar->erase(itr);
+//            } else {
+//                ++itr;
+//            }
+//        }
         return 0;
     }();
     Q_UNUSED(init)

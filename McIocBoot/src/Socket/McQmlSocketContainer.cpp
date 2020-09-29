@@ -14,6 +14,10 @@
 #include "McBoot/Socket/impl/McSession.h"
 #include "McBoot/Socket/impl/McQmlSocketRunner.h"
 
+MC_INIT(McQmlSocketContainer)
+MC_REGISTER_BEAN_FACTORY(McQmlSocketContainer)
+MC_INIT_END
+
 MC_DECL_PRIVATE_DATA(McQmlSocketContainer)
 QMap<QString, QObjectPtr> sockets;
 MC_DECL_PRIVATE_DATA_END

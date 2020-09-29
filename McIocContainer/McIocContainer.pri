@@ -56,7 +56,9 @@ HEADERS += \
     $$PWD/include/McIoc/Utils/XmlBuilder/impl/McRef.h \
     $$PWD/include/McIoc/BeanDefinitionReader/impl/McSettingBeanDefinitionReader.h \
     $$PWD/include/McIoc/ApplicationContext/impl/McSettingApplicationContext.h \
-    $$PWD/include/McIoc/ApplicationContext/impl/McIniSettingApplicationContext.h
+    $$PWD/include/McIoc/ApplicationContext/impl/McIniSettingApplicationContext.h \
+    $$PWD/include/McIoc/ApplicationContext/IMcRelatableApplicationContext.h \
+    $$PWD/include/McIoc/ApplicationContext/IMcConfigurableApplicationContext.h
 
 SOURCES += \
     $$PWD/src/ApplicationContext/McAbstractApplicationContext.cpp \

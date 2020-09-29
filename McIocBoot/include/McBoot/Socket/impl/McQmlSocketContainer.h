@@ -12,8 +12,11 @@ class MCIOCBOOT_EXPORT McQmlSocketContainer
         , public IMcQmlSocketContainer 
 {
     Q_OBJECT
+    MC_DECL_INIT(McQmlSocketContainer)
+    MC_COMPONENT
+    MC_BEANNAME("socketContainer")
 public:
-    McQmlSocketContainer(QObject *parent = nullptr);
+    Q_INVOKABLE McQmlSocketContainer(QObject *parent = nullptr);
     ~McQmlSocketContainer() override;
     
     void init(McIocBootConstPtrRef boot) noexcept;
@@ -29,4 +32,4 @@ private:
     MC_DECL_PRIVATE(McQmlSocketContainer)
 };
 
-MC_DECL_POINTER(McQmlSocketContainer)
+MC_DECL_METATYPE(McQmlSocketContainer)

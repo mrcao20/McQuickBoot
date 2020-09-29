@@ -1,11 +1,17 @@
-#include "MainWindow.h"
-#include <QApplication>
+#include <QGuiApplication>
+#include <QQmlApplicationEngine>
+#include <McBoot/McIocBoot.h>
+#include <QTemporaryFile>
+#include <QDebug>
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
+//    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+//    QGuiApplication app(argc, argv);
     
-    return a.exec();
+//    QQmlApplicationEngine engine;
+//    engine.load(QUrl(QLatin1String("qrc:/main.qml")));
+    
+//    return app.exec();
+    return McIocBoot::run(argc, argv, QLatin1String("qrc:/main.qml"));
 }

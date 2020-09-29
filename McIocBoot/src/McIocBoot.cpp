@@ -13,12 +13,15 @@
 #include "McBoot/Model/McModelContainer.h"
 #include "McBoot/Socket/impl/McQmlSocketContainer.h"
 #include "McBoot/Requestor/McQmlRequestor.h"
+#include "McBoot/BeanDefinitionReader/impl/McConfigurationFileBeanDefinitionReader.h"
 
 MC_DECL_PRIVATE_DATA(McIocBoot)
 McAnnotationApplicationContextPtr context;
+QQmlEngine *engine{nullptr};
 MC_DECL_PRIVATE_DATA_END
 
-Q_GLOBAL_STATIC_WITH_ARGS(QQmlEngine *, mcEngine, (nullptr))
+//Q_GLOBAL_STATIC_WITH_ARGS(QQmlEngine *, mcEngine, (nullptr))
+Q_GLOBAL_STATIC(McIocBootPtr, mcBoot)
 
 McIocBoot::McIocBoot(QObject *parent)
     : QObject(parent)
@@ -32,26 +35,26 @@ McIocBoot::~McIocBoot()
 
 void McIocBoot::init(QQmlApplicationEngine *engine) noexcept 
 {
-    *mcEngine = engine;
+    *mcBoot = McIocBootPtr::create();
+    McIocBootPtr &boot = *mcBoot;
+    boot->initBoot(engine);
+    auto appCtx = boot->d->context;
     
-    McIocBootPtr boot = McIocBootPtr::create();
-    boot->initBoot();
-    
-    McControllerContainerPtr controllerContainer = McControllerContainerPtr::create();
+    auto controllerContainer = appCtx->getBean<McControllerContainer>("controllerContainer");
     controllerContainer->init(boot);
     
-    McModelContainerPtr modelContainer = McModelContainerPtr::create();
+    auto modelContainer = appCtx->getBean<McModelContainer>("modelContainer");
     modelContainer->init(boot);
     
-    McQmlSocketContainerPtr socketContainer = McQmlSocketContainerPtr::create();
+    auto socketContainer = appCtx->getBean<McQmlSocketContainer>("socketContainer");
     socketContainer->init(boot);
     
-    McQmlRequestor *requestor = new McQmlRequestor(engine); //!< 不需要设置父对象
+    auto requestor = appCtx->getBean<McQmlRequestor>("requestor");
     requestor->setControllerContainer(controllerContainer);
     requestor->setSocketContainer(socketContainer);
     
     //! engine的newQObject函数会将其参数所有权转移到其返回的QJSValue中
-    QJSValue jsObj = engine->newQObject(requestor);
+    QJSValue jsObj = engine->newQObject(requestor.data());
     engine->globalObject().setProperty("$", jsObj);
     QString data = R"(
        $.__proto__.get = function(uri) {
@@ -98,13 +101,13 @@ void McIocBoot::init(QQmlApplicationEngine *engine) noexcept
 
 QQmlEngine *McIocBoot::engine() noexcept
 {
-    return *mcEngine;
+    return mcBoot->operator ->()->d->engine;
 }
 
 QQuickView *McIocBoot::createQuickView(const QString &source, QWindow *parent) noexcept
 {
     if(McIocBoot::engine() == nullptr) {
-        qCritical("engine is null. you must be call function init or run before");
+        qCritical("engine is null. you must be call function init or run before\n");
         return nullptr;
     }
     QQuickView *view = new QQuickView(engine(), parent);
@@ -112,13 +115,16 @@ QQuickView *McIocBoot::createQuickView(const QString &source, QWindow *parent) n
     return  view;
 }
 
-void McIocBoot::initBoot() noexcept 
+void McIocBoot::initBoot(QQmlEngine *engine) noexcept 
 {
     if (d->context) {
 		qInfo() << "The container has been initialized";
 		return;
 	}
+    d->engine = engine;
     d->context = McAnnotationApplicationContextPtr::create();
+    auto reader = McConfigurationFileBeanDefinitionReaderPtr::create(d->context);
+    reader->readBeanDefinition(d->context.data());
     d->context->refresh();  //!< 预加载bean
 }
 

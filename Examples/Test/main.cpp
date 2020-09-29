@@ -9,7 +9,9 @@
 
 #include "McIoc/ApplicationContext/impl/McLocalPathApplicationContext.h"
 #include "McIoc/ApplicationContext/impl/McAnnotationApplicationContext.h"
+#ifndef MC_NO_YAML
 #include "McIoc/ApplicationContext/impl/McYamlSettingApplicationContext.h"
+#endif
 #include "IocTest.h"
 #include "InvokeTest.h"
 #include <Object.h>
@@ -72,14 +74,20 @@ int main(int argc, char *argv[])
              << QMetaType::type("QObject");
     
     ThreadTest *t = new ThreadTest();
+    IMcApplicationContextPtr appCon;
     //! XML注入方式
-//    IMcApplicationContextPtr appCon = McLocalPathApplicationContextPtr::create(
+//    appCon = McLocalPathApplicationContextPtr::create(
 //                QStringList() << ":/myspring.xml" << ":/xmltest2.xml");
-    IMcApplicationContextPtr appCon = McYamlSettingApplicationContextPtr::create(
+#ifdef MC_NO_YAML
+    return 0;
+#else
+    appCon = McYamlSettingApplicationContextPtr::create(
                 ":/ioc.yml");
+#endif
+    
     appCon->refresh(t);
     auto test = appCon->getBean<IocTestPtr>("test");
-    qDebug() << test->m_interface << test->m_str << test->m_interfaces
+    qDebug() << test->m_interface << test->m_str << test->m_interfaces << test->m_interfaces.at(2).dynamicCast<Object>()->m_text
              << test->m_strMap << test->m_iMap << test->m_innerBean << test->m_innerBean.objectCast<Object>()->m_text
              << test->m_eee << test->m_align;
     test->m_interface->say();

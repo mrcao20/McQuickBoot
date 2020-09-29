@@ -64,6 +64,9 @@ public:
      * \param beanDefinition bean的定义
      */
     void registerBeanDefinition(const QString &name, IMcBeanDefinitionConstPtrRef beanDefinition) noexcept override;
+    
+    IMcBeanDefinitionPtr unregisterBeanDefinition(const QString &name) noexcept override;
+    
     /*!
      * \brief isContained
      * 

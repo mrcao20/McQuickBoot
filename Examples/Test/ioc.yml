@@ -3,7 +3,7 @@ object:
     Singleton: true
     Class: Object
     text: "Hello World!"
-innerObject: 
+ioc.innerObject: 
     Class: Object
     text: "Inner Bean"
 test: 
@@ -33,12 +33,16 @@ test:
         - 关系
     interfaces: 
         - $object
-        - $object
-        - $innerObject
+        - $ioc.innerObject
+        # 同XML相比，YAML新增功能，支持在list中指定特殊的bean，没有Singleton属性，不能指定beanName
+        - Class: Object
+          text: "list object"
     strMap:
         - jack: 杰克
         - rose: 肉丝
     iMap: 
         - jack: $object
-        - rose: $object
+        - rose: 
+            # 同XML相比，YAML新增功能，支持在map中指定特殊的bean，没有Singleton属性，不能指定beanName
+            Class: Object
         

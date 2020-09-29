@@ -7,6 +7,10 @@
 
 #include "McBoot/McIocBoot.h"
 
+MC_INIT(McModelContainer)
+MC_REGISTER_BEAN_FACTORY(McModelContainer)
+MC_INIT_END
+
 MC_DECL_PRIVATE_DATA(McModelContainer)
 MC_DECL_PRIVATE_DATA_END
 

@@ -52,7 +52,7 @@ public:
             , const function<void(T *app, QQmlApplicationEngine *)> &func = nullptr
             , const function<void(T *app)> &prefunc = nullptr) noexcept;
  
-    void initBoot() noexcept;
+    void initBoot(QQmlEngine *engine) noexcept;
     
     IMcApplicationContextPtr getApplicationContext() const noexcept;
     

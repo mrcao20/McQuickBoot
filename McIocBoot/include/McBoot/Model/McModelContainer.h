@@ -9,8 +9,11 @@ MC_FORWARD_DECL_CLASS(McIocBoot);
 class MCIOCBOOT_EXPORT McModelContainer : public QObject 
 {
     Q_OBJECT
+    MC_DECL_INIT(McModelContainer)
+    MC_COMPONENT
+    MC_BEANNAME("modelContainer")
 public:
-	explicit McModelContainer(QObject *parent = nullptr);
+	Q_INVOKABLE explicit McModelContainer(QObject *parent = nullptr);
 	~McModelContainer() override;
 
     void init(McIocBootConstPtrRef boot) noexcept;
@@ -19,4 +22,4 @@ private:
 	MC_DECL_PRIVATE(McModelContainer)
 };
 
-MC_DECL_POINTER(McModelContainer)
+MC_DECL_METATYPE(McModelContainer)

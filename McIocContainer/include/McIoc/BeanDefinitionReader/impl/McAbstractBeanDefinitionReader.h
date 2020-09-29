@@ -4,11 +4,10 @@
 
 MC_FORWARD_DECL_PRIVATE_DATA(McAbstractBeanDefinitionReader)
 
-class McAbstractBeanDefinitionReader
+class MCIOCCONTAINER_EXPORT McAbstractBeanDefinitionReader
         : public QObject
         , public IMcBeanDefinitionReader 
 {
-    
     Q_OBJECT
 public:
     explicit McAbstractBeanDefinitionReader(QObject *parent = nullptr);

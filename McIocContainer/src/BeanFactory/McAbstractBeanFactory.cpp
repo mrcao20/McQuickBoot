@@ -76,6 +76,15 @@ void McAbstractBeanFactory::registerBeanDefinition(
     d->hash.insert(name, beanDefinition);
 }
 
+IMcBeanDefinitionPtr McAbstractBeanFactory::unregisterBeanDefinition(const QString &name) noexcept
+{
+    QMutexLocker locker(&d->mtx);
+    if(!d->hash.contains(name)) {
+        return IMcBeanDefinitionPtr();
+    }
+    return d->hash.take(name);
+}
+
 bool McAbstractBeanFactory::isContained(const QString &name) noexcept 
 {
     return containsBean(name);

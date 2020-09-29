@@ -43,7 +43,7 @@ void McSettingBeanDefinitionReader::doReadBeanDefinition() noexcept
             s->beginGroup(beanName);
             auto beanDefinition = buildBeanDefinition(s);
             if(beanDefinition.isNull()) {
-                qCritical("build '%s' occurred error", qPrintable(beanName));
+                qCritical("build '%s' occurred error\n", qPrintable(beanName));
                 continue;
             }
             //! 向注册容器 添加bean名称和bean定义. 如果存在则替换
@@ -70,7 +70,7 @@ IMcBeanDefinitionPtr McSettingBeanDefinitionReader::buildBeanDefinition(QSetting
         beanDefinition->setPluginPath(pluginPath);
         beanDefinition->setSingleton(true);     //!< 插件必须是单例
     } else {
-        qCritical("you must be set '%s' or '%s'", MC_QSETTING_CLASS, MC_QSETTING_PLUGIN);
+        qCritical("you must be set '%s' or '%s'\n", MC_QSETTING_CLASS, MC_QSETTING_PLUGIN);
         return IMcBeanDefinitionPtr();
     }
     readBeanDefinitionForProperty(setting, beanDefinition);
@@ -96,31 +96,32 @@ void McSettingBeanDefinitionReader::readBeanDefinitionForProperty(
         setting->beginGroup(childBeanName);
         auto childBeanDefinition = buildBeanDefinition(setting);
         if(childBeanDefinition.isNull()) {
-            qCritical("build '%s' occurred error", qPrintable(childBeanName));
+            qCritical("build '%s' occurred error\n", qPrintable(childBeanName));
             continue;
         }
         childBeanDefinition->setSingleton(true);
-        QString beanName;
         QString className = beanDefinition->getClassName();
         if(className.isEmpty()) {
             QFileInfo fileInfo(beanDefinition->getPluginPath());
             className = fileInfo.baseName();
         }
-        beanName = QString("__mc__%1_%2").arg(className, childBeanName);
-        auto tmpBeanName = beanName;
-        int index = 1;
-        while(registry()->isContained(tmpBeanName)) {
-            tmpBeanName = beanName;
-            tmpBeanName.append('_');
-            tmpBeanName.append(QString::number(index++));
-        }
-        beanName = tmpBeanName;
+        QString beanName = getUnregisteredBeanName(childBeanName, className);
         //! 向注册容器 添加bean名称和bean定义. 如果存在则替换
         registry()->registerBeanDefinition(beanName, childBeanDefinition);
         McBeanReferencePtr ref = McBeanReferencePtr::create();
         ref->setName(beanName);
         beanDefinition->addProperty(childBeanName, QVariant::fromValue(ref));
         setting->endGroup();
+    }
+}
+
+void McSettingBeanDefinitionReader::readBeanDefinitionForProperty(
+        const QMap<QString, QVariant> &map
+        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
+{
+    for(auto key : map.keys()) {
+        auto value = parseProperty(map.value(key));
+        beanDefinition->addProperty(key, value);
     }
 }
 
@@ -132,6 +133,32 @@ void McSettingBeanDefinitionReader::readBeanDefinitionForConnect(
         return;
     }
     auto cs = setting->value(MC_QSETTING_CONNECTS).value<QList<QVariantMap>>();
+    for(auto c : cs) {
+        if(!c.contains(MC_QSETTING_SINGAL)
+                || !c.contains(MC_QSETTING_SLOT)) {
+            continue;
+        }
+        McBeanConnectorPtr connector = McBeanConnectorPtr::create();
+        connector->setSender(c.value(MC_QSETTING_SENDER, "this").toString());
+        connector->setSignal(c.value(MC_QSETTING_SINGAL).toString());
+        connector->setReceiver(c.value(MC_QSETTING_RECEIVER, "this").toString());
+        connector->setSlot(c.value(MC_QSETTING_SLOT).toString());
+        auto type = c.value(MC_QSETTING_TYPE, "AutoConnection").toString();
+        connector->setType(getConnectionType(type));
+        QVariant var;
+        var.setValue(connector);
+        beanDefinition->addConnector(var);
+    }
+}
+
+void McSettingBeanDefinitionReader::readBeanDefinitionForConnect(
+        const QMap<QString, QVariant> &map
+        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
+{
+    if(!map.contains(MC_QSETTING_CONNECTS)) {
+        return;
+    }
+    auto cs = map.value(MC_QSETTING_CONNECTS).value<QList<QVariantMap>>();
     for(auto c : cs) {
         if(!c.contains(MC_QSETTING_SINGAL)
                 || !c.contains(MC_QSETTING_SLOT)) {
@@ -190,8 +217,83 @@ QVariant McSettingBeanDefinitionReader::parseProperty(const QVariant &var) noexc
     }
     if(var.canConvert<QPair<QString, QVariant>>()) {
         auto pair = var.value<QPair<QString, QVariant>>();
-        pair.second = parseProperty(pair.second);
-        return QVariant::fromValue(pair);
+        if(pair.first != MC_QSETTING_CLASS
+                && pair.first != MC_QSETTING_PLUGIN) {
+            pair.second = parseProperty(pair.second);
+            return QVariant::fromValue(pair);
+        }
+        McRootBeanDefinitionPtr beanDefinition = McRootBeanDefinitionPtr::create();
+        beanDefinition->setSingleton(true);
+        QString className;
+        if(pair.first == MC_QSETTING_CLASS) {
+            className = pair.second.toString();
+            beanDefinition->setClassName(className);
+        } else {
+            auto pluginPath = pair.second.toString();
+            pluginPath = Mc::toAbsolutePath(pluginPath);
+            if(!QLibrary::isLibrary(pluginPath)){
+                qCritical() << pluginPath << "is not a plugin. please check!!!";
+                return QVariant();
+            }
+            beanDefinition->setPluginPath(pluginPath);
+            QFileInfo fileInfo(beanDefinition->getPluginPath());
+            className = fileInfo.baseName();
+        }
+        QString beanName = getUnregisteredBeanName("__pair__", className);
+        registry()->registerBeanDefinition(beanName, beanDefinition);
+        McBeanReferencePtr ref = McBeanReferencePtr::create();
+        ref->setName(beanName);
+        return QVariant::fromValue(ref);
+    }
+    if(var.canConvert<QVariantMap>()) {
+        auto map = var.value<QVariantMap>();
+        if(!map.contains(MC_QSETTING_CLASS)
+                && !map.contains(MC_QSETTING_PLUGIN)) {
+            return QVariant();
+        }
+        McRootBeanDefinitionPtr beanDefinition = McRootBeanDefinitionPtr::create();
+        beanDefinition->setSingleton(true);
+        QString className;
+        if(map.contains(MC_QSETTING_CLASS)) {
+            className = map.value(MC_QSETTING_CLASS).toString();
+            beanDefinition->setClassName(className);
+        } else {
+            auto pluginPath = map.value(MC_QSETTING_PLUGIN).toString();
+            pluginPath = Mc::toAbsolutePath(pluginPath);
+            if(!QLibrary::isLibrary(pluginPath)){
+                qCritical() << pluginPath << "is not a plugin. please check!!!";
+                return QVariant();
+            }
+            beanDefinition->setPluginPath(pluginPath);
+            QFileInfo fileInfo(beanDefinition->getPluginPath());
+            className = fileInfo.baseName();
+        }
+        map.remove(MC_QSETTING_CLASS);
+        map.remove(MC_QSETTING_PLUGIN);
+        map.remove(MC_QSETTING_SINGLETON);
+        readBeanDefinitionForConnect(map, beanDefinition);
+        map.remove(MC_QSETTING_CONNECTS);
+        readBeanDefinitionForProperty(map, beanDefinition);
+        QString beanName = getUnregisteredBeanName("__map__", className);
+        registry()->registerBeanDefinition(beanName, beanDefinition);
+        McBeanReferencePtr ref = McBeanReferencePtr::create();
+        ref->setName(beanName);
+        return QVariant::fromValue(ref);
     }
     return QVariant();
+}
+
+QString McSettingBeanDefinitionReader::getUnregisteredBeanName(
+        const QString &proName, const QString &className) const noexcept
+{
+    QString beanName = QString("__mc__%1_%2").arg(className, proName);
+    auto tmpBeanName = beanName;
+    int index = 1;
+    while(registry()->isContained(tmpBeanName)) {
+        tmpBeanName = beanName;
+        tmpBeanName.append('_');
+        tmpBeanName.append(QString::number(index++));
+    }
+    beanName = tmpBeanName;
+    return beanName;
 }

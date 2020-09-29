@@ -28,6 +28,9 @@ void readYamlFile_helper(const QString &key, const YAML::Node &node, QSettings::
 
 bool readYamlFile(QIODevice &device, QSettings::SettingsMap &map)
 {
+    if(device.bytesAvailable() == 0) {
+        return true;
+    }
     try {
         auto root = YAML::Load(device.readAll());
         if(!root.IsMap()) {
@@ -37,7 +40,7 @@ bool readYamlFile(QIODevice &device, QSettings::SettingsMap &map)
         readYamlFile_helper("", root, map);
         return true;
     } catch (const std::exception &e) {
-        qCritical("parse yaml failure. exception: ", e.what());
+        qCritical("parse yaml failure. exception: %s\n", e.what());
         return false;
     }
 }
@@ -62,6 +65,9 @@ void writeYamlFile_helper(QVariantMap &map, const QStringList &keyList, const QV
 
 bool writeYamlFile(QIODevice &device, const QSettings::SettingsMap &map)
 {
+    if(map.isEmpty()) {
+        return true;
+    }
     try {
         YAML::Node node(YAML::NodeType::Map);
         QVariantMap resultMap;
@@ -80,7 +86,7 @@ bool writeYamlFile(QIODevice &device, const QSettings::SettingsMap &map)
         device.write(QByteArray::fromStdString(YAML::Dump(node)));
         return true;
     } catch (const std::exception &e) {
-        qCritical("parse yaml failure. exception: ", e.what());
+        qCritical("parse yaml failure. exception: %s\n", e.what());
         return false;
     }
 }

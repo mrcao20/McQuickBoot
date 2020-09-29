@@ -129,7 +129,7 @@ bool McDefaultBeanFactory::addPropertyValue(QObjectConstPtrRef bean
             value.convert(QMetaType::type(metaProperty.typeName()));
 #endif
             if(!metaProperty.write(bean.data(), value)) {
-                qCritical("bean '%s' write property named for '%s' failure"
+                qCritical("bean '%s' write property named for '%s' failure\n"
                           , bean->metaObject()->className()
                           , itr.key().toLocal8Bit().data());
             }
@@ -169,7 +169,7 @@ bool McDefaultBeanFactory::addObjectConnect(QObjectConstPtrRef bean
         }
         int signalIndex = signalMetaObj->indexOfSignal(signalStr.toLocal8Bit());
         if(signalIndex == -1) {
-            qCritical("not exists signal named '%s' for bean '%s'", signalMetaObj->className(), qPrintable(signalStr));
+            qCritical("not exists signal named '%s' for bean '%s'\n", signalMetaObj->className(), qPrintable(signalStr));
             return false;
         }
         signal = signalMetaObj->method(signalIndex);
@@ -188,7 +188,7 @@ bool McDefaultBeanFactory::addObjectConnect(QObjectConstPtrRef bean
         }
         int slotIndex = slotMetaObj->indexOfMethod(slotStr.toLocal8Bit());
         if(slotIndex == -1) {
-            qCritical("not exists slot named '%s' for bean '%s'", slotMetaObj->className(), qPrintable(slotStr));
+            qCritical("not exists slot named '%s' for bean '%s'\n", slotMetaObj->className(), qPrintable(slotStr));
             return false;
         }
         slot = slotMetaObj->method(slotIndex);
@@ -209,7 +209,7 @@ QObjectPtr McDefaultBeanFactory::getPropertyObject(QObjectConstPtrRef bean
         obj = bean;
     }else{
         if(!proValues.contains(proName)) {
-            qCritical("not found property named '%s' for bean '%s'"
+            qCritical("not found property named '%s' for bean '%s'\n"
                       , bean->metaObject()->className(), qPrintable(proName));
             return QObjectPtr();
         }

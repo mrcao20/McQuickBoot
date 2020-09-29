@@ -35,3 +35,5 @@ unix {
 
 DESTDIR = $$PWD/../bin
 MOC_DIR = $$PWD/../moc/McIocBoot
+
+INCLUDEPATH += $$PWD/../moc/McIocBoot
