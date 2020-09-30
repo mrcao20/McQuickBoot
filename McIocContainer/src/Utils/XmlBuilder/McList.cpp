@@ -1,5 +1,7 @@
 #include "McIoc/Utils/XmlBuilder/impl/McList.h"
 
+#include <QVector>
+
 #include "McIoc/Utils/XmlBuilder/impl/McValue.h"
 
 namespace McXmlBuilder {

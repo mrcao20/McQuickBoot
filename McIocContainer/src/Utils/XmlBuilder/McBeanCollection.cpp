@@ -2,6 +2,7 @@
 
 #include <QDomProcessingInstruction>
 #include <QTextStream>
+#include <QVector>
 
 #include "McIoc/Utils/XmlBuilder/IMcBean.h"
 

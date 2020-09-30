@@ -10,8 +10,10 @@
 namespace McPrivate {
 
 MC_INIT(McGlobal)
-McMetaTypeId::addQObjectPointerIds(qRegisterMetaType<QObject *>("QObject"));
-McMetaTypeId::addSharedPointerId(qRegisterMetaType<QObjectPtr>(MC_MACRO_STR(QObjectConstPtrRef)));
+auto pId = qRegisterMetaType<QObject *>("QObject");
+auto sId = qRegisterMetaType<QObjectPtr>(MC_MACRO_STR(QObjectConstPtrRef));
+McMetaTypeId::addQObjectPointerIds(pId, sId);
+McMetaTypeId::addSharedPointerId(sId, pId);
 MC_INIT_END
 
 }

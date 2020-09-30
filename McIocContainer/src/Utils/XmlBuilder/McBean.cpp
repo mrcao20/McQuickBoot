@@ -1,5 +1,7 @@
 #include "McIoc/Utils/XmlBuilder/impl/McBean.h"
 
+#include <QVector>
+
 #include "McIoc/Utils/XmlBuilder/IMcBeanContent.h"
 
 namespace McXmlBuilder {

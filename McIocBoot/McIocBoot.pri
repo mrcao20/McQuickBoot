@@ -18,8 +18,6 @@ SOURCES += \
     src/Socket/McSession.cpp \
     src/Utils/McJsonUtils.cpp \
     $$PWD/src/BeanDefinitionReader/McConfigurationFileBeanDefinitionReader.cpp \
-    $$PWD/include/McBoot/Dog.cpp \
-    $$PWD/include/McBoot/Person.cpp \
     $$PWD/src/Configuration/McQmlRequestorConfig.cpp
 
 HEADERS +=  \
@@ -46,6 +44,4 @@ HEADERS +=  \
     include/McBoot/Socket/impl/McSession.h \
     include/McBoot/Utils/McJsonUtils.h \
     $$PWD/include/McBoot/BeanDefinitionReader/impl/McConfigurationFileBeanDefinitionReader.h \
-    $$PWD/include/McBoot/Dog.h \
-    $$PWD/include/McBoot/Person.h \
     $$PWD/include/McBoot/Configuration/McQmlRequestorConfig.h

@@ -44,7 +44,7 @@ McAnnotationApplicationContext::McAnnotationApplicationContext(QObject *parent)
     static int init = [](){
         auto ar = mcAutowiredRegistry();
         auto qobjectMetaTypeIds = McMetaTypeId::qobjectPointerIds();
-        for(auto type : qobjectMetaTypeIds) {
+        for(auto type : qobjectMetaTypeIds.keys()) {
             Q_ASSERT_X(QMetaType::isRegistered(type), "McAnnotationApplicationContext", "type not registered");
             auto metaObj = QMetaType::metaObjectForType(type);
             Q_ASSERT_X(metaObj, "McAnnotationApplicationContext", "cannot get meta object");

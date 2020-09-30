@@ -1,5 +1,7 @@
 #pragma once
 #include <McIoc/McGlobal.h>
+#include <QVector>
+
 class R : public QObject
 {
     Q_OBJECT

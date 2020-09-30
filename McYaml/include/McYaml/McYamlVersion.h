@@ -6,7 +6,7 @@
 #define MC_YAML_MAJOR 1 // version when you make big feature changes.
 #define MC_YAML_MINOR 0 // version when you make small feature changes.
 #define MC_YAML_PATCH 0 // version when you make backwards-compatible bug fixes.
-#define MC_YAML_INTERNAL 0 // MC_YAML_INTERNAL version for perpurse like feature test, bug fix test,development, et
+#define MC_YAML_INTERNAL 1 // MC_YAML_INTERNAL version for perpurse like feature test, bug fix test,development, et
 
 #ifdef QT_DEBUG
 #define MC_YAML_VERSION_STR (QString::number(MC_YAML_MAJOR) + "." + QString::number(MC_YAML_MINOR) + "." + QString::number(MC_YAML_PATCH) + "." + QString::number(MC_YAML_INTERNAL))

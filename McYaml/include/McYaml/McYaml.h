@@ -76,10 +76,11 @@ struct convert<QVariant>
             }
         } else if(rhs.canConvert<QVariantList>()) {
             return Node(rhs.toList());
+        } else if(rhs.canConvert<QPair<QString, QVariant>>()) {
+            return Node(rhs.value<QPair<QString, QVariant>>());
         } else {
             return Node(rhs.toString());
         }
-        
     }
 
     static bool decode(const Node &node, QVariant &rhs)

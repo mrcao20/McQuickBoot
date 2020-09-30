@@ -129,8 +129,10 @@ void mcRegisterBeanFactory(const char *typeName, const char *constRefTypeName)
     if (!QMetaType::hasRegisteredConverterFunction<QObjectPtr, TPtr>()) {
         QMetaType::registerConverter<QObjectPtr, TPtr>(mcConverterQSharedPointerObject<QObjectPtr, TPtr>);
     }
-    McMetaTypeId::addQObjectPointerIds(qRegisterMetaType<T*>(typeName));
-    McMetaTypeId::addSharedPointerId(qRegisterMetaType<TPtr>(constRefTypeName));
+    auto pId = qRegisterMetaType<T*>(typeName);
+    auto sId = qRegisterMetaType<TPtr>(constRefTypeName);
+    McMetaTypeId::addQObjectPointerIds(pId, sId);
+    McMetaTypeId::addSharedPointerId(sId, pId);
 }
 
 template<typename From, typename To>

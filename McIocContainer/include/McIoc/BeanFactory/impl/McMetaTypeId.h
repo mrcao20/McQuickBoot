@@ -167,38 +167,45 @@
 ****************************************************************************/
 #pragma once
 
-#include <QVector>
 #include <QHash>
 #include <QSharedPointer>
 
 #include "../../McMacroGlobal.h"
 
+struct McPointerMetaId
+{
+    int qobjectPointerId{-1};
+    int sharedPointerId{-1};
+};
+typedef QSharedPointer<McPointerMetaId> McPointerMetaIdPtr;
+
 struct McSequentialMetaId
 {
     int id{-1};
-    int valueId{-1};
+    int valueId{-1}; //!< 如果是指针类型，那么此ID指待的是QObject *而不是QObjectPtr
 };
 typedef QSharedPointer<McSequentialMetaId> McSequentialMetaIdPtr;
 
 struct McAssociativeMetaId
 {
     int id{-1};
-    int keyId{-1};
-    int valueId{-1};
+    int keyId{-1};  //!< 同list
+    int valueId{-1}; //!< 同list
 };
 typedef QSharedPointer<McAssociativeMetaId> McAssociativeMetaIdPtr;
 
+typedef QHash<int, McPointerMetaIdPtr> McPointerType;
 typedef QHash<int, McSequentialMetaIdPtr> McSequentialType;
 typedef QHash<int, McAssociativeMetaIdPtr> McAssociativeType;
 
 class MCIOCCONTAINER_EXPORT McMetaTypeId
 {
 public:
-    static QVector<int> qobjectPointerIds() noexcept;
-    static void addQObjectPointerIds(int id) noexcept;
+    static McPointerType qobjectPointerIds() noexcept;
+    static void addQObjectPointerIds(int id, int sharedId) noexcept;
     
-    static QVector<int> sharedPointerIds() noexcept;
-    static void addSharedPointerId(int id) noexcept;
+    static McPointerType sharedPointerIds() noexcept;
+    static void addSharedPointerId(int id, int qobjectId) noexcept;
     
     static McSequentialType sequentialIds() noexcept;
     static void addSequentialId(int id, int valueId) noexcept;

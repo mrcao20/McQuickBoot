@@ -24,8 +24,12 @@ protected:
 private:
     QString getDefaultConfigPath() const noexcept;
     void copyBeanDefinition(QSettingsConstPtrRef setting
-                            , const QString &path, const QString &prefix) noexcept;
-    void copyBeanDefinition(QSettingsConstPtrRef setting, QSettings &originSet) noexcept;
+                            , const QString &path, const QString &prefix
+                            , const QMetaObject *metaObj) noexcept;
+    void copyBeanDefinition(QSettingsConstPtrRef setting
+                            , QSettings &originSet, const QMetaObject *metaObj) noexcept;
+    QVariant buildChildProperty(const QString &proName
+                                , const QVariant &value, const QMetaObject *metaObj) noexcept;
     
 private:
     MC_DECL_PRIVATE(McConfigurationFileBeanDefinitionReader)
