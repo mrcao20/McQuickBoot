@@ -59,23 +59,45 @@
 
 #endif //! !Q_MOC_RUN
 
+//! Inner QObject Property
+#define MC_CUSTOM_DELETER_PROPERTY_NAME "__mc__customDeleter"
+//!< Inner QObject Property
 
 //! Q_CLASSINFO
-#define MC_SINGLETON "isSingleton"
-#define MC_BEANNAME "beanName"
+#define MC_COMPONENT_TAG "Component"
+
+#define MC_SINGLETON_TAG "isSingleton"
+#define MC_BEANNAME_TAG "beanName"
+
+#define MC_COMPONENT Q_CLASSINFO(MC_COMPONENT_TAG, MC_COMPONENT_TAG)
+#define MC_SINGLETON(arg) Q_CLASSINFO(MC_SINGLETON_TAG, MC_MACRO_STR(arg))
+#define MC_BEANNAME(name) Q_CLASSINFO(MC_BEANNAME_TAG, name)
 //!< Q_CLASSINFO
 
-#define MC_BEANS "beans"
-#define MC_BEAN "bean"
-#define MC_PROPERTY "property"
-#define MC_CONNECT "connect"
+#define MC_BEANS_TAG "beans"
+#define MC_BEAN_TAG "bean"
+#define MC_PROPERTY_TAG "property"
+#define MC_CONNECT_TAG "connect"
 
-#define MC_THIS "this"
-#define MC_SENDER "sender"
-#define MC_SIGNAL "signal"
-#define MC_RECEIVER "receiver"
-#define MC_SLOT "slot"
-#define MC_CONNECTION_TYPE "ConnectionType"
+#define MC_THIS_TAG "this"
+#define MC_SENDER_TAG "sender"
+#define MC_SIGNAL_TAG "signal"
+#define MC_RECEIVER_TAG "receiver"
+#define MC_SLOT_TAG "slot"
+#define MC_CONNECTION_TYPE_TAG "type"
+
+//! QSetting Config
+#define MC_QSETTING_CLASS "Class"
+#define MC_QSETTING_PLUGIN "Plugin"
+#define MC_QSETTING_SINGLETON "Singleton"
+#define MC_QSETTING_CONNECTS "Connects"
+#define MC_QSETTING_SENDER "Sender"
+#define MC_QSETTING_SINGAL "Signal"
+#define MC_QSETTING_RECEIVER "Receiver"
+#define MC_QSETTING_SLOT "Slot"
+#define MC_QSETTING_TYPE "Type"
+#define MC_QSETTING_REF_TAG "$"
+//!< QSetting Config
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
 #define qInfo QMessageLogger(QT_MESSAGELOG_FILE, QT_MESSAGELOG_LINE, QT_MESSAGELOG_FUNC).debug

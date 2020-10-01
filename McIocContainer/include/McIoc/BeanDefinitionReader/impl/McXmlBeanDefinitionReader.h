@@ -41,8 +41,6 @@ private:
                                        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept;
     void readBeanDefinitionForConnect(const QDomElement &propEle
                                        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept;
-    Qt::ConnectionType getConnectionType(const QString &typeStr) noexcept;
-    Qt::ConnectionType connectionTypeStrToEnum(const QString &typeStr) noexcept;
 
 private:
 	MC_DECL_PRIVATE(McXmlBeanDefinitionReader)

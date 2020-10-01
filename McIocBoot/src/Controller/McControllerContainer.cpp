@@ -11,6 +11,10 @@
 #include "McBoot/Controller/impl/McResult.h"
 #include "McIoc/BeanFactory/impl/McMetaTypeId.h"
 
+MC_INIT(McControllerContainer)
+MC_REGISTER_BEAN_FACTORY(McControllerContainer)
+MC_INIT_END
+
 MC_DECL_PRIVATE_DATA(McControllerContainer)
 QMap<QString, QObjectPtr> controllers;	//!< 键为beanName，值为controller对象
 MC_DECL_PRIVATE_DATA_END
@@ -28,7 +32,7 @@ McControllerContainer::~McControllerContainer()
 void McControllerContainer::init(const QSharedPointer<McIocBoot> &boot) noexcept 
 {
     auto appCtx = boot->getApplicationContext();
-	auto beanNames = boot->getComponents(MC_CONTROLLER);
+	auto beanNames = boot->getComponents(MC_CONTROLLER_TAG);
     for (const auto &beanName : beanNames) {
         auto obj = appCtx->getBean(beanName);
         if(!obj) {
@@ -399,7 +403,7 @@ QVariant McControllerContainer::makeObjectValue(
     
     int typeId = QMetaType::type(objTypeName);
     if (typeId == QMetaType::UnknownType) {
-        qCritical("this class for type '%s' is not register", objTypeName.data());
+        qCritical("this class for type '%s' is not register\n", objTypeName.data());
         return QVariant();
     }
     const QMetaObject *mobj = QMetaType::metaObjectForType(typeId);
@@ -414,7 +418,7 @@ QVariant McControllerContainer::makeObjectValue(
         auto value = args[name];
         value = makeValue(pro.typeName(), value);
         if (!pro.write(obj, value))
-            qCritical("cannot dynamic write value to property '%s' for class '%s'", objTypeName.data(), pro.name());
+            qCritical("cannot dynamic write value to property '%s' for class '%s'\n", objTypeName.data(), pro.name());
     }
     QObjectPtr objPtr(obj);
     QVariant var;

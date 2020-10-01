@@ -1,7 +1,5 @@
 QT += quick concurrent
 
-CONFIG += c++11
-
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
 # depend on your compiler). Refer to the documentation for the
@@ -32,40 +30,27 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 DESTDIR = $$PWD/../../bin/Examples
 MOC_DIR = $$PWD/../../moc/Examples/LogTest
 
-CONFIG(release, debug|release) {
-    DEFINES += QT_MESSAGELOGCONTEXT
-}
+include($$PWD/../../common.pri)
+include($$PWD/../../McLogQt/McLogQtDepend.pri)
 
 win32 {
     msvc {
-        QMAKE_CFLAGS += /utf-8
-        QMAKE_CXXFLAGS += /utf-8
-        
-        CONFIG(release, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocContainer \
-            -L$$PWD/../../bin/ -lMcLogQt
-        else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocContainerd \
-            -L$$PWD/../../bin/ -lMcLogQtd
+        CONFIG(release, debug|release): LIBS += -L$$PWD/../../bin/ -lMcLogQt
+        else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcLogQtd
     } else {
         equals(QT_MAJOR_VERSION, 5):lessThan(QT_MINOR_VERSION, 9) {
-            CONFIG(release, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocContainer \
-                -L$$PWD/../../bin/ -lMcLogQt
-            else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocContainerd \
-                -L$$PWD/../../bin/ -lMcLogQtd
+            CONFIG(release, debug|release): LIBS += -L$$PWD/../../bin/ -lMcLogQt
+            else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcLogQtd
         } else {
-            LIBS += -L$$PWD/../../bin/ -lMcIocContainer \
-                -L$$PWD/../../bin/ -lMcLogQt
+            LIBS += -L$$PWD/../../bin/ -lMcLogQt
         }
     }
 } else:unix:!macx {
-    LIBS += -L$$PWD/../../bin/ -lMcIocContainer \
-        -L$$PWD/../../bin/ -lMcLogQt
+    LIBS += -L$$PWD/../../bin/ -lMcLogQt
 }
 
 INCLUDEPATH += $$PWD/../../McLogQt/include
 DEPENDPATH += $$PWD/../../McLogQt/include
-
-INCLUDEPATH += $$PWD/../../McIocContainer/include
-DEPENDPATH += $$PWD/../../McIocContainer/include
 
 # 将/替换为\\才能正确识别路径
 SrcConfigPath = $$PWD/logqt.xml

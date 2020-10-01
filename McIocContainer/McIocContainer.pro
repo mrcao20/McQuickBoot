@@ -7,14 +7,8 @@
 QT -= gui
 QT += xml
 
-CONFIG += c++11
-
 TARGET = McIocContainer
 TARGET = $$qt5LibraryTarget($$TARGET)
-
-CONFIG(release, debug|release) {
-    DEFINES += QT_MESSAGELOGCONTEXT
-}
 
 TEMPLATE = lib
 
@@ -36,15 +30,9 @@ unix {
     INSTALLS += target
 }
 
-include(McIocContainer.pri)
+include($$PWD/../common.pri)
+include($$PWD/McIocContainer.pri)
+include($$PWD/McIocContainerDepend.pri)
 
 DESTDIR = $$PWD/../bin
 MOC_DIR = $$PWD/../moc/McIocContainer
-
-msvc {
-    QMAKE_CFLAGS += /utf-8
-    QMAKE_CXXFLAGS += /utf-8
-}
-
-QMAKE_CXXFLAGS_RELEASE = $$QMAKE_CFLAGS_RELEASE_WITH_DEBUGINFO
-QMAKE_LFLAGS_RELEASE = $$QMAKE_LFLAGS_RELEASE_WITH_DEBUGINFO

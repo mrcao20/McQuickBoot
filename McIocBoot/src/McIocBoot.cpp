@@ -13,12 +13,15 @@
 #include "McBoot/Model/McModelContainer.h"
 #include "McBoot/Socket/impl/McQmlSocketContainer.h"
 #include "McBoot/Requestor/McQmlRequestor.h"
+#include "McBoot/BeanDefinitionReader/impl/McConfigurationFileBeanDefinitionReader.h"
 
 MC_DECL_PRIVATE_DATA(McIocBoot)
 McAnnotationApplicationContextPtr context;
+QQmlEngine *engine{nullptr};
 MC_DECL_PRIVATE_DATA_END
 
-Q_GLOBAL_STATIC_WITH_ARGS(QQmlEngine *, mcEngine, (nullptr))
+//Q_GLOBAL_STATIC_WITH_ARGS(QQmlEngine *, mcEngine, (nullptr))
+Q_GLOBAL_STATIC(McIocBootPtr, mcBoot)
 
 McIocBoot::McIocBoot(QObject *parent)
     : QObject(parent)
@@ -28,30 +31,35 @@ McIocBoot::McIocBoot(QObject *parent)
 
 McIocBoot::~McIocBoot() 
 {
+    qDebug() << "~McIocBoot";
 }
 
 void McIocBoot::init(QQmlApplicationEngine *engine) noexcept 
 {
-    *mcEngine = engine;
+    if(!mcBoot->isNull()) {
+        qWarning("the boot is already init.");
+        return;
+    }
+    *mcBoot = McIocBootPtr::create();
+    McIocBootPtr &boot = *mcBoot;
+    boot->initBoot(engine);
+    auto appCtx = boot->d->context;
     
-    McIocBootPtr boot = McIocBootPtr::create();
-    boot->initBoot();
-    
-    McControllerContainerPtr controllerContainer = McControllerContainerPtr::create();
+    auto controllerContainer = appCtx->getBean<McControllerContainer>("controllerContainer");
     controllerContainer->init(boot);
     
-    McModelContainerPtr modelContainer = McModelContainerPtr::create();
+    auto modelContainer = appCtx->getBean<McModelContainer>("modelContainer");
     modelContainer->init(boot);
     
-    McQmlSocketContainerPtr socketContainer = McQmlSocketContainerPtr::create();
+    auto socketContainer = appCtx->getBean<McQmlSocketContainer>("socketContainer");
     socketContainer->init(boot);
     
-    McQmlRequestor *requestor = new McQmlRequestor(engine); //!< 不需要设置父对象
+    auto requestor = appCtx->getBean<McQmlRequestor>("requestor");
     requestor->setControllerContainer(controllerContainer);
     requestor->setSocketContainer(socketContainer);
     
     //! engine的newQObject函数会将其参数所有权转移到其返回的QJSValue中
-    QJSValue jsObj = engine->newQObject(requestor);
+    QJSValue jsObj = engine->newQObject(requestor.data());
     engine->globalObject().setProperty("$", jsObj);
     QString data = R"(
        $.__proto__.get = function(uri) {
@@ -98,13 +106,13 @@ void McIocBoot::init(QQmlApplicationEngine *engine) noexcept
 
 QQmlEngine *McIocBoot::engine() noexcept
 {
-    return *mcEngine;
+    return mcBoot->operator ->()->d->engine;
 }
 
 QQuickView *McIocBoot::createQuickView(const QString &source, QWindow *parent) noexcept
 {
     if(McIocBoot::engine() == nullptr) {
-        qCritical("engine is null. you must be call function init or run before");
+        qCritical("engine is null. you must be call function init or run before\n");
         return nullptr;
     }
     QQuickView *view = new QQuickView(engine(), parent);
@@ -112,19 +120,40 @@ QQuickView *McIocBoot::createQuickView(const QString &source, QWindow *parent) n
     return  view;
 }
 
-void McIocBoot::initBoot() noexcept 
+void McIocBoot::initBoot(QQmlEngine *engine) noexcept 
 {
     if (d->context) {
 		qInfo() << "The container has been initialized";
 		return;
 	}
+    d->engine = engine;
     d->context = McAnnotationApplicationContextPtr::create();
+    auto reader = McConfigurationFileBeanDefinitionReaderPtr::create(d->context);
+    reader->readBeanDefinition(d->context.data());
     d->context->refresh();  //!< 预加载bean
 }
 
 QSharedPointer<IMcApplicationContext> McIocBoot::getApplicationContext() const noexcept 
 {
     return d->context;
+}
+
+QList<QString> McIocBoot::getAllComponent() noexcept
+{
+    auto context = getApplicationContext();
+	if (!context) {
+		qCritical() << "Please call initContainer to initialize container first";
+		return QList<QString>();
+	}
+	QList<QString> components;
+    QHash<QString, IMcBeanDefinitionPtr> beanDefinitions = context->getBeanDefinitions();
+	for (auto itr = beanDefinitions.cbegin(); itr != beanDefinitions.cend(); ++itr) {
+		auto beanDefinition = itr.value();
+		if (!isComponent(beanDefinition->getBeanMetaObject()))
+			continue;
+		components.append(itr.key());
+	}
+	return components;
 }
 
 QList<QString> McIocBoot::getComponents(const QString &componentType) noexcept 
@@ -145,6 +174,21 @@ QList<QString> McIocBoot::getComponents(const QString &componentType) noexcept
 	return components;
 }
 
+bool McIocBoot::isComponent(const QMetaObject *metaObj) noexcept
+{
+    if(!metaObj) {
+        return false;
+    }
+    int classInfoCount = metaObj->classInfoCount();
+	for (int i = 0; i < classInfoCount; ++i) {
+		auto classInfo = metaObj->classInfo(i);
+		if (qstrcmp(classInfo.name(), MC_COMPONENT_TAG) != 0)
+			continue;
+		return true;
+	}
+	return false;
+}
+
 bool McIocBoot::isComponentType(const QMetaObject *metaObj, const QString &type) noexcept 
 {
     if(!metaObj) {
@@ -153,7 +197,7 @@ bool McIocBoot::isComponentType(const QMetaObject *metaObj, const QString &type)
 	int classInfoCount = metaObj->classInfoCount();
 	for (int i = 0; i < classInfoCount; ++i) {
 		auto classInfo = metaObj->classInfo(i);
-		if (qstrcmp(classInfo.name(), "Component") != 0)
+		if (qstrcmp(classInfo.name(), MC_COMPONENT_TAG) != 0)
 			continue;
 		return classInfo.value() == type;
 	}

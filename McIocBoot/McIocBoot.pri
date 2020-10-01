@@ -16,7 +16,9 @@ SOURCES += \
     src/Socket/McQmlSocketContainer.cpp \
     src/Socket/McQmlSocketRunner.cpp \
     src/Socket/McSession.cpp \
-    src/Utils/McJsonUtils.cpp
+    src/Utils/McJsonUtils.cpp \
+    $$PWD/src/BeanDefinitionReader/McConfigurationFileBeanDefinitionReader.cpp \
+    $$PWD/src/Configuration/McQmlRequestorConfig.cpp
 
 HEADERS +=  \
     include/McBoot/Application/McSingleApplication.h \
@@ -40,4 +42,6 @@ HEADERS +=  \
     include/McBoot/Socket/impl/McQmlSocketContainer.h \
     include/McBoot/Socket/impl/McQmlSocketRunner.h \
     include/McBoot/Socket/impl/McSession.h \
-    include/McBoot/Utils/McJsonUtils.h
+    include/McBoot/Utils/McJsonUtils.h \
+    $$PWD/include/McBoot/BeanDefinitionReader/impl/McConfigurationFileBeanDefinitionReader.h \
+    $$PWD/include/McBoot/Configuration/McQmlRequestorConfig.h

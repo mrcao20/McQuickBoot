@@ -8,18 +8,10 @@ QT       -= gui
 
 TARGET = McLogQt
 TARGET = $$qt5LibraryTarget($$TARGET)
-CONFIG += c++11
-
-CONFIG(release, debug|release) {
-    DEFINES += QT_MESSAGELOGCONTEXT
-}
 
 TEMPLATE = lib
 
 DEFINES += MCLOGQT_LIBRARY
-
-# 去掉IOC容器的依赖部分
-#DEFINES += MC_NO_IOC
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
@@ -37,36 +29,10 @@ unix {
     INSTALLS += target
 }
 
-include(McLogQt.pri)
+# 在最上面
+include($$PWD/../common.pri)
+include($$PWD/McLogQt.pri)
+include($$PWD/McLogQtDepend.pri)
 
 DESTDIR = $$PWD/../bin
 MOC_DIR = $$PWD/../moc/McLogQt
-
-contains(DEFINES, MC_NO_IOC) {
-    message(defined MC_NO_IOC)
-}else{
-    win32 {
-        msvc {
-            QMAKE_CFLAGS += /utf-8
-            QMAKE_CXXFLAGS += /utf-8
-            
-            CONFIG(release, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocContainer
-            else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocContainerd
-        } else {
-            equals(QT_MAJOR_VERSION, 5):lessThan(QT_MINOR_VERSION, 9) {
-                CONFIG(release, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocContainer
-                else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocContainerd
-            } else {
-                LIBS += -L$$PWD/../bin/ -lMcIocContainer
-            }
-        }
-    } else:unix:!macx {
-        LIBS += -L$$PWD/../bin/ -lMcIocContainer
-    }
-    
-    INCLUDEPATH += $$PWD/../McIocContainer/include
-    DEPENDPATH += $$PWD/../McIocContainer/include
-}
-
-QMAKE_CXXFLAGS_RELEASE = $$QMAKE_CFLAGS_RELEASE_WITH_DEBUGINFO
-QMAKE_LFLAGS_RELEASE = $$QMAKE_LFLAGS_RELEASE_WITH_DEBUGINFO

@@ -3,4 +3,6 @@ TEMPLATE = subdirs
 SUBDIRS += \
     IocTest \
     LogTest \
-    Test
+    Test \
+    YamlTest \
+    BootTest

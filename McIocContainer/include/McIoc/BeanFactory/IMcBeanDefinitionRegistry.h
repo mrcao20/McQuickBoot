@@ -21,6 +21,15 @@ public:
     virtual void registerBeanDefinition(const QString &name, IMcBeanDefinitionConstPtrRef beanDefinition) noexcept = 0;
     
     /*!
+     * \brief unregisterBeanDefinition
+     * 
+     * 将beanDefinition从容器中移除
+     * \param name beanName
+     * \return 被移除的beanDefinition，如果不存在则返回空
+     */
+    virtual IMcBeanDefinitionPtr unregisterBeanDefinition(const QString &name) noexcept = 0;
+    
+    /*!
      * \brief isContained
      * 
      * 检测该bean是否已经存在

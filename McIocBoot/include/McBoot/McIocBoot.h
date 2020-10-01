@@ -52,12 +52,16 @@ public:
             , const function<void(T *app, QQmlApplicationEngine *)> &func = nullptr
             , const function<void(T *app)> &prefunc = nullptr) noexcept;
  
-    void initBoot() noexcept;
+    void initBoot(QQmlEngine *engine) noexcept;
     
     IMcApplicationContextPtr getApplicationContext() const noexcept;
     
+    //! 获取所有被Component标记的bean
+    QList<QString> getAllComponent() noexcept;
     //! 获取所有组建类型为componentType的bean的名称
     QList<QString> getComponents(const QString &componentType) noexcept;
+    //! 是否被Component标记
+    bool isComponent(const QMetaObject *metaObj) noexcept;
     //! 传入的元对象的组件类型是否为type
     bool isComponentType(const QMetaObject *metaObj, const QString &type) noexcept;
     

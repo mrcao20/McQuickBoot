@@ -9,7 +9,7 @@
             <signal>signal_send()</signal>
             <receiver name="r"></receiver>
             <slot name="slot_recv()"></slot>
-            <ConnectionType>DirectConnection | UniqueConnection</ConnectionType>
+            <type>DirectConnection | UniqueConnection</type>
         </connect>
         <property name="text">
             <value>test c</value>

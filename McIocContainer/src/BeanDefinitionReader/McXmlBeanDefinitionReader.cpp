@@ -1,6 +1,5 @@
 #include "McIoc/BeanDefinitionReader/impl/McXmlBeanDefinitionReader.h"
 
-#include <QCoreApplication>
 #include <QFile>
 #include <QDir>
 #include <qdom.h>
@@ -72,7 +71,7 @@ void McXmlBeanDefinitionReader::readBeanDefinition(const QDomDocument &doc) noex
 		qCritical() << "XML Error: Root element is NULL.";
 		return;
 	}
-	if (root.tagName() != MC_BEANS) {
+	if (root.tagName() != MC_BEANS_TAG) {
 		qCritical() << "XML Error: Root element is not beans.";
 		return;
 	}
@@ -86,7 +85,7 @@ void McXmlBeanDefinitionReader::readBeanDefinition(const QDomNodeList &nodes) no
         if(ele.isNull()) {
             continue;
         }
-		if (ele.tagName() != MC_BEAN || ele.attribute("name").isEmpty() ||
+		if (ele.tagName() != MC_BEAN_TAG || ele.attribute("name").isEmpty() ||
 			(ele.attribute("class").isEmpty() && ele.attribute("plugin").isEmpty())) {
 			qCritical() << "node name must be 'bean', and it's not only contains attribute 'name' and 'class/plugin' but also this attribute not is able null!!";
 			continue;
@@ -114,11 +113,7 @@ bool McXmlBeanDefinitionReader::parseBeanClass(const QDomElement &ele, IMcBeanDe
         beanDefinition->setClassName(ele.attribute("class"));
     else if(ele.hasAttribute("plugin")){    //!< 如果指定的是plugin，则通过插件创建对象
         QString pluginPath = ele.attribute("plugin");
-        pluginPath = QDir::toNativeSeparators(pluginPath);
-        if(pluginPath.startsWith(QString("%1%2").arg(".", QDir::separator()))
-                || pluginPath.startsWith(QString("%1%2").arg("..", QDir::separator()))) {
-            pluginPath = qApp->applicationDirPath() + "/" + pluginPath;   //!< 补全为全路径
-        }
+        pluginPath = Mc::toAbsolutePath(pluginPath);
         if(!QLibrary::isLibrary(pluginPath)){
             qCritical() << pluginPath << "is not a plugin. please check!!!";
             return false;
@@ -140,7 +135,7 @@ void McXmlBeanDefinitionReader::readBeanDefinition(
 		QDomElement propEle = propNodes.at(i).toElement();
 		if (propEle.isNull())
 			continue;
-        if(propEle.tagName() == MC_CONNECT) {
+        if(propEle.tagName() == MC_CONNECT_TAG) {
             readBeanDefinitionForConnect(propEle, beanDefinition);
         }else{    //! 不判定标签是否为property，即除了connect以外均可以解析为property
             readBeanDefinitionForProperty(propEle, beanDefinition);
@@ -211,32 +206,32 @@ void McXmlBeanDefinitionReader::readBeanDefinitionForConnect(
         , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept 
 {
     McBeanConnectorPtr connector = McBeanConnectorPtr::create();
-    connector->setSender(MC_THIS);       //!< 如果没有指定sender，则默认为对象本身
-    connector->setReceiver(MC_THIS);     //!< 如果没有指定receiver，则默认为对象本身
+    connector->setSender(MC_THIS_TAG);       //!< 如果没有指定sender，则默认为对象本身
+    connector->setReceiver(MC_THIS_TAG);     //!< 如果没有指定receiver，则默认为对象本身
     connector->setType(Qt::ConnectionType::AutoConnection); //!< 默认为自动连接
     
     // connect attribute
-    if(propEle.hasAttribute(MC_SENDER)) {
-        connector->setSender(propEle.attribute(MC_SENDER));
+    if(propEle.hasAttribute(MC_SENDER_TAG)) {
+        connector->setSender(propEle.attribute(MC_SENDER_TAG));
     }
-    if(propEle.hasAttribute(MC_SIGNAL)) {
-        connector->setSignal(propEle.attribute(MC_SIGNAL));
+    if(propEle.hasAttribute(MC_SIGNAL_TAG)) {
+        connector->setSignal(propEle.attribute(MC_SIGNAL_TAG));
     }
-    if(propEle.hasAttribute(MC_RECEIVER)) {
-        connector->setReceiver(propEle.attribute(MC_RECEIVER));
+    if(propEle.hasAttribute(MC_RECEIVER_TAG)) {
+        connector->setReceiver(propEle.attribute(MC_RECEIVER_TAG));
     }
-    if(propEle.hasAttribute(MC_SLOT)) {
-        connector->setSlot(propEle.attribute(MC_SLOT));
+    if(propEle.hasAttribute(MC_SLOT_TAG)) {
+        connector->setSlot(propEle.attribute(MC_SLOT_TAG));
     }
-    if(propEle.hasAttribute(MC_CONNECTION_TYPE)) {
-        QString typeStr = propEle.attribute(MC_CONNECTION_TYPE);
+    if(propEle.hasAttribute(MC_CONNECTION_TYPE_TAG)) {
+        QString typeStr = propEle.attribute(MC_CONNECTION_TYPE_TAG);
         connector->setType(getConnectionType(typeStr));
     }
     
     // connect childNodes attribute and text
     auto childEle = propEle.firstChildElement();
     while(!childEle.isNull()) {
-        if(childEle.tagName() == MC_SENDER) {
+        if(childEle.tagName() == MC_SENDER_TAG) {
             auto text = connector->getSender();
             if(childEle.hasAttribute("name")) {
                 text = childEle.attribute("name");
@@ -245,7 +240,7 @@ void McXmlBeanDefinitionReader::readBeanDefinitionForConnect(
                 text = childEle.text();
             }
             connector->setSender(text);
-        }else if(childEle.tagName() == MC_SIGNAL) {
+        }else if(childEle.tagName() == MC_SIGNAL_TAG) {
             auto text = connector->getSignal();
             if(childEle.hasAttribute("name")) {
                 text = childEle.attribute("name");
@@ -254,7 +249,7 @@ void McXmlBeanDefinitionReader::readBeanDefinitionForConnect(
                 text = childEle.text();
             }
             connector->setSignal(text);
-        }else if(childEle.tagName() == MC_RECEIVER) {
+        }else if(childEle.tagName() == MC_RECEIVER_TAG) {
             auto text = connector->getReceiver();
             if(childEle.hasAttribute("name")) {
                 text = childEle.attribute("name");
@@ -263,7 +258,7 @@ void McXmlBeanDefinitionReader::readBeanDefinitionForConnect(
                 text = childEle.text();
             }
             connector->setReceiver(text);
-        }else if(childEle.tagName() == MC_SLOT) {
+        }else if(childEle.tagName() == MC_SLOT_TAG) {
             auto text = connector->getSlot();
             if(childEle.hasAttribute("name")) {
                 text = childEle.attribute("name");
@@ -272,7 +267,7 @@ void McXmlBeanDefinitionReader::readBeanDefinitionForConnect(
                 text = childEle.text();
             }
             connector->setSlot(text);
-        }else if(childEle.tagName() == MC_CONNECTION_TYPE) {
+        }else if(childEle.tagName() == MC_CONNECTION_TYPE_TAG) {
             auto text = connector->getType();
             if(childEle.hasAttribute("name")) {
                 text = getConnectionType(childEle.attribute("name"));
@@ -289,58 +284,4 @@ void McXmlBeanDefinitionReader::readBeanDefinitionForConnect(
     QVariant var;
     var.setValue(connector);
     beanDefinition->addConnector(var);
-}
-
-Qt::ConnectionType McXmlBeanDefinitionReader::getConnectionType(const QString &typeStr) noexcept 
-{
-    Qt::ConnectionType type = Qt::ConnectionType::AutoConnection;
-    
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
-    QStringList typeList = typeStr.simplified().split('|', Qt::SkipEmptyParts);
-#else
-    QStringList typeList = typeStr.simplified().split('|', QString::SkipEmptyParts);
-#endif
-    
-    if(typeList.size() > 2) {
-        qCritical() << "请按照QObject::connect的要求设置ConnectionType";
-        return type;
-    }
-    
-    if(typeList.size() == 1) {
-        auto temp = connectionTypeStrToEnum(typeList.at(0));
-        if(temp == Qt::ConnectionType::UniqueConnection)
-            type = static_cast<Qt::ConnectionType>(type | temp);
-        else {
-            type = temp;
-        }
-    } else if(typeList.size() == 2) {
-        auto temp1 = connectionTypeStrToEnum(typeList.at(0));
-        auto temp2 = connectionTypeStrToEnum(typeList.at(1));
-        if(temp1 != Qt::ConnectionType::UniqueConnection
-                && temp2 != Qt::ConnectionType::UniqueConnection) {
-            qCritical() << "如果指定两种连接方式，则至少有一种必须为Qt::UniqueConnection";
-        }else if(temp1 == Qt::ConnectionType::UniqueConnection
-                 && temp2 == Qt::ConnectionType::UniqueConnection) {
-            type = static_cast<Qt::ConnectionType>(type | temp1);
-        }else {
-            type = static_cast<Qt::ConnectionType>(temp1 | temp2);
-        }
-    }
-    return type;
-}
-
-Qt::ConnectionType McXmlBeanDefinitionReader::connectionTypeStrToEnum(const QString &typeStr) noexcept 
-{
-    auto type = typeStr.simplified();
-    if(type == "AutoConnection") {
-        return Qt::ConnectionType::AutoConnection;
-    }else if(type == "DirectConnection") {
-        return Qt::ConnectionType::DirectConnection;
-    }else if(type == "QueuedConnection") {
-        return Qt::ConnectionType::QueuedConnection;
-    }else if(type == "BlockingQueuedConnection") {
-        return Qt::ConnectionType::BlockingQueuedConnection;
-    }else {
-        return Qt::ConnectionType::UniqueConnection;
-    }
 }

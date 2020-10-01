@@ -13,19 +13,16 @@ MC_PADDING_CLANG(7)
 bool isSyncCall{false};         // 是否让线程回到主线程再执行callback，默认不需要
 QJSValue callback;
 QVariant body;
-QJSEngine *jsEngine{nullptr};
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McQmlResponse)
 qRegisterMetaType<McQmlResponse *>("McQmlResponse");
 MC_INIT_END
 
-McQmlResponse::McQmlResponse(QJSEngine *jsEngine, QObject *parent)
+McQmlResponse::McQmlResponse(QObject *parent)
     : QObject(parent)
 {
     MC_NEW_PRIVATE_DATA(McQmlResponse);
-    
-    d->jsEngine = jsEngine;
 }
 
 McQmlResponse::~McQmlResponse()
@@ -75,10 +72,15 @@ void McQmlResponse::callCallback() noexcept
     McScopedFunction func([this](){
         this->deleteLater();
     });
+    Q_UNUSED(func)
     if(!d->callback.isCallable()) {
         return;
     }
-    auto engine = d->jsEngine;
+#if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
+    auto engine = QQmlEngine::contextForObject(this)->engine();
+#else
+    auto engine = qjsEngine(this);
+#endif
     if(!engine) {
         return;
     }

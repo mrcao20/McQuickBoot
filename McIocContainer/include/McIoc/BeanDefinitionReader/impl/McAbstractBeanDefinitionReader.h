@@ -4,11 +4,10 @@
 
 MC_FORWARD_DECL_PRIVATE_DATA(McAbstractBeanDefinitionReader)
 
-class McAbstractBeanDefinitionReader
+class MCIOCCONTAINER_EXPORT McAbstractBeanDefinitionReader
         : public QObject
         , public IMcBeanDefinitionReader 
 {
-    
     Q_OBJECT
 public:
     explicit McAbstractBeanDefinitionReader(QObject *parent = nullptr);
@@ -20,6 +19,9 @@ public:
     
 protected:
     virtual void doReadBeanDefinition() noexcept = 0;
+    
+    Qt::ConnectionType getConnectionType(const QString &typeStr) noexcept;
+    Qt::ConnectionType connectionTypeStrToEnum(const QString &typeStr) noexcept;
     
 private:
     MC_DECL_PRIVATE(McAbstractBeanDefinitionReader)

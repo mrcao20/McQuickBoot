@@ -9,6 +9,15 @@
 #include "McIocVersion.h"
 #include "BeanFactory/McBeanGlobal.h"
 
+namespace McPrivate {
+
+class McGlobal
+{
+    MC_DECL_INIT(McGlobal)
+};
+
+}
+
 MC_DECL_POINTER(QObject)
 Q_DECLARE_METATYPE(QObjectPtr)
 

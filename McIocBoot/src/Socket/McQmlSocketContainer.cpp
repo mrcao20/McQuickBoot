@@ -14,6 +14,10 @@
 #include "McBoot/Socket/impl/McSession.h"
 #include "McBoot/Socket/impl/McQmlSocketRunner.h"
 
+MC_INIT(McQmlSocketContainer)
+MC_REGISTER_BEAN_FACTORY(McQmlSocketContainer)
+MC_INIT_END
+
 MC_DECL_PRIVATE_DATA(McQmlSocketContainer)
 QMap<QString, QObjectPtr> sockets;
 MC_DECL_PRIVATE_DATA_END
@@ -31,7 +35,7 @@ McQmlSocketContainer::~McQmlSocketContainer()
 void McQmlSocketContainer::init(McIocBootConstPtrRef boot) noexcept 
 {
     auto appCtx = boot->getApplicationContext();
-	auto beanNames = boot->getComponents(MC_QML_SOCKET);
+	auto beanNames = boot->getComponents(MC_QML_SOCKET_TAG);
     for (const auto &beanName : beanNames) {
         auto obj = appCtx->getBean(beanName);
         if(!obj) {

@@ -3,5 +3,7 @@
         <file>main.qml</file>
         <file>myspring.xml</file>
         <file>xmltest2.xml</file>
+        <file>ioc.yml</file>
+        <file>ioc2.yml</file>
     </qresource>
 </RCC>

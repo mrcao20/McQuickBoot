@@ -1,8 +1,12 @@
 QT -= gui
 QT += xml
 
-CONFIG += c++11 console
+CONFIG += console
 CONFIG -= app_bundle
+
+TEMPLATE += fakelib
+TARGET = IocTest
+TARGET = $$qt5LibraryTarget($$TARGET)
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -30,24 +34,5 @@ HEADERS += \
 DESTDIR = $$PWD/../../bin/Examples
 MOC_DIR = $$PWD/../../moc/Examples/IocTest
 
-win32 {
-    msvc {
-        QMAKE_CFLAGS += /utf-8
-        QMAKE_CXXFLAGS += /utf-8
-        
-        CONFIG(release, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocContainer
-        else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocContainerd
-    } else {
-        equals(QT_MAJOR_VERSION, 5):lessThan(QT_MINOR_VERSION, 9) {
-            CONFIG(release, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocContainer
-            else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocContainerd
-        } else {
-            LIBS += -L$$PWD/../../bin/ -lMcIocContainer
-        }
-    }
-} else:unix:!macx {
-    LIBS += -L$$PWD/../../bin/ -lMcIocContainer
-}
-
-INCLUDEPATH += $$PWD/../../McIocContainer/include
-DEPENDPATH += $$PWD/../../McIocContainer/include
+include($$PWD/../../common.pri)
+include($$PWD/../../McIocBoot/McIocBootDepend.pri)

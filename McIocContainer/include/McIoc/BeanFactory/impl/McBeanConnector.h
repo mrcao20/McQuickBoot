@@ -37,9 +37,9 @@ public:
     { m_type = type; }
     
 private:
-    QString m_sender{MC_THIS};                      //!< 发送方beanName，默认为对象本身
+    QString m_sender{MC_THIS_TAG};                      //!< 发送方beanName，默认为对象本身
     QString m_signal;                               //!< 信号名
-    QString m_receiver{MC_THIS};                    //!< 接收方beanName，默认为对象本身
+    QString m_receiver{MC_THIS_TAG};                    //!< 接收方beanName，默认为对象本身
     QString m_slot;                                 //!< 槽名
     Qt::ConnectionType m_type{Qt::AutoConnection};  //!< 连接方式，默认为自动连接
 };

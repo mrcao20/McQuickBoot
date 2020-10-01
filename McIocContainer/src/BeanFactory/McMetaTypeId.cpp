@@ -2,37 +2,43 @@
 
 #include <QGlobalStatic>
 
-Q_GLOBAL_STATIC(QVector<int>, mcQObjectPointerIds)
-Q_GLOBAL_STATIC(QVector<int>, mcSharedPointerIds)
+Q_GLOBAL_STATIC(McPointerType, mcQObjectPointerIds)
+Q_GLOBAL_STATIC(McPointerType, mcSharedPointerIds)
 Q_GLOBAL_STATIC(McSequentialType, mcSequentialIds)
 Q_GLOBAL_STATIC(McAssociativeType, mcAssociativeIds)
 
-QVector<int> McMetaTypeId::qobjectPointerIds() noexcept
+McPointerType McMetaTypeId::qobjectPointerIds() noexcept
 {
     return *mcQObjectPointerIds;
 }
 
-void McMetaTypeId::addQObjectPointerIds(int id) noexcept
+void McMetaTypeId::addQObjectPointerIds(int id, int sharedId) noexcept
 {
-    auto ids = mcQObjectPointerIds;
+    auto ids = mcQObjectPointerIds();
     if(ids->contains(id)) {
         return;
     }
-    ids->append(id);
+    McPointerMetaIdPtr pId = McPointerMetaIdPtr::create();
+    pId->qobjectPointerId = id;
+    pId->sharedPointerId = sharedId;
+    ids->insert(id, pId);
 }
 
-QVector<int> McMetaTypeId::sharedPointerIds() noexcept
+McPointerType McMetaTypeId::sharedPointerIds() noexcept
 {
     return *mcSharedPointerIds;
 }
 
-void McMetaTypeId::addSharedPointerId(int id) noexcept
+void McMetaTypeId::addSharedPointerId(int id, int qobjectId) noexcept
 {
     auto ids = mcSharedPointerIds();
     if(ids->contains(id)) {
         return;
     }
-    ids->append(id);
+    McPointerMetaIdPtr pId = McPointerMetaIdPtr::create();
+    pId->sharedPointerId = id;
+    pId->qobjectPointerId = qobjectId;
+    ids->insert(id, pId);
 }
 
 McSequentialType McMetaTypeId::sequentialIds() noexcept

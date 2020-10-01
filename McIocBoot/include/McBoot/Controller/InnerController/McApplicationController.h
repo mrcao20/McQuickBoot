@@ -177,8 +177,8 @@ class McApplicationController : public QObject {
     Q_OBJECT
     MC_DECL_INIT(McApplicationController)
     MC_DEFINE_TYPELIST(QObject)
-    Q_CLASSINFO(MC_COMPONENT, MC_CONTROLLER)
-    Q_CLASSINFO(MC_BEANNAME, "app")
+    MC_CONTROLLER
+    MC_BEANNAME("app")
 public:
     Q_INVOKABLE McApplicationController() noexcept;
     ~McApplicationController() noexcept;

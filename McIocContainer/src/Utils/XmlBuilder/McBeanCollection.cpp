@@ -2,6 +2,7 @@
 
 #include <QDomProcessingInstruction>
 #include <QTextStream>
+#include <QVector>
 
 #include "McIoc/Utils/XmlBuilder/IMcBean.h"
 
@@ -30,7 +31,7 @@ QDomDocument McBeanCollection::toDomDocument() const noexcept
     QDomDocument doc;
     auto xmlInstruction = doc.createProcessingInstruction("xml", R"(version="1.0" encoding="UTF-8")");
     doc.appendChild(xmlInstruction);
-    QDomElement root = doc.createElement(MC_BEANS);
+    QDomElement root = doc.createElement(MC_BEANS_TAG);
     doc.appendChild(root);
     for(auto bean : d->beans) {
         root.appendChild(bean->toDomElement(doc));

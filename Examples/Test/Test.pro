@@ -1,5 +1,4 @@
 QT += quick
-CONFIG += c++11
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -49,33 +48,24 @@ HEADERS += \
     QmlSocketTest.h \
     ThreadTest.h
     
+include($$PWD/../../common.pri)
+include($$PWD/../../McIocBoot/McIocBootDepend.pri)
+
 win32 {
     msvc {
-        QMAKE_CFLAGS += /utf-8
-        QMAKE_CXXFLAGS += /utf-8
-        
-        CONFIG(release, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocContainer \
-            -L$$PWD/../../bin/ -lMcIocBoot
-        else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocContainerd \
-            -L$$PWD/../../bin/ -lMcIocBootd
+        CONFIG(release, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocBoot
+        else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocBootd
     } else {
         equals(QT_MAJOR_VERSION, 5):lessThan(QT_MINOR_VERSION, 9) {
-            CONFIG(release, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocContainer \
-                -L$$PWD/../../bin/ -lMcIocBoot
-            else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocContainerd \
-                -L$$PWD/../../bin/ -lMcIocBootd
+            CONFIG(release, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocBoot
+            else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocBootd
         } else {
-            LIBS += -L$$PWD/../../bin/ -lMcIocContainer \
-                -L$$PWD/../../bin/ -lMcIocBoot
+            LIBS += -L$$PWD/../../bin/ -lMcIocBoot
         }
     }
 } else:unix:!macx {
-    LIBS += -L$$PWD/../../bin/ -lMcIocContainer \
-        -L$$PWD/../../bin/ -lMcIocBoot
+    LIBS += -L$$PWD/../../bin/ -lMcIocBoot
 }
-
-INCLUDEPATH += $$PWD/../../McIocContainer/include
-DEPENDPATH += $$PWD/../../McIocContainer/include
 
 INCLUDEPATH += $$PWD/../../McIocBoot/include
 DEPENDPATH += $$PWD/../../McIocBoot/include

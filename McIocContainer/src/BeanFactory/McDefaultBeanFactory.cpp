@@ -10,6 +10,7 @@
 #include "McIoc/BeanFactory/impl/McBeanConnector.h"
 #include "McIoc/PropertyParser/IMcPropertyConverter.h"
 #include "McIoc/Thread/IMcDeleteThreadWhenQuit.h"
+#include "McIoc/Destroyer/IMcDestroyer.h"
 
 MC_DECL_PRIVATE_DATA(McDefaultBeanFactory)
 IMcPropertyConverterPtr converter;
@@ -34,7 +35,7 @@ QVariant McDefaultBeanFactory::doCreate(
         , QThread *thread) noexcept 
 {
     QVariant var;
-    QObjectPtr bean;
+    QObject *obj = nullptr;
     auto pluginPath = beanDefinition->getPluginPath();
     if(!pluginPath.isEmpty()){
         QPluginLoader loader(pluginPath);
@@ -42,20 +43,21 @@ QVariant McDefaultBeanFactory::doCreate(
             qWarning() << pluginPath << "cannot load!!";
             return QVariant();
         }
-        bean.reset(loader.instance());
+        obj = loader.instance();
     }else{
         auto beanMetaObj = beanDefinition->getBeanMetaObject();
         if (!beanMetaObj) {
             qCritical() << QString("the class '%1' is not in meta-object system").arg(beanDefinition->getClassName());
             return QVariant();
         }
-        bean.reset(beanMetaObj->newInstance());
+        obj = beanMetaObj->newInstance();
     }
-    if (!bean) {
+    if (!obj) {
 		qCritical() << QString("bean '%1' cannot instantiation, please make sure that have a non-parameter constructor and declared by Q_INVOKABLE")
 			.arg(beanDefinition->getClassName());
 		return QVariant();
 	}
+    QObjectPtr bean(obj, Mc::McCustomDeleter());
     callStartFunction(bean);    //!< 调用构造开始函数
     QVariantMap proValues;
 	if (!addPropertyValue(bean, beanDefinition, proValues)) {
@@ -80,6 +82,11 @@ QVariant McDefaultBeanFactory::doCreate(
     auto destoryer = var.value<IMcDeleteThreadWhenQuitPtr>();
     if(destoryer) {
         destoryer->deleteWhenQuit();
+    }
+    auto customDeleter = var.value<IMcDestroyerPtr>();
+    if(!customDeleter.isNull()) {
+        //! 这里如果传递共享指针，那么该对象将永远不会析构
+        bean->setProperty(MC_CUSTOM_DELETER_PROPERTY_NAME, QVariant::fromValue(customDeleter.data()));
     }
     return var;
 }
@@ -129,7 +136,7 @@ bool McDefaultBeanFactory::addPropertyValue(QObjectConstPtrRef bean
             value.convert(QMetaType::type(metaProperty.typeName()));
 #endif
             if(!metaProperty.write(bean.data(), value)) {
-                qCritical("bean '%s' write property named for '%s' failure"
+                qCritical("bean '%s' write property named for '%s' failure\n"
                           , bean->metaObject()->className()
                           , itr.key().toLocal8Bit().data());
             }
@@ -169,7 +176,7 @@ bool McDefaultBeanFactory::addObjectConnect(QObjectConstPtrRef bean
         }
         int signalIndex = signalMetaObj->indexOfSignal(signalStr.toLocal8Bit());
         if(signalIndex == -1) {
-            qCritical("not exists signal named '%s' for bean '%s'", signalMetaObj->className(), qPrintable(signalStr));
+            qCritical("not exists signal named '%s' for bean '%s'\n", signalMetaObj->className(), qPrintable(signalStr));
             return false;
         }
         signal = signalMetaObj->method(signalIndex);
@@ -188,7 +195,7 @@ bool McDefaultBeanFactory::addObjectConnect(QObjectConstPtrRef bean
         }
         int slotIndex = slotMetaObj->indexOfMethod(slotStr.toLocal8Bit());
         if(slotIndex == -1) {
-            qCritical("not exists slot named '%s' for bean '%s'", slotMetaObj->className(), qPrintable(slotStr));
+            qCritical("not exists slot named '%s' for bean '%s'\n", slotMetaObj->className(), qPrintable(slotStr));
             return false;
         }
         slot = slotMetaObj->method(slotIndex);
@@ -205,11 +212,11 @@ QObjectPtr McDefaultBeanFactory::getPropertyObject(QObjectConstPtrRef bean
                            , const QVariantMap &proValues) noexcept 
 {
     QObjectPtr obj;
-    if(proName == MC_THIS) {
+    if(proName == MC_THIS_TAG) {
         obj = bean;
     }else{
         if(!proValues.contains(proName)) {
-            qCritical("not found property named '%s' for bean '%s'"
+            qCritical("not found property named '%s' for bean '%s'\n"
                       , bean->metaObject()->className(), qPrintable(proName));
             return QObjectPtr();
         }

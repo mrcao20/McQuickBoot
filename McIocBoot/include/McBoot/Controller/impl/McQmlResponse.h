@@ -14,7 +14,7 @@ class MCIOCBOOT_EXPORT McQmlResponse : public QObject
     Q_OBJECT
     MC_DECL_INIT(McQmlResponse)
 public:
-    explicit McQmlResponse(QJSEngine *jsEngine, QObject *parent = nullptr);
+    explicit McQmlResponse(QObject *parent = nullptr);
     ~McQmlResponse() override;
     
     void setBody(const QVariant &var) noexcept;
