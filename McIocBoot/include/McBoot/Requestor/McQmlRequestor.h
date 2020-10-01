@@ -4,6 +4,8 @@
 
 #include <QJsonObject>
 
+#include <McIoc/Destroyer/IMcDestroyer.h>
+
 QT_BEGIN_NAMESPACE
 class QRunable;
 class QJSValue;
@@ -19,16 +21,22 @@ MC_FORWARD_DECL_CLASS(McQmlRequestorConfig);
 class McQmlResponse;
 class McQmlSocket;
 
-class MCIOCBOOT_EXPORT McQmlRequestor : public QObject 
+class MCIOCBOOT_EXPORT McQmlRequestor : public QObject, public IMcDestroyer
 {
     Q_OBJECT
     MC_DECL_INIT(McQmlRequestor)
+    MC_DEFINE_TYPELIST(IMcDestroyer)
     MC_COMPONENT
     MC_BEANNAME("requestor")
+    //! 在容器中为非单例，但是McIocBoot会控制其为单例
+    MC_SINGLETON(false)
     Q_PRIVATE_PROPERTY(d, McQmlRequestorConfigPtr requestorConfig MEMBER requestorConfig USER true)
 public:
     Q_INVOKABLE explicit McQmlRequestor(QObject *parent = nullptr);
     ~McQmlRequestor() override;
+    
+    //! 此函数什么都不做，因为此对象的所有权将转移至JavaScript，生命周期由JS管控
+    void destroy() noexcept override;
 
     qint64 maxThreadCount() const noexcept;
     void setMaxThreadCount(int val) noexcept;

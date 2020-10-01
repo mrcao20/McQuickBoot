@@ -1,7 +1,6 @@
 win32 {
     msvc {
-        win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../3rdparty/yaml-cpp/lib/lib/ -lyaml-cpp
-        else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../3rdparty/yaml-cpp/lib/lib/ -lyaml-cppd
+        win32: LIBS += -L$$PWD/../3rdparty/yaml-cpp/lib/lib/ -lyaml-cpp
     } else {
         LIBS += $$PWD/../3rdparty/yaml-cpp/lib/bin/yaml-cpp.dll
     }

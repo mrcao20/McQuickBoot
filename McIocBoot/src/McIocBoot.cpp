@@ -31,10 +31,15 @@ McIocBoot::McIocBoot(QObject *parent)
 
 McIocBoot::~McIocBoot() 
 {
+    qDebug() << "~McIocBoot";
 }
 
 void McIocBoot::init(QQmlApplicationEngine *engine) noexcept 
 {
+    if(!mcBoot->isNull()) {
+        qWarning("the boot is already init.");
+        return;
+    }
     *mcBoot = McIocBootPtr::create();
     McIocBootPtr &boot = *mcBoot;
     boot->initBoot(engine);

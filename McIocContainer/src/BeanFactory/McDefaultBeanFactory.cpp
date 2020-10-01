@@ -10,6 +10,7 @@
 #include "McIoc/BeanFactory/impl/McBeanConnector.h"
 #include "McIoc/PropertyParser/IMcPropertyConverter.h"
 #include "McIoc/Thread/IMcDeleteThreadWhenQuit.h"
+#include "McIoc/Destroyer/IMcDestroyer.h"
 
 MC_DECL_PRIVATE_DATA(McDefaultBeanFactory)
 IMcPropertyConverterPtr converter;
@@ -34,7 +35,7 @@ QVariant McDefaultBeanFactory::doCreate(
         , QThread *thread) noexcept 
 {
     QVariant var;
-    QObjectPtr bean;
+    QObject *obj = nullptr;
     auto pluginPath = beanDefinition->getPluginPath();
     if(!pluginPath.isEmpty()){
         QPluginLoader loader(pluginPath);
@@ -42,20 +43,21 @@ QVariant McDefaultBeanFactory::doCreate(
             qWarning() << pluginPath << "cannot load!!";
             return QVariant();
         }
-        bean.reset(loader.instance());
+        obj = loader.instance();
     }else{
         auto beanMetaObj = beanDefinition->getBeanMetaObject();
         if (!beanMetaObj) {
             qCritical() << QString("the class '%1' is not in meta-object system").arg(beanDefinition->getClassName());
             return QVariant();
         }
-        bean.reset(beanMetaObj->newInstance());
+        obj = beanMetaObj->newInstance();
     }
-    if (!bean) {
+    if (!obj) {
 		qCritical() << QString("bean '%1' cannot instantiation, please make sure that have a non-parameter constructor and declared by Q_INVOKABLE")
 			.arg(beanDefinition->getClassName());
 		return QVariant();
 	}
+    QObjectPtr bean(obj, Mc::McCustomDeleter());
     callStartFunction(bean);    //!< 调用构造开始函数
     QVariantMap proValues;
 	if (!addPropertyValue(bean, beanDefinition, proValues)) {
@@ -80,6 +82,11 @@ QVariant McDefaultBeanFactory::doCreate(
     auto destoryer = var.value<IMcDeleteThreadWhenQuitPtr>();
     if(destoryer) {
         destoryer->deleteWhenQuit();
+    }
+    auto customDeleter = var.value<IMcDestroyerPtr>();
+    if(!customDeleter.isNull()) {
+        //! 这里如果传递共享指针，那么该对象将永远不会析构
+        bean->setProperty(MC_CUSTOM_DELETER_PROPERTY_NAME, QVariant::fromValue(customDeleter.data()));
     }
     return var;
 }

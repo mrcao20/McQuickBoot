@@ -36,7 +36,7 @@ McRunnerEvent::~McRunnerEvent()
 }
 
 MC_INIT(McQmlRequestor)
-MC_REGISTER_BEAN_FACTORY(McQmlRequestor)
+MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(McQmlRequestor))
 MC_INIT_END
 
 MC_DECL_PRIVATE_DATA(McQmlRequestor)
@@ -56,6 +56,12 @@ McQmlRequestor::McQmlRequestor(QObject *parent)
 
 McQmlRequestor::~McQmlRequestor() 
 {
+    qDebug() << "~McQmlRequestor";
+}
+
+void McQmlRequestor::destroy() noexcept
+{
+    qDebug() << "McQmlRequestor is called destroy";
 }
 
 qint64 McQmlRequestor::maxThreadCount() const noexcept 

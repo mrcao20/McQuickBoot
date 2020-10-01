@@ -27,6 +27,8 @@ HEADERS += \
     $$PWD/include/McIoc/BeanFactory/impl/McBeanReference.h \
     $$PWD/include/McIoc/BeanFactory/impl/McDefaultBeanFactory.h \
     $$PWD/include/McIoc/BeanFactory/impl/McMetaTypeId.h \
+    $$PWD/include/McIoc/Destroyer/IMcDestroyer.h \
+    $$PWD/include/McIoc/Destroyer/impl/McNormalDestroyer.h \
     $$PWD/include/McIoc/PropertyParser/IMcPropertyConverter.h \
     $$PWD/include/McIoc/PropertyParser/IMcPropertyParser.h \
     $$PWD/include/McIoc/PropertyParser/impl/McAbstarctPropertyConverter.h \

@@ -59,6 +59,9 @@
 
 #endif //! !Q_MOC_RUN
 
+//! Inner QObject Property
+#define MC_CUSTOM_DELETER_PROPERTY_NAME "__mc__customDeleter"
+//!< Inner QObject Property
 
 //! Q_CLASSINFO
 #define MC_COMPONENT_TAG "Component"

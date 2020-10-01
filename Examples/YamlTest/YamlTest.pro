@@ -61,3 +61,6 @@ SrcConfigPath = $$replace(SrcConfigPath, /, \\)
 DstConfigPath = $$PWD/../../bin/Examples/
 DstConfigPath = $$replace(DstConfigPath, /, \\)
 QMAKE_POST_LINK += copy /y $$SrcConfigPath $$DstConfigPath
+
+RESOURCES += \
+    resource.qrc
