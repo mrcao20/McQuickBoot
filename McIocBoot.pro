@@ -2,8 +2,8 @@ TEMPLATE = subdirs
 
 SUBDIRS += McYaml \
     McIocContainer \
-    McIocBoot \
     McLogQt \
+    McIocBoot \
     Examples
 
 #SUBDIRS += McIocBoot
