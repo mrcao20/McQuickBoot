@@ -54,7 +54,7 @@ MC_DECL_METATYPE(Class)
 ~~~
 Q_PROPERTY(InterfacePtr interface MEMBER m_interface) // 注意这里的类型为Interface后接上Ptr，而不是QSharedPointer<Interface>
 ~~~
-同样的，你可以调用Q_CLASSINFO("interface", "obj")将interface属性指向beanN为obj的bean，如果不调用，那么将直接以属性名interface查找bean，并且需要在后面将USER字段置为true: Q_PROPERTY(InterfacePtr interface MEMBER m_interface USER true)。<br />
+同样的，你可以调用MC_AUTOWIRED("interface = obj")将interface属性指向beanName为obj的bean，即在IOC容器中查找一个beanName为obj的bean，并将其注入到该属性，如果属性名和beanName一样，也可以省掉"=obj": MC_AUTOWIRED("interface")。<br />
 同样的，如果你没有调用过QMetaType::unregisterType函数，那么你可以不用调用MC_REGISTER_COMPONENT宏，只需要调用MC_REGISTER_BEAN_FACTORY宏将类注册到元对象中，并使用MC_COMPONENT将其声明为一个Component，McAnnotationApplicationContext就会在构造时自动查找所有注册到元对象中的类进而进行注入，前提是你从来都没有调用过QMetaType::unregisterType函数或者没有在McAnnotationApplicationContext构造之前调用。
 
 5. 可以在MC_INIT和MC_INIT_END之间使用Mc::Ioc::connect("test", "interface", "signal()", "this", "slot()")为某一个bean连接信号和槽
@@ -94,7 +94,8 @@ Q_INVOKABLE
 MC_BEAN_FINISHED
 void end() noexcept;
 ~~~
-8. 提供一个接口IMcDeleteThreadWhenQuit，当一个实现至该接口的bean构造完成时会调用该接口中的deleteWhenQuit方法(只要实现了该接口就一定会调用)，同时提供一个默认的McDefaultDeleteThreadWhenQuit类，继承该类后，当bean被析构时会同时析构bean的生存线程，注意: 无论线程是否是主线程都会析构，所以如果需要实现复杂功能，需要自己实现IMcDeleteThreadWhenQuit接口。
+8. 提供一个接口IMcDeleteThreadWhenQuit，当一个实现至该接口的bean构造完成时会调用该接口中的deleteWhenQuit方法(只要实现了该接口就一定会调用)，同时提供一个默认的McDefaultDeleteThreadWhenQuit类，继承该类后，当bean被析构时会同时析构bean的生存线程，注意: 无论线程是否是主线程都会析构，所以如果需要实现复杂功能，需要自己实现IMcDeleteThreadWhenQuit接口。  
+9. 容器提供了IMcDestroyer接口用来自定义QSharedPointer包裹对象的析构，如果一个bean实现了该接口，那么QSharedPointer的引用计数为0时将不会析构其包裹的对象，而是调用IMcDestroyer接口的destroy方法，你可以在这个方法内实现自己的delete方式(比如调用QObject::deleteLater)。  
 
 以上都可在Test代码中找到相应用法用例。
 
