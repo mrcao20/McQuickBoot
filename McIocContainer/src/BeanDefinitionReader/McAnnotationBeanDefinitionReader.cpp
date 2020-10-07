@@ -53,23 +53,31 @@ void McAnnotationBeanDefinitionReader::injectProperty(
         const QMetaObject *metaObj
         , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept 
 {
-	int count = metaObj->propertyCount();
-	for (int i = 0; i < count; ++i) {
-		QMetaProperty prop = metaObj->property(i);
-        auto isUser = prop.isUser();
-        auto beanName = prop.name();
-		int classInfoIndex = metaObj->indexOfClassInfo(beanName);
-        if(classInfoIndex != -1) {
-            isUser = true;
-            auto classInfo = metaObj->classInfo(classInfoIndex);
-            beanName = classInfo.value();
-        }
-        if(!isUser) {
+    for(int i = 0, count = metaObj->classInfoCount(); i < count; ++i) {
+        auto classInfo = metaObj->classInfo(i);
+        if(qstrcmp(classInfo.name(), MC_AUTOWIRED_TAG) != 0) {
             continue;
         }
-        
-        McBeanReferencePtr beanRef = McBeanReferencePtr::create();
-        beanRef->setName(beanName);
-		beanDefinition->addProperty(prop.name(), QVariant::fromValue(beanRef));
-	}
+        QString value = classInfo.value();
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+        QStringList list = value.split("=", Qt::SkipEmptyParts);
+#else
+        QStringList list = value.split("=", QString::SkipEmptyParts);
+#endif
+        if(list.isEmpty()) {
+            continue;
+        }
+        QString proName, beanName;
+        if(list.size() == 1) {
+            proName = beanName = list.first().simplified();
+        } else {
+            proName = list.first().simplified();
+            beanName = list.last().simplified();
+        }
+        if(metaObj->indexOfProperty(proName.toLocal8Bit()) != -1) {
+            McBeanReferencePtr beanRef = McBeanReferencePtr::create();
+            beanRef->setName(beanName);
+            beanDefinition->addProperty(proName, QVariant::fromValue(beanRef));
+        }
+    }
 }

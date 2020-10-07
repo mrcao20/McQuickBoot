@@ -47,11 +47,10 @@ class C : public QObject, public IB
     //! 这里不需要额外指定QOBject，容器会自动指定。但如果C继承至其他类，比如QWidget，那么需要先使用MC_DECL_METATYPE声明QWidget，再使用MC_DEFINE_TYPELIST(QWidget, MC_DECL_TYPELIST(IB))，
     //! 当然，如果不需要从C转换到QWidget，也就不需要额外声明QWidget
     MC_DEFINE_TYPELIST(MC_DECL_TYPELIST(IB))
-    Q_CLASSINFO(MC_BEANNAME_TAG, "c")
+    MC_BEANNAME("c")
     Q_PROPERTY(QString text READ text WRITE setText)    //!< 使用getter和setter形式
-    Q_PROPERTY(RPtr r MEMBER m_r USER true)             //!< 如果外界并不需要使用对象r，则可以直接使用MEMBER形式。具体请查阅QT官方文档
-    //!< r的注入的两种形式，这里因为属性r和beanNamer同名，所以可以直接添加USER true，否则需要使用下面这种形式
-    //!< Q_CLASSINFO("r", "r")
+    MC_AUTOWIRED("r")
+    Q_PROPERTY(RPtr r MEMBER m_r)             //!< 如果外界并不需要使用对象r，则可以直接使用MEMBER形式。具体请查阅QT官方文档
     Q_PROPERTY(QList<QString> texts MEMBER m_texts)
     Q_PROPERTY(QVector<RPtr> rs MEMBER m_rs)
     typedef QMap<QString, QString> StringMap;           //!< 由于QMap在Q_PROPERTY宏中有错误提示，所以这里先重定义一下

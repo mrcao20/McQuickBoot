@@ -30,7 +30,8 @@ class MCIOCBOOT_EXPORT McQmlRequestor : public QObject, public IMcDestroyer
     MC_BEANNAME("requestor")
     //! 在容器中为非单例，但是McIocBoot会控制其为单例
     MC_SINGLETON(false)
-    Q_PRIVATE_PROPERTY(d, McQmlRequestorConfigPtr requestorConfig MEMBER requestorConfig USER true)
+    MC_AUTOWIRED("requestorConfig")
+    Q_PRIVATE_PROPERTY(d, McQmlRequestorConfigPtr requestorConfig MEMBER requestorConfig)
 public:
     Q_INVOKABLE explicit McQmlRequestor(QObject *parent = nullptr);
     ~McQmlRequestor() override;
