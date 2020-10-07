@@ -4,6 +4,7 @@
 #include <QThreadPool>
 #include <QQmlEngine>
 #include <QEvent>
+#include <QDebug>
 
 #include "McBoot/Controller/IMcControllerContainer.h"
 #include "McBoot/Controller/impl/McQmlResponse.h"

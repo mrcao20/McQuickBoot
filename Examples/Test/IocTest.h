@@ -16,7 +16,7 @@ class IocTest : public QObject, public McDefaultDeleteThreadWhenQuit
     MC_COMPONENT
     MC_BEANNAME("test")
     MC_SINGLETON(false)
-    Q_CLASSINFO("interface", "obj")
+    MC_AUTOWIRED("interface = obj")
     Q_PROPERTY(InterfacePtr interface MEMBER m_interface)
     Q_PROPERTY(QObjectPtr innerBean MEMBER m_innerBean)
     Q_PROPERTY(QList<QString> str MEMBER m_str)

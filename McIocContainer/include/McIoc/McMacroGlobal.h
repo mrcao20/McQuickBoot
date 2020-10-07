@@ -51,8 +51,6 @@
 
 #ifndef Q_MOC_RUN			//!< 这行语句必须加，只有包围在这行语句之中的宏才能被识别为tag
 
-# define MC_AUTOWIRED		//!< 用于表示函数是否需要自动注入
-
 # define MC_BEAN_START      //!< 当bean被构造，但还未注入属性时调用
 # define MC_BEAN_FINISHED   //!< 当bean完全被构造完成之后调用
 # define MC_THREAD_FINISHED   //!< 当bean的线程被移动之后调用
@@ -68,10 +66,12 @@
 
 #define MC_SINGLETON_TAG "isSingleton"
 #define MC_BEANNAME_TAG "beanName"
+#define MC_AUTOWIRED_TAG "autowired"
 
 #define MC_COMPONENT Q_CLASSINFO(MC_COMPONENT_TAG, MC_COMPONENT_TAG)
 #define MC_SINGLETON(arg) Q_CLASSINFO(MC_SINGLETON_TAG, MC_MACRO_STR(arg))
 #define MC_BEANNAME(name) Q_CLASSINFO(MC_BEANNAME_TAG, name)
+#define MC_AUTOWIRED(v) Q_CLASSINFO(MC_AUTOWIRED_TAG, v)
 //!< Q_CLASSINFO
 
 #define MC_BEANS_TAG "beans"
