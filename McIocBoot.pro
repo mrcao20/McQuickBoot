@@ -3,6 +3,7 @@ TEMPLATE = subdirs
 SUBDIRS += McYaml \
     McIocContainer \
     McLogQt \
+    McOrm \
     McIocBoot \
     Examples
 
