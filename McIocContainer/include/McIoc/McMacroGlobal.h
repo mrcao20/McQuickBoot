@@ -74,6 +74,12 @@
 #define MC_AUTOWIRED(v) Q_CLASSINFO(MC_AUTOWIRED_TAG, v)
 //!< Q_CLASSINFO
 
+//! PROPERTY
+#define MC_POCO_PROPERTY(Type, name) \
+    Q_PROPERTY(Type name MEMBER name) \
+    Type name;
+//!< PROPERTY
+
 #define MC_BEANS_TAG "beans"
 #define MC_BEAN_TAG "bean"
 #define MC_PROPERTY_TAG "property"

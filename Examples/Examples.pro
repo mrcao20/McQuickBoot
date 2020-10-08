@@ -5,4 +5,5 @@ SUBDIRS += \
     LogTest \
     Test \
     YamlTest \
-    BootTest
+    BootTest \
+    OrmTest
