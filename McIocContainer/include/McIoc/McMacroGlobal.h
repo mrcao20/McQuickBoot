@@ -75,9 +75,9 @@
 //!< Q_CLASSINFO
 
 //! PROPERTY
-#define MC_POCO_PROPERTY(Type, name) \
+#define MC_POCO_PROPERTY(Type, name, ...) \
     Q_PROPERTY(Type name MEMBER name) \
-    Type name;
+    Type name __VA_ARGS__;
 //!< PROPERTY
 
 #define MC_BEANS_TAG "beans"

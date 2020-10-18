@@ -140,66 +140,10 @@ QSharedPointer<IMcApplicationContext> McIocBoot::getApplicationContext() const n
 
 QList<QString> McIocBoot::getAllComponent() noexcept
 {
-    auto context = getApplicationContext();
-	if (!context) {
-		qCritical() << "Please call initContainer to initialize container first";
-		return QList<QString>();
-	}
-	QList<QString> components;
-    QHash<QString, IMcBeanDefinitionPtr> beanDefinitions = context->getBeanDefinitions();
-	for (auto itr = beanDefinitions.cbegin(); itr != beanDefinitions.cend(); ++itr) {
-		auto beanDefinition = itr.value();
-		if (!isComponent(beanDefinition->getBeanMetaObject()))
-			continue;
-		components.append(itr.key());
-	}
-	return components;
+    return Mc::getAllComponent(getApplicationContext());
 }
 
 QList<QString> McIocBoot::getComponents(const QString &componentType) noexcept 
 {
-    auto context = getApplicationContext();
-	if (!context) {
-		qCritical() << "Please call initContainer to initialize container first";
-		return QList<QString>();
-	}
-	QList<QString> components;
-    QHash<QString, IMcBeanDefinitionPtr> beanDefinitions = context->getBeanDefinitions();
-	for (auto itr = beanDefinitions.cbegin(); itr != beanDefinitions.cend(); ++itr) {
-		auto beanDefinition = itr.value();
-		if (!isComponentType(beanDefinition->getBeanMetaObject(), componentType))
-			continue;
-		components.append(itr.key());
-	}
-	return components;
-}
-
-bool McIocBoot::isComponent(const QMetaObject *metaObj) noexcept
-{
-    if(!metaObj) {
-        return false;
-    }
-    int classInfoCount = metaObj->classInfoCount();
-	for (int i = 0; i < classInfoCount; ++i) {
-		auto classInfo = metaObj->classInfo(i);
-		if (qstrcmp(classInfo.name(), MC_COMPONENT_TAG) != 0)
-			continue;
-		return true;
-	}
-	return false;
-}
-
-bool McIocBoot::isComponentType(const QMetaObject *metaObj, const QString &type) noexcept 
-{
-    if(!metaObj) {
-        return false;
-    }
-	int classInfoCount = metaObj->classInfoCount();
-	for (int i = 0; i < classInfoCount; ++i) {
-		auto classInfo = metaObj->classInfo(i);
-		if (qstrcmp(classInfo.name(), MC_COMPONENT_TAG) != 0)
-			continue;
-		return classInfo.value() == type;
-	}
-	return false;
+    return Mc::getComponents(getApplicationContext(), componentType);
 }

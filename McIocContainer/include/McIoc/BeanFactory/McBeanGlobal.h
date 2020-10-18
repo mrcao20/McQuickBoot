@@ -165,28 +165,78 @@ struct TypeSelector<QSharedPointer<T>>
 };
 
 template<typename From, typename To>
-To mcConverterList(const From &from) 
+struct McConverterList
 {
-	To to;
-	for (const auto &f : from) {
-        to << f.template value<typename To::value_type>();
-	}
-	return to;
-}
+    static To registerConverter(const From &from)
+    {
+        Q_UNUSED(from);
+    }
+};
+
+template<typename To>
+struct McConverterList<QVariantList, To>
+{
+    static To registerConverter(const QVariantList &from)
+    {
+        To to;
+        for (const auto &f : from) {
+            to << f.template value<typename To::value_type>();
+        }
+        return to;
+    }
+};
+
+template<typename From>
+struct McConverterList<From, QVariantList>
+{
+    static QVariantList registerConverter(const From &from)
+    {
+        QVariantList to;
+        for (const auto &f : from) {
+            to << QVariant::fromValue(f);
+        }
+        return to;
+    }
+};
 
 template<typename From, typename To>
-To mcConverterMap(const From &from) 
+struct McConverterMap
 {
-	To to;
-    using keyType = typename To::key_type;
-    using mappedType = typename To::mapped_type;
-	for (auto itr = from.cbegin(); itr != from.cend(); ++itr) {
-        keyType key = itr.key().template value<keyType>();
-        mappedType value = itr.value().template value<mappedType>();
-		to.insert(key, value);
-	}
-	return to;
-}
+    static To registerConverter(const From &from)
+    {
+        Q_UNUSED(from);
+    }
+};
+
+template<typename To>
+struct McConverterMap<QMap<QVariant, QVariant>, To>
+{
+    static To registerConverter(const QMap<QVariant, QVariant> &from)
+    {
+        To to;
+        using keyType = typename To::key_type;
+        using mappedType = typename To::mapped_type;
+        for (auto itr = from.cbegin(); itr != from.cend(); ++itr) {
+            keyType key = itr.key().template value<keyType>();
+            mappedType value = itr.value().template value<mappedType>();
+            to.insert(key, value);
+        }
+        return to;
+    }
+};
+
+template<typename From>
+struct McConverterMap<From, QMap<QVariant, QVariant>>
+{
+    static QMap<QVariant, QVariant> registerConverter(const From &from)
+    {
+        QMap<QVariant, QVariant> to;
+        for (auto itr = from.cbegin(); itr != from.cend(); ++itr) {
+            to.insert(QVariant::fromValue(itr.key()), QVariant::fromValue(itr.value()));
+        }
+        return to;
+    }
+};
 
 template<typename T, int =
     QtPrivate::IsSharedPointerToTypeDerivedFromQObject<T>::Value ? QMetaType::SharedPointerToQObject :
@@ -224,30 +274,36 @@ struct McMetaTypeIdHelper<T, QMetaType::PointerToQObject>
 namespace McPrivate {
 
 template<typename From, typename To>
-void mcRegisterListConverter() 
+struct McListConverterRegisterHelper
 {
-	if (QMetaType::hasRegisteredConverterFunction(qMetaTypeId<From>(), qMetaTypeId<To>()))
-		return;
-    QVariant var;
-    var.setValue(From());
-    if(var.canConvert<To>()) {
-        return;
+    static void registerConverter()
+    {
+        if (QMetaType::hasRegisteredConverterFunction(qMetaTypeId<From>(), qMetaTypeId<To>()))
+            return;
+        QVariant var;
+        var.setValue(From());
+        if(var.canConvert<To>()) {
+            return;
+        }
+        QMetaType::registerConverter<From, To>(McPrivate::McConverterList<From, To>::registerConverter);
     }
-	QMetaType::registerConverter<From, To>(McPrivate::mcConverterList<From, To>);
-}
+};
 
 template<typename From, typename To>
-void mcRegisterMapConverter()
+struct McMapConverterRegisterHelper
 {
-	if (QMetaType::hasRegisteredConverterFunction(qMetaTypeId<From>(), qMetaTypeId<To>()))
-		return;
-    QVariant var;
-    var.setValue(From());
-    if(var.canConvert<To>()) {
-        return;
+    static void registerConverter()
+    {
+        if (QMetaType::hasRegisteredConverterFunction(qMetaTypeId<From>(), qMetaTypeId<To>()))
+            return;
+        QVariant var;
+        var.setValue(From());
+        if(var.canConvert<To>()) {
+            return;
+        }
+        QMetaType::registerConverter<From, To>(McPrivate::McConverterMap<From, To>::registerConverter);
     }
-	QMetaType::registerConverter<From, To>(McPrivate::mcConverterMap<From, To>);
-}
+};
 
 template<typename T, int = 
          QtPrivate::IsSequentialContainer<T>::Value ? 1 :
@@ -273,7 +329,8 @@ struct McContainerConverterRegisterHelper<T, 1>
         int valueId = McPrivate::McMetaTypeIdHelper<ValueType>::metaTypeId();
         McContainerConverterRegisterHelper<ValueType>::registerConverter(QMetaType::typeName(valueId));
         McMetaTypeId::addSequentialId(id, valueId);
-        mcRegisterListConverter<QVariantList, T>();
+        McListConverterRegisterHelper<QVariantList, T>::registerConverter();
+        McListConverterRegisterHelper<T, QVariantList>::registerConverter();
     }
 };
 
@@ -293,7 +350,8 @@ struct McContainerConverterRegisterHelper<T, 2>
         McContainerConverterRegisterHelper<KeyType>::registerConverter(QMetaType::typeName(keyId));
         McContainerConverterRegisterHelper<ValueType>::registerConverter(QMetaType::typeName(valueId));
         McMetaTypeId::addAssociativeId(id, keyId, valueId);
-        mcRegisterMapConverter<QMap<QVariant, QVariant>, T>();
+        McMapConverterRegisterHelper<QMap<QVariant, QVariant>, T>::registerConverter();
+        McMapConverterRegisterHelper<T, QMap<QVariant, QVariant>>::registerConverter();
     }
 };
 
