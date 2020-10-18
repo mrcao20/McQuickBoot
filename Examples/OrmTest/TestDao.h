@@ -10,8 +10,12 @@ class TestDao : public QObject
     Q_OBJECT
     MC_DECL_INIT(TestDao)
     MC_DAO
-signals:
-    TestVoPtr selectById(int id);
+    MC_BEANNAME("testDao")
+public:
+    Q_INVOKABLE TestDao(){}
+    
+    MC_SELECT("selectById")
+    void selectById(const QList<TestVoPtr> &t);
 };
 
 MC_DECL_METATYPE(TestDao)

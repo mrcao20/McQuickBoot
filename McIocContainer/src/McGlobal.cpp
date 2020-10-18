@@ -6,6 +6,12 @@
 #include <QDir>
 #include <QCoreApplication>
 #include <QUrl>
+#include <QMetaObject>
+#include <QMetaClassInfo>
+#include <QDebug>
+
+#include "McIoc/BeanDefinition/IMcBeanDefinition.h"
+#include "McIoc/ApplicationContext/IMcApplicationContext.h"
 
 namespace McPrivate {
 
@@ -73,6 +79,70 @@ QString toAbsolutePath(const QString &path) noexcept
         dstPath = url.toString();
     }
     return dstPath;
+}
+
+QList<QString> getAllComponent(IMcApplicationContextConstPtrRef appCtx) noexcept
+{
+	if (!appCtx) {
+		qCritical() << "Please call initContainer to initialize container first";
+		return QList<QString>();
+	}
+	QList<QString> components;
+    QHash<QString, IMcBeanDefinitionPtr> beanDefinitions = appCtx->getBeanDefinitions();
+	for (auto itr = beanDefinitions.cbegin(); itr != beanDefinitions.cend(); ++itr) {
+		auto beanDefinition = itr.value();
+		if (!isComponent(beanDefinition->getBeanMetaObject()))
+			continue;
+		components.append(itr.key());
+	}
+	return components;
+}
+
+QList<QString> getComponents(IMcApplicationContextConstPtrRef appCtx, const QString &componentType) noexcept 
+{
+	if (!appCtx) {
+		qCritical() << "Please call initContainer to initialize container first";
+		return QList<QString>();
+	}
+	QList<QString> components;
+    QHash<QString, IMcBeanDefinitionPtr> beanDefinitions = appCtx->getBeanDefinitions();
+	for (auto itr = beanDefinitions.cbegin(); itr != beanDefinitions.cend(); ++itr) {
+		auto beanDefinition = itr.value();
+		if (!isComponentType(beanDefinition->getBeanMetaObject(), componentType))
+			continue;
+		components.append(itr.key());
+	}
+	return components;
+}
+
+bool isComponent(const QMetaObject *metaObj) noexcept
+{
+    if(!metaObj) {
+        return false;
+    }
+    int classInfoCount = metaObj->classInfoCount();
+	for (int i = 0; i < classInfoCount; ++i) {
+		auto classInfo = metaObj->classInfo(i);
+		if (qstrcmp(classInfo.name(), MC_COMPONENT_TAG) != 0)
+			continue;
+		return true;
+	}
+	return false;
+}
+
+bool isComponentType(const QMetaObject *metaObj, const QString &type) noexcept 
+{
+    if(!metaObj) {
+        return false;
+    }
+	int classInfoCount = metaObj->classInfoCount();
+	for (int i = 0; i < classInfoCount; ++i) {
+		auto classInfo = metaObj->classInfo(i);
+		if (qstrcmp(classInfo.name(), MC_COMPONENT_TAG) != 0)
+			continue;
+		return classInfo.value() == type;
+	}
+	return false;
 }
 
 }

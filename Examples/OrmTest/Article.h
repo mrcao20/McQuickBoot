@@ -9,6 +9,9 @@ struct Article : public QObject
     Q_OBJECT
     MC_DECL_INIT(Article)
     
+public:
+    Q_INVOKABLE Article() {}
+    
     MC_PRIMARY_KEY("id")
     MC_POCO_PROPERTY(int, id)
 };
