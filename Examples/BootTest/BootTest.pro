@@ -35,26 +35,26 @@ DESTDIR = $$PWD/../../bin/Examples
 MOC_DIR = $$PWD/../../moc/Examples/BootTest
 
 include($$PWD/../../common.pri)
-include($$PWD/../../McIocBoot/McIocBootDepend.pri)
+include($$PWD/../../McQuickBoot/McQuickBootDepend.pri)
 
 win32 {
     msvc {
-        CONFIG(release, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocBoot
-        else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocBootd
+        CONFIG(release, debug|release): LIBS += -L$$PWD/../../bin/ -lMcQuickBoot
+        else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcQuickBootd
     } else {
         equals(QT_MAJOR_VERSION, 5):lessThan(QT_MINOR_VERSION, 9) {
-            CONFIG(release, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocBoot
-            else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcIocBootd
+            CONFIG(release, debug|release): LIBS += -L$$PWD/../../bin/ -lMcQuickBoot
+            else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcQuickBootd
         } else {
-            LIBS += -L$$PWD/../../bin/ -lMcIocBoot
+            LIBS += -L$$PWD/../../bin/ -lMcQuickBoot
         }
     }
 } else:unix:!macx {
-    LIBS += -L$$PWD/../../bin/ -lMcIocBoot
+    LIBS += -L$$PWD/../../bin/ -lMcQuickBoot
 }
 
-INCLUDEPATH += $$PWD/../../McIocBoot/include
-DEPENDPATH += $$PWD/../../McIocBoot/include
+INCLUDEPATH += $$PWD/../../McQuickBoot/include
+DEPENDPATH += $$PWD/../../McQuickBoot/include
 
 # 将/替换为\\才能正确识别路径
 SrcConfigPath = $$PWD/application.yml
