@@ -5,7 +5,7 @@ win32 {
         LIBS += $$PWD/../3rdparty/yaml-cpp/lib/bin/yaml-cpp.dll
     }
 } else:unix:!macx {
-    LIBS += -L$$PWD/../bin/ -lMcIocContainer
+    LIBS += -L$$PWD/../bin/ -McIoc
 }
 
 INCLUDEPATH += $$PWD/../3rdparty/yaml-cpp/lib/include

@@ -1,20 +1,20 @@
 win32 {
     msvc {
-        CONFIG(release, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocContainer
-        else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocContainerd
+        CONFIG(release, debug|release): LIBS += -L$$PWD/../bin/ -lMcIoc
+        else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocd
     } else {
         equals(QT_MAJOR_VERSION, 5):lessThan(QT_MINOR_VERSION, 9) {
-            CONFIG(release, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocContainer
-            else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocContainerd
+            CONFIG(release, debug|release): LIBS += -L$$PWD/../bin/ -lMcIoc
+            else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../bin/ -lMcIocd
         } else {
-            LIBS += -L$$PWD/../bin/ -lMcIocContainer
+            LIBS += -L$$PWD/../bin/ -lMcIoc
         }
     }
 } else:unix:!macx {
-    LIBS += -L$$PWD/../bin/ -lMcIocContainer
+    LIBS += -L$$PWD/../bin/ -lMcIoc
 }
 
-INCLUDEPATH += $$PWD/../McIocContainer/include
-DEPENDPATH += $$PWD/../McIocContainer/include
+INCLUDEPATH += $$PWD/../McIoc/include
+DEPENDPATH += $$PWD/../McIoc/include
 
-include($$PWD/../McIocContainer/McIocContainerDepend.pri)
+include($$PWD/../McIoc/McIocDepend.pri)

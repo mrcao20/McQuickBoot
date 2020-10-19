@@ -35,4 +35,4 @@ DESTDIR = $$PWD/../../bin/Examples
 MOC_DIR = $$PWD/../../moc/Examples/IocTest
 
 include($$PWD/../../common.pri)
-include($$PWD/../../McIocBoot/McIocBootDepend.pri)
+include($$PWD/../../McQuickBoot/McQuickBootDepend.pri)
