@@ -22,8 +22,8 @@ win32 {
 
 INCLUDEPATH += $$PWD/../McIoc/include
 DEPENDPATH += $$PWD/../McIoc/include
-INCLUDEPATH += $$PWD/../../McLogQt/include
-DEPENDPATH += $$PWD/../../McLogQt/include
+INCLUDEPATH += $$PWD/../McLogQt/include
+DEPENDPATH += $$PWD/../McLogQt/include
 
 include($$PWD/../McIoc/McIocDepend.pri)
 include($$PWD/../McLogQt/McLogQtDepend.pri)
