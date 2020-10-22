@@ -17,25 +17,26 @@ QT_END_NAMESPACE
 
 MC_FORWARD_DECL_CLASS(IMcApplicationContext);
 
-MC_FORWARD_DECL_PRIVATE_DATA(McIocBoot);
+MC_FORWARD_DECL_PRIVATE_DATA(McQuickBoot);
 
 using std::function;
 
-class MCQUICKBOOT_EXPORT McIocBoot : public QObject 
+class MCQUICKBOOT_EXPORT McQuickBoot : public QObject 
 {
     Q_OBJECT
 public:
-    explicit McIocBoot(QObject *parent = nullptr);
-    ~McIocBoot() override;
+    explicit McQuickBoot(QObject *parent = nullptr);
+    ~McQuickBoot() override;
     
-    static void init(QQmlApplicationEngine *engine) noexcept;
+    static void init(QCoreApplication *app, QQmlApplicationEngine *engine) noexcept;
     static QQmlEngine *engine() noexcept;
     static QQuickView *createQuickView(const QString &source, QWindow *parent = nullptr) noexcept;
     
+    static void setPreInitFunc(const function<void(QCoreApplication *)> &func) noexcept;
+    static void setAfterInitFunc(const function<void(QCoreApplication *, QQmlApplicationEngine *)> &func) noexcept;
+    
     template<typename T = QGuiApplication>
-    static int run(int argc, char *argv[], const QString &path = "qrc:/main.qml"
-            , const function<void(T *app, QQmlApplicationEngine *)> &func = nullptr
-            , const function<void(T *app)> &prefunc = nullptr) noexcept;
+    static int run(int argc, char *argv[], const QString &path = "qrc:/main.qml") noexcept;
     
     /*!
      * \brief singleRun
@@ -44,13 +45,10 @@ public:
      * \param argc
      * \param argv
      * \param url
-     * \param func
      * \return 
      */
     template<typename T = McSingleApplication>
-    static int singleRun(int argc, char *argv[], const QString &path = "qrc:/main.qml"
-            , const function<void(T *app, QQmlApplicationEngine *)> &func = nullptr
-            , const function<void(T *app)> &prefunc = nullptr) noexcept;
+    static int singleRun(int argc, char *argv[], const QString &path = "qrc:/main.qml") noexcept;
  
     void initBoot(QQmlEngine *engine) noexcept;
     
@@ -62,15 +60,13 @@ public:
     QList<QString> getComponents(const QString &componentType) noexcept;
     
 private:
-    MC_DECL_PRIVATE(McIocBoot)
+    MC_DECL_PRIVATE(McQuickBoot)
 };
 
-MC_DECL_POINTER(McIocBoot);
+MC_DECL_POINTER(McQuickBoot);
 
 template<typename T>
-int McIocBoot::run(int argc, char *argv[], const QString &path
-                   , const function<void(T *app, QQmlApplicationEngine *)> &func
-                   , const function<void(T *app)> &prefunc) noexcept 
+int McQuickBoot::run(int argc, char *argv[], const QString &path) noexcept 
 {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -78,17 +74,9 @@ int McIocBoot::run(int argc, char *argv[], const QString &path
 
     T app(argc, argv);
     
-    if(prefunc) {
-        prefunc(&app);
-    }
-    
     QQmlApplicationEngine engine;
     
-    McIocBoot::init(&engine);
-    
-    if(func) {
-        func(&app, &engine);
-    }
+    McQuickBoot::init(&app, &engine);
     
     QString dstPath = Mc::toAbsolutePath(path);
     QUrl url(dstPath);
@@ -103,9 +91,7 @@ int McIocBoot::run(int argc, char *argv[], const QString &path
 }
 
 template<typename T>
-int McIocBoot::singleRun(int argc, char *argv[], const QString &path
-                         , const function<void(T *app, QQmlApplicationEngine *)> &func
-                         , const function<void(T *app)> &prefunc) noexcept 
+int McQuickBoot::singleRun(int argc, char *argv[], const QString &path) noexcept 
 {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -115,17 +101,9 @@ int McIocBoot::singleRun(int argc, char *argv[], const QString &path
     if(app.isRunning())
         return 0;
     
-    if(prefunc) {
-        prefunc(&app);
-    }
-    
     QQmlApplicationEngine engine;
     
-    McIocBoot::init(&engine);
-    
-    if(func) {
-        func(&app, &engine);
-    }
+    McQuickBoot::init(&app, &engine);
     
     QString dstPath = Mc::toAbsolutePath(path);
     QUrl url(dstPath);

@@ -15,7 +15,7 @@
 #include "IocTest.h"
 #include "InvokeTest.h"
 #include <Object.h>
-#include <McBoot/McIocBoot.h>
+#include <McBoot/McQuickBoot.h>
 #include "ThreadTest.h"
 #include <McBoot/Utils/McJsonUtils.h>
 
@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 //    auto me = mo->enumerator(mo->indexOfEnumerator("EEE"));
 //    qDebug() << me.enumName();
 //    qDebug() << me.keysToValue("A | B");
-//    return McIocBoot::singleRun(argc, argv);
+//    return McQuickBoot::singleRun(argc, argv);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif

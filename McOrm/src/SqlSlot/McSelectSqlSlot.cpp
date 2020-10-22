@@ -17,7 +17,7 @@ McSelectSqlSlot::McSelectSqlSlot(QObject *parent) noexcept
 void McSelectSqlSlot::query(void **args, const QMetaMethod &sig, const QByteArray &additionalInfo) noexcept
 {
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName(R"(E:\Code\QtCreator\McIocBoot\Examples\OrmTest\d_orm_test.db)");
+    db.setDatabaseName(R"(E:\Code\QtCreator\McQuickBoot\Examples\OrmTest\d_orm_test.db)");
     qDebug() << db.open();
     
     if(!additionalInfo.isEmpty()) {

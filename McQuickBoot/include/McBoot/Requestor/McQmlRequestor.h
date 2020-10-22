@@ -28,7 +28,7 @@ class MCQUICKBOOT_EXPORT McQmlRequestor : public QObject, public IMcDestroyer
     MC_DEFINE_TYPELIST(IMcDestroyer)
     MC_COMPONENT
     MC_BEANNAME("requestor")
-    //! 在容器中为非单例，但是McIocBoot会控制其为单例
+    //! 在容器中为非单例，但是McQuickBoot会控制其为单例
     MC_SINGLETON(false)
     MC_AUTOWIRED("requestorConfig")
     Q_PRIVATE_PROPERTY(d, McQmlRequestorConfigPtr requestorConfig MEMBER requestorConfig)

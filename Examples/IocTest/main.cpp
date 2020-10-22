@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
     QTextStream stream(&file);
     doc.save(stream, 4);
     
-//    auto appContext = McLocalPathApplicationContextPtr::create(R"(E:\Github\McIocBoot\Examples\IocTest\myspring.xml)");
+//    auto appContext = McLocalPathApplicationContextPtr::create(R"(E:\Github\McQuickBoot\Examples\IocTest\myspring.xml)");
 //    auto appContext = McAnnotationApplicationContextPtr::create();
     QSharedPointer<QBuffer> buf = QSharedPointer<QBuffer>::create();
     buf->open(QIODevice::ReadWrite);
