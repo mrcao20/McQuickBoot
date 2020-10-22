@@ -1,4 +1,4 @@
-#include "McBoot/McIocBoot.h"
+#include "McBoot/McQuickBoot.h"
 
 #include <QQmlContext>
 #include <QJSValue>
@@ -15,33 +15,44 @@
 #include "McBoot/Requestor/McQmlRequestor.h"
 #include "McBoot/BeanDefinitionReader/impl/McConfigurationFileBeanDefinitionReader.h"
 
-MC_DECL_PRIVATE_DATA(McIocBoot)
+struct McQuickBootStaticData
+{
+    McQuickBootPtr boot;
+    function<void(QCoreApplication *)> preInitFunc;
+    function<void(QCoreApplication *, QQmlApplicationEngine *)> afterInitFunc;
+};
+
+MC_DECL_PRIVATE_DATA(McQuickBoot)
 McAnnotationApplicationContextPtr context;
 QQmlEngine *engine{nullptr};
 MC_DECL_PRIVATE_DATA_END
 
 //Q_GLOBAL_STATIC_WITH_ARGS(QQmlEngine *, mcEngine, (nullptr))
-Q_GLOBAL_STATIC(McIocBootPtr, mcBoot)
+Q_GLOBAL_STATIC(McQuickBootStaticData, mcQuickBootStaticData)
 
-McIocBoot::McIocBoot(QObject *parent)
+McQuickBoot::McQuickBoot(QObject *parent)
     : QObject(parent)
 {
-    MC_NEW_PRIVATE_DATA(McIocBoot)
+    MC_NEW_PRIVATE_DATA(McQuickBoot)
 }
 
-McIocBoot::~McIocBoot() 
+McQuickBoot::~McQuickBoot() 
 {
-    qDebug() << "~McIocBoot";
+    qDebug() << "~McQuickBoot";
 }
 
-void McIocBoot::init(QQmlApplicationEngine *engine) noexcept 
+void McQuickBoot::init(QCoreApplication *app, QQmlApplicationEngine *engine) noexcept 
 {
-    if(!mcBoot->isNull()) {
+    if(mcQuickBootStaticData->preInitFunc) {
+        mcQuickBootStaticData->preInitFunc(app);
+    }
+    
+    if(!mcQuickBootStaticData->boot.isNull()) {
         qWarning("the boot is already init.");
         return;
     }
-    *mcBoot = McIocBootPtr::create();
-    McIocBootPtr &boot = *mcBoot;
+    mcQuickBootStaticData->boot = McQuickBootPtr::create();
+    McQuickBootPtr &boot = mcQuickBootStaticData->boot;
     boot->initBoot(engine);
     auto appCtx = boot->d->context;
     
@@ -102,16 +113,20 @@ void McIocBoot::init(QQmlApplicationEngine *engine) noexcept
        }
     )";
     engine->evaluate(data);
+    
+    if(mcQuickBootStaticData->afterInitFunc) {
+        mcQuickBootStaticData->afterInitFunc(app, engine);
+    }
 }
 
-QQmlEngine *McIocBoot::engine() noexcept
+QQmlEngine *McQuickBoot::engine() noexcept
 {
-    return mcBoot->operator ->()->d->engine;
+    return mcQuickBootStaticData->boot->d->engine;
 }
 
-QQuickView *McIocBoot::createQuickView(const QString &source, QWindow *parent) noexcept
+QQuickView *McQuickBoot::createQuickView(const QString &source, QWindow *parent) noexcept
 {
-    if(McIocBoot::engine() == nullptr) {
+    if(McQuickBoot::engine() == nullptr) {
         qCritical("engine is null. you must be call function init or run before\n");
         return nullptr;
     }
@@ -120,7 +135,17 @@ QQuickView *McIocBoot::createQuickView(const QString &source, QWindow *parent) n
     return  view;
 }
 
-void McIocBoot::initBoot(QQmlEngine *engine) noexcept 
+void McQuickBoot::setPreInitFunc(const function<void(QCoreApplication *)> &func) noexcept
+{
+    mcQuickBootStaticData->preInitFunc = func;
+}
+
+void McQuickBoot::setAfterInitFunc(const function<void(QCoreApplication *, QQmlApplicationEngine *)> &func) noexcept
+{
+    mcQuickBootStaticData->afterInitFunc = func;
+}
+
+void McQuickBoot::initBoot(QQmlEngine *engine) noexcept 
 {
     if (d->context) {
 		qInfo() << "The container has been initialized";
@@ -133,17 +158,17 @@ void McIocBoot::initBoot(QQmlEngine *engine) noexcept
     d->context->refresh();  //!< 预加载bean
 }
 
-QSharedPointer<IMcApplicationContext> McIocBoot::getApplicationContext() const noexcept 
+QSharedPointer<IMcApplicationContext> McQuickBoot::getApplicationContext() const noexcept 
 {
     return d->context;
 }
 
-QList<QString> McIocBoot::getAllComponent() noexcept
+QList<QString> McQuickBoot::getAllComponent() noexcept
 {
     return Mc::getAllComponent(getApplicationContext());
 }
 
-QList<QString> McIocBoot::getComponents(const QString &componentType) noexcept 
+QList<QString> McQuickBoot::getComponents(const QString &componentType) noexcept 
 {
     return Mc::getComponents(getApplicationContext(), componentType);
 }

@@ -8,7 +8,7 @@ SOURCES += \
     $$PWD/src/Controller/McQmlResponse.cpp \
     $$PWD/src/Controller/McRequestRunner.cpp \
     $$PWD/src/Controller/McResult.cpp \
-    $$PWD/src/McIocBoot.cpp \
+    $$PWD/src/McQuickBoot.cpp \
     $$PWD/src/Model/McModelContainer.cpp \
     $$PWD/src/Requestor/McQmlRequestor.cpp \
     $$PWD/src/Socket/McInnerSocket.cpp \
@@ -32,7 +32,7 @@ HEADERS +=  \
     $$PWD/include/McBoot/McBootGlobal.h \
     $$PWD/include/McBoot/McBootMacroGlobal.h \
     $$PWD/include/McBoot/McBootVersion.h \
-    $$PWD/include/McBoot/McIocBoot.h \
+    $$PWD/include/McBoot/McQuickBoot.h \
     $$PWD/include/McBoot/Model/McModelContainer.h \
     $$PWD/include/McBoot/Requestor/McQmlRequestor.h \
     $$PWD/include/McBoot/Socket/IMcQmlSocketContainer.h \

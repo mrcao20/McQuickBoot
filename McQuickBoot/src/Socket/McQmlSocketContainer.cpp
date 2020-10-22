@@ -8,7 +8,7 @@
 
 #include <McIoc/ApplicationContext/IMcApplicationContext.h>
 
-#include "McBoot/McIocBoot.h"
+#include "McBoot/McQuickBoot.h"
 #include "McBoot/Socket/impl/McQmlSocket.h"
 #include "McBoot/Socket/impl/McInnerSocket.h"
 #include "McBoot/Socket/impl/McSession.h"
@@ -32,7 +32,7 @@ McQmlSocketContainer::~McQmlSocketContainer()
 {
 }
 
-void McQmlSocketContainer::init(McIocBootConstPtrRef boot) noexcept 
+void McQmlSocketContainer::init(McQuickBootConstPtrRef boot) noexcept 
 {
     auto appCtx = boot->getApplicationContext();
 	auto beanNames = boot->getComponents(MC_QML_SOCKET_TAG);
