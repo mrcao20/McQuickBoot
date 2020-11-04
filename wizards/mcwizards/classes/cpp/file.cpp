@@ -6,6 +6,7 @@
 @endif
 %{JS: Cpp.openNamespaces('%{Class}')}
 MC_INIT(%{CN})
+MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(%{CN}))
 MC_INIT_END
 
 MC_DECL_PRIVATE_DATA(%{CN})
