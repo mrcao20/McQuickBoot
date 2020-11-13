@@ -9,6 +9,8 @@ struct Article : public QObject
     Q_OBJECT
     MC_DECL_INIT(Article)
     
+    MC_DB_TABLE("t_article")
+    
 public:
     Q_INVOKABLE Article() {}
     

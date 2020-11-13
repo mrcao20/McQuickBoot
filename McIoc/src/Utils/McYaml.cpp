@@ -1,7 +1,9 @@
-#include "McYaml/McYaml.h"
+#include "McIoc/Utils/McYaml.h"
 
 #include <QCoreApplication>
 #include <QIODevice>
+
+#ifndef MC_NO_YAML
 
 namespace McPrivate {
 
@@ -93,22 +95,11 @@ bool writeYamlFile(QIODevice &device, const QSettings::SettingsMap &map)
 
 }
 
-int McYaml::InitYaml = [](){
-    qAddPreRoutine([](){
-        m_format = QSettings::registerFormat("yml", McPrivate::readYamlFile
-                                             , McPrivate::writeYamlFile);
-    });
-    return 0;
-}();
+MC_INIT(McYaml)
+m_format = QSettings::registerFormat("yml", McPrivate::readYamlFile
+                                     , McPrivate::writeYamlFile);
+MC_INIT_END
 
 QSettings::Format McYaml::m_format = QSettings::InvalidFormat;
 
-/*!
- * \brief McYaml::registerYaml
- * 
- * 此函数没有实际功能，仅仅用作让编译器加载此cpp文件，
- * 以此使InitYaml属性初始化
- */
-void McYaml::registerYaml() noexcept
-{
-}
+#endif

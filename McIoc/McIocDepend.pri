@@ -1,22 +1,14 @@
-win32 {
-    msvc {
-        CONFIG(release, debug|release): LIBS += -L$$PWD/../bin/ -lMcYaml
-        else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../bin/ -lMcYamld
-    } else {
-        equals(QT_MAJOR_VERSION, 5):lessThan(QT_MINOR_VERSION, 9) {
-            CONFIG(release, debug|release): LIBS += -L$$PWD/../bin/ -lMcYaml
-            else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../bin/ -lMcYamld
-        } else {
-            LIBS += -L$$PWD/../bin/ -lMcYaml
-        }
-    }
-} else:unix:!macx {
-    LIBS += -L$$PWD/../bin/ -lMcYaml
-}
-
-INCLUDEPATH += $$PWD/../McYaml/include
-DEPENDPATH += $$PWD/../McYaml/include
-
 !contains(DEFINES, MC_NO_YAML) {
-    include($$PWD/../McYaml/McYamlDepend.pri)
+    win32 {
+        msvc {
+            win32: LIBS += -L$$PWD/../3rdparty/yaml-cpp/lib/lib/ -lyaml-cpp
+        } else {
+            LIBS += $$PWD/../3rdparty/yaml-cpp/lib/bin/yaml-cpp.dll
+        }
+    } else:unix:!macx {
+        LIBS += -L$$PWD/../bin/ -McIoc
+    }
+    
+    INCLUDEPATH += $$PWD/../3rdparty/yaml-cpp/lib/include
+    DEPENDPATH += $$PWD/../3rdparty/yaml-cpp/lib/include
 }

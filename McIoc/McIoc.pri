@@ -29,6 +29,7 @@ HEADERS += \
     $$PWD/include/McIoc/BeanFactory/impl/McMetaTypeId.h \
     $$PWD/include/McIoc/Destroyer/IMcDestroyer.h \
     $$PWD/include/McIoc/Destroyer/impl/McNormalDestroyer.h \
+    $$PWD/include/McIoc/McVersion.h \
     $$PWD/include/McIoc/PropertyParser/IMcPropertyConverter.h \
     $$PWD/include/McIoc/PropertyParser/IMcPropertyParser.h \
     $$PWD/include/McIoc/PropertyParser/impl/McAbstarctPropertyConverter.h \
@@ -41,7 +42,6 @@ HEADERS += \
     $$PWD/include/McIoc/Thread/impl/McDefaultDeleteThreadWhenQuit.h \
     $$PWD/include/McIoc/Utils/McScopedFunction.h \
     $$PWD/include/McIoc/McGlobal.h \
-    $$PWD/include/McIoc/McIocVersion.h \
     $$PWD/include/McIoc/McMacroGlobal.h \
     $$PWD/include/McIoc/Utils/XmlBuilder/impl/McBean.h \
     $$PWD/include/McIoc/Utils/XmlBuilder/impl/McBeanCollection.h \
@@ -98,7 +98,9 @@ SOURCES += \
     $$PWD/src/ApplicationContext/McIniSettingApplicationContext.cpp
 
 !contains(DEFINES, MC_NO_YAML) {
-    HEADERS +=$$PWD/include/McIoc/ApplicationContext/impl/McYamlSettingApplicationContext.h
+    HEADERS += $$PWD/include/McIoc/Utils/McYaml.h \
+        $$PWD/include/McIoc/ApplicationContext/impl/McYamlSettingApplicationContext.h
 
-    SOURCES += $$PWD/src/ApplicationContext/McYamlSettingApplicationContext.cpp
+    SOURCES += $$PWD/src/Utils/McYaml.cpp \
+        $$PWD/src/ApplicationContext/McYamlSettingApplicationContext.cpp
 }
