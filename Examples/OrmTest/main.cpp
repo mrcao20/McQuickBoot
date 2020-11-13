@@ -18,8 +18,8 @@ int main(int argc, char *argv[])
     TestVoPtr r = TestVoPtr::create();
     r->id = 1;
     lr.append(r);
-    testDao->selectById(lr);
-    qDebug() << lr;
+    auto l = testDao->selectById(1);
+    qDebug() << l->id << l->userName << l->password << l->article->id;
     
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));

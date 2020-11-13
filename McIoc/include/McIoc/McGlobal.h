@@ -6,7 +6,7 @@
 #include <QObject>
 #include <QEvent>
 
-#include "McIocVersion.h"
+#include "McVersion.h"
 #include "BeanFactory/McBeanGlobal.h"
 
 MC_FORWARD_DECL_CLASS(IMcApplicationContext)

@@ -1,9 +1,10 @@
 #include "McIoc/ApplicationContext/impl/McYamlSettingApplicationContext.h"
 
-#include <McYaml/McYaml.h>
+#include "McIoc/Utils/McYaml.h"
+
+#ifndef MC_NO_YAML
 
 MC_INIT(McYamlSettingApplicationContext)
-McYaml::registerYaml();
 MC_INIT_END
 
 McYamlSettingApplicationContext::McYamlSettingApplicationContext(QObject *parent)
@@ -22,3 +23,5 @@ McYamlSettingApplicationContext::McYamlSettingApplicationContext(
     : McSettingApplicationContext(McYaml::format(), locations, parent)
 {
 }
+
+#endif

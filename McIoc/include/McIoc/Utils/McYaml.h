@@ -15,6 +15,8 @@
 
 #pragma once
 
+#ifndef MC_NO_YAML
+
 #include <yaml-cpp/yaml.h>
 
 #include <QtCore/QVariant>
@@ -25,14 +27,12 @@
 #include <QtCore/QPair>
 #include <QtCore/QSettings>
 
-#include "McDll.h"
+#include "McIoc/McGlobal.h"
 
-class MCYAML_EXPORT McYaml
+class MCIOC_EXPORT McYaml
 {
-    static int InitYaml;
+    MC_DECL_INIT(McYaml)
 public:
-    static void registerYaml() noexcept;
-    
     static inline QSettings::Format format() noexcept
     { return m_format; }
     
@@ -220,3 +220,5 @@ struct convert<QPair<T, U> >
 // QLinkedList, QStack, QQueue, QSet, QMultiMap, QHash, QMultiHash, QStringList, ...
 
 } // end namespace YAML
+
+#endif

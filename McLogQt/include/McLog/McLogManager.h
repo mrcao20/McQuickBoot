@@ -1,6 +1,6 @@
 #pragma once
 
-#include "McLogGlobal.h"
+#include "McLogMacroGlobal.h"
 
 MC_FORWARD_DECL_CLASS(IMcLoggerRepository)
 

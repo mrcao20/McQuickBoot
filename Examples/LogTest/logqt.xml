@@ -14,6 +14,9 @@
 		<property name="immediateFlush" value="true"></property>
 		<property name="layout" ref="ttccLayout"></property>
     </bean>
+    <bean name="vsDebug" class="McVSDebugAppender">
+		<property name="layout" ref="normalLayout"></property>
+    </bean>
 	<bean name="dailyRollingFile" class="McDailyRollingFileAppender">
 		<!-- 后面加debug-表示debug等级及以上 -->
         <property name="threshold" value="debug-"></property>
@@ -57,6 +60,7 @@
 		<property name="appenders">
 			<list>
 				<ref bean="console" />
+                <ref bean="vsDebug" />
 				<ref bean="dailyRollingFile" />
 				<ref bean="rollingFile" />
 				<ref bean="file" />

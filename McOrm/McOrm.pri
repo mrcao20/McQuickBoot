@@ -5,7 +5,6 @@ HEADERS += $$PWD/include/McOrm/McDll.h \
     $$PWD/include/McOrm/DaoLoader/impl/McDaoLoader.h \
     $$PWD/include/McOrm/McOrmMacroGlobal.h \
     $$PWD/include/McOrm/McOrmGlobal.h \
-    $$PWD/include/McOrm/McOrmVersion.h \
     $$PWD/include/McOrm/Parser/IMcParser.h \
     $$PWD/include/McOrm/Parser/impl/McAbstractParser.h \
     $$PWD/include/McOrm/Parser/impl/McSelectParser.h \

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../McLogGlobal.h"
+#include "../McLogMacroGlobal.h"
 
 QT_BEGIN_NAMESPACE
 class QSettings;

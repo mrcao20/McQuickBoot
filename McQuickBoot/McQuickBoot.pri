@@ -31,7 +31,6 @@ HEADERS +=  \
     $$PWD/include/McBoot/Controller/impl/McResult.h \
     $$PWD/include/McBoot/McBootGlobal.h \
     $$PWD/include/McBoot/McBootMacroGlobal.h \
-    $$PWD/include/McBoot/McBootVersion.h \
     $$PWD/include/McBoot/McQuickBoot.h \
     $$PWD/include/McBoot/Model/McModelContainer.h \
     $$PWD/include/McBoot/Requestor/McQmlRequestor.h \

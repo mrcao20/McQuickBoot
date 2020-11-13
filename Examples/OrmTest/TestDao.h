@@ -4,6 +4,7 @@
 #include <QObject>
 #include <McOrm/McOrmGlobal.h>
 #include "TestVo.h"
+#include "Article.h"
 
 class TestDao : public QObject
 {
@@ -15,7 +16,10 @@ public:
     Q_INVOKABLE TestDao(){}
     
     MC_SELECT("selectById")
-    void selectById(const QList<TestVoPtr> &t);
+    TestVoPtr selectById(int id);
+    
+    MC_SELECT("selectByArticleId")
+    ArticlePtr selectByArticleId(int id);
 };
 
 MC_DECL_METATYPE(TestDao)

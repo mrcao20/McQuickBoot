@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../McLogGlobal.h"
+#include "../McLogMacroGlobal.h"
 
 class MCLOGQT_EXPORT McXMLConfigurator : public QObject 
 {

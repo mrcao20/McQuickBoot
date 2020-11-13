@@ -153,8 +153,10 @@ void McQuickBoot::initBoot(QQmlEngine *engine) noexcept
 	}
     d->engine = engine;
     d->context = McAnnotationApplicationContextPtr::create();
+#ifndef MC_NO_YAML
     auto reader = McConfigurationFileBeanDefinitionReaderPtr::create(d->context);
     reader->readBeanDefinition(d->context.data());
+#endif
     d->context->refresh();  //!< 预加载bean
 }
 

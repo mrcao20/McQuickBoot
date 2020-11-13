@@ -6,6 +6,7 @@
 
 QT -= gui
 QT += xml
+QT += core-private
 
 TARGET = McIoc
 TARGET = $$qt5LibraryTarget($$TARGET)

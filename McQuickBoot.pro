@@ -1,7 +1,5 @@
 TEMPLATE = subdirs
 
-SUBDIRS += McYaml
-
 SUBDIRS += McIoc \
     McLogQt \
     McOrm \
