@@ -1,28 +1,14 @@
 #include "McLog/Appender/impl/McAbstractAppender.h"
 
-#include <QCoreApplication>
-#include <QIODevice>
-#include <QThread>
-#include <qlogging.h>
-
 #define LEVEL_DEBUG "debug"
 #define LEVEL_WARN "warn"
 #define LEVEL_CRITICAL "critical"
 #define LEVEL_FATAL "fatal"
 #define LEVEL_INFO "info"
 
-const QEvent::Type McAppenderEvent::eventType = 
-        static_cast<QEvent::Type>(QEvent::registerEventType(QEvent::User + 1));
-
-McAppenderEvent::~McAppenderEvent() 
-{
-}
-
 MC_DECL_PRIVATE_DATA(McAbstractAppender)
 QString threshold;                  //!< 全小写
 QList<QtMsgType> types;
-QIODevicePtr device;
-bool immediateFlush{false};         //!< 是否立即刷新输出，默认为false
 MC_PADDING_CLANG(7)
 MC_DECL_PRIVATE_DATA_END
 
@@ -36,8 +22,6 @@ McAbstractAppender::McAbstractAppender()
 
 McAbstractAppender::~McAbstractAppender() 
 {
-    if(!d->device.isNull() && d->device->isOpen())
-        d->device->close();
 }
 
 QString McAbstractAppender::threshold() const noexcept 
@@ -52,55 +36,6 @@ void McAbstractAppender::setThreshold(const QString &val) noexcept
     d->types = initThreshold(d->threshold);
 }
 
-bool McAbstractAppender::immediateFlush() const noexcept 
-{
-    return d->immediateFlush;
-}
-
-void McAbstractAppender::setImmediateFlush(bool val) noexcept 
-{
-    d->immediateFlush = val;
-}
-
-void McAbstractAppender::append(QtMsgType type, const QMessageLogContext &context, const QString &str) noexcept 
-{
-    if(!d->types.contains(type)) {
-        return;
-    }
-    
-    if(d->immediateFlush) {
-        if(thread() == QThread::currentThread()) {
-            doAppend(type, context, str);
-        }else{
-            QMetaObject::invokeMethod(this
-                                      , "doAppend"
-                                      , Qt::BlockingQueuedConnection
-                                      , Q_ARG(QtMsgType, type)
-                                      , Q_ARG(QMessageLogContext, context)
-                                      , Q_ARG(QString, str));
-        }
-    }else{
-        auto e = new McAppenderEvent(type, str);
-        auto ctx = e->context();
-        ctx->version = context.version;
-        ctx->line = context.line;
-        ctx->file = context.file;
-        ctx->function = context.function;
-        ctx->category = context.category;
-        qApp->postEvent(this, e);
-    }
-}
-
-QIODevicePtr McAbstractAppender::device() const noexcept 
-{
-    return d->device;
-}
-
-void McAbstractAppender::setDevice(QIODeviceConstPtrRef device) noexcept 
-{
-    d->device = device;
-}
-
 void McAbstractAppender::finished() noexcept 
 {
 }
@@ -109,12 +44,9 @@ void McAbstractAppender::threadFinished() noexcept
 {
 }
 
-void McAbstractAppender::customEvent(QEvent *event) 
+QList<QtMsgType> McAbstractAppender::types() const noexcept
 {
-    if(event->type() == McAppenderEvent::eventType) {
-        auto e = static_cast<McAppenderEvent *>(event);
-        doAppend(e->type(), *e->context(), e->msg());
-    }
+    return d->types;
 }
 
 QList<QtMsgType> McAbstractAppender::initThreshold(const QString &val) const noexcept 

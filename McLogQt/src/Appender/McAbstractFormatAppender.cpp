@@ -1,9 +1,14 @@
 #include "McLog/Appender/impl/McAbstractFormatAppender.h"
 
+#include <QCoreApplication>
+#include <QThread>
+#include <qlogging.h>
+
 #include "McLog/Layout/impl/McNormalLayout.h"
 
 MC_DECL_PRIVATE_DATA(McAbstractFormatAppender)
 IMcLayoutPtr layout;
+bool immediateFlush{false};         //!< 是否立即刷新输出，默认为false
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McAbstractFormatAppender)
@@ -28,30 +33,22 @@ void McAbstractFormatAppender::setLayout(IMcLayoutConstPtrRef val) noexcept
     d->layout = val;
 }
 
-void McAbstractFormatAppender::finished() noexcept
+bool McAbstractFormatAppender::immediateFlush() const noexcept 
 {
-    McAbstractAppender::finished();
-    
-    if(layout().isNull()) {
-        auto l = McNormalLayoutPtr::create();
-        l->finished();
-        setLayout(l);
-    }
+    return d->immediateFlush;
 }
 
-void McAbstractFormatAppender::threadFinished() noexcept
+void McAbstractFormatAppender::setImmediateFlush(bool val) noexcept 
 {
-    McAbstractAppender::threadFinished();
-    
-    auto l = layout();  //!< 一定存在
-    auto pl = l.staticCast<McPatternLayout>();  //!< 一定成功
-    if(pl->thread() != thread()) {
-        pl->moveToThread(thread());
-    }
+    d->immediateFlush = val;
 }
 
-void McAbstractFormatAppender::doAppend(QtMsgType type, const QMessageLogContext &context, const QString &str) noexcept
+void McAbstractFormatAppender::append(QtMsgType type, const QMessageLogContext &context, const QString &str) noexcept 
 {
+    if(!types().contains(type)) {
+        return;
+    }
+    
     auto l = layout();
     if(l.isNull()) {
         MC_PRINT_ERR("the appender not set layout. category: %s\n", context.category);
@@ -65,12 +62,59 @@ void McAbstractFormatAppender::doAppend(QtMsgType type, const QMessageLogContext
     }
     auto message = l->format(type, context, str);
     
+    if(d->immediateFlush) {
+        if(thread() == QThread::currentThread()) {
+            append_helper(message);
+        }else{
+            QMetaObject::invokeMethod(this
+                                      , MC_MACRO_STR(append_helper)
+                                      , Qt::BlockingQueuedConnection
+                                      , Q_ARG(QString, message));
+        }
+    }else{
+        auto e = new McCustomEvent(QEvent::User, message);
+        qApp->postEvent(this, e);
+    }
+}
+
+void McAbstractFormatAppender::finished() noexcept
+{
+    McAbstractIODeviceAppender::finished();
+    
+    if(layout().isNull()) {
+        auto l = McNormalLayoutPtr::create();
+        l->finished();
+        setLayout(l);
+    }
+}
+
+void McAbstractFormatAppender::threadFinished() noexcept
+{
+    McAbstractIODeviceAppender::threadFinished();
+    
+    auto l = layout();  //!< 一定存在
+    auto pl = l.staticCast<McPatternLayout>();  //!< 一定成功
+    if(pl->thread() != thread()) {
+        pl->moveToThread(thread());
+    }
+}
+
+void McAbstractFormatAppender::customEvent(QEvent *event) 
+{
+    if(event->type() == QEvent::User) {
+        auto e = static_cast<McCustomEvent *>(event);
+        append_helper(e->data().toString());
+    }
+}
+
+void McAbstractFormatAppender::append_helper(const QString &msg) noexcept
+{
     writeBefore();
     auto out = device();
     if(out.isNull() || !out->isOpen()) {
         return;
     }
-    out->write(message.toLocal8Bit());
+    out->write(msg.toLocal8Bit());
     out->write("\n", 1);
     writeAfter();
 }

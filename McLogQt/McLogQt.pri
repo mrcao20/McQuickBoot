@@ -17,6 +17,7 @@ SOURCES += \
     $$PWD/src/Layout/McSimpleLayout.cpp \
     $$PWD/src/Layout/McTTCCLayout.cpp \
     $$PWD/src/Logger/McLogger.cpp \
+    $$PWD/src/Appender/McAbstractIODeviceAppender.cpp \
     $$PWD/src/McLogManager.cpp \
     $$PWD/src/Appender/McVSDebugAppender.cpp \
     $$PWD/src/Repository/McLoggerRepository.cpp \
@@ -29,6 +30,7 @@ HEADERS += \
     $$PWD/include/McLog/Appender/IMcConfigurableAppender.h \
     $$PWD/include/McLog/Appender/IMcWritableAppender.h \
     $$PWD/include/McLog/Appender/impl/McAbstractAppender.h \
+    $$PWD/include/McLog/Appender/impl/McAbstractIODeviceAppender.h \
     $$PWD/include/McLog/Appender/impl/McConsoleAppender.h \
     $$PWD/include/McLog/Appender/impl/McDailyRollingFileAppender.h \
     $$PWD/include/McLog/Appender/impl/McFileAppender.h \
