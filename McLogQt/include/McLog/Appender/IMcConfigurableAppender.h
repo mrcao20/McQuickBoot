@@ -6,7 +6,6 @@
 class IMcConfigurableAppender 
         : public IMcAppender 
 {
-    
     MC_DEFINE_TYPELIST(MC_DECL_TYPELIST(IMcAppender))
 public:
     virtual ~IMcConfigurableAppender() = default;
