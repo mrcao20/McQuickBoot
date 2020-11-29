@@ -7,7 +7,7 @@
 
 #include <McIoc/ApplicationContext/IMcApplicationContext.h>
 
-#include "McBoot/McQuickBoot.h"
+#include "McBoot/IMcQuickBoot.h"
 #include "McBoot/Controller/impl/McResult.h"
 #include "McIoc/BeanFactory/impl/McMetaTypeId.h"
 
@@ -29,10 +29,10 @@ McControllerContainer::~McControllerContainer()
 {
 }
 
-void McControllerContainer::init(const QSharedPointer<McQuickBoot> &boot) noexcept 
+void McControllerContainer::init(IMcQuickBootConstPtrRef &boot) noexcept 
 {
     auto appCtx = boot->getApplicationContext();
-	auto beanNames = boot->getComponents(MC_CONTROLLER_TAG);
+	auto beanNames = Mc::getComponents(appCtx, MC_CONTROLLER_TAG);
     for (const auto &beanName : beanNames) {
         auto obj = appCtx->getBean(beanName);
         if(!obj) {

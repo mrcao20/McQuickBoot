@@ -5,7 +5,7 @@
 
 #include <McIoc/ApplicationContext/IMcApplicationContext.h>
 
-#include "McBoot/McQuickBoot.h"
+#include "McBoot/IMcQuickBoot.h"
 
 MC_INIT(McModelContainer)
 MC_REGISTER_BEAN_FACTORY(McModelContainer)
@@ -23,10 +23,10 @@ McModelContainer::~McModelContainer()
 {
 }
 
-void McModelContainer::init(McQuickBootConstPtrRef boot) noexcept 
+void McModelContainer::init(IMcQuickBootConstPtrRef boot) noexcept 
 {
     auto appCtx = boot->getApplicationContext();
-	auto beanNames = boot->getComponents(MC_MODEL_TAG);
+	auto beanNames = Mc::getComponents(appCtx, MC_MODEL_TAG);
     for (const auto &beanName : beanNames) {
         auto obj = appCtx->getBean(beanName);
         if(!obj) {

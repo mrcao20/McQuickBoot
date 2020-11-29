@@ -9,6 +9,7 @@ MC_FORWARD_DECL_PRIVATE_DATA(McLogManager);
 class MCLOGQT_EXPORT McLogManager : public QObject 
 {
     Q_OBJECT
+    MC_DECL_INIT(McLogManager)
     Q_DISABLE_COPY(McLogManager)
     McLogManager();
 public:

@@ -15,6 +15,10 @@ McSelectParser::McSelectParser() noexcept
     MC_NEW_PRIVATE_DATA(McSelectParser);
 }
 
+McSelectParser::~McSelectParser()
+{
+}
+
 IMcSqlSlot *McSelectParser::createSqlSlot(const char *tag) noexcept
 {
     if(qstrcmp(tag, MC_SELECT_TAG) != 0) {

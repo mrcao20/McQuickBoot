@@ -1,6 +1,6 @@
 TEMPLATE = app
 
-QT += qml quick
+QT += qml quick sql
 CONFIG += c++11
 
 SOURCES += main.cpp \
@@ -38,8 +38,21 @@ MOC_DIR = $$PWD/../../moc/Examples/OrmTest
 include($$PWD/../../common.pri)
 include($$PWD/../../McOrm/McOrmDepend.pri)
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../bin/ -lMcOrm
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcOrmd
+win32 {
+    msvc {
+        CONFIG(release, debug|release): LIBS += -L$$PWD/../../bin/ -lMcOrm
+        else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcOrmd
+    } else {
+        equals(QT_MAJOR_VERSION, 5):lessThan(QT_MINOR_VERSION, 13) {
+            CONFIG(release, debug|release): LIBS += -L$$PWD/../../bin/ -lMcOrm
+            else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcOrmd
+        } else {
+            LIBS += -L$$PWD/../../bin/ -lMcOrm
+        }
+    }
+} else:unix:!macx {
+    LIBS += -L$$PWD/../../bin/ -lMcOrm
+}
 
 INCLUDEPATH += $$PWD/../../McOrm/include
 DEPENDPATH += $$PWD/../../McOrm/include

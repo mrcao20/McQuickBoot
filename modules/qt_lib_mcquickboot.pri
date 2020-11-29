@@ -1,0 +1,11 @@
+QT.mcquickboot.VERSION = 5.15.0
+QT.mcquickboot.name = McQuickBoot
+QT.mcquickboot.module = McQuickBoot
+QT.mcquickboot.libs = $$QT_MODULE_LIB_BASE
+QT.mcquickboot.includes = $$QT_MODULE_INCLUDE_BASE $$QT_MODULE_INCLUDE_BASE/McQuickBoot
+QT.mcquickboot.bins = $$QT_MODULE_BIN_BASE
+QT.mcquickboot.libexecs = $$QT_MODULE_LIBEXEC_BASE
+QT.mcquickboot.imports = $$QT_MODULE_IMPORT_BASE
+QT.mcquickboot.depends = quick mcioc mclogqt
+QT.mcquickboot.DEFINES = MC_QUICKBOOT_LIB
+QT_MODULES += mcquickboot

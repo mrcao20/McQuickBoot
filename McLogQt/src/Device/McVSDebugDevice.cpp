@@ -30,7 +30,11 @@ Lock qt_unique_lock(Mutex *mutex)
 }
     
 #ifdef Q_OS_WIN
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+static void win_outputDebugString_helper(const QString &message)
+#else
 static void win_outputDebugString_helper(QStringView message)
+#endif
 {
     const int maxOutputStringLength = 32766;
     static QBasicMutex m;

@@ -4,7 +4,7 @@
 
 MC_FORWARD_DECL_PRIVATE_DATA(McModelContainer);
 
-MC_FORWARD_DECL_CLASS(McQuickBoot);
+MC_FORWARD_DECL_CLASS(IMcQuickBoot);
 
 class MCQUICKBOOT_EXPORT McModelContainer : public QObject 
 {
@@ -16,7 +16,7 @@ public:
 	Q_INVOKABLE explicit McModelContainer(QObject *parent = nullptr);
 	~McModelContainer() override;
 
-    void init(McQuickBootConstPtrRef boot) noexcept;
+    void init(IMcQuickBootConstPtrRef boot) noexcept;
 
 private:
 	MC_DECL_PRIVATE(McModelContainer)

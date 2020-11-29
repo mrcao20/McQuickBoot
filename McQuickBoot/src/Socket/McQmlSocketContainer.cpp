@@ -8,7 +8,7 @@
 
 #include <McIoc/ApplicationContext/IMcApplicationContext.h>
 
-#include "McBoot/McQuickBoot.h"
+#include "McBoot/IMcQuickBoot.h"
 #include "McBoot/Socket/impl/McQmlSocket.h"
 #include "McBoot/Socket/impl/McInnerSocket.h"
 #include "McBoot/Socket/impl/McSession.h"
@@ -32,10 +32,10 @@ McQmlSocketContainer::~McQmlSocketContainer()
 {
 }
 
-void McQmlSocketContainer::init(McQuickBootConstPtrRef boot) noexcept 
+void McQmlSocketContainer::init(IMcQuickBootConstPtrRef boot) noexcept 
 {
     auto appCtx = boot->getApplicationContext();
-	auto beanNames = boot->getComponents(MC_QML_SOCKET_TAG);
+	auto beanNames = Mc::getComponents(appCtx, MC_QML_SOCKET_TAG);
     for (const auto &beanName : beanNames) {
         auto obj = appCtx->getBean(beanName);
         if(!obj) {

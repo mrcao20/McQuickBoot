@@ -7,6 +7,12 @@ MC_DECL_PRIVATE_DATA(McLogManager)
 IMcLoggerRepositoryPtr loggerRepository;
 MC_DECL_PRIVATE_DATA_END
 
+MC_INIT(McLogManager)
+MC_DESTROY(Mc::RoutinePriority::Min)
+McLogManager::uninstallQtMessageHandler();  //!< 此函数内部会加锁，loggerRepository析构时一定不会进入output函数
+McLogManager::instance()->d->loggerRepository.reset();
+MC_INIT_END
+
 McLogManager::McLogManager() 
 {
     MC_NEW_PRIVATE_DATA(McLogManager);
@@ -14,7 +20,6 @@ McLogManager::McLogManager()
 
 McLogManager::~McLogManager() 
 {
-    McLogManager::uninstallQtMessageHandler();
 }
 
 IMcLoggerRepositoryPtr McLogManager::loggerRepository() const noexcept 
@@ -29,7 +34,6 @@ void McLogManager::setLoggerRepository(IMcLoggerRepositoryConstPtrRef val) noexc
 
 McLogManager *McLogManager::instance() noexcept 
 {
-    //! 好像有bug，存在如果主程序中没有静态局部对象或者没有优先调用一次此函数时析构不掉
     static McLogManager instance;
     return &instance;
 }

@@ -4,7 +4,7 @@
 
 MC_FORWARD_DECL_PRIVATE_DATA(McQmlSocketContainer);
 
-MC_FORWARD_DECL_CLASS(McQuickBoot);
+MC_FORWARD_DECL_CLASS(IMcQuickBoot);
 MC_FORWARD_DECL_CLASS(McInnerSocket);
 
 class MCQUICKBOOT_EXPORT McQmlSocketContainer 
@@ -19,7 +19,7 @@ public:
     Q_INVOKABLE McQmlSocketContainer(QObject *parent = nullptr);
     ~McQmlSocketContainer() override;
     
-    void init(McQuickBootConstPtrRef boot) noexcept;
+    void init(IMcQuickBootConstPtrRef boot) noexcept;
     
     McQmlSocket *addConnect(const QString &uri) noexcept override;
     McQmlSocket *addConnect(const QString &uri, const QJSValue &data) noexcept override;

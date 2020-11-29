@@ -2,6 +2,9 @@
 
 #include <QtCore/qglobal.h>
 
+#include "Utils/Macro/MacroSize.h"
+#include "Utils/Macro/MacroFillingFunc.h"
+
 #ifndef BUILD_STATIC
 # if defined(MCIOC_LIBRARY)
 #  define MCIOC_EXPORT Q_DECL_EXPORT
@@ -47,6 +50,30 @@
 
 #define MC_PADDING_CLANG(size)  \
     char ___clang_padding___[size];
+
+#define MC_DECL_INIT(Class) \
+    static const int Class##_Static_Init;
+
+#define MC_FILLING_ROUTINE_PRIORITY_FUNC_0() Mc::RoutinePriority::Normal
+#define MC_FILLING_ROUTINE_PRIORITY_FUNC_1(args) args
+#define MC_FUNC_CHOOSER(_f1, _f2, ...) _f2
+#define MC_FUNC_RECOMPOSER(par) MC_FUNC_CHOOSER par
+#define MC_CHOOSE_FROM_ARG_COUNT(...) MC_FUNC_RECOMPOSER((__VA_ARGS__, MC_FILLING_ROUTINE_PRIORITY_FUNC_1,))
+#define MC_NO_ARG_EXPANDER() ,MC_FILLING_ROUTINE_PRIORITY_FUNC_0
+#define MC_MACRO_CHOOSER(...) MC_CHOOSE_FROM_ARG_COUNT(MC_NO_ARG_EXPANDER __VA_ARGS__ ())
+#define MC_ROUTINE_PRIORITY(...) MC_MACRO_CHOOSER(__VA_ARGS__)(__VA_ARGS__)
+
+#define MC_INIT(Class, ...) \
+    const int Class::Class##_Static_Init = []() -> int { \
+        Mc::addPreRoutine(MC_ROUTINE_PRIORITY(__VA_ARGS__), [](){
+
+#define MC_DESTROY(...) \
+    }); \
+    Mc::addPostRoutine(MC_ROUTINE_PRIORITY(__VA_ARGS__), [](){
+
+#define MC_INIT_END \
+    }); \
+    return 0;}();
 
 
 #ifndef Q_MOC_RUN			//!< 这行语句必须加，只有包围在这行语句之中的宏才能被识别为tag

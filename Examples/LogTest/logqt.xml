@@ -53,17 +53,28 @@
 		<property name="fileNamePattern" value="Lidar[0]_%{time yyyy-MM-dd_hh-mm-ss}.log"></property>
 		<property name="layout" ref="patternLayout"></property>
     </bean>
-	
-	<bean name="defaultLogger" class="McLogger">
-		<!-- 指定一个全局的threshold，优先级地狱Appender中的threshold -->
-		<property name="threshold" value="debug-"></property>
-		<property name="appenders">
+    
+    <bean name="appenderDecorator" class="McAppenderPostDecorator">
+        <property name="separator">
+            <value>----------------------------------</value>
+        </property>
+        <property name="appenders">
 			<list>
 				<ref bean="console" />
                 <ref bean="vsDebug" />
 				<ref bean="dailyRollingFile" />
 				<ref bean="rollingFile" />
 				<ref bean="file" />
+			</list>
+		</property>
+    </bean>
+	
+	<bean name="defaultLogger" class="McLogger">
+		<!-- 指定一个全局的threshold，优先级地狱Appender中的threshold -->
+		<property name="threshold" value="debug-"></property>
+		<property name="appenders">
+			<list>
+				<ref bean="appenderDecorator" />
 			</list>
 		</property>
 	</bean>

@@ -18,6 +18,55 @@
 
 namespace McPrivate {
 
+using StartUpFuncs = QMap<Mc::RoutinePriority, QVector<Mc::StartUpFunction>>;
+Q_GLOBAL_STATIC(StartUpFuncs, preRFuncs)
+using VFuncs = QMap<Mc::RoutinePriority, QVector<Mc::CleanUpFunction>>;
+Q_GLOBAL_STATIC(VFuncs, postRFuncs)
+static QBasicMutex globalRoutinesMutex;
+
+static int GlobalStaticInit = [](){
+    qAddPreRoutine([](){
+        if(!preRFuncs.exists()) {
+            return;
+        }
+        StartUpFuncs funcs;
+        {
+            const auto locker = mc_scoped_lock(globalRoutinesMutex);
+            funcs = *preRFuncs;
+        }
+        auto keys = funcs.keys();
+        for(int i = keys.length() - 1; i >= 0; --i) {
+            auto list = funcs.value(keys.value(i));
+            for(int j = 0; j < list.length(); ++j) {
+                list.at(j)();
+            }
+        }
+    });
+    qAddPostRoutine([](){
+        if(!postRFuncs.exists()) {
+            return;
+        }
+        forever {
+            VFuncs funcs;
+            {
+                const auto locker = mc_scoped_lock(globalRoutinesMutex);
+                qSwap(*postRFuncs, funcs);
+            }
+            if(funcs.isEmpty()) {
+                break;
+            }
+            auto keys = funcs.keys();
+            for(int i = keys.length() - 1; i >= 0; --i) {
+                auto list = funcs.value(keys.value(i));
+                for(int j = 0; j < list.length(); ++j) {
+                    list.at(j)();
+                }
+            }
+        }
+    });
+    return 0;
+}();
+
 static const void *constData(const QVariant::Private &d)
 {
     return d.is_shared ? d.data.shared->ptr : reinterpret_cast<const void *>(&d.data.c);
@@ -275,6 +324,29 @@ bool isComponentType(const QMetaObject *metaObj, const QString &type) noexcept
 		return classInfo.value() == type;
 	}
 	return false;
+}
+
+void addPreRoutine(RoutinePriority priority, const StartUpFunction &func) noexcept
+{
+    McPrivate::StartUpFuncs *funcs = McPrivate::preRFuncs();
+    if(!funcs) {
+        return;
+    }
+    if (QCoreApplication::instance()) {
+        func();
+    }
+    const auto locker = McPrivate::mc_scoped_lock(McPrivate::globalRoutinesMutex);
+    (*funcs)[priority].prepend(func);
+}
+
+void addPostRoutine(RoutinePriority priority, const CleanUpFunction &func) noexcept
+{
+    McPrivate::VFuncs *funcs = McPrivate::postRFuncs();
+    if(!funcs) {
+        return;
+    }
+    const auto locker = McPrivate::mc_scoped_lock(McPrivate::globalRoutinesMutex);
+    (*funcs)[priority].prepend(func);
 }
 
 }

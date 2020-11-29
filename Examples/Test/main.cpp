@@ -30,14 +30,14 @@ static void  __attribute__((destructor)) after(void)
 	qDebug() << "after";
 }
 #elif Q_CC_MSVC
-#define SECNAME ".CRT$XCG"
-#pragma section(SECNAME,long,read)
-int foo()
-{
-    qDebug() << "before";
-    return 0;
-}
-__declspec(allocate(SECNAME)) _PIFV dummy[] = { foo };
+//#define SECNAME ".CRT$XCG"
+//#pragma section(SECNAME,long,read)
+//int foo()
+//{
+//    qDebug() << "before";
+//    return 0;
+//}
+//__declspec(allocate(SECNAME)) _PIFV dummy[] = { foo };
 #endif
 
 #define BB(par) MC_FIRST_TYPE_NAME((par))

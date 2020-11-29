@@ -44,10 +44,10 @@ ApplicationWindow {
             console.log(">>>>>>>>>1.", result, result.errMsg);
         });
 //        aaa({errMsg: "aaa"});
-//        $.get("con.invoke2").syncThen(function(result){
-//            console.log("con");
-//            console.log(">>>>>>>>>.", result, result.errMsg);
-//        });
+        $.get("con.invoke2").syncThen(function(result){
+            console.log("con");
+            console.log(">>>>>>>>>.", result, result.errMsg);
+        });
 //        var data1 = {
 //            o: {
 //                text: "aaa",

@@ -6,6 +6,8 @@
 #include <McIoc/ApplicationContext/McContainerGlobal.h>
 #include <McBoot/Controller/impl/McResult.h>
 #include <McBoot./Utils/McJsonUtils.h>
+#include <McBoot/McQuickBoot.h>
+#include <McBoot/Controller/impl/McQmlResponse.h>
 
 MC_INIT(InvokeTest)
 MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(InvokeTest))
@@ -48,8 +50,14 @@ void InvokeTest::start() noexcept {
     qDebug() << "InvokeTest start construct";
 }
 
+#include <QTimer>
 void InvokeTest::end() noexcept {
     qDebug() << "InvokeTest construct finished" << thread() << QThread::currentThread();
+    QTimer::singleShot(1000, [](){
+        $->invoke("con.invoke4")->then([](const QVariant &var){
+            qDebug() << "---------------" << var;
+        });
+    });
 }
 
 void InvokeTest::threadEnd() noexcept {
