@@ -12,17 +12,6 @@
     Q_DECLARE_METATYPE(Class##Ptr) \
     Q_DECLARE_METATYPE(Class*)
 
-#define MC_DECL_INIT(Class) \
-    static const int Class##_Static_Init;
-
-#define MC_INIT(Class) \
-    const int Class::Class##_Static_Init = []() -> int { \
-        qAddPreRoutine([](){
-
-#define MC_INIT_END \
-    }); \
-    return 0;}();
-
 #define MC_DEFINE_TYPELIST(...) \
 public: \
     using McPrivateTypeList = McPrivate::McTypeList<__VA_ARGS__>; \
@@ -53,7 +42,6 @@ private:
     McPrivate::McContainerConverterRegisterHelper<Type>::registerConverter(#Type);
 #define MC_REGISTER_LIST_CONVERTER MC_REGISTER_CONTAINER_CONVERTER
 #define MC_REGISTER_MAP_CONVERTER MC_REGISTER_CONTAINER_CONVERTER
-
 
 namespace McPrivate {
 

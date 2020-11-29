@@ -22,6 +22,9 @@ public:
     Q_INVOKABLE McQmlResponse *then(const QJSValue &callback) noexcept;
     Q_INVOKABLE McQmlResponse *syncThen(const QJSValue &callback) noexcept;
     
+    McQmlResponse *then(const std::function<void(const QVariant &)> &callback) noexcept;
+    McQmlResponse *syncThen(const std::function<void(const QVariant &)> &callback) noexcept;
+    
 protected:
     void customEvent(QEvent *event) override;
     

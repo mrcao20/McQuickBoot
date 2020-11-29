@@ -1,5 +1,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QSqlDatabase>
+#include <QDebug>
 
 #include <McIoc/ApplicationContext/impl/McAnnotationApplicationContext.h>
 #include <McOrm/DaoLoader/impl/McDaoLoader.h>
@@ -9,6 +11,10 @@
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
+    
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName(R"(E:\Code\QtCreator\McQuickBoot\Examples\OrmTest\d_orm_test.db)");
+    qDebug() << db.open();
     
     McAnnotationApplicationContextPtr appCtx = McAnnotationApplicationContextPtr::create();
     appCtx->getBean<McDaoLoader>("daoLoader")->init(appCtx);

@@ -37,7 +37,7 @@ win32 {
         CONFIG(release, debug|release): LIBS += -L$$PWD/../../bin/ -lMcLogQt
         else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcLogQtd
     } else {
-        equals(QT_MAJOR_VERSION, 5):lessThan(QT_MINOR_VERSION, 9) {
+        equals(QT_MAJOR_VERSION, 5):lessThan(QT_MINOR_VERSION, 13) {
             CONFIG(release, debug|release): LIBS += -L$$PWD/../../bin/ -lMcLogQt
             else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcLogQtd
         } else {

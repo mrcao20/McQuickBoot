@@ -1,9 +1,13 @@
 #include "McLog/Repository/impl/McLoggerRepository.h"
 
+#include <QThread>
+#include <QAbstractEventDispatcher>
+
 #include "McLog/Logger/IMcLogger.h"
 
 MC_DECL_PRIVATE_DATA(McLoggerRepository)
 QMap<QString, IMcLoggerPtr> loggers;
+QThread *thread{nullptr};
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McLoggerRepository)
@@ -18,6 +22,22 @@ McLoggerRepository::McLoggerRepository()
 
 McLoggerRepository::~McLoggerRepository() 
 {
+    if(d->thread) {
+        if(QThread::currentThread() == thread()) {
+            processEvents();
+        } else {
+            QMetaObject::invokeMethod(this, "processEvents", Qt::BlockingQueuedConnection);
+        }
+        d->thread->quit();
+        if(d->thread->thread() != QThread::currentThread()) {
+            d->thread->wait();
+        } else {
+            while(!d->thread->isFinished() || d->thread->isRunning()) {
+                QThread::msleep(100);
+            }
+        }
+        delete d->thread;
+    }
 }
 
 QMap<QString, IMcLoggerPtr> McLoggerRepository::loggers() const noexcept 
@@ -41,4 +61,14 @@ IMcLoggerPtr McLoggerRepository::getLogger(const QString &loggerName) noexcept
         return IMcLoggerPtr();
     }
     return d->loggers.value(loggerName);
+}
+
+void McLoggerRepository::deleteWhenQuit() noexcept
+{
+    d->thread = thread();
+}
+
+void McLoggerRepository::processEvents() noexcept
+{
+    d->thread->eventDispatcher()->processEvents(QEventLoop::AllEvents);
 }

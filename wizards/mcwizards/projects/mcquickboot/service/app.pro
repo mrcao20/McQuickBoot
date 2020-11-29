@@ -1,4 +1,5 @@
 QT -= gui
+QT += mcquickboot
 
 TARGET = %{ProjectName}
 TARGET = $$qt5LibraryTarget($$TARGET)

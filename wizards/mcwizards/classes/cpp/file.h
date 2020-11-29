@@ -25,11 +25,12 @@ class %{CN}
 	 MC_DEFINE_TYPELIST();
 public:
 @if '%{Base}' === 'QObject'
-    explicit %{CN}(QObject *parent = nullptr);
+    Q_INVOKABLE explicit %{CN}(QObject *parent = nullptr);
+    ~%{CN}() override;
 @else
     %{CN}();
-@endif
     ~%{CN}();
+@endif
 
 private:
 	MC_DECL_PRIVATE(%{CN})

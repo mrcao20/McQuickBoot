@@ -1,6 +1,9 @@
 INCLUDEPATH += $$PWD/include/
 
 SOURCES += \
+    $$PWD/src/Appender/Decorator/McAbstractAppenderDecorator.cpp \
+    $$PWD/src/Appender/Decorator/McAppenderFrontDecorator.cpp \
+    $$PWD/src/Appender/Decorator/McAppenderPostDecorator.cpp \
     $$PWD/src/Appender/McAbstractAppender.cpp \
     $$PWD/src/Appender/McConsoleAppender.cpp \
     $$PWD/src/Appender/McDailyRollingFileAppender.cpp \
@@ -21,11 +24,13 @@ SOURCES += \
     $$PWD/src/McLogManager.cpp \
     $$PWD/src/Appender/McVSDebugAppender.cpp \
     $$PWD/src/Repository/McLoggerRepository.cpp \
-    $$PWD/src/Utils/McDeleteThreadWhenQuit.cpp \
     $$PWD/src/Appender/McAbstractFormatAppender.cpp \
     $$PWD/src/Utils/McMessagePattern.cpp
 
 HEADERS += \
+    $$PWD/include/McLog/Appender/Decorator/McAbstractAppenderDecorator.h \
+    $$PWD/include/McLog/Appender/Decorator/McAppenderFrontDecorator.h \
+    $$PWD/include/McLog/Appender/Decorator/McAppenderPostDecorator.h \
     $$PWD/include/McLog/Appender/IMcAppender.h \
     $$PWD/include/McLog/Appender/IMcConfigurableAppender.h \
     $$PWD/include/McLog/Appender/IMcWritableAppender.h \
@@ -54,6 +59,5 @@ HEADERS += \
     $$PWD/include/McLog/McLogManager.h \
     $$PWD/include/McLog/Repository/IMcLoggerRepository.h \
     $$PWD/include/McLog/Repository/impl/McLoggerRepository.h \
-    $$PWD/include/McLog/Utils/McDeleteThreadWhenQuit.h \
     $$PWD/include/McLog/Appender/impl/McAbstractFormatAppender.h \
     $$PWD/include/McLog/Utils/McMessagePattern.h

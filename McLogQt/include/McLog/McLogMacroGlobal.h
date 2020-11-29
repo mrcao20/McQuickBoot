@@ -38,6 +38,9 @@
 #ifdef MC_PADDING_CLANG
 #undef MC_PADDING_CLANG
 #endif
+#ifdef MC_DECL_INIT
+#undef MC_DECL_INIT
+#endif
 
 #define MC_DECL_POINTER(Class) \
     using Class##Ptr = QSharedPointer<Class>; \
@@ -73,6 +76,9 @@
 #define MC_PADDING_CLANG(size)  \
     char ___clang_padding___[size];
 
+#define MC_DECL_INIT(Class) \
+    static const int Class##_Static_Init;
+
 #ifdef MC_NO_IOC
 
 # define MC_BEAN_START
@@ -82,7 +88,6 @@
 #define MC_DECL_METATYPE(Class) \
     MC_DECL_POINTER(Class)
 
-#define MC_DECL_INIT(...)
 #define MC_INIT(...)
 #define MC_INIT_END
 #define MC_DEFINE_TYPELIST(...)

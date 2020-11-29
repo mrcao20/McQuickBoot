@@ -12,8 +12,9 @@
 #include "McBoot/Controller/impl/McControllerContainer.h"
 #include "McBoot/Model/McModelContainer.h"
 #include "McBoot/Socket/impl/McQmlSocketContainer.h"
-#include "McBoot/Requestor/McQmlRequestor.h"
 #include "McBoot/BeanDefinitionReader/impl/McConfigurationFileBeanDefinitionReader.h"
+
+namespace {
 
 struct McQuickBootStaticData
 {
@@ -22,13 +23,26 @@ struct McQuickBootStaticData
     function<void(QCoreApplication *, QQmlApplicationEngine *)> afterInitFunc;
 };
 
+}
+
+Q_GLOBAL_STATIC(McQuickBootStaticData, mcQuickBootStaticData)
+
 MC_DECL_PRIVATE_DATA(McQuickBoot)
 McAnnotationApplicationContextPtr context;
 QQmlEngine *engine{nullptr};
+McQmlRequestorPtr requestor;
 MC_DECL_PRIVATE_DATA_END
 
-//Q_GLOBAL_STATIC_WITH_ARGS(QQmlEngine *, mcEngine, (nullptr))
-Q_GLOBAL_STATIC(McQuickBootStaticData, mcQuickBootStaticData)
+MC_INIT(McQuickBoot)
+MC_DESTROY()
+if(!mcQuickBootStaticData.exists()) {
+    return;
+}
+auto requestor = mcQuickBootStaticData->boot->d->requestor.data();
+mcQuickBootStaticData->boot->d->requestor.clear();
+delete requestor;
+mcQuickBootStaticData->boot.reset();
+MC_INIT_END
 
 McQuickBoot::McQuickBoot(QObject *parent)
     : QObject(parent)
@@ -36,12 +50,12 @@ McQuickBoot::McQuickBoot(QObject *parent)
     MC_NEW_PRIVATE_DATA(McQuickBoot)
 }
 
-McQuickBoot::~McQuickBoot() 
+McQuickBoot::~McQuickBoot()
 {
     qDebug() << "~McQuickBoot";
 }
 
-void McQuickBoot::init(QCoreApplication *app, QQmlApplicationEngine *engine) noexcept 
+void McQuickBoot::init(QCoreApplication *app, QQmlApplicationEngine *engine) noexcept
 {
     if(mcQuickBootStaticData->preInitFunc) {
         mcQuickBootStaticData->preInitFunc(app);
@@ -68,6 +82,10 @@ void McQuickBoot::init(QCoreApplication *app, QQmlApplicationEngine *engine) noe
     auto requestor = appCtx->getBean<McQmlRequestor>("requestor");
     requestor->setControllerContainer(controllerContainer);
     requestor->setSocketContainer(socketContainer);
+    
+    boot->d->requestor = appCtx->getBean<McQmlRequestor>("requestor");
+    boot->d->requestor->setControllerContainer(controllerContainer);
+    boot->d->requestor->setSocketContainer(socketContainer);
     
     //! engine的newQObject函数会将其参数所有权转移到其返回的QJSValue中
     QJSValue jsObj = engine->newQObject(requestor.data());
@@ -145,6 +163,15 @@ void McQuickBoot::setAfterInitFunc(const function<void(QCoreApplication *, QQmlA
     mcQuickBootStaticData->afterInitFunc = func;
 }
 
+McQmlRequestorPtr McQuickBoot::requestor() noexcept
+{
+    McQuickBootPtr &boot = mcQuickBootStaticData->boot;
+    if(boot.isNull()) {
+        return McQmlRequestorPtr();
+    }
+    return boot->d->requestor;
+}
+
 void McQuickBoot::initBoot(QQmlEngine *engine) noexcept 
 {
     if (d->context) {
@@ -160,7 +187,7 @@ void McQuickBoot::initBoot(QQmlEngine *engine) noexcept
     d->context->refresh();  //!< 预加载bean
 }
 
-QSharedPointer<IMcApplicationContext> McQuickBoot::getApplicationContext() const noexcept 
+IMcApplicationContextPtr McQuickBoot::getApplicationContext() const noexcept 
 {
     return d->context;
 }

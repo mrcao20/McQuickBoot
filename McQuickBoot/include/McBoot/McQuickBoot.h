@@ -1,6 +1,6 @@
 #pragma once
 
-#include "McBootGlobal.h"
+#include "IMcQuickBoot.h"
 
 #include <functional>
 
@@ -10,6 +10,10 @@
 
 #include "Application/McSingleApplication.h"
 #include "Application/McSingleCoreApplication.h"
+#include "McBoot/Requestor/McQmlRequestor.h"
+
+//! 此宏所对应的对象将在Application析构时销毁，所以一旦Application开始析构，就再也不要调用此宏
+#define $ McQuickBoot::requestor()
 
 QT_BEGIN_NAMESPACE
 class QQuickView;
@@ -21,9 +25,10 @@ MC_FORWARD_DECL_PRIVATE_DATA(McQuickBoot);
 
 using std::function;
 
-class MCQUICKBOOT_EXPORT McQuickBoot : public QObject 
+class MCQUICKBOOT_EXPORT McQuickBoot : public QObject, public IMcQuickBoot
 {
     Q_OBJECT
+    MC_DECL_INIT(McQuickBoot)
 public:
     explicit McQuickBoot(QObject *parent = nullptr);
     ~McQuickBoot() override;
@@ -34,6 +39,8 @@ public:
     
     static void setPreInitFunc(const function<void(QCoreApplication *)> &func) noexcept;
     static void setAfterInitFunc(const function<void(QCoreApplication *, QQmlApplicationEngine *)> &func) noexcept;
+    
+    static McQmlRequestorPtr requestor() noexcept;
     
     template<typename T = QGuiApplication>
     static int run(int argc, char *argv[], const QString &path = "qrc:/main.qml") noexcept;
@@ -52,7 +59,7 @@ public:
  
     void initBoot(QQmlEngine *engine) noexcept;
     
-    IMcApplicationContextPtr getApplicationContext() const noexcept;
+    IMcApplicationContextPtr getApplicationContext() const noexcept override;
     
     //! 获取所有被Component标记的bean
     QList<QString> getAllComponent() noexcept;

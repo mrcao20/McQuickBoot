@@ -11,6 +11,7 @@ class McSelectParser : public McAbstractParser
     MC_DECL_INIT(McSelectParser)
 public:
     Q_INVOKABLE McSelectParser() noexcept;
+    ~McSelectParser() override;
     
 protected:
     IMcSqlSlot *createSqlSlot(const char *tag) noexcept override;

@@ -1,10 +1,12 @@
 #pragma once
 
 #include <functional>
+#include <mutex>
 
 #include <QSharedPointer>
 #include <QObject>
 #include <QEvent>
+#include <QtCore/qmutex.h>
 
 #include "McVersion.h"
 #include "BeanFactory/McBeanGlobal.h"
@@ -17,6 +19,35 @@ class McGlobal
 {
     MC_DECL_INIT(McGlobal)
 };
+
+template <typename Mutex, typename Lock =
+#if defined(__cpp_guaranteed_copy_elision) && __cpp_guaranteed_copy_elision >= 201606L
+# if defined(__cpp_lib_scoped_lock) && __cpp_lib_scoped_lock >= 201703L
+          std::scoped_lock
+# else
+          std::lock_guard
+# endif
+#else
+          std::unique_lock
+#endif
+          <typename std::decay<Mutex>::type>
+>
+Lock mc_scoped_lock(Mutex &mutex)
+{
+    return Lock(mutex);
+}
+
+template <typename Mutex, typename Lock = std::unique_lock<typename std::decay<Mutex>::type>>
+Lock mc_unique_lock(Mutex &mutex)
+{
+    return Lock(mutex);
+}
+
+template <typename Mutex, typename Lock = std::unique_lock<typename std::decay<Mutex>::type>>
+Lock mc_unique_lock(Mutex *mutex)
+{
+    return mutex ? Lock(*mutex) : Lock() ;
+}
 
 }
 
@@ -43,6 +74,12 @@ private:
 };
 
 namespace Mc {
+
+enum class RoutinePriority : int {
+    Min = -10,
+    Normal = 0,
+    Max = 10
+};
 
 template<typename Container>
 bool isContains(int index, const Container &container) {
@@ -83,5 +120,10 @@ MCIOC_EXPORT QList<QString> getComponents(IMcApplicationContextConstPtrRef appCt
 MCIOC_EXPORT bool isComponent(const QMetaObject *metaObj) noexcept;
 //! 传入的元对象的组件类型是否为type
 MCIOC_EXPORT bool isComponentType(const QMetaObject *metaObj, const QString &type) noexcept;
+
+using StartUpFunction = std::function<void()>;
+using CleanUpFunction = std::function<void()>;
+MCIOC_EXPORT void addPreRoutine(RoutinePriority priority, const StartUpFunction &func) noexcept;
+MCIOC_EXPORT void addPostRoutine(RoutinePriority priority, const CleanUpFunction &func) noexcept;
 
 }

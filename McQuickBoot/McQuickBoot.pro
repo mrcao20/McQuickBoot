@@ -28,12 +28,26 @@ include($$PWD/../common.pri)
 include($$PWD/McQuickBoot.pri)
 include($$PWD/McQuickBootDepend.pri)
 
-unix {
-    target.path = /usr/lib
-    INSTALLS += target
-}
-
 DESTDIR = $$PWD/../bin
 MOC_DIR = $$PWD/../moc/McQuickBoot
 
 INCLUDEPATH += $$PWD/../moc/McQuickBoot
+
+unix {
+    target.path = /usr/lib
+    INSTALLS += target
+} else:win32 {
+    include_target.path = $$[QT_INSTALL_HEADERS]
+    include_target.files = $$PWD/include/*
+    
+    bin_target.path = $$[QT_INSTALL_BINS]
+    bin_target.files = $$DESTDIR/$${TARGET}.dll
+    
+    lib_target.path = $$[QT_INSTALL_LIBS]
+    lib_target.files = $$DESTDIR/$${TARGET}.lib $$DESTDIR/$${TARGET}.pdb
+    
+    module_target.path = $$[QT_INSTALL_PREFIX]/mkspecs/modules
+    module_target.files = $$PWD/../modules/qt_lib_mcquickboot.pri
+    
+    INSTALLS += include_target bin_target lib_target module_target
+}

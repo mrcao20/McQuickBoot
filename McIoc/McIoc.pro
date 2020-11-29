@@ -26,14 +26,28 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-unix {
-    target.path = /usr/lib
-    INSTALLS += target
-}
-
 include($$PWD/../common.pri)
 include($$PWD/McIoc.pri)
 include($$PWD/McIocDepend.pri)
 
 DESTDIR = $$PWD/../bin
 MOC_DIR = $$PWD/../moc/McIoc
+
+unix {
+    target.path = /usr/lib
+    INSTALLS += target
+} else:win32 {
+    include_target.path = $$[QT_INSTALL_HEADERS]
+    include_target.files = $$PWD/include/*
+    
+    bin_target.path = $$[QT_INSTALL_BINS]
+    bin_target.files = $$DESTDIR/$${TARGET}.dll
+    
+    lib_target.path = $$[QT_INSTALL_LIBS]
+    lib_target.files = $$DESTDIR/$${TARGET}.lib $$DESTDIR/$${TARGET}.pdb
+    
+    module_target.path = $$[QT_INSTALL_PREFIX]/mkspecs/modules
+    module_target.files = $$PWD/../modules/qt_lib_mcioc.pri
+    
+    INSTALLS += include_target bin_target lib_target module_target
+}

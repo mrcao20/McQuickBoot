@@ -8,7 +8,7 @@ QT_BEGIN_NAMESPACE
 class QMetaMethod;
 QT_END_NAMESPACE
 
-MC_FORWARD_DECL_CLASS(McQuickBoot)
+MC_FORWARD_DECL_CLASS(IMcQuickBoot)
 MC_FORWARD_DECL_STRUCT(McSequentialMetaId)
 MC_FORWARD_DECL_STRUCT(McAssociativeMetaId)
 
@@ -26,7 +26,7 @@ public:
 	Q_INVOKABLE explicit McControllerContainer(QObject *parent = nullptr);
 	~McControllerContainer() override;
 
-    void init(McQuickBootConstPtrRef boot) noexcept;
+    void init(IMcQuickBootConstPtrRef boot) noexcept;
     
     QVariant invoke(const QString &uri, const QVariant &body) noexcept override;
     QVariant invoke(const QString &uri) noexcept override;

@@ -13,6 +13,7 @@ MC_PADDING_CLANG(7)
 bool isSyncCall{false};         // 是否让线程回到主线程再执行callback，默认不需要
 QJSValue callback;
 QVariant body;
+std::function<void(const QVariant &)> innerCallback;
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McQmlResponse)
@@ -60,6 +61,20 @@ McQmlResponse *McQmlResponse::syncThen(const QJSValue &callback) noexcept
     return this;
 }
 
+McQmlResponse *McQmlResponse::then(const std::function<void(const QVariant &)> &callback) noexcept
+{
+    d->innerCallback = callback;
+    d->isSyncCall = false;
+    return this;
+}
+
+McQmlResponse *McQmlResponse::syncThen(const std::function<void(const QVariant &)> &callback) noexcept
+{
+    d->innerCallback = callback;
+    d->isSyncCall = true;
+    return this;
+}
+
 void McQmlResponse::customEvent(QEvent *event) 
 {
     if(event->type() == QEvent::Type::User + 1) {
@@ -73,6 +88,12 @@ void McQmlResponse::callCallback() noexcept
         this->deleteLater();
     });
     Q_UNUSED(func)
+    
+    if(d->innerCallback) {
+        d->innerCallback(d->body);
+        return;
+    }
+    
     if(!d->callback.isCallable()) {
         return;
     }

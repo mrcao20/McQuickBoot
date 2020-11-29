@@ -2,7 +2,6 @@
 
 #include <QMetaMethod>
 #include <QSqlQuery>
-#include <QSqlDatabase>
 #include <QDebug>
 
 #include <McIoc/BeanFactory/impl/McMetaTypeId.h>
@@ -16,10 +15,6 @@ McSelectSqlSlot::McSelectSqlSlot(QObject *parent) noexcept
 
 void McSelectSqlSlot::query(void **args, const QMetaMethod &sig, const QByteArray &additionalInfo) noexcept
 {
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName(R"(E:\Code\QtCreator\McQuickBoot\Examples\OrmTest\d_orm_test.db)");
-    qDebug() << db.open();
-    
     if(!additionalInfo.isEmpty()) {
         qDebug() << "additionalInfo is not empty";
         return;

@@ -16,8 +16,8 @@ class %{CN} : public QObject
     MC_DECL_INIT(%{CN})
     MC_DEFINE_TYPELIST();
 public:
-    explicit %{CN}(QObject *parent = nullptr);
-    ~%{CN}();
+    Q_INVOKABLE explicit %{CN}(QObject *parent = nullptr);
+    ~%{CN}() override;
 	
 private:
     MC_DECL_PRIVATE(%{CN})

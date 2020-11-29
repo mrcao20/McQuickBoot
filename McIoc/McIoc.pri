@@ -40,6 +40,8 @@ HEADERS += \
     $$PWD/include/McIoc/Slot/IMcSlot.h \
     $$PWD/include/McIoc/Thread/IMcDeleteThreadWhenQuit.h \
     $$PWD/include/McIoc/Thread/impl/McDefaultDeleteThreadWhenQuit.h \
+    $$PWD/include/McIoc/Utils/Macro/MacroFillingFunc.h \
+    $$PWD/include/McIoc/Utils/Macro/MacroSize.h \
     $$PWD/include/McIoc/Utils/McScopedFunction.h \
     $$PWD/include/McIoc/McGlobal.h \
     $$PWD/include/McIoc/McMacroGlobal.h \
