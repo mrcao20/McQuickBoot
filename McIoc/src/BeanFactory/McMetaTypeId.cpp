@@ -14,7 +14,7 @@ McPointerType McMetaTypeId::qobjectPointerIds() noexcept
 
 void McMetaTypeId::addQObjectPointerIds(int id, int sharedId) noexcept
 {
-    auto ids = mcQObjectPointerIds();
+    McPointerType *ids = mcQObjectPointerIds;
     if(ids->contains(id)) {
         return;
     }
@@ -31,7 +31,7 @@ McPointerType McMetaTypeId::sharedPointerIds() noexcept
 
 void McMetaTypeId::addSharedPointerId(int id, int qobjectId) noexcept
 {
-    auto ids = mcSharedPointerIds();
+    McPointerType *ids = mcSharedPointerIds;
     if(ids->contains(id)) {
         return;
     }
@@ -48,7 +48,7 @@ McSequentialType McMetaTypeId::sequentialIds() noexcept
 
 void McMetaTypeId::addSequentialId(int id, int valueId) noexcept
 {
-    auto ids = mcSequentialIds();
+    McSequentialType *ids = mcSequentialIds;
     if(ids->contains(id)) {
         return;
     }
@@ -65,7 +65,7 @@ McAssociativeType McMetaTypeId::associativeIds() noexcept
 
 void McMetaTypeId::addAssociativeId(int id, int keyId, int valueId) noexcept
 {
-    auto ids = mcAssociativeIds();
+    McAssociativeType *ids = mcAssociativeIds;
     if(ids->contains(id)) {
         return;
     }

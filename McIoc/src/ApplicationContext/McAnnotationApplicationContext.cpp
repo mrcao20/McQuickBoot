@@ -13,7 +13,7 @@
 MC_DECL_PRIVATE_DATA(McAnnotationApplicationContext)
 MC_DECL_PRIVATE_DATA_END
 
-/// 用来保存需要自动注入的bean的beanName和BeanDefinition
+//! 用来保存需要自动注入的bean的beanName和BeanDefinition
 typedef QHash<QString, IMcBeanDefinitionPtr> McBeanDefinitionContainter; 
 Q_GLOBAL_STATIC(McBeanDefinitionContainter, mcAutowiredRegistry)
 
@@ -42,7 +42,7 @@ McAnnotationApplicationContext::McAnnotationApplicationContext(QObject *parent)
     //! 确保只会被调用一次，并且调用时间在QCoreApplication之后
     //! C++11之后编译器必须保证静态局部变量的初始化的线程安全性
     static int init = [](){
-        auto ar = mcAutowiredRegistry();
+        McBeanDefinitionContainter *ar = mcAutowiredRegistry;
         auto qobjectMetaTypeIds = McMetaTypeId::qobjectPointerIds();
         for(auto type : qobjectMetaTypeIds.keys()) {
             Q_ASSERT_X(QMetaType::isRegistered(type), "McAnnotationApplicationContext", "type not registered");
@@ -141,7 +141,7 @@ void McAnnotationApplicationContext::insertRegistry(const QString &typeName) noe
         beanName = classInfo.value();
     }
     
-    auto ar = mcAutowiredRegistry();
+    McBeanDefinitionContainter *ar = mcAutowiredRegistry;
     auto beanDefinition = (*ar)[beanName];
     if(!beanDefinition) {
         beanDefinition = McRootBeanDefinitionPtr::create();
@@ -165,7 +165,7 @@ void McAnnotationApplicationContext::addConnect(
         , const QString &slot
         , Qt::ConnectionType type) noexcept 
 {
-    auto ar = mcAutowiredRegistry();
+    McBeanDefinitionContainter *ar = mcAutowiredRegistry;
     auto beanDefinition = (*ar)[beanName];
     if(!beanDefinition) {
         beanDefinition = McRootBeanDefinitionPtr::create();
