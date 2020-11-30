@@ -26,9 +26,11 @@ static QBasicMutex globalRoutinesMutex;
 
 static int GlobalStaticInit = [](){
     qAddPreRoutine([](){
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
         if(!preRFuncs.exists()) {
             return;
         }
+#endif
         StartUpFuncs funcs;
         {
             const auto locker = mc_scoped_lock(globalRoutinesMutex);
@@ -43,9 +45,11 @@ static int GlobalStaticInit = [](){
         }
     });
     qAddPostRoutine([](){
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
         if(!postRFuncs.exists()) {
             return;
         }
+#endif
         forever {
             VFuncs funcs;
             {
@@ -328,7 +332,7 @@ bool isComponentType(const QMetaObject *metaObj, const QString &type) noexcept
 
 void addPreRoutine(RoutinePriority priority, const StartUpFunction &func) noexcept
 {
-    McPrivate::StartUpFuncs *funcs = McPrivate::preRFuncs();
+    McPrivate::StartUpFuncs *funcs = McPrivate::preRFuncs;
     if(!funcs) {
         return;
     }
@@ -341,7 +345,7 @@ void addPreRoutine(RoutinePriority priority, const StartUpFunction &func) noexce
 
 void addPostRoutine(RoutinePriority priority, const CleanUpFunction &func) noexcept
 {
-    McPrivate::VFuncs *funcs = McPrivate::postRFuncs();
+    McPrivate::VFuncs *funcs = McPrivate::postRFuncs;
     if(!funcs) {
         return;
     }
