@@ -1,5 +1,7 @@
 #include "McLog/Appender/Decorator/McAppenderPostDecorator.h"
 
+#include "McLog/Appender/Decorator/McAppenderSeparator.h"
+
 MC_INIT(McAppenderPostDecorator)
 MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(McAppenderPostDecorator))
 MC_INIT_END
@@ -17,10 +19,8 @@ McAppenderPostDecorator::~McAppenderPostDecorator()
 {
 }
 
-void McAppenderPostDecorator::append(QtMsgType type, const QMessageLogContext &context, const QString &str) noexcept
+void McAppenderPostDecorator::doAppend(IMcConfigurableAppenderConstPtrRef appender, QtMsgType type, const QMessageLogContext &context, const QString &str) noexcept
 {
-    for(auto appender : appenders()) {
-        appender->append(type, context, str);
-        appender->append(type, context, separator());
-    }
+    appender->append(type, context, str);
+    writeSeparator(appender, type, context);
 }

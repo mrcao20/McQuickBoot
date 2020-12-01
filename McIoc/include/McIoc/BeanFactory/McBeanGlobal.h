@@ -55,8 +55,7 @@ struct McTypeList<T, U...>
 };
 
 // 针对空list的特化
-template <>
-struct McTypeList<> {};
+template <> struct McTypeList<> {};
 
 template<typename From, typename To>
 struct McRegisterConverterHelper 

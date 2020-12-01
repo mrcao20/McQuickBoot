@@ -10,7 +10,6 @@ MC_FORWARD_DECL_PRIVATE_DATA(Test);
 class Test : public QObject
 {
     Q_OBJECT
-    MC_DECL_INIT(Test)
     MC_DEFINE_TYPELIST();
     MC_CONTROLLER
     MC_BEANNAME("aaa")

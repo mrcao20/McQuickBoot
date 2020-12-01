@@ -15,6 +15,7 @@ void McNormalLayout::finished() noexcept
 #endif
                       "%{if-warning}WARN]:    %{endif}%{if-critical}CRITICAL]:%{endif}"
                       "%{if-fatal}FATAL]:   %{endif} "
-                      "%{message}  [File:%{file}] [Line:%{line}] [Function:%{function}]";
+                      "%{message}                                                      "
+                      "[File:%{file}] [Line:%{line}] [Function:%{function}]";
     setPattern(pattern);
 }

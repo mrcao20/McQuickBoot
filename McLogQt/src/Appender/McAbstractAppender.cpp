@@ -36,17 +36,17 @@ void McAbstractAppender::setThreshold(const QString &val) noexcept
     d->types = initThreshold(d->threshold);
 }
 
+QList<QtMsgType> McAbstractAppender::types() const noexcept
+{
+    return d->types;
+}
+
 void McAbstractAppender::finished() noexcept 
 {
 }
 
 void McAbstractAppender::threadFinished() noexcept 
 {
-}
-
-QList<QtMsgType> McAbstractAppender::types() const noexcept
-{
-    return d->types;
 }
 
 QList<QtMsgType> McAbstractAppender::initThreshold(const QString &val) const noexcept 

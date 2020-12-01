@@ -75,6 +75,17 @@
     }); \
     return 0;}();
 
+#define MC_STATIC(...) \
+    namespace { \
+    static const int __Static_Code_Block__ = []() -> int { \
+        Mc::addPreRoutine(MC_ROUTINE_PRIORITY(__VA_ARGS__), [](){
+
+#define MC_STATIC_END \
+        }); \
+        return 0; \
+    }(); \
+    }
+
 
 #ifndef Q_MOC_RUN			//!< 这行语句必须加，只有包围在这行语句之中的宏才能被识别为tag
 

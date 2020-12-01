@@ -14,7 +14,8 @@ public:
     Q_INVOKABLE explicit McAppenderPostDecorator(QObject *parent = nullptr);
     ~McAppenderPostDecorator() override;
     
-    void append(QtMsgType type, const QMessageLogContext &context, const QString &str) noexcept override;
+protected:
+    void doAppend(IMcConfigurableAppenderConstPtrRef appender, QtMsgType type, const QMessageLogContext &context, const QString &str) noexcept override;
     
 private:
     MC_DECL_PRIVATE(McAppenderPostDecorator)

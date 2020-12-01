@@ -8,18 +8,13 @@
 
 #include <McIoc/McGlobal.h>
 %{JS: Cpp.openNamespaces('%{CN}')}
-MC_FORWARD_DECL_PRIVATE_DATA(%{CN});
-
-class %{CN} : public QObject
+struct %{CN} : public QObject
 {
     Q_OBJECT
-    MC_DEFINE_TYPELIST();
 public:
-    Q_INVOKABLE explicit %{CN}(QObject *parent = nullptr);
-    ~%{CN}() override;
-	
-private:
-    MC_DECL_PRIVATE(%{CN})
+    Q_INVOKABLE %{CN}() = default;
+    
+    MC_POCO_PROPERTY()
 };
 
 MC_DECL_METATYPE(%{CN})
