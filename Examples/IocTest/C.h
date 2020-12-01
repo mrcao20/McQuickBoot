@@ -38,10 +38,12 @@ public:
 };
 MC_DECL_METATYPE(IB);
 
+typedef QMap<QString, QString> StringMap;           //!< 由于QMap在Q_PROPERTY宏中有错误提示，所以这里先重定义一下
+typedef QHash<QString, RPtr> RHash;
 class C : public QObject, public IB
 {
     Q_OBJECT
-    MC_DECL_INIT(C)                     //!< 这个宏主要用来实现一个类似于java静态代码块的功能。这里只是声明，真正实现在cpp中
+//    MC_DECL_INIT(C)                     //!< 这个宏主要用来实现一个类似于java静态代码块的功能。这里只是声明，真正实现在cpp中
     //! 同理，由于C实现至IB接口，并且可能转换到IB，所以这里需要使用该宏。
     //! 这里需要使用MC_DECL_TYPELIST宏的原因在于IB继承了其他父接口，并且C也可能转换到IB的其他父接口，所以需要使用该宏额外标识。注意：IB必须使用过MC_DEFINE_TYPELIST后才能使用该宏
     //! 这里不需要额外指定QOBject，容器会自动指定。但如果C继承至其他类，比如QWidget，那么需要先使用MC_DECL_METATYPE声明QWidget，再使用MC_DEFINE_TYPELIST(QWidget, MC_DECL_TYPELIST(IB))，
@@ -53,9 +55,7 @@ class C : public QObject, public IB
     Q_PROPERTY(RPtr r MEMBER m_r)             //!< 如果外界并不需要使用对象r，则可以直接使用MEMBER形式。具体请查阅QT官方文档
     Q_PROPERTY(QList<QString> texts MEMBER m_texts)
     Q_PROPERTY(QVector<RPtr> rs MEMBER m_rs)
-    typedef QMap<QString, QString> StringMap;           //!< 由于QMap在Q_PROPERTY宏中有错误提示，所以这里先重定义一下
     Q_PROPERTY(StringMap mtexts MEMBER m_mtexts)
-    typedef QHash<QString, RPtr> RHash; 
     Q_PROPERTY(RHash hrs MEMBER m_hrs)
     Q_PROPERTY(Qt::AlignmentFlag align MEMBER m_align)
 public:

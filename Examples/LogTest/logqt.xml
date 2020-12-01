@@ -56,7 +56,10 @@
     
     <bean name="appenderDecorator" class="McAppenderPostDecorator">
         <property name="separator">
-            <value>----------------------------------</value>
+            <bean class="McAppenderSeparator">
+				<property name="separator" value="----------------------------------"></property>
+                <property name="autoSeparateInterval" value="1000"></property>
+			</bean>
         </property>
         <property name="appenders">
 			<list>

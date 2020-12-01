@@ -1,5 +1,7 @@
 #include "McBoot/McQuickBootSimple.h"
 
+#include <QDebug>
+
 #include <McIoc/ApplicationContext/impl/McAnnotationApplicationContext.h>
 #include <McIoc/BeanDefinition/IMcBeanDefinition.h>
 

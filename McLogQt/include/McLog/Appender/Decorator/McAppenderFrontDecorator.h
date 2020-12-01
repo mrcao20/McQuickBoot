@@ -14,7 +14,8 @@ public:
     Q_INVOKABLE explicit McAppenderFrontDecorator(QObject *parent = nullptr);
     ~McAppenderFrontDecorator() override;
     
-    void append(QtMsgType type, const QMessageLogContext &context, const QString &str) noexcept override;
+protected:
+    void doAppend(IMcConfigurableAppenderConstPtrRef appender, QtMsgType type, const QMessageLogContext &context, const QString &str) noexcept override;
     
 private:
     MC_DECL_PRIVATE(McAppenderFrontDecorator)

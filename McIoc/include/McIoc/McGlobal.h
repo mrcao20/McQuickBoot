@@ -75,7 +75,7 @@ private:
 
 namespace Mc {
 
-enum class RoutinePriority : int {
+enum RoutinePriority : int {
     Min = -10,
     Normal = 0,
     Max = 10
@@ -123,7 +123,7 @@ MCIOC_EXPORT bool isComponentType(const QMetaObject *metaObj, const QString &typ
 
 using StartUpFunction = std::function<void()>;
 using CleanUpFunction = std::function<void()>;
-MCIOC_EXPORT void addPreRoutine(RoutinePriority priority, const StartUpFunction &func) noexcept;
-MCIOC_EXPORT void addPostRoutine(RoutinePriority priority, const CleanUpFunction &func) noexcept;
+MCIOC_EXPORT void addPreRoutine(int priority, const StartUpFunction &func) noexcept;
+MCIOC_EXPORT void addPostRoutine(int priority, const CleanUpFunction &func) noexcept;
 
 }

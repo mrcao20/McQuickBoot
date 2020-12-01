@@ -19,6 +19,8 @@ public:
      * \param val
      */
     virtual void setThreshold(const QString &val) noexcept = 0;
+    
+    virtual QList<QtMsgType> types() const noexcept = 0;
 };
 
 MC_DECL_METATYPE(IMcConfigurableAppender)

@@ -20,6 +20,8 @@ public:
     QString threshold() const noexcept override;
     void setThreshold(const QString &val) noexcept override;
     
+    QList<QtMsgType> types() const noexcept override;
+    
     virtual
     Q_INVOKABLE
     MC_BEAN_FINISHED
@@ -29,9 +31,6 @@ public:
     Q_INVOKABLE
     MC_THREAD_FINISHED
     void threadFinished() noexcept;
-    
-protected:
-    QList<QtMsgType> types() const noexcept;
     
 private:
     QList<QtMsgType> initThreshold(const QString &val) const noexcept;

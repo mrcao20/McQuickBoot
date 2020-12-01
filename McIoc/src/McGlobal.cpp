@@ -18,9 +18,9 @@
 
 namespace McPrivate {
 
-using StartUpFuncs = QMap<Mc::RoutinePriority, QVector<Mc::StartUpFunction>>;
+using StartUpFuncs = QMap<int, QVector<Mc::StartUpFunction>>;
 Q_GLOBAL_STATIC(StartUpFuncs, preRFuncs)
-using VFuncs = QMap<Mc::RoutinePriority, QVector<Mc::CleanUpFunction>>;
+using VFuncs = QMap<int, QVector<Mc::CleanUpFunction>>;
 Q_GLOBAL_STATIC(VFuncs, postRFuncs)
 static QBasicMutex globalRoutinesMutex;
 
@@ -330,7 +330,7 @@ bool isComponentType(const QMetaObject *metaObj, const QString &type) noexcept
 	return false;
 }
 
-void addPreRoutine(RoutinePriority priority, const StartUpFunction &func) noexcept
+void addPreRoutine(int priority, const StartUpFunction &func) noexcept
 {
     McPrivate::StartUpFuncs *funcs = McPrivate::preRFuncs;
     if(!funcs) {
@@ -343,7 +343,7 @@ void addPreRoutine(RoutinePriority priority, const StartUpFunction &func) noexce
     (*funcs)[priority].prepend(func);
 }
 
-void addPostRoutine(RoutinePriority priority, const CleanUpFunction &func) noexcept
+void addPostRoutine(int priority, const CleanUpFunction &func) noexcept
 {
     McPrivate::VFuncs *funcs = McPrivate::postRFuncs;
     if(!funcs) {

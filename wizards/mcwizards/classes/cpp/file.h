@@ -21,7 +21,6 @@ class %{CN}
 @endif
 {
      Q_OBJECT
-	 MC_DECL_INIT(%{CN})
 	 MC_DEFINE_TYPELIST();
 public:
 @if '%{Base}' === 'QObject'
