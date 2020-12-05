@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+    <!-- name为IOC中使用过的对象名，class为对象类型 -->
+    <bean name="r" class="R">
+        <property name="text" value="test r" />
+    </bean>
+    <bean name="c" class="C">
+        <connect sender=" this">
+            <signal>signal_send()</signal>
+            <receiver name="r"></receiver>
+            <slot name="slot_recv()"></slot>
+            <type>DirectConnection | UniqueConnection</type>
+        </connect>
+        <property name="text">
+            <value>test c</value>
+        </property>
+        <property name="r" ref="r"></property>
+        <property name="texts">
+            <list>
+                <value>停封</value>
+                <value>薄纸</value>
+                <value>关系</value>
+            </list>
+        </property>
+        <property name="rs">
+            <!-- 都是用list标签 -->
+            <list>
+                <!-- 可以引入不同的对象，这里测试引入同一个对象 -->
+                <ref bean="r"></ref>
+                <ref>r</ref>
+                <ref>r</ref>
+            </list>
+        </property>
+        <property name="mtexts">
+            <map>
+                <entry key="jack" value="杰克"></entry>
+                <entry>
+                    <key><value>rose</value></key>
+                    <value>肉丝</value>
+                </entry>
+            </map>
+        </property>
+        <property name="hrs">
+            <!-- 同list -->
+            <map>
+                <entry>
+                    <key><value>jack</value></key>
+                    <value><ref>r</ref></value>
+                </entry>
+                <entry>
+                    <key><value>rose</value></key>
+                    <value><ref>r</ref></value>
+                </entry>
+            </map>
+        </property>
+    </bean>
+</beans>

@@ -1,0 +1,25 @@
+logger:
+    default:
+        threshold: "debug-"
+        appender:
+            file:
+                threshold: "debug-"
+                immediateFlush: true
+                maxFileSize: "1KB"
+                backupDirPath: "./log/rollingFile/backup/"
+                backupDirPattern: "%{time yyyy-MM-dd}"
+                dirPath: "./log/rollingFile/"
+                fileNamePattern: "log_%{time yyyy-MM-dd_hh-mm-ss}.log"
+            console:
+                immediateFlush: true
+        
+    Lidar[0]:
+        threshold: "warn-"
+        appender:
+            file:
+                maxFileSize: "30KB"
+                backupDirPath: "./Lidar[0]/backup/"
+                backupDirPattern: "%{time yyyy-MM-dd}"
+                dirPath: "./Lidar[0]/"
+                fileNamePattern: "Lidar[0]_%{time yyyy-MM-dd_hh-mm-ss}.log"
+        

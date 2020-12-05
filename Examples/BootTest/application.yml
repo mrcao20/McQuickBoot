@@ -1,0 +1,24 @@
+boot: 
+    application: 
+        person: 
+            lastName: hello
+            age: 18
+            boss: false
+            maps: 
+                - k1: 
+                    name: d1
+                    age: 1
+                - k2: 
+                    name: d2
+                    age: 2
+            lists: 
+                - name: d3
+                  age: 3
+                - name: d4
+                  age: 4
+            dog: 
+                name: dd
+                age: 10
+        requestor: 
+            maxThreadCount: 10
+        

@@ -167,5 +167,3 @@ $的所有请求(get/post/qs)全部需要使用syncThen方式，否则会出现�
 # 联系方式
 QQ: 839566521  
 email: mrcao20@163.com(或QQ邮箱)
-   
-   
