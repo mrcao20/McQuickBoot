@@ -90,47 +90,7 @@ void McQuickBoot::init(QCoreApplication *app, QQmlApplicationEngine *engine) noe
     //! engine的newQObject函数会将其参数所有权转移到其返回的QJSValue中
     QJSValue jsObj = engine->newQObject(requestor.data());
     engine->globalObject().setProperty("$", jsObj);
-    QString data = R"(
-       $.__proto__.get = function(uri) {
-           return $.invoke(uri);
-       }
-       
-       $.__proto__.post = function(uri, body) {
-           return $.invoke(uri, body);
-       }
-       
-       $.__proto__.qs = function(uri, data) {
-           if(data === undefined) {
-               return $.addConnect(uri);
-           }else{
-               return $.addConnect(uri, data);
-           }
-       }
-       String.prototype.format = function(args) {
-           if(arguments.length <= 0) {
-               return this;
-           }
-
-           var result = this;
-           if(arguments.length == 1 && typeof(args) == 'object') {
-               for(var key in args) {
-                   if(args[key] !== undefined) {
-                       var reg = new RegExp('({' + key + '})', 'g');
-                       result = result.replace(reg, args[key]);
-                   }
-               }
-           }else{
-               for(var i = 0; i < arguments.length; ++i) {
-                   if(arguments[i] !== undefined) {
-                       reg = new RegExp('({)' + i + '(})', 'g');
-                       result = result.replace(reg, arguments[i]);
-                   }
-               }
-           }
-           return result;
-       }
-    )";
-    engine->evaluate(data);
+    engine->importModule(":/requestor.js.inl");
     
     if(mcQuickBootStaticData->afterInitFunc) {
         mcQuickBootStaticData->afterInitFunc(app, engine);

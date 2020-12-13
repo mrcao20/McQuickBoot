@@ -26,11 +26,6 @@ static QBasicMutex globalRoutinesMutex;
 
 static int GlobalStaticInit = [](){
     qAddPreRoutine([](){
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-        if(!preRFuncs.exists()) {
-            return;
-        }
-#endif
         StartUpFuncs funcs;
         {
             const auto locker = mc_scoped_lock(globalRoutinesMutex);
@@ -43,13 +38,9 @@ static int GlobalStaticInit = [](){
                 list.at(j)();
             }
         }
+        Q_QGS_preRFuncs::guard.storeRelaxed(QtGlobalStatic::Initialized);
     });
     qAddPostRoutine([](){
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-        if(!postRFuncs.exists()) {
-            return;
-        }
-#endif
         forever {
             VFuncs funcs;
             {
@@ -67,6 +58,7 @@ static int GlobalStaticInit = [](){
                 }
             }
         }
+        Q_QGS_postRFuncs::guard.storeRelaxed(QtGlobalStatic::Initialized);
     });
     return 0;
 }();

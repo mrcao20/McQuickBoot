@@ -47,3 +47,6 @@ HEADERS +=  \
     $$PWD/include/McBoot/Utils/McJsonUtils.h \
     $$PWD/include/McBoot/BeanDefinitionReader/impl/McConfigurationFileBeanDefinitionReader.h \
     $$PWD/include/McBoot/Configuration/McQmlRequestorConfig.h
+
+RESOURCES += \
+    $$PWD/qrc/resource.qrc

@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>requestor.js.inl</file>
+    </qresource>
+</RCC>
