@@ -30,7 +30,7 @@ MC_REGISTER_CONTAINER_CONVERTER(QList<QString>);    //!< 容器需要额外注�
 MC_REGISTER_LIST_CONVERTER(QVector<RPtr>);  //!< 和MC_REGISTER_CONTAINER_CONVERTER效果一样
 MC_REGISTER_MAP_CONVERTER(StringMap);       //!< 重定义之后需要使用重定义之后的类型
 MC_REGISTER_CONTAINER_CONVERTER(RHash);     //!< 和MC_REGISTER_MAP_CONVERTER效果一样
-mcConnect("c", "this", "signal_send()", "r", "slot_recv()");
+Mc::Ioc::connect("c", "this", "signal_send()", "r", "slot_recv()");
 //!< 可以做更多事情，此代码块中的功能将在main函数之前被调用，以后可能会在QCoreApplication构造时调用
 //!< 所以建议其他正常操作都放在QCoreApplication构造后
 MC_DESTROY()

@@ -10,7 +10,6 @@ class MCIOC_EXPORT McAbstractBeanFactory
         , public IMcConfigurableBeanFactory
         , public IMcBeanReferenceResolver 
 {
-    
     Q_OBJECT
 public:
     using IMcBeanFactory::getBean;

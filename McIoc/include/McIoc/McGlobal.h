@@ -126,4 +126,16 @@ using CleanUpFunction = std::function<void()>;
 MCIOC_EXPORT void addPreRoutine(int priority, const StartUpFunction &func) noexcept;
 MCIOC_EXPORT void addPostRoutine(int priority, const CleanUpFunction &func) noexcept;
 
+namespace Ioc {
+
+MCIOC_EXPORT void connect(
+        const QString &beanName,
+        const QString &sender,
+        const QString &signal,
+        const QString &receiver,
+        const QString &slot,
+        Qt::ConnectionType type = Qt::AutoConnection) noexcept;
+
+}
+
 }

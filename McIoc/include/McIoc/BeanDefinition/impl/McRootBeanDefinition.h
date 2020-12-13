@@ -6,7 +6,6 @@ class McRootBeanDefinition
         : public QObject
         , public IMcBeanDefinition 
 {
-    
     Q_OBJECT
 public:
     QVariant getBean() const noexcept override 

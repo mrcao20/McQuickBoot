@@ -19,7 +19,7 @@ struct McQuickBootSimpleStaticData
 
 }
 
-Q_GLOBAL_STATIC(McQuickBootSimpleStaticData, mcQuickBootSimpleStaticData)
+MC_GLOBAL_STATIC(McQuickBootSimpleStaticData, mcQuickBootSimpleStaticData)
 
 MC_DECL_PRIVATE_DATA(McQuickBootSimple)
 McAnnotationApplicationContextPtr context;
@@ -58,10 +58,8 @@ void McQuickBootSimple::init() noexcept
     McQuickBootSimplePtr &boot = mcQuickBootSimpleStaticData->boot;
     if(boot->d->context.isNull()) {
         boot->d->context = McAnnotationApplicationContextPtr::create();
-#ifndef MC_NO_YAML
         auto reader = McConfigurationFileBeanDefinitionReaderPtr::create(boot->d->context);
         reader->readBeanDefinition(boot->d->context.data());
-#endif
         boot->d->context->refresh();  //!< 预加载bean
     }
     auto appCtx = boot->d->context;

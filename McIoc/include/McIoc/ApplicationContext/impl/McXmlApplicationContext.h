@@ -17,11 +17,11 @@ public:
     explicit McXmlApplicationContext(QObject *parent = nullptr);
     McXmlApplicationContext(QIODeviceConstPtrRef device, QObject *parent = nullptr);
     McXmlApplicationContext(const QList<QIODevicePtr> &devices, QObject *parent = nullptr);
-    McXmlApplicationContext(IMcBeanDefinitionReaderConstPtrRef reader
-                            , QObject *parent = nullptr);
-    McXmlApplicationContext(IMcConfigurableBeanFactoryConstPtrRef factory
-                            , IMcBeanDefinitionReaderConstPtrRef reader
-                            , QObject *parent = nullptr);
+    McXmlApplicationContext(IMcBeanDefinitionReaderConstPtrRef reader,
+                            QObject *parent = nullptr);
+    McXmlApplicationContext(IMcConfigurableBeanFactoryConstPtrRef factory,
+                            IMcBeanDefinitionReaderConstPtrRef reader,
+                            QObject *parent = nullptr);
     ~McXmlApplicationContext() override;
     
     void setDevice(QIODeviceConstPtrRef device) noexcept;

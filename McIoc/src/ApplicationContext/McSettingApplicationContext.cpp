@@ -11,15 +11,13 @@ McSettingApplicationContext::McSettingApplicationContext(QObject *parent)
 }
 
 McSettingApplicationContext::McSettingApplicationContext(
-        QSettingsConstPtrRef setting
-        , QObject *parent)
+        QSettingsConstPtrRef setting, QObject *parent)
     : McSettingApplicationContext(QList<QSettingsPtr>() << setting, parent)
 {
 }
 
 McSettingApplicationContext::McSettingApplicationContext(
-        const QList<QSettingsPtr> &settings
-        , QObject *parent)
+        const QList<QSettingsPtr> &settings, QObject *parent)
     : McSettingApplicationContext(parent)
 {
     setSettings(settings);
@@ -54,16 +52,15 @@ McSettingApplicationContext::McSettingApplicationContext(
 }
 
 McSettingApplicationContext::McSettingApplicationContext(
-        IMcBeanDefinitionReaderConstPtrRef reader
-        , QObject *parent)
+        IMcBeanDefinitionReaderConstPtrRef reader, QObject *parent)
     : McReadableApplicationContext(reader, parent)
 {
 }
 
 McSettingApplicationContext::McSettingApplicationContext(
-        IMcConfigurableBeanFactoryConstPtrRef factory
-        , IMcBeanDefinitionReaderConstPtrRef reader
-        , QObject *parent)
+        IMcConfigurableBeanFactoryConstPtrRef factory,
+        IMcBeanDefinitionReaderConstPtrRef reader,
+        QObject *parent)
     : McReadableApplicationContext(factory, reader, parent)
 {
 }

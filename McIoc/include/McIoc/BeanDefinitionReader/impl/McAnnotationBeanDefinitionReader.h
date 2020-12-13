@@ -9,7 +9,6 @@ MC_FORWARD_DECL_PRIVATE_DATA(McAnnotationBeanDefinitionReader);
 class MCIOC_EXPORT McAnnotationBeanDefinitionReader 
         : public McAbstractBeanDefinitionReader 
 {
-    
     Q_OBJECT
 public:
     McAnnotationBeanDefinitionReader(
@@ -21,10 +20,10 @@ protected:
     void doReadBeanDefinition() noexcept override;
     
 private:
-    void inject(const QString &beanName
-                , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept;
-    void injectProperty(const QMetaObject *metaObj
-                        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept;
+    void inject(const QString &beanName,
+                IMcBeanDefinitionConstPtrRef beanDefinition) noexcept;
+    void injectProperty(const QMetaObject *metaObj,
+                        IMcBeanDefinitionConstPtrRef beanDefinition) noexcept;
     
 private:
     MC_DECL_PRIVATE(McAnnotationBeanDefinitionReader)

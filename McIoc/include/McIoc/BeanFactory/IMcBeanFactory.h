@@ -21,8 +21,8 @@ public:
      */
     template<typename T>
     typename McPrivate::TypeSelector<T>::Type getBean(
-            const QString &name
-            , QThread *thread = nullptr) noexcept 
+            const QString &name,
+            QThread *thread = nullptr) noexcept 
     {
         QVariant var = getBeanToVariant(name, thread);
         return var.value<typename McPrivate::TypeSelector<T>::Type>();

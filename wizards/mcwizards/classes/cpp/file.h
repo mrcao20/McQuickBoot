@@ -21,13 +21,13 @@ class %{CN}
 @endif
 {
      Q_OBJECT
-	 MC_DEFINE_TYPELIST();
+     MC_DEFINE_TYPELIST();
 public:
 @if '%{Base}' === 'QObject'
-    Q_INVOKABLE explicit %{CN}(QObject *parent = nullptr);
+    Q_INVOKABLE explicit %{CN}(QObject *parent = nullptr) noexcept;
     ~%{CN}() override;
 @else
-    %{CN}();
+    %{CN}() noexcept;
     ~%{CN}();
 @endif
 

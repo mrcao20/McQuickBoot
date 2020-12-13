@@ -14,8 +14,8 @@ public:
     virtual bool containsBeanSelf(const QString &name) noexcept = 0;
     virtual bool isSingletonSelf(const QString &name) noexcept = 0;
     virtual void registerBeanDefinitionSelf(
-            const QString &name
-            , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept = 0;
+            const QString &name,
+            IMcBeanDefinitionConstPtrRef beanDefinition) noexcept = 0;
     virtual IMcBeanDefinitionPtr unregisterBeanDefinitionSelf(const QString &name) noexcept = 0;
     virtual QHash<QString, IMcBeanDefinitionPtr> getBeanDefinitionsSelf() noexcept = 0;
 };

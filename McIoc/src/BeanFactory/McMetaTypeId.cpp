@@ -2,10 +2,10 @@
 
 #include <QGlobalStatic>
 
-Q_GLOBAL_STATIC(McPointerType, mcQObjectPointerIds)
-Q_GLOBAL_STATIC(McPointerType, mcSharedPointerIds)
-Q_GLOBAL_STATIC(McSequentialType, mcSequentialIds)
-Q_GLOBAL_STATIC(McAssociativeType, mcAssociativeIds)
+MC_GLOBAL_STATIC(McPointerType, mcQObjectPointerIds)
+MC_GLOBAL_STATIC(McPointerType, mcSharedPointerIds)
+MC_GLOBAL_STATIC(McSequentialType, mcSequentialIds)
+MC_GLOBAL_STATIC(McAssociativeType, mcAssociativeIds)
 
 McPointerType McMetaTypeId::qobjectPointerIds() noexcept
 {

@@ -146,3 +146,7 @@
 #if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
 #define qInfo QMessageLogger(QT_MESSAGELOG_FILE, QT_MESSAGELOG_LINE, QT_MESSAGELOG_FUNC).debug
 #endif
+
+//! QT相关宏的重定义
+#define MC_GLOBAL_STATIC Q_GLOBAL_STATIC
+//!<

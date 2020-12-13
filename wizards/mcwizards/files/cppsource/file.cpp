@@ -8,7 +8,7 @@ MC_STATIC_END
 MC_DECL_PRIVATE_DATA(%{CN})
 MC_DECL_PRIVATE_DATA_END
 
-%{CN}::%{CN}(QObject *parent)
+%{CN}::%{CN}(QObject *parent) noexcept
     : QObject(parent)
 {
     MC_NEW_PRIVATE_DATA(%{CN});

@@ -80,8 +80,8 @@ bool McAbstractApplicationContext::isSingleton(const QString &name) noexcept
 }
 
 void McAbstractApplicationContext::registerBeanDefinition(
-        const QString &name
-        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept 
+        const QString &name,
+        IMcBeanDefinitionConstPtrRef beanDefinition) noexcept 
 {
     registerBeanDefinitionSelf(name, beanDefinition);
 }

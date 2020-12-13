@@ -12,8 +12,8 @@ public:
     McMap() noexcept;
     ~McMap() override;
     
-    void addContent(IMcPropertyContentConstPtrRef key
-                    , IMcPropertyContentConstPtrRef value) noexcept;
+    void addContent(IMcPropertyContentConstPtrRef key,
+                    IMcPropertyContentConstPtrRef value) noexcept;
     void addContent(const QString &key, IMcPropertyContentConstPtrRef value) noexcept;
     
     QDomElement toDomElement(QDomDocument &doc) const noexcept override;

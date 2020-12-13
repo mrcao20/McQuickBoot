@@ -9,9 +9,7 @@
 
 #include "McIoc/ApplicationContext/impl/McLocalPathApplicationContext.h"
 #include "McIoc/ApplicationContext/impl/McAnnotationApplicationContext.h"
-#ifndef MC_NO_YAML
 #include "McIoc/ApplicationContext/impl/McYamlSettingApplicationContext.h"
-#endif
 #include "IocTest.h"
 #include "InvokeTest.h"
 #include <Object.h>
@@ -78,12 +76,8 @@ int main(int argc, char *argv[])
     //! XML注入方式
 //    appCon = McLocalPathApplicationContextPtr::create(
 //                QStringList() << ":/myspring.xml" << ":/xmltest2.xml");
-#ifdef MC_NO_YAML
-    return 0;
-#else
     appCon = McYamlSettingApplicationContextPtr::create(
                 ":/ioc.yml");
-#endif
     
     appCon->refresh(t);
     auto test = appCon->getBean<IocTestPtr>("test");

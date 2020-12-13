@@ -17,8 +17,8 @@ IMcPropertyConverterPtr converter;
 MC_DECL_PRIVATE_DATA_END
 
 McDefaultBeanFactory::McDefaultBeanFactory(
-        IMcPropertyConverterConstPtrRef converter
-        , QObject *parent)
+        IMcPropertyConverterConstPtrRef converter,
+        QObject *parent)
     : McAbstractBeanFactory(parent)
 {
     MC_NEW_PRIVATE_DATA(McDefaultBeanFactory);
@@ -31,8 +31,8 @@ McDefaultBeanFactory::~McDefaultBeanFactory()
 }
 
 QVariant McDefaultBeanFactory::doCreate(
-        IMcBeanDefinitionConstPtrRef beanDefinition
-        , QThread *thread) noexcept 
+        IMcBeanDefinitionConstPtrRef beanDefinition,
+        QThread *thread) noexcept 
 {
     QVariant var;
     QObject *obj = nullptr;
@@ -109,9 +109,9 @@ void McDefaultBeanFactory::callStartFunction(QObjectConstPtrRef bean) noexcept
     callTagFunction(bean, MC_MACRO_STR(MC_BEAN_START));
 }
 
-bool McDefaultBeanFactory::addPropertyValue(QObjectConstPtrRef bean
-                      , IMcBeanDefinitionConstPtrRef beanDefinition
-                      , QVariantMap &proValues) noexcept 
+bool McDefaultBeanFactory::addPropertyValue(QObjectConstPtrRef bean,
+                                            IMcBeanDefinitionConstPtrRef beanDefinition,
+                                            QVariantMap &proValues) noexcept 
 {
     //! 循环给定 bean 的属性集合
 	auto props = beanDefinition->getProperties();
@@ -145,9 +145,9 @@ bool McDefaultBeanFactory::addPropertyValue(QObjectConstPtrRef bean
 	return true;
 }
 
-bool McDefaultBeanFactory::addObjectConnect(QObjectConstPtrRef bean
-                      , IMcBeanDefinitionConstPtrRef beanDefinition
-                      , const QVariantMap &proValues) noexcept 
+bool McDefaultBeanFactory::addObjectConnect(QObjectConstPtrRef bean,
+                                            IMcBeanDefinitionConstPtrRef beanDefinition,
+                                            const QVariantMap &proValues) noexcept 
 {
     auto connectors = beanDefinition->getConnectors();
     for(auto connector : connectors) {
@@ -207,9 +207,9 @@ bool McDefaultBeanFactory::addObjectConnect(QObjectConstPtrRef bean
     return true;
 }
 
-QObjectPtr McDefaultBeanFactory::getPropertyObject(QObjectConstPtrRef bean
-                           , const QString &proName
-                           , const QVariantMap &proValues) noexcept 
+QObjectPtr McDefaultBeanFactory::getPropertyObject(QObjectConstPtrRef bean,
+                                                   const QString &proName,
+                                                   const QVariantMap &proValues) noexcept 
 {
     QObjectPtr obj;
     if(proName == MC_THIS_TAG) {

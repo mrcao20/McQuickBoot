@@ -17,14 +17,14 @@ McMap::~McMap()
 {
 }
 
-void McMap::addContent(IMcPropertyContentConstPtrRef key
-                       , IMcPropertyContentConstPtrRef value) noexcept
+void McMap::addContent(IMcPropertyContentConstPtrRef key,
+                       IMcPropertyContentConstPtrRef value) noexcept
 {
     d->contents.insert(key, value);
 }
 
-void McMap::addContent(const QString &key
-                       , IMcPropertyContentConstPtrRef value) noexcept
+void McMap::addContent(const QString &key,
+                       IMcPropertyContentConstPtrRef value) noexcept
 {
     auto v = McValuePtr::create();
     v->setContent(key);

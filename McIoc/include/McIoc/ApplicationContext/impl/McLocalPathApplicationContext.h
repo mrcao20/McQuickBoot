@@ -5,7 +5,6 @@
 class MCIOC_EXPORT McLocalPathApplicationContext 
         : public McXmlApplicationContext 
 {
-    
     Q_OBJECT
 public:
     explicit McLocalPathApplicationContext(QObject *parent = nullptr);

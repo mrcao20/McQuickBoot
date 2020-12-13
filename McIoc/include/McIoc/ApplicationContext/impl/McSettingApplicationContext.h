@@ -18,17 +18,17 @@ public:
     explicit McSettingApplicationContext(QObject *parent = nullptr);
     McSettingApplicationContext(QSettingsConstPtrRef setting, QObject *parent = nullptr);
     McSettingApplicationContext(const QList<QSettingsPtr> &settings, QObject *parent = nullptr);
-    McSettingApplicationContext(QSettings::Format format
-                                , const QString &location
-                                , QObject *parent = nullptr);
-    McSettingApplicationContext(QSettings::Format format
-                                , const QStringList &locations
-                                , QObject *parent = nullptr);
-    McSettingApplicationContext(IMcBeanDefinitionReaderConstPtrRef reader
-                            , QObject *parent = nullptr);
-    McSettingApplicationContext(IMcConfigurableBeanFactoryConstPtrRef factory
-                            , IMcBeanDefinitionReaderConstPtrRef reader
-                            , QObject *parent = nullptr);
+    McSettingApplicationContext(QSettings::Format format,
+                                const QString &location,
+                                QObject *parent = nullptr);
+    McSettingApplicationContext(QSettings::Format format,
+                                const QStringList &locations,
+                                QObject *parent = nullptr);
+    McSettingApplicationContext(IMcBeanDefinitionReaderConstPtrRef reader,
+                                QObject *parent = nullptr);
+    McSettingApplicationContext(IMcConfigurableBeanFactoryConstPtrRef factory,
+                                IMcBeanDefinitionReaderConstPtrRef reader,
+                                QObject *parent = nullptr);
     ~McSettingApplicationContext() override;
     
     void setSetting(QSettingsConstPtrRef setting) noexcept;

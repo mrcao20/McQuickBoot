@@ -1,3 +1,7 @@
+include($$PWD/../3rdparty/yaml-cpp.pri)
+include($$PWD/../3rdparty/zlib.pri)
+include($$PWD/../3rdparty/quazip.pri)
+
 INCLUDEPATH += $$PWD/include/
 
 HEADERS += \
@@ -62,7 +66,10 @@ HEADERS += \
     $$PWD/include/McIoc/ApplicationContext/impl/McSettingApplicationContext.h \
     $$PWD/include/McIoc/ApplicationContext/impl/McIniSettingApplicationContext.h \
     $$PWD/include/McIoc/ApplicationContext/IMcRelatableApplicationContext.h \
-    $$PWD/include/McIoc/ApplicationContext/IMcConfigurableApplicationContext.h
+    $$PWD/include/McIoc/ApplicationContext/IMcConfigurableApplicationContext.h \
+    $$PWD/include/McIoc/Utils/McYaml.h \
+    $$PWD/include/McIoc/ApplicationContext/impl/McYamlSettingApplicationContext.h \
+    $$PWD/include/McIoc/Utils/Zip/McCompressor.h
 
 SOURCES += \
     $$PWD/src/ApplicationContext/McAbstractApplicationContext.cpp \
@@ -97,12 +104,7 @@ SOURCES += \
     $$PWD/src/Utils/XmlBuilder/McValue.cpp \
     $$PWD/src/BeanDefinitionReader/McSettingBeanDefinitionReader.cpp \
     $$PWD/src/ApplicationContext/McSettingApplicationContext.cpp \
-    $$PWD/src/ApplicationContext/McIniSettingApplicationContext.cpp
-
-!contains(DEFINES, MC_NO_YAML) {
-    HEADERS += $$PWD/include/McIoc/Utils/McYaml.h \
-        $$PWD/include/McIoc/ApplicationContext/impl/McYamlSettingApplicationContext.h
-
-    SOURCES += $$PWD/src/Utils/McYaml.cpp \
-        $$PWD/src/ApplicationContext/McYamlSettingApplicationContext.cpp
-}
+    $$PWD/src/ApplicationContext/McIniSettingApplicationContext.cpp \
+    $$PWD/src/Utils/McYaml.cpp \
+    $$PWD/src/ApplicationContext/McYamlSettingApplicationContext.cpp \
+    $$PWD/src/Utils/Zip/McCompressor.cpp

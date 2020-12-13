@@ -1,7 +1,5 @@
 #pragma once
 
-#ifndef MC_NO_YAML
-
 #include <McIoc/BeanDefinitionReader/impl/McAbstractBeanDefinitionReader.h>
 
 MC_FORWARD_DECL_CLASS(IMcBeanDefinition);
@@ -38,5 +36,3 @@ private:
 };
 
 MC_DECL_POINTER(McConfigurationFileBeanDefinitionReader)
-
-#endif

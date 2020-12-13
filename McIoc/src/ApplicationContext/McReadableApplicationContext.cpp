@@ -11,35 +11,33 @@ MC_DECL_PRIVATE_DATA_END
 McReadableApplicationContext::McReadableApplicationContext(QObject *parent)
     : McReadableApplicationContext(
           IMcConfigurableBeanFactoryPtr(
-              McDefaultBeanFactoryPtr::create(McDefaultPropertyConverterPtr::create()))
-          , parent)
+              McDefaultBeanFactoryPtr::create(McDefaultPropertyConverterPtr::create())), parent)
 {
 }
 
 McReadableApplicationContext::McReadableApplicationContext(
-        IMcConfigurableBeanFactoryConstPtrRef factory
-        , QObject *parent)
+        IMcConfigurableBeanFactoryConstPtrRef factory,
+        QObject *parent)
     : McAbstractApplicationContext(factory, parent)
 {
     MC_NEW_PRIVATE_DATA(McReadableApplicationContext);
 }
 
 McReadableApplicationContext::McReadableApplicationContext(
-        IMcConfigurableBeanFactoryConstPtrRef factory
-        , IMcBeanDefinitionReaderConstPtrRef reader
-        , QObject *parent)
+        IMcConfigurableBeanFactoryConstPtrRef factory,
+        IMcBeanDefinitionReaderConstPtrRef reader,
+        QObject *parent)
     : McReadableApplicationContext(factory, parent)
 {
    setReader(reader);
 }
 
 McReadableApplicationContext::McReadableApplicationContext(
-        IMcBeanDefinitionReaderConstPtrRef reader
-        , QObject *parent)
+        IMcBeanDefinitionReaderConstPtrRef reader,
+        QObject *parent)
     : McReadableApplicationContext(
-          McDefaultBeanFactoryPtr::create(McDefaultPropertyConverterPtr::create())
-          , reader
-          , parent)
+          McDefaultBeanFactoryPtr::create(McDefaultPropertyConverterPtr::create()),
+          reader, parent)
 {
 }
 

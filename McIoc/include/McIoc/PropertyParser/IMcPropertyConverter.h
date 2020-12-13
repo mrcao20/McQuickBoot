@@ -13,8 +13,8 @@ class IMcPropertyConverter
 public:
     virtual ~IMcPropertyConverter() = default;
     
-    virtual QVariant convert(IMcBeanReferenceResolver *resolver
-                             , const QVariant &value) const noexcept = 0;
+    virtual QVariant convert(IMcBeanReferenceResolver *resolver,
+                             const QVariant &value) const noexcept = 0;
 };
 
 MC_DECL_POINTER(IMcPropertyConverter)

@@ -26,14 +26,14 @@ protected:
     
 private:
     IMcBeanDefinitionPtr buildBeanDefinition(QSettingsConstPtrRef setting) noexcept;
-    void readBeanDefinitionForProperty(QSettingsConstPtrRef setting
-                                       , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept;
-    void readBeanDefinitionForProperty(const QMap<QString, QVariant> &map
-                                       , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept;
-    void readBeanDefinitionForConnect(QSettingsConstPtrRef setting
-                                      , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept;
-    void readBeanDefinitionForConnect(const QMap<QString, QVariant> &map
-                                      , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept;
+    void readBeanDefinitionForProperty(QSettingsConstPtrRef setting,
+                                       IMcBeanDefinitionConstPtrRef beanDefinition) noexcept;
+    void readBeanDefinitionForProperty(const QMap<QString, QVariant> &map,
+                                       IMcBeanDefinitionConstPtrRef beanDefinition) noexcept;
+    void readBeanDefinitionForConnect(QSettingsConstPtrRef setting,
+                                      IMcBeanDefinitionConstPtrRef beanDefinition) noexcept;
+    void readBeanDefinitionForConnect(const QMap<QString, QVariant> &map,
+                                      IMcBeanDefinitionConstPtrRef beanDefinition) noexcept;
     QVariant parseProperty(const QVariant &var) noexcept;
     QString getUnregisteredBeanName(const QString &proName, const QString &className) const noexcept;
 

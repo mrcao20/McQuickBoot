@@ -5,6 +5,9 @@
 #include <McIoc/Thread/IMcDeleteThreadWhenQuit.h>
 #endif
 
+MC_FORWARD_DECL_CLASS(IMcLogDeleter);
+MC_FORWARD_DECL_CLASS(IMcLogPackager);
+
 MC_FORWARD_DECL_PRIVATE_DATA(McLoggerRepository);
 
 class McLoggerRepository 
@@ -14,7 +17,6 @@ class McLoggerRepository
 #endif
         , public IMcLoggerRepository 
 {
-    
     Q_OBJECT
     MC_DECL_INIT(McLoggerRepository)
 #ifndef MC_NO_IOC
@@ -24,6 +26,8 @@ class McLoggerRepository
 #endif
     typedef QMap<QString, IMcLoggerPtr> LoggerMap;
     Q_PROPERTY(LoggerMap loggers READ loggers WRITE setLogger)
+    Q_PRIVATE_PROPERTY(d, IMcLogDeleterPtr logDeleter MEMBER logDeleter)
+    Q_PRIVATE_PROPERTY(d, IMcLogPackagerPtr logPackager MEMBER logPackager)
 public:
     Q_INVOKABLE McLoggerRepository();
     ~McLoggerRepository() override;

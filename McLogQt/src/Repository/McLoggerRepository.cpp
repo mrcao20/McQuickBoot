@@ -4,10 +4,14 @@
 #include <QAbstractEventDispatcher>
 
 #include "McLog/Logger/IMcLogger.h"
+#include "McLog/Utils/Deleter/IMcLogDeleter.h"
+#include "McLog/Utils/Packager/IMcLogPackager.h"
 
 MC_DECL_PRIVATE_DATA(McLoggerRepository)
 QMap<QString, IMcLoggerPtr> loggers;
 QThread *thread{nullptr};
+IMcLogDeleterPtr logDeleter;
+IMcLogPackagerPtr logPackager;
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McLoggerRepository)
@@ -72,3 +76,5 @@ void McLoggerRepository::processEvents() noexcept
 {
     d->thread->eventDispatcher()->processEvents(QEventLoop::AllEvents);
 }
+
+#include "moc_McLoggerRepository.cpp"

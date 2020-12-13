@@ -15,20 +15,20 @@ MC_DECL_PRIVATE_DATA_END
 
 //! 用来保存需要自动注入的bean的beanName和BeanDefinition
 typedef QHash<QString, IMcBeanDefinitionPtr> McBeanDefinitionContainter; 
-Q_GLOBAL_STATIC(McBeanDefinitionContainter, mcAutowiredRegistry)
+MC_GLOBAL_STATIC(McBeanDefinitionContainter, mcAutowiredRegistry)
 
 McAnnotationApplicationContext::McAnnotationApplicationContext(
-        IMcConfigurableBeanFactoryConstPtrRef factory
-        , IMcBeanDefinitionReaderConstPtrRef reader
-        , QObject *parent)
+        IMcConfigurableBeanFactoryConstPtrRef factory,
+        IMcBeanDefinitionReaderConstPtrRef reader,
+        QObject *parent)
     : McReadableApplicationContext(factory, reader, parent)
 {
     MC_NEW_PRIVATE_DATA(McAnnotationApplicationContext);
 }
 
 McAnnotationApplicationContext::McAnnotationApplicationContext(
-        IMcBeanDefinitionReaderConstPtrRef reader
-        , QObject *parent)
+        IMcBeanDefinitionReaderConstPtrRef reader,
+        QObject *parent)
     : McReadableApplicationContext(reader, parent)
 {
     MC_NEW_PRIVATE_DATA(McAnnotationApplicationContext);
@@ -158,12 +158,12 @@ void McAnnotationApplicationContext::insertRegistry(const QString &typeName) noe
 }
 
 void McAnnotationApplicationContext::addConnect(
-        const QString &beanName
-        , const QString &sender
-        , const QString &signal
-        , const QString &receiver
-        , const QString &slot
-        , Qt::ConnectionType type) noexcept 
+        const QString &beanName,
+        const QString &sender,
+        const QString &signal,
+        const QString &receiver,
+        const QString &slot,
+        Qt::ConnectionType type) noexcept 
 {
     McBeanDefinitionContainter *ar = mcAutowiredRegistry;
     auto beanDefinition = (*ar)[beanName];

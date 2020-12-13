@@ -13,8 +13,8 @@ public:
     explicit McAbstarctPropertyConverter(QObject *parent = nullptr);
     ~McAbstarctPropertyConverter() override;
     
-    QVariant convert(IMcBeanReferenceResolver *resolver
-                     , const QVariant &value) const noexcept override;
+    QVariant convert(IMcBeanReferenceResolver *resolver,
+                     const QVariant &value) const noexcept override;
     
 protected:
     IMcBeanReferenceResolver *resolver() const noexcept;

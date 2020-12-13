@@ -13,10 +13,10 @@ MC_DECL_PRIVATE_DATA(%{CN})
 MC_DECL_PRIVATE_DATA_END
 
 @if '%{Base}' === 'QObject'
-%{CN}::%{CN}(QObject *parent)
+%{CN}::%{CN}(QObject *parent) noexcept
     : QObject(parent)
 @else
-%{CN}::%{CN}()
+%{CN}::%{CN}() noexcept
 @endif
 {
     MC_NEW_PRIVATE_DATA(%{CN});

@@ -1,7 +1,5 @@
 #include "McBoot/BeanDefinitionReader/impl/McConfigurationFileBeanDefinitionReader.h"
 
-#ifndef MC_NO_YAML
-
 #include <QCoreApplication>
 #include <QMetaObject>
 #include <QMetaProperty>
@@ -234,5 +232,3 @@ QVariant McConfigurationFileBeanDefinitionReader::buildChildProperty(
     }
     return value;
 }
-
-#endif

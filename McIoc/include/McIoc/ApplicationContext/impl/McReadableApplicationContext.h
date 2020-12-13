@@ -12,13 +12,13 @@ class MCIOC_EXPORT McReadableApplicationContext
     Q_OBJECT
 public:
     explicit McReadableApplicationContext(QObject *parent = nullptr);
-    McReadableApplicationContext(IMcConfigurableBeanFactoryConstPtrRef factory
-                                 , QObject *parent = nullptr);
-    McReadableApplicationContext(IMcConfigurableBeanFactoryConstPtrRef factory
-                                 , IMcBeanDefinitionReaderConstPtrRef reader
-                                 , QObject *parent = nullptr);
-    McReadableApplicationContext(IMcBeanDefinitionReaderConstPtrRef reader
-                                 , QObject *parent = nullptr);
+    McReadableApplicationContext(IMcConfigurableBeanFactoryConstPtrRef factory,
+                                 QObject *parent = nullptr);
+    McReadableApplicationContext(IMcConfigurableBeanFactoryConstPtrRef factory,
+                                 IMcBeanDefinitionReaderConstPtrRef reader,
+                                 QObject *parent = nullptr);
+    McReadableApplicationContext(IMcBeanDefinitionReaderConstPtrRef reader,
+                                 QObject *parent = nullptr);
     ~McReadableApplicationContext() override;
     
     void readBeans() noexcept override;

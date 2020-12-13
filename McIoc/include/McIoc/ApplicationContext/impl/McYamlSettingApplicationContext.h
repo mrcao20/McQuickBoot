@@ -1,7 +1,5 @@
 #pragma once
 
-#ifndef MC_NO_YAML
-
 #include "McSettingApplicationContext.h"
 
 class MCIOC_EXPORT McYamlSettingApplicationContext 
@@ -16,5 +14,3 @@ public:
 };
         
 MC_DECL_POINTER(McYamlSettingApplicationContext)
-
-#endif

@@ -464,13 +464,13 @@ QString format(McMessagePatternPtr pattern, QtMsgType type, const QMessageLogCon
             message.append(QLatin1String(context.category));
         } else if (token == typeTokenC) {
             switch (type) {
-            case QtDebugMsg:   message.append(QLatin1String("debug")); break;
+            case QtDebugMsg:   message.append(QLatin1String("DEBUG")); break;
 #if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
-            case QtInfoMsg:    message.append(QLatin1String("info")); break;
+            case QtInfoMsg:    message.append(QLatin1String("INFO")); break;
 #endif
-            case QtWarningMsg: message.append(QLatin1String("warning")); break;
-            case QtCriticalMsg:message.append(QLatin1String("critical")); break;
-            case QtFatalMsg:   message.append(QLatin1String("fatal")); break;
+            case QtWarningMsg: message.append(QLatin1String("WARNING")); break;
+            case QtCriticalMsg:message.append(QLatin1String("CRITICAL")); break;
+            case QtFatalMsg:   message.append(QLatin1String("FATAL")); break;
             }
         } else if (token == fileTokenC) {
             if (context.file)

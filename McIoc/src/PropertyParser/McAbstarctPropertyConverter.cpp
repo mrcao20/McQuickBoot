@@ -17,8 +17,8 @@ McAbstarctPropertyConverter::~McAbstarctPropertyConverter()
 {
 }
 
-QVariant McAbstarctPropertyConverter::convert(IMcBeanReferenceResolver *resolver
-                 , const QVariant &value) const noexcept 
+QVariant McAbstarctPropertyConverter::convert(IMcBeanReferenceResolver *resolver,
+                                              const QVariant &value) const noexcept 
 {
     d->resolver = resolver;
     if(value.canConvert<McBeanReferencePtr>()) {

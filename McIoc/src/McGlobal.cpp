@@ -13,18 +13,19 @@
 #include <QMetaClassInfo>
 #include <QDebug>
 
+#include "McIoc/ApplicationContext/McContainerGlobal.h"
 #include "McIoc/BeanDefinition/IMcBeanDefinition.h"
-#include "McIoc/ApplicationContext/IMcApplicationContext.h"
 
 namespace McPrivate {
 
 using StartUpFuncs = QMap<int, QVector<Mc::StartUpFunction>>;
-Q_GLOBAL_STATIC(StartUpFuncs, preRFuncs)
+MC_GLOBAL_STATIC(StartUpFuncs, preRFuncs)
 using VFuncs = QMap<int, QVector<Mc::CleanUpFunction>>;
-Q_GLOBAL_STATIC(VFuncs, postRFuncs)
+MC_GLOBAL_STATIC(VFuncs, postRFuncs)
 static QBasicMutex globalRoutinesMutex;
 
-static int GlobalStaticInit = [](){
+int iocStaticInit()
+{
     qAddPreRoutine([](){
         StartUpFuncs funcs;
         {
@@ -60,8 +61,9 @@ static int GlobalStaticInit = [](){
         }
         Q_QGS_postRFuncs::guard.storeRelaxed(QtGlobalStatic::Initialized);
     });
-    return 0;
-}();
+    return 1;
+}
+Q_CONSTRUCTOR_FUNCTION(iocStaticInit)
 
 static const void *constData(const QVariant::Private &d)
 {
@@ -255,6 +257,7 @@ QString toAbsolutePath(const QString &path) noexcept
         }
         dstPath = url.toString();
     }
+    dstPath = QDir::cleanPath(dstPath);
     return dstPath;
 }
 
@@ -343,6 +346,20 @@ void addPostRoutine(int priority, const CleanUpFunction &func) noexcept
     }
     const auto locker = McPrivate::mc_scoped_lock(McPrivate::globalRoutinesMutex);
     (*funcs)[priority].prepend(func);
+}
+
+namespace Ioc {
+
+void connect(const QString &beanName,
+               const QString &sender,
+               const QString &signal,
+               const QString &receiver,
+               const QString &slot,
+               Qt::ConnectionType type) noexcept 
+{
+    mcConnect(beanName, sender, signal, receiver, slot, type);
+}
+
 }
 
 }

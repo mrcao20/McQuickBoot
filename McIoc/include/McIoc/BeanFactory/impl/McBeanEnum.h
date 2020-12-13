@@ -2,7 +2,8 @@
 
 #include "../../McGlobal.h"
 
-class MCIOC_EXPORT McBeanEnum : public QObject {
+class MCIOC_EXPORT McBeanEnum : public QObject
+{
     Q_OBJECT
     MC_DECL_INIT(McBeanEnum)
 public:

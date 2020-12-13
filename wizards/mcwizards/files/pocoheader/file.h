@@ -12,7 +12,7 @@ struct %{CN} : public QObject
 {
     Q_OBJECT
 public:
-    Q_INVOKABLE %{CN}() = default;
+    Q_INVOKABLE %{CN}() noexcept = default;
     
     MC_POCO_PROPERTY()
 };

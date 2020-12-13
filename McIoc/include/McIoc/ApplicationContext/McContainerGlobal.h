@@ -28,9 +28,9 @@ void mcRegisterComponent(const char *typeName, const char *constRefTypeName)
 }
 
 MCIOC_EXPORT void mcConnect(
-        const QString &beanName
-        , const QString &sender
-        , const QString &signal
-        , const QString &receiver
-        , const QString &slot
-        , Qt::ConnectionType type = Qt::AutoConnection) noexcept;
+        const QString &beanName,
+        const QString &sender,
+        const QString &signal,
+        const QString &receiver,
+        const QString &slot,
+        Qt::ConnectionType type = Qt::AutoConnection) noexcept;

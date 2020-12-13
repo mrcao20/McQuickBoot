@@ -11,8 +11,8 @@ class MCIOC_EXPORT McDefaultBeanFactory : public McAbstractBeanFactory
     Q_OBJECT
 public:
     explicit McDefaultBeanFactory(
-            IMcPropertyConverterConstPtrRef converter
-            , QObject *parent = nullptr);
+            IMcPropertyConverterConstPtrRef converter,
+            QObject *parent = nullptr);
     ~McDefaultBeanFactory() override;
     
 protected:
@@ -25,8 +25,8 @@ protected:
      * \param thread 目标线程
      * \return 包裹实例化出的bean的QVariant。可能为无效值
      */
-    QVariant doCreate(IMcBeanDefinitionConstPtrRef beanDefinition
-                      , QThread *thread) noexcept override;
+    QVariant doCreate(IMcBeanDefinitionConstPtrRef beanDefinition,
+                      QThread *thread) noexcept override;
     
 private:
     /*!
@@ -54,9 +54,9 @@ private:
      * \param proValues 获取到的属性值
      * \return 是否全部成功
      */
-    bool addPropertyValue(QObjectConstPtrRef bean
-                          , IMcBeanDefinitionConstPtrRef beanDefinition
-                          , QVariantMap &proValues) noexcept;
+    bool addPropertyValue(QObjectConstPtrRef bean,
+                          IMcBeanDefinitionConstPtrRef beanDefinition,
+                          QVariantMap &proValues) noexcept;
     
     /*!
      * \brief addObjectConnect
@@ -67,9 +67,9 @@ private:
      * \param proValues bean中的属性
      * \return 是否全部成功
      */
-    bool addObjectConnect(QObjectConstPtrRef bean
-                          , IMcBeanDefinitionConstPtrRef beanDefinition
-                          , const QVariantMap &proValues) noexcept;
+    bool addObjectConnect(QObjectConstPtrRef bean,
+                          IMcBeanDefinitionConstPtrRef beanDefinition,
+                          const QVariantMap &proValues) noexcept;
     
     /*!
      * \brief getPropertyObject
@@ -80,9 +80,9 @@ private:
      * \param proValues bean中已经注入的属性
      * \return 获取到的属性。可能为空
      */
-    QObjectPtr getPropertyObject(QObjectConstPtrRef bean
-                               , const QString &proName
-                               , const QVariantMap &proValues) noexcept;
+    QObjectPtr getPropertyObject(QObjectConstPtrRef bean,
+                                 const QString &proName,
+                                 const QVariantMap &proValues) noexcept;
     
     /*!
      * \brief callFinishedFunction

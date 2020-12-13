@@ -18,17 +18,17 @@ QList<QIODevicePtr> devices;
 MC_DECL_PRIVATE_DATA_END
 
 McXmlBeanDefinitionReader::McXmlBeanDefinitionReader(
-        IMcPropertyParserConstPtrRef parser
-        , QIODeviceConstPtrRef device
-        , QObject *parent)
+        IMcPropertyParserConstPtrRef parser,
+        QIODeviceConstPtrRef device,
+        QObject *parent)
     : McXmlBeanDefinitionReader(parser, QList<QIODevicePtr>() << device, parent)
 {
 }
 
 McXmlBeanDefinitionReader::McXmlBeanDefinitionReader(
-        IMcPropertyParserConstPtrRef parser
-        , const QList<QIODevicePtr> &devices
-        , QObject *parent)
+        IMcPropertyParserConstPtrRef parser,
+        const QList<QIODevicePtr> &devices,
+        QObject *parent)
     : McAbstractBeanDefinitionReader(parent)
 {
     MC_NEW_PRIVATE_DATA(McXmlBeanDefinitionReader);
@@ -128,8 +128,8 @@ bool McXmlBeanDefinitionReader::parseBeanClass(const QDomElement &ele, IMcBeanDe
 }
 
 void McXmlBeanDefinitionReader::readBeanDefinition(
-        const QDomNodeList &propNodes
-        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept 
+        const QDomNodeList &propNodes,
+        IMcBeanDefinitionConstPtrRef beanDefinition) noexcept 
 {
 	for (int i = 0; i < propNodes.size(); ++i) {
 		QDomElement propEle = propNodes.at(i).toElement();
@@ -144,8 +144,8 @@ void McXmlBeanDefinitionReader::readBeanDefinition(
 }
 
 void McXmlBeanDefinitionReader::readBeanDefinitionForProperty(
-        const QDomElement &propEle
-        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept 
+        const QDomElement &propEle,
+        IMcBeanDefinitionConstPtrRef beanDefinition) noexcept 
 {
     //! 获取给定元素的 name 属性
     QString propName = propEle.attribute("name");
@@ -156,8 +156,8 @@ void McXmlBeanDefinitionReader::readBeanDefinitionForProperty(
     
     QVariant value;
     QDomElement childEle;
-    if((childEle = propEle).tagName() == "bean"
-             || !(childEle = propEle.firstChildElement("bean")).isNull()) {
+    if((childEle = propEle).tagName() == "bean"||
+            !(childEle = propEle.firstChildElement("bean")).isNull()) {
         
         McBeanReferencePtr ref = McBeanReferencePtr::create();
         QString beanName = childEle.attribute("name");
@@ -202,8 +202,8 @@ void McXmlBeanDefinitionReader::readBeanDefinitionForProperty(
 }
 
 void McXmlBeanDefinitionReader::readBeanDefinitionForConnect(
-        const QDomElement &propEle
-        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept 
+        const QDomElement &propEle,
+        IMcBeanDefinitionConstPtrRef beanDefinition) noexcept 
 {
     McBeanConnectorPtr connector = McBeanConnectorPtr::create();
     connector->setSender(MC_THIS_TAG);       //!< 如果没有指定sender，则默认为对象本身

@@ -2,8 +2,6 @@
 
 #include "McIoc/Utils/McYaml.h"
 
-#ifndef MC_NO_YAML
-
 MC_INIT(McYamlSettingApplicationContext)
 MC_INIT_END
 
@@ -23,5 +21,3 @@ McYamlSettingApplicationContext::McYamlSettingApplicationContext(
     : McSettingApplicationContext(McYaml::format(), locations, parent)
 {
 }
-
-#endif

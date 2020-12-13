@@ -2,8 +2,6 @@ CONFIG += c++17
 
 # 去掉IOC容器的依赖部分
 #DEFINES += MC_NO_IOC
-# 去除yaml的依赖
-#DEFINES += MC_NO_YAML
 
 CONFIG(release, debug|release) {
     DEFINES += QT_MESSAGELOGCONTEXT

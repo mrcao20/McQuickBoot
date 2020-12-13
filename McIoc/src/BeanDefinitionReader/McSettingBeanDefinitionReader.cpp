@@ -15,15 +15,13 @@ QList<QSettingsPtr> settings;
 MC_DECL_PRIVATE_DATA_END
 
 McSettingBeanDefinitionReader::McSettingBeanDefinitionReader(
-        QSettingsConstPtrRef setting
-        , QObject *parent)
+        QSettingsConstPtrRef setting, QObject *parent)
     : McSettingBeanDefinitionReader(QList<QSettingsPtr>() << setting, parent)
 {
 }
 
 McSettingBeanDefinitionReader::McSettingBeanDefinitionReader(
-        const QList<QSettingsPtr> &settings
-        , QObject *parent)
+        const QList<QSettingsPtr> &settings, QObject *parent)
     : McAbstractBeanDefinitionReader(parent)
 {
     MC_NEW_PRIVATE_DATA(McSettingBeanDefinitionReader);
@@ -79,8 +77,8 @@ IMcBeanDefinitionPtr McSettingBeanDefinitionReader::buildBeanDefinition(QSetting
 }
 
 void McSettingBeanDefinitionReader::readBeanDefinitionForProperty(
-        QSettingsConstPtrRef setting
-        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
+        QSettingsConstPtrRef setting,
+        IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
 {
     auto pros = setting->childKeys();
     pros.removeAll(MC_QSETTING_CLASS);
@@ -116,8 +114,8 @@ void McSettingBeanDefinitionReader::readBeanDefinitionForProperty(
 }
 
 void McSettingBeanDefinitionReader::readBeanDefinitionForProperty(
-        const QMap<QString, QVariant> &map
-        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
+        const QMap<QString, QVariant> &map,
+        IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
 {
     for(auto key : map.keys()) {
         auto value = parseProperty(map.value(key));
@@ -126,8 +124,8 @@ void McSettingBeanDefinitionReader::readBeanDefinitionForProperty(
 }
 
 void McSettingBeanDefinitionReader::readBeanDefinitionForConnect(
-        QSettingsConstPtrRef setting
-        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
+        QSettingsConstPtrRef setting,
+        IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
 {
     if(!setting->contains(MC_QSETTING_CONNECTS)) {
         return;
@@ -152,8 +150,8 @@ void McSettingBeanDefinitionReader::readBeanDefinitionForConnect(
 }
 
 void McSettingBeanDefinitionReader::readBeanDefinitionForConnect(
-        const QMap<QString, QVariant> &map
-        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
+        const QMap<QString, QVariant> &map,
+        IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
 {
     if(!map.contains(MC_QSETTING_CONNECTS)) {
         return;

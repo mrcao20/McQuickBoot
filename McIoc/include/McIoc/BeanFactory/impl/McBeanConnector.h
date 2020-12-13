@@ -2,7 +2,8 @@
 
 #include "../../McGlobal.h"
 
-class MCIOC_EXPORT McBeanConnector : public QObject {
+class MCIOC_EXPORT McBeanConnector : public QObject
+{
     Q_OBJECT
     MC_DECL_INIT(McBeanConnector)
 public:
