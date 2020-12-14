@@ -2,10 +2,18 @@
 
 #include <QtCore/qglobal.h>
 
-#if defined(MCLOGQT_LIBRARY)
+#if defined (MC_BUILD_STATIC) && !defined (MC_EXPORT_DISABLE)
+#define MC_EXPORT_DISABLE
+#endif
+
+#ifndef MC_EXPORT_DISABLE
+# if defined(MCLOGQT_LIBRARY)
 #  define MCLOGQT_EXPORT Q_DECL_EXPORT
-#else
+# else
 #  define MCLOGQT_EXPORT Q_DECL_IMPORT
+# endif
+#else
+# define MCLOGQT_EXPORT
 #endif
 
 #ifdef MC_DECL_POINTER

@@ -56,19 +56,19 @@ private:
      * 
      * 初始化本地连接
      */
-	void initLocalConnection() noexcept;
+    void initLocalConnection() noexcept;
     /*!
      * \brief newLocalServer
      * 
      * 创建服务端
      */
-	void newLocalServer() noexcept;
+    void newLocalServer() noexcept;
     /*!
      * \brief activateWindow
      * 
      * 激活
      */
-	void activateWindow() noexcept;
+    void activateWindow() noexcept;
 
 private:
     MC_DECL_PRIVATE(McSingleApplication)

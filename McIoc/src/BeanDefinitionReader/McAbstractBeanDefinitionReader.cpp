@@ -9,7 +9,7 @@ IMcBeanDefinitionRegistry *registry{nullptr};
 MC_DECL_PRIVATE_DATA_END
 
 McAbstractBeanDefinitionReader::McAbstractBeanDefinitionReader(QObject *parent)
-	: QObject(parent)
+    : QObject(parent)
 {
     MC_NEW_PRIVATE_DATA(McAbstractBeanDefinitionReader);
 }

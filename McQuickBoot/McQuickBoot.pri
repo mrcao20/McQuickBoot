@@ -1,3 +1,5 @@
+QT *= quick network
+
 INCLUDEPATH += $$PWD/include/
 
 SOURCES += \

@@ -83,9 +83,9 @@ enum RoutinePriority : int {
 
 template<typename Container>
 bool isContains(int index, const Container &container) {
-	if (index >= 0 && index < container.size())
-		return true;
-	return false;
+    if (index >= 0 && index < container.size())
+        return true;
+    return false;
 }
 
 

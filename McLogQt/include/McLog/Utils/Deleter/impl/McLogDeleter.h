@@ -1,10 +1,11 @@
 #pragma once
 
 #include "../IMcLogDeleter.h"
+#include "../../../McLogGlobal.h"
 
 MC_FORWARD_DECL_PRIVATE_DATA(McLogDeleter);
 
-class McLogDeleter : public QObject, public IMcLogDeleter
+class MCLOGQT_EXPORT McLogDeleter : public QObject, public IMcLogDeleter
 {
     Q_OBJECT
     MC_DEFINE_TYPELIST(IMcLogDeleter);

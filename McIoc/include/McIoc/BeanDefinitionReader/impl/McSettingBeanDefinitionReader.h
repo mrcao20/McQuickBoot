@@ -38,7 +38,7 @@ private:
     QString getUnregisteredBeanName(const QString &proName, const QString &className) const noexcept;
 
 private:
-	MC_DECL_PRIVATE(McSettingBeanDefinitionReader)
+    MC_DECL_PRIVATE(McSettingBeanDefinitionReader)
 };
 
 MC_DECL_POINTER(McSettingBeanDefinitionReader)

@@ -20,12 +20,12 @@
 #ifdef Q_CC_GNU
 static void  __attribute__((constructor)) before(void) 
 {
-	qDebug() << "before";
+    qDebug() << "before";
 }
 
 static void  __attribute__((destructor)) after(void) 
 {
-	qDebug() << "after";
+    qDebug() << "after";
 }
 #elif Q_CC_MSVC
 //#define SECNAME ".CRT$XCG"

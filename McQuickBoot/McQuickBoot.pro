@@ -4,8 +4,6 @@
 #
 #-------------------------------------------------
 
-QT += quick network
-
 TARGET = McQuickBoot
 TARGET = $$qt5LibraryTarget($$TARGET)
 

@@ -14,7 +14,7 @@ template<typename T>
 void mcRegisterComponent(const char *typeName, const char *constRefTypeName) 
 {
     Q_ASSERT(typeName != nullptr && constRefTypeName != nullptr);
-	mcRegisterBeanFactory<T>(typeName, constRefTypeName);
+    mcRegisterBeanFactory<T>(typeName, constRefTypeName);
     McAnnotationApplicationContext::insertRegistry(typeName);
 }
 
@@ -23,7 +23,7 @@ template<typename From, typename To>
 void mcRegisterComponent(const char *typeName, const char *constRefTypeName) 
 {
     Q_ASSERT(typeName != nullptr && constRefTypeName != nullptr);
-	mcRegisterBeanFactory<From, To>(typeName, constRefTypeName);
+    mcRegisterBeanFactory<From, To>(typeName, constRefTypeName);
     McAnnotationApplicationContext::insertRegistry(typeName);
 }
 

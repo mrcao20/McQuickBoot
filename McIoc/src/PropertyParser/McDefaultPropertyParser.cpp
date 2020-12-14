@@ -52,7 +52,7 @@ QVariant McDefaultPropertyParser::parseList(const QDomElement &ele) const noexce
     
     auto childNodes = ele.childNodes();
     for(int i = 0; i < childNodes.size(); ++i) {
-		auto childEle = childNodes.at(i).toElement();
+        auto childEle = childNodes.at(i).toElement();
         if (childEle.isNull()) {
             continue;
         }
@@ -63,7 +63,7 @@ QVariant McDefaultPropertyParser::parseList(const QDomElement &ele) const noexce
             continue;
         }
         list << value;
-	}
+    }
     
     return list;
 }
@@ -72,11 +72,11 @@ QVariant McDefaultPropertyParser::parseMap(const QDomElement &ele) const noexcep
 {
     QMap<QVariant, QVariant> map;
     
-	auto childNodes = ele.childNodes();
-	for (int i = 0; i < childNodes.size(); ++i) {
-		auto ele = childNodes.at(i).toElement();
-		if (ele.isNull() || ele.tagName() != "entry")
-			continue;
+    auto childNodes = ele.childNodes();
+    for (int i = 0; i < childNodes.size(); ++i) {
+        auto ele = childNodes.at(i).toElement();
+        if (ele.isNull() || ele.tagName() != "entry")
+            continue;
         QVariant mapKey, mapValue;
         if(ele.hasAttribute("key")) {
             mapKey = ele.attribute("key");
@@ -111,7 +111,7 @@ QVariant McDefaultPropertyParser::parseMap(const QDomElement &ele) const noexcep
         if(mapKey.isValid() && mapValue.isValid()) {
             map.insert(mapKey, mapValue);
         }
-	}
+    }
     
     return QVariant::fromValue(map);
 }
@@ -182,7 +182,7 @@ QVariantList McDefaultPropertyParser::getList(const QString &dirPath) const noex
         }
         QSharedPointer<McBeanReference> beanRef = QSharedPointer<McBeanReference>::create();
         beanRef->setPluginPath(pluginPath);
-		list << QVariant::fromValue(beanRef);
+        list << QVariant::fromValue(beanRef);
     }
     
     return list;

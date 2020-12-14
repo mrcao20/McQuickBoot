@@ -35,7 +35,7 @@ McQmlSocketContainer::~McQmlSocketContainer()
 void McQmlSocketContainer::init(IMcQuickBootConstPtrRef boot) noexcept 
 {
     auto appCtx = boot->getApplicationContext();
-	auto beanNames = Mc::getComponents(appCtx, MC_QML_SOCKET_TAG);
+    auto beanNames = Mc::getComponents(appCtx, MC_QML_SOCKET_TAG);
     for (const auto &beanName : beanNames) {
         auto obj = appCtx->getBean(beanName);
         if(!obj) {

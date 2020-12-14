@@ -40,12 +40,12 @@ McLogManager *McLogManager::instance() noexcept
 
 void McLogManager::installQtMessageHandler() noexcept 
 {
-	qInstallMessageHandler(customMessageHandler);
+    qInstallMessageHandler(customMessageHandler);
 }
 
 void McLogManager::uninstallQtMessageHandler() noexcept 
 {
-	qInstallMessageHandler(nullptr);
+    qInstallMessageHandler(nullptr);
 }
 
 void McLogManager::customMessageHandler(QtMsgType msgType, const QMessageLogContext &msgLogCtx, const QString &msg) noexcept 

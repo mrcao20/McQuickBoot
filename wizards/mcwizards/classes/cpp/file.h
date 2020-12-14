@@ -32,7 +32,7 @@ public:
 @endif
 
 private:
-	MC_DECL_PRIVATE(%{CN})
+    MC_DECL_PRIVATE(%{CN})
 };
 
 MC_DECL_METATYPE(%{CN})

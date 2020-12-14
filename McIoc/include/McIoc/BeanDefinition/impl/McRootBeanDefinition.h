@@ -63,9 +63,9 @@ private:
     QVariant m_bean;                                    //!< 包含bean的QVariant。此对象不再删除该bean
     bool m_isSingleton{true};                           //!< 该bean是否是单例，默认是
     const QMetaObject *m_beanMetaObject{ nullptr };     //!< bean的MetaObject对象
-    QString m_className;								//!< bean的类全限定名称
+    QString m_className;                                //!< bean的类全限定名称
     QString m_pluginPath;                               //!< bean的插件路径
-    QVariantHash m_properties;							//!< bean的属性集合
+    QVariantHash m_properties;                            //!< bean的属性集合
     QVariantList m_connectors;                          //!< bean中需要连接的信号槽
 };
 

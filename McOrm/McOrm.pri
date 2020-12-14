@@ -1,3 +1,5 @@
+QT *= sql
+
 INCLUDEPATH += $$PWD/include/
 
 HEADERS += $$PWD/include/McOrm/McDll.h \

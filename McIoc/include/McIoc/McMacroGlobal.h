@@ -5,7 +5,11 @@
 #include "Utils/Macro/MacroSize.h"
 #include "Utils/Macro/MacroFillingFunc.h"
 
-#ifndef BUILD_STATIC
+#if defined (MC_BUILD_STATIC) && !defined (MC_EXPORT_DISABLE)
+#define MC_EXPORT_DISABLE
+#endif
+
+#ifndef MC_EXPORT_DISABLE
 # if defined(MCIOC_LIBRARY)
 #  define MCIOC_EXPORT Q_DECL_EXPORT
 # else
@@ -87,7 +91,7 @@
     }
 
 
-#ifndef Q_MOC_RUN			//!< 这行语句必须加，只有包围在这行语句之中的宏才能被识别为tag
+#ifndef Q_MOC_RUN            //!< 这行语句必须加，只有包围在这行语句之中的宏才能被识别为tag
 
 # define MC_BEAN_START      //!< 当bean被构造，但还未注入属性时调用
 # define MC_BEAN_FINISHED   //!< 当bean完全被构造完成之后调用

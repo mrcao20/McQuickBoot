@@ -135,9 +135,9 @@ McQmlRequestorPtr McQuickBoot::requestor() noexcept
 void McQuickBoot::initBoot(QQmlEngine *engine) noexcept 
 {
     if (d->context) {
-		qInfo() << "The container has been initialized";
-		return;
-	}
+        qInfo() << "The container has been initialized";
+        return;
+    }
     d->engine = engine;
     d->context = McAnnotationApplicationContextPtr::create();
     auto reader = McConfigurationFileBeanDefinitionReaderPtr::create(d->context);

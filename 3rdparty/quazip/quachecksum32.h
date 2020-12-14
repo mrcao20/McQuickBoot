@@ -54,26 +54,26 @@ class QUAZIP_EXPORT QuaChecksum32
 
 public:
     virtual ~QuaChecksum32();
-	///Calculates the checksum for data.
-	/** \a data source data
-	 * \return data checksum
-	 *
-	 * This function has no efect on the value returned by value().
-	 */
-	virtual quint32 calculate(const QByteArray &data) = 0;
+    ///Calculates the checksum for data.
+    /** \a data source data
+     * \return data checksum
+     *
+     * This function has no efect on the value returned by value().
+     */
+    virtual quint32 calculate(const QByteArray &data) = 0;
 
-	///Resets the calculation on a checksun for a stream.
-	virtual void reset() = 0;
+    ///Resets the calculation on a checksun for a stream.
+    virtual void reset() = 0;
 
-	///Updates the calculated checksum for the stream
-	/** \a buf next portion of data from the stream
-	 */
-	virtual void update(const QByteArray &buf) = 0;
+    ///Updates the calculated checksum for the stream
+    /** \a buf next portion of data from the stream
+     */
+    virtual void update(const QByteArray &buf) = 0;
 
-	///Value of the checksum calculated for the stream passed throw update().
-	/** \return checksum
-	 */
-	virtual quint32 value() = 0;
+    ///Value of the checksum calculated for the stream passed throw update().
+    /** \return checksum
+     */
+    virtual quint32 value() = 0;
 };
 
 #endif //QUACHECKSUM32_H

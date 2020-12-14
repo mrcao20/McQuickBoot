@@ -18,7 +18,7 @@ public:
     { m_pluginPath = pluginPath; }
     
 private:
-    QString m_name;						//!< 被引用bean的名称
+    QString m_name;                        //!< 被引用bean的名称
     QString m_pluginPath;               //!< 被引用的插件路径，这个参数和m_name只能有一个存在
 };
 

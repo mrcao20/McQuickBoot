@@ -41,12 +41,12 @@ void McAnnotationBeanDefinitionReader::inject(
         const QString& beanName,
         IMcBeanDefinitionConstPtrRef beanDefinition) noexcept 
 {
-	const QMetaObject *metaObj = beanDefinition->getBeanMetaObject();
-	Q_ASSERT_X(metaObj != nullptr
+    const QMetaObject *metaObj = beanDefinition->getBeanMetaObject();
+    Q_ASSERT_X(metaObj != nullptr
             , "McAnnotationBeanDefinitionReader"
                , "if you want to use declarative inject. make sure mark used MC_COMPONENT");
-	injectProperty(metaObj, beanDefinition);
-	registry()->registerBeanDefinition(beanName, beanDefinition);
+    injectProperty(metaObj, beanDefinition);
+    registry()->registerBeanDefinition(beanName, beanDefinition);
 }
 
 void McAnnotationBeanDefinitionReader::injectProperty(

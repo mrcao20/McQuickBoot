@@ -53,17 +53,17 @@ QVariant McDefaultBeanFactory::doCreate(
         obj = beanMetaObj->newInstance();
     }
     if (!obj) {
-		qCritical() << QString("bean '%1' cannot instantiation, please make sure that have a non-parameter constructor and declared by Q_INVOKABLE")
-			.arg(beanDefinition->getClassName());
-		return QVariant();
-	}
+        qCritical() << QString("bean '%1' cannot instantiation, please make sure that have a non-parameter constructor and declared by Q_INVOKABLE")
+            .arg(beanDefinition->getClassName());
+        return QVariant();
+    }
     QObjectPtr bean(obj, Mc::McCustomDeleter());
     callStartFunction(bean);    //!< 调用构造开始函数
     QVariantMap proValues;
-	if (!addPropertyValue(bean, beanDefinition, proValues)) {
-		qCritical() << QString("failed to init definition '%1'").arg(bean->metaObject()->className());
+    if (!addPropertyValue(bean, beanDefinition, proValues)) {
+        qCritical() << QString("failed to init definition '%1'").arg(bean->metaObject()->className());
         return QVariant();
-	}
+    }
     if(!addObjectConnect(bean, beanDefinition, proValues)) {
         qCritical() << QString("failed to add object connect '%1'").arg(bean->metaObject()->className());
         return QVariant();
@@ -114,16 +114,16 @@ bool McDefaultBeanFactory::addPropertyValue(QObjectConstPtrRef bean,
                                             QVariantMap &proValues) noexcept 
 {
     //! 循环给定 bean 的属性集合
-	auto props = beanDefinition->getProperties();
-	for (auto itr = props.cbegin(); itr != props.cend(); ++itr) {
+    auto props = beanDefinition->getProperties();
+    for (auto itr = props.cbegin(); itr != props.cend(); ++itr) {
         //! 获取定义的属性中的对象
-		auto value = itr.value();
+        auto value = itr.value();
         
-		//! 解析value
+        //! 解析value
         value = d->converter->convert(this, value);
         proValues.insert(itr.key(), value);
         
-		//! 根据给定属性名称获取 给定的bean中的属性对象
+        //! 根据给定属性名称获取 给定的bean中的属性对象
         auto index = bean->metaObject()->indexOfProperty(itr.key().toLocal8Bit());
         if(index == -1) {
             qDebug() << QString("bean '%1' cannot found property named for '%2'. it will be a dynamic property")
@@ -141,8 +141,8 @@ bool McDefaultBeanFactory::addPropertyValue(QObjectConstPtrRef bean,
                           , itr.key().toLocal8Bit().data());
             }
         }
-	}
-	return true;
+    }
+    return true;
 }
 
 bool McDefaultBeanFactory::addObjectConnect(QObjectConstPtrRef bean,

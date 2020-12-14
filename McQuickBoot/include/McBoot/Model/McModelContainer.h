@@ -13,13 +13,13 @@ class MCQUICKBOOT_EXPORT McModelContainer : public QObject
     MC_COMPONENT
     MC_BEANNAME("modelContainer")
 public:
-	Q_INVOKABLE explicit McModelContainer(QObject *parent = nullptr);
-	~McModelContainer() override;
+    Q_INVOKABLE explicit McModelContainer(QObject *parent = nullptr);
+    ~McModelContainer() override;
 
     void init(IMcQuickBootConstPtrRef boot) noexcept;
 
 private:
-	MC_DECL_PRIVATE(McModelContainer)
+    MC_DECL_PRIVATE(McModelContainer)
 };
 
 MC_DECL_METATYPE(McModelContainer)

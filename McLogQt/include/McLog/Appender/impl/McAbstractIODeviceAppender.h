@@ -5,7 +5,7 @@
 
 MC_FORWARD_DECL_PRIVATE_DATA(McAbstractIODeviceAppender);
 
-class McAbstractIODeviceAppender
+class MCLOGQT_EXPORT McAbstractIODeviceAppender
         : public McAbstractAppender
         , public IMcWritableAppender
 {

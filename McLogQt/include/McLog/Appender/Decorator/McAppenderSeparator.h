@@ -1,8 +1,8 @@
 #pragma once
 
-#include <McIoc/McGlobal.h>
+#include "../../McLogGlobal.h"
 
-struct McAppenderSeparator : public QObject
+struct MCLOGQT_EXPORT McAppenderSeparator : public QObject
 {
     Q_OBJECT
 public:

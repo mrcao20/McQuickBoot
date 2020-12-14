@@ -95,14 +95,14 @@ bool JlCompress::compressSubDir(QuaZip* zip, QString dir, QString origDir, bool 
     if (!directory.exists()) return false;
 
     QDir origDirectory(origDir);
-	if (dir != origDir) {
-		QuaZipFile dirZipFile(zip);
-		if (!dirZipFile.open(QIODevice::WriteOnly,
+    if (dir != origDir) {
+        QuaZipFile dirZipFile(zip);
+        if (!dirZipFile.open(QIODevice::WriteOnly,
             QuaZipNewInfo(origDirectory.relativeFilePath(dir) + QLatin1String("/"), dir), nullptr, 0, 0)) {
-				return false;
-		}
-		dirZipFile.close();
-	}
+                return false;
+        }
+        dirZipFile.close();
+    }
 
 
     // Se comprimo anche le sotto cartelle

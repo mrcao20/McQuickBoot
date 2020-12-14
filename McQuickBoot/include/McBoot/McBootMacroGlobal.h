@@ -2,14 +2,21 @@
 
 #include <McIoc/McMacroGlobal.h>
 
-#if defined(MCQUICKBOOT_LIBRARY)
-#  define MCQUICKBOOT_EXPORT Q_DECL_EXPORT
-#else
-#  define MCQUICKBOOT_EXPORT Q_DECL_IMPORT
+#if defined (MC_BUILD_STATIC) && !defined (MC_EXPORT_DISABLE)
+#define MC_EXPORT_DISABLE
 #endif
 
+#ifndef MC_EXPORT_DISABLE
+# if defined(MCQUICKBOOT_LIBRARY)
+#  define MCQUICKBOOT_EXPORT Q_DECL_EXPORT
+# else
+#  define MCQUICKBOOT_EXPORT Q_DECL_IMPORT
+# endif
+#else
+# define MCQUICKBOOT_EXPORT
+#endif
 
-#ifndef Q_MOC_RUN			//!< 这行语句必须加，只有包围在这行语句之中的宏才能被识别为tag
+#ifndef Q_MOC_RUN            //!< 这行语句必须加，只有包围在这行语句之中的宏才能被识别为tag
 
 //! QML Socket
 # define MC_ON_OPEN

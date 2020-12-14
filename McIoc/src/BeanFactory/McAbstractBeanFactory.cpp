@@ -40,14 +40,14 @@ QVariant McAbstractBeanFactory::getBeanToVariant(const QString &name, QThread *t
         return QVariant();
     }
     auto beanVar = beanDefinition->getBean();
-    if (!beanVar.isValid()) {	//!< 如果bean不存在
-        beanVar = doCreate(beanDefinition, d->targetThread);	//!< 创建
+    if (!beanVar.isValid()) {    //!< 如果bean不存在
+        beanVar = doCreate(beanDefinition, d->targetThread);    //!< 创建
         if (!beanVar.isValid()) {
             qWarning() << QString("failed to create bean '%1'").arg(name);
             return QVariant();
         }
         if(beanDefinition->isSingleton())
-            beanDefinition->setBean(beanVar);		//!< 如果为单例时，则放进beanDefinition，以达到复用。
+            beanDefinition->setBean(beanVar);        //!< 如果为单例时，则放进beanDefinition，以达到复用。
     }
     return beanVar;
 }

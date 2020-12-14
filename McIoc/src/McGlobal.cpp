@@ -22,16 +22,11 @@ using StartUpFuncs = QMap<int, QVector<Mc::StartUpFunction>>;
 MC_GLOBAL_STATIC(StartUpFuncs, preRFuncs)
 using VFuncs = QMap<int, QVector<Mc::CleanUpFunction>>;
 MC_GLOBAL_STATIC(VFuncs, postRFuncs)
-static QBasicMutex globalRoutinesMutex;
 
 int iocStaticInit()
 {
     qAddPreRoutine([](){
-        StartUpFuncs funcs;
-        {
-            const auto locker = mc_scoped_lock(globalRoutinesMutex);
-            funcs = *preRFuncs;
-        }
+        StartUpFuncs funcs = *preRFuncs;
         auto keys = funcs.keys();
         for(int i = keys.length() - 1; i >= 0; --i) {
             auto list = funcs.value(keys.value(i));
@@ -39,27 +34,26 @@ int iocStaticInit()
                 list.at(j)();
             }
         }
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+        Q_QGS_preRFuncs::guard.store(QtGlobalStatic::Initialized);
+#else
         Q_QGS_preRFuncs::guard.storeRelaxed(QtGlobalStatic::Initialized);
+#endif
     });
     qAddPostRoutine([](){
-        forever {
-            VFuncs funcs;
-            {
-                const auto locker = mc_scoped_lock(globalRoutinesMutex);
-                qSwap(*postRFuncs, funcs);
-            }
-            if(funcs.isEmpty()) {
-                break;
-            }
-            auto keys = funcs.keys();
-            for(int i = keys.length() - 1; i >= 0; --i) {
-                auto list = funcs.value(keys.value(i));
-                for(int j = 0; j < list.length(); ++j) {
-                    list.at(j)();
-                }
+        VFuncs funcs = *postRFuncs;
+        auto keys = funcs.keys();
+        for(int i = keys.length() - 1; i >= 0; --i) {
+            auto list = funcs.value(keys.value(i));
+            for(int j = 0; j < list.length(); ++j) {
+                list.at(j)();
             }
         }
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+        Q_QGS_postRFuncs::guard.store(QtGlobalStatic::Initialized);
+#else
         Q_QGS_postRFuncs::guard.storeRelaxed(QtGlobalStatic::Initialized);
+#endif
     });
     return 1;
 }
@@ -263,36 +257,36 @@ QString toAbsolutePath(const QString &path) noexcept
 
 QList<QString> getAllComponent(IMcApplicationContextConstPtrRef appCtx) noexcept
 {
-	if (!appCtx) {
-		qCritical() << "Please call initContainer to initialize container first";
-		return QList<QString>();
-	}
-	QList<QString> components;
+    if (!appCtx) {
+        qCritical() << "Please call initContainer to initialize container first";
+        return QList<QString>();
+    }
+    QList<QString> components;
     QHash<QString, IMcBeanDefinitionPtr> beanDefinitions = appCtx->getBeanDefinitions();
-	for (auto itr = beanDefinitions.cbegin(); itr != beanDefinitions.cend(); ++itr) {
-		auto beanDefinition = itr.value();
-		if (!isComponent(beanDefinition->getBeanMetaObject()))
-			continue;
-		components.append(itr.key());
-	}
-	return components;
+    for (auto itr = beanDefinitions.cbegin(); itr != beanDefinitions.cend(); ++itr) {
+        auto beanDefinition = itr.value();
+        if (!isComponent(beanDefinition->getBeanMetaObject()))
+            continue;
+        components.append(itr.key());
+    }
+    return components;
 }
 
 QList<QString> getComponents(IMcApplicationContextConstPtrRef appCtx, const QString &componentType) noexcept 
 {
-	if (!appCtx) {
-		qCritical() << "Please call initContainer to initialize container first";
-		return QList<QString>();
-	}
-	QList<QString> components;
+    if (!appCtx) {
+        qCritical() << "Please call initContainer to initialize container first";
+        return QList<QString>();
+    }
+    QList<QString> components;
     QHash<QString, IMcBeanDefinitionPtr> beanDefinitions = appCtx->getBeanDefinitions();
-	for (auto itr = beanDefinitions.cbegin(); itr != beanDefinitions.cend(); ++itr) {
-		auto beanDefinition = itr.value();
-		if (!isComponentType(beanDefinition->getBeanMetaObject(), componentType))
-			continue;
-		components.append(itr.key());
-	}
-	return components;
+    for (auto itr = beanDefinitions.cbegin(); itr != beanDefinitions.cend(); ++itr) {
+        auto beanDefinition = itr.value();
+        if (!isComponentType(beanDefinition->getBeanMetaObject(), componentType))
+            continue;
+        components.append(itr.key());
+    }
+    return components;
 }
 
 bool isComponent(const QMetaObject *metaObj) noexcept
@@ -301,13 +295,13 @@ bool isComponent(const QMetaObject *metaObj) noexcept
         return false;
     }
     int classInfoCount = metaObj->classInfoCount();
-	for (int i = 0; i < classInfoCount; ++i) {
-		auto classInfo = metaObj->classInfo(i);
-		if (qstrcmp(classInfo.name(), MC_COMPONENT_TAG) != 0)
-			continue;
-		return true;
-	}
-	return false;
+    for (int i = 0; i < classInfoCount; ++i) {
+        auto classInfo = metaObj->classInfo(i);
+        if (qstrcmp(classInfo.name(), MC_COMPONENT_TAG) != 0)
+            continue;
+        return true;
+    }
+    return false;
 }
 
 bool isComponentType(const QMetaObject *metaObj, const QString &type) noexcept 
@@ -315,14 +309,14 @@ bool isComponentType(const QMetaObject *metaObj, const QString &type) noexcept
     if(!metaObj) {
         return false;
     }
-	int classInfoCount = metaObj->classInfoCount();
-	for (int i = 0; i < classInfoCount; ++i) {
-		auto classInfo = metaObj->classInfo(i);
-		if (qstrcmp(classInfo.name(), MC_COMPONENT_TAG) != 0)
-			continue;
-		return classInfo.value() == type;
-	}
-	return false;
+    int classInfoCount = metaObj->classInfoCount();
+    for (int i = 0; i < classInfoCount; ++i) {
+        auto classInfo = metaObj->classInfo(i);
+        if (qstrcmp(classInfo.name(), MC_COMPONENT_TAG) != 0)
+            continue;
+        return classInfo.value() == type;
+    }
+    return false;
 }
 
 void addPreRoutine(int priority, const StartUpFunction &func) noexcept
@@ -334,7 +328,6 @@ void addPreRoutine(int priority, const StartUpFunction &func) noexcept
     if (QCoreApplication::instance()) {
         func();
     }
-    const auto locker = McPrivate::mc_scoped_lock(McPrivate::globalRoutinesMutex);
     (*funcs)[priority].prepend(func);
 }
 
@@ -344,7 +337,6 @@ void addPostRoutine(int priority, const CleanUpFunction &func) noexcept
     if(!funcs) {
         return;
     }
-    const auto locker = McPrivate::mc_scoped_lock(McPrivate::globalRoutinesMutex);
     (*funcs)[priority].prepend(func);
 }
 

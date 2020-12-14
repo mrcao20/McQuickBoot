@@ -11,7 +11,7 @@ class MCIOC_EXPORT McAbstractBeanDefinitionReader
     Q_OBJECT
 public:
     explicit McAbstractBeanDefinitionReader(QObject *parent = nullptr);
-	~McAbstractBeanDefinitionReader() override;
+    ~McAbstractBeanDefinitionReader() override;
     
     IMcBeanDefinitionRegistry *registry() const noexcept;
     

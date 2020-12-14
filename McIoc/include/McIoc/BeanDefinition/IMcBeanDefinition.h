@@ -14,22 +14,22 @@ public:
     virtual bool isSingleton() const noexcept = 0;
     virtual void setSingleton(bool val) noexcept = 0;
 
-	virtual const QMetaObject *getBeanMetaObject() const noexcept = 0;
-	virtual void setBeanMetaObject(const QMetaObject *o) noexcept = 0;
+    virtual const QMetaObject *getBeanMetaObject() const noexcept = 0;
+    virtual void setBeanMetaObject(const QMetaObject *o) noexcept = 0;
 
-	virtual QString getClassName() const noexcept = 0;
+    virtual QString getClassName() const noexcept = 0;
     /*!
      * \brief setClassName
      * 
      * 使用此函数设置className之后，会自动生成QMetaObject
      * \param name
      */
-	virtual void setClassName(const QString &name) noexcept = 0;
+    virtual void setClassName(const QString &name) noexcept = 0;
 
     virtual QString getPluginPath() const noexcept = 0;
     virtual void setPluginPath(const QString &path) noexcept = 0;
 
-	virtual QVariantHash getProperties() const noexcept = 0;
+    virtual QVariantHash getProperties() const noexcept = 0;
     /*!
      * \brief addProperty
      * 
@@ -37,7 +37,7 @@ public:
      * \param name
      * \param value
      */
-	virtual void addProperty(const QString &name, const QVariant &value) noexcept = 0;
+    virtual void addProperty(const QString &name, const QVariant &value) noexcept = 0;
     
     virtual QVariantList getConnectors() const noexcept = 0;
     virtual void addConnector(const QVariant &val) noexcept = 0;

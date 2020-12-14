@@ -20,10 +20,10 @@ public:
     
     static McLogManager *instance() noexcept;
     static void installQtMessageHandler() noexcept;
-	static void uninstallQtMessageHandler() noexcept;
+    static void uninstallQtMessageHandler() noexcept;
     
 private:
-	static void customMessageHandler(QtMsgType msgType, const QMessageLogContext &msgLogCtx, const QString &msg) noexcept;
+    static void customMessageHandler(QtMsgType msgType, const QMessageLogContext &msgLogCtx, const QString &msg) noexcept;
     
     void output(QtMsgType msgType, const QMessageLogContext &msgLogCtx, const QString &msg) noexcept;
     

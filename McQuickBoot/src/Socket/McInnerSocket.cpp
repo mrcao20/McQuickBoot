@@ -55,7 +55,7 @@ void McInnerSocket::opened(IMcSessionConstPtrRef session) noexcept
     }
     
     QVector<QGenericArgument> arguments;
-	arguments.resize(10);
+    arguments.resize(10);
     
     int sessionTypeId = QMetaType::type(MC_MACRO_STR(IMcSessionPtr));
     for(int i = 0; i < method.parameterCount(); ++i) {
@@ -81,7 +81,7 @@ void McInnerSocket::closed(IMcSessionConstPtrRef session) noexcept
     }
     
     QVector<QGenericArgument> arguments;
-	arguments.resize(10);
+    arguments.resize(10);
     
     int sessionTypeId = QMetaType::type(MC_MACRO_STR(IMcSessionPtr));
     for(int i = 0; i < method.parameterCount(); ++i) {
@@ -107,7 +107,7 @@ void McInnerSocket::errored(IMcSessionConstPtrRef session, const QString &errMsg
     }
     
     QVector<QGenericArgument> arguments;
-	arguments.resize(10);
+    arguments.resize(10);
     
     int sessionTypeId = QMetaType::type(MC_MACRO_STR(IMcSessionPtr));
     int stringTypeId = QMetaType::type(MC_MACRO_STR(QString));
@@ -137,7 +137,7 @@ void McInnerSocket::receivedMsg(IMcSessionConstPtrRef session, const QVariant &m
     auto tempMsg = msg;
     
     QVector<QGenericArgument> arguments;
-	arguments.resize(10);
+    arguments.resize(10);
     
     int sessionTypeId = QMetaType::type(MC_MACRO_STR(IMcSessionPtr));
     for(int i = 0; i < method.parameterCount(); ++i) {

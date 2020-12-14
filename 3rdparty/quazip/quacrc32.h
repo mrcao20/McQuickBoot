@@ -35,16 +35,16 @@ see quazip/(un)zip.h files for details. Basically it's the zlib license.
 class QUAZIP_EXPORT QuaCrc32 : public QuaChecksum32 {
 
 public:
-	QuaCrc32();
+    QuaCrc32();
 
-	quint32 calculate(const QByteArray &data);
+    quint32 calculate(const QByteArray &data);
 
-	void reset();
-	void update(const QByteArray &buf);
-	quint32 value();
+    void reset();
+    void update(const QByteArray &buf);
+    quint32 value();
 
 private:
-	quint32 checksum;
+    quint32 checksum;
 };
 
 #endif //QUACRC32_H

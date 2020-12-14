@@ -17,7 +17,7 @@ class %{CN} : public QObject
 public:
     Q_INVOKABLE explicit %{CN}(QObject *parent = nullptr) noexcept;
     ~%{CN}() override;
-	
+    
 private:
     MC_DECL_PRIVATE(%{CN})
 };

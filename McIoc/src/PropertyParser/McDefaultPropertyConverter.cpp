@@ -16,18 +16,18 @@ QVariant McDefaultPropertyConverter::convertRef(const QVariant &value) const noe
 {
     
     auto ref = value.value<McBeanReferencePtr>();
-    if (!ref) {	//!< 判断是否能够成功转换
-		//! 失败，记录错误信息
-		qCritical() << "cannot inject beanReference";
-		return QVariant();
-	}
+    if (!ref) {    //!< 判断是否能够成功转换
+        //! 失败，记录错误信息
+        qCritical() << "cannot inject beanReference";
+        return QVariant();
+    }
     //! 调用IMcBeanReferenceResolver的resolveBeanReferenceToQVariant方法，根据bean获取实例，此处即是递归
     auto objVar = resolver()->resolveBeanReferenceToQVariant(ref);
     if (!objVar.isValid()) {
-		//! 失败，记录错误信息
-		qCritical() << "cannot get bean from beanReference";
-		return QVariant();
-	}
+        //! 失败，记录错误信息
+        qCritical() << "cannot get bean from beanReference";
+        return QVariant();
+    }
     return objVar;
 }
 

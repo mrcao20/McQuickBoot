@@ -43,7 +43,7 @@ private:
                                       IMcBeanDefinitionConstPtrRef beanDefinition) noexcept;
 
 private:
-	MC_DECL_PRIVATE(McXmlBeanDefinitionReader)
+    MC_DECL_PRIVATE(McXmlBeanDefinitionReader)
 };
 
 MC_DECL_POINTER(McXmlBeanDefinitionReader)

@@ -26,7 +26,7 @@ McModelContainer::~McModelContainer()
 void McModelContainer::init(IMcQuickBootConstPtrRef boot) noexcept 
 {
     auto appCtx = boot->getApplicationContext();
-	auto beanNames = Mc::getComponents(appCtx, MC_MODEL_TAG);
+    auto beanNames = Mc::getComponents(appCtx, MC_MODEL_TAG);
     for (const auto &beanName : beanNames) {
         auto obj = appCtx->getBean(beanName);
         if(!obj) {

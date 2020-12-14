@@ -10,7 +10,7 @@ MC_FORWARD_DECL_CLASS(IMcLogPackager);
 
 MC_FORWARD_DECL_PRIVATE_DATA(McLoggerRepository);
 
-class McLoggerRepository 
+class MCLOGQT_EXPORT McLoggerRepository 
         : public QObject
 #ifndef MC_NO_IOC
         , public IMcDeleteThreadWhenQuit

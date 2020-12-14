@@ -1,11 +1,11 @@
 #pragma once
 
 #include <QIODevice>
-#include <McIoc/McGlobal.h>
+#include "../McLogGlobal.h"
 
 MC_FORWARD_DECL_PRIVATE_DATA(McVSDebugDevice);
 
-class McVSDebugDevice : public QIODevice
+class MCLOGQT_EXPORT McVSDebugDevice : public QIODevice
 {
     Q_OBJECT
     MC_DECL_INIT(McVSDebugDevice)

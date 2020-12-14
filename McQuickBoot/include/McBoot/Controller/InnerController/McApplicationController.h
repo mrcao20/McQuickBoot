@@ -173,7 +173,7 @@
 
 MC_FORWARD_DECL_PRIVATE_DATA(McApplicationController);
 
-class McApplicationController : public QObject {
+class MCQUICKBOOT_EXPORT McApplicationController : public QObject {
     Q_OBJECT
     MC_DECL_INIT(McApplicationController)
     MC_DEFINE_TYPELIST(QObject)

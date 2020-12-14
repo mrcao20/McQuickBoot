@@ -16,11 +16,11 @@ MC_REGISTER_BEAN_FACTORY(McControllerContainer)
 MC_INIT_END
 
 MC_DECL_PRIVATE_DATA(McControllerContainer)
-QMap<QString, QObjectPtr> controllers;	//!< 键为beanName，值为controller对象
+QMap<QString, QObjectPtr> controllers;    //!< 键为beanName，值为controller对象
 MC_DECL_PRIVATE_DATA_END
 
 McControllerContainer::McControllerContainer(QObject *parent)
-	: QObject(parent)
+    : QObject(parent)
 {
     MC_NEW_PRIVATE_DATA(McControllerContainer)
 }
@@ -32,7 +32,7 @@ McControllerContainer::~McControllerContainer()
 void McControllerContainer::init(IMcQuickBootConstPtrRef &boot) noexcept 
 {
     auto appCtx = boot->getApplicationContext();
-	auto beanNames = Mc::getComponents(appCtx, MC_CONTROLLER_TAG);
+    auto beanNames = Mc::getComponents(appCtx, MC_CONTROLLER_TAG);
     for (const auto &beanName : beanNames) {
         auto obj = appCtx->getBean(beanName);
         if(!obj) {
@@ -252,12 +252,12 @@ QVariant McControllerContainer::invokeForArgs(
     else {
         returnValue = QVariant(static_cast<QVariant::Type>(returnType));
         // 由于调用函数时需要对比类型名，所以这里类型名需要具体指定，不能再用QVariant
-//		returnArg = Q_RETURN_ARG(QVariant, returnValue);
+//        returnArg = Q_RETURN_ARG(QVariant, returnValue);
         returnArg = QGenericReturnArgument(method.typeName(), returnValue.data());
     }
     QVector<QGenericArgument> arguments;
     arguments.resize(10);
-	
+    
     bool ok = false;
     QVariant errMsg;
     auto values = makeValues(method, args, arguments.size(), &errMsg, &ok);
@@ -266,7 +266,7 @@ QVariant McControllerContainer::invokeForArgs(
     }
     for(int i = 0; i < values.size(); ++i) {
         // 由于Q_ARG宏所调用的函数是直接取value的地址，所以value不能是局部变量
-//		arguments.replace(i, Q_ARG(QVariant, values[i]));
+//        arguments.replace(i, Q_ARG(QVariant, values[i]));
         /* 由于业务需要，调用函数的方式为直接连接，通过源代码分析，直接连接的类型名
          * 不需要使用，只需要保证它不为空即可
          */
