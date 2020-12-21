@@ -4,9 +4,8 @@
 
 MC_FORWARD_DECL_PRIVATE_DATA(McAbstractApplicationContext);
 
-class MCIOC_EXPORT McAbstractApplicationContext
-        : public QObject
-        , public IMcConfigurableApplicationContext 
+class MCIOC_EXPORT McAbstractApplicationContext : public QObject,
+                                                  public IMcConfigurableApplicationContext
 {
     Q_OBJECT
 public:

@@ -12,8 +12,7 @@ QHash<QString, IMcBeanDefinitionPtr> definitions;
 MC_DECL_PRIVATE_DATA_END
 
 McAnnotationBeanDefinitionReader::McAnnotationBeanDefinitionReader(
-        const QHash<QString, IMcBeanDefinitionPtr> &definitions,
-        QObject *parent)
+    const QHash<QString, IMcBeanDefinitionPtr> &definitions, QObject *parent)
     : McAbstractBeanDefinitionReader(parent)
 {
     MC_NEW_PRIVATE_DATA(McAnnotationBeanDefinitionReader)
@@ -37,9 +36,8 @@ void McAnnotationBeanDefinitionReader::doReadBeanDefinition() noexcept
     }
 }
 
-void McAnnotationBeanDefinitionReader::inject(
-        const QString& beanName,
-        IMcBeanDefinitionConstPtrRef beanDefinition) noexcept 
+void McAnnotationBeanDefinitionReader::inject(const QString &beanName,
+                                              IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
 {
     const QMetaObject *metaObj = beanDefinition->getBeanMetaObject();
     Q_ASSERT_X(metaObj != nullptr
@@ -50,8 +48,7 @@ void McAnnotationBeanDefinitionReader::inject(
 }
 
 void McAnnotationBeanDefinitionReader::injectProperty(
-        const QMetaObject *metaObj,
-        IMcBeanDefinitionConstPtrRef beanDefinition) noexcept 
+    const QMetaObject *metaObj, IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
 {
     for(int i = 0, count = metaObj->classInfoCount(); i < count; ++i) {
         auto classInfo = metaObj->classInfo(i);

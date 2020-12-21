@@ -13,7 +13,7 @@
 #include <QMetaClassInfo>
 #include <QDebug>
 
-#include "McIoc/ApplicationContext/McContainerGlobal.h"
+#include "McIoc/ApplicationContext/impl/McAnnotationApplicationContext.h"
 #include "McIoc/BeanDefinition/IMcBeanDefinition.h"
 
 namespace McPrivate {
@@ -195,6 +195,24 @@ QVariantPrivate::registerHandler(QModulesPrivate::Core, kernelHandler);
 QVariantPrivate::registerHandler(QModulesPrivate::Unknown, &mc_custom_variant_handler);
 MC_INIT_END
 
+QString getBeanName(const QMetaObject *metaObj) noexcept
+{
+    QString beanName;
+    auto beanNameIndex = metaObj->indexOfClassInfo(MC_BEANNAME_TAG);
+    if(beanNameIndex == -1) {
+        beanName = metaObj->className();
+        Q_ASSERT(!beanName.isEmpty());
+        auto firstChar = beanName.at(0);
+        firstChar = firstChar.toLower();
+        beanName.remove(0, 1);
+        beanName = firstChar + beanName;
+    } else {
+        auto beanNameClassInfo = metaObj->classInfo(beanNameIndex);
+        beanName = beanNameClassInfo.value();
+    }
+    return beanName;
+}
+
 }
 
 McCustomEvent::~McCustomEvent() noexcept
@@ -349,7 +367,19 @@ void connect(const QString &beanName,
                const QString &slot,
                Qt::ConnectionType type) noexcept 
 {
-    mcConnect(beanName, sender, signal, receiver, slot, type);
+    McAnnotationApplicationContext::addConnect(beanName, sender, signal, receiver, slot, type);
+}
+
+void connect(const QMetaObject *metaObj,
+               const QString &sender,
+               const QString &signal,
+               const QString &receiver,
+               const QString &slot,
+               Qt::ConnectionType type) noexcept 
+{
+    Q_ASSERT(metaObj != nullptr);
+    QString beanName = McPrivate::getBeanName(metaObj);
+    connect(beanName, sender, signal, receiver, slot, type);
 }
 
 }

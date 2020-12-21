@@ -23,9 +23,8 @@ class MCIOC_EXPORT McYaml
 {
     MC_DECL_INIT(McYaml)
 public:
-    static inline QSettings::Format format() noexcept
-    { return m_format; }
-    
+    static inline QSettings::Format format() noexcept { return m_format; }
+
 private:
     static QSettings::Format m_format;
 };

@@ -3,7 +3,7 @@
 #include <QThread>
 #include <QDebug>
 
-#include <McIoc/ApplicationContext/McContainerGlobal.h>
+#include <McIoc/McGlobal.h>
 #include <McBoot/Controller/impl/McResult.h>
 #include <McBoot./Utils/McJsonUtils.h>
 

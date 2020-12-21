@@ -1,6 +1,6 @@
 #include "Object.h"
 
-#include "McIoc/ApplicationContext/McContainerGlobal.h"
+#include "McIoc/McGlobal.h"
 
 MC_INIT(Tmp)
 MC_REGISTER_BEAN_FACTORY(Tmp)

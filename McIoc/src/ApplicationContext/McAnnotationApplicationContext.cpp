@@ -18,17 +18,16 @@ typedef QHash<QString, IMcBeanDefinitionPtr> McBeanDefinitionContainter;
 MC_GLOBAL_STATIC(McBeanDefinitionContainter, mcAutowiredRegistry)
 
 McAnnotationApplicationContext::McAnnotationApplicationContext(
-        IMcConfigurableBeanFactoryConstPtrRef factory,
-        IMcBeanDefinitionReaderConstPtrRef reader,
-        QObject *parent)
+    IMcConfigurableBeanFactoryConstPtrRef factory,
+    IMcBeanDefinitionReaderConstPtrRef reader,
+    QObject *parent)
     : McReadableApplicationContext(factory, reader, parent)
 {
     MC_NEW_PRIVATE_DATA(McAnnotationApplicationContext);
 }
 
 McAnnotationApplicationContext::McAnnotationApplicationContext(
-        IMcBeanDefinitionReaderConstPtrRef reader,
-        QObject *parent)
+    IMcBeanDefinitionReaderConstPtrRef reader, QObject *parent)
     : McReadableApplicationContext(reader, parent)
 {
     MC_NEW_PRIVATE_DATA(McAnnotationApplicationContext);
@@ -53,19 +52,7 @@ McAnnotationApplicationContext::McAnnotationApplicationContext(QObject *parent)
                 continue;
             }
             
-            QString beanName;
-            auto beanNameIndex = metaObj->indexOfClassInfo(MC_BEANNAME_TAG);
-            if(beanNameIndex == -1) {
-                beanName = metaObj->className();
-                Q_ASSERT(!beanName.isEmpty());
-                auto firstChar = beanName.at(0);
-                firstChar = firstChar.toLower();
-                beanName.remove(0, 1);
-                beanName = firstChar + beanName;
-            } else {
-                auto beanNameClassInfo = metaObj->classInfo(beanNameIndex);
-                beanName = beanNameClassInfo.value();
-            }
+            QString beanName = McPrivate::getBeanName(metaObj);
             auto beanDefinition = (*ar)[beanName];
             if(!beanDefinition) {
                 beanDefinition = McRootBeanDefinitionPtr::create();
@@ -111,59 +98,12 @@ McAnnotationApplicationContext::~McAnnotationApplicationContext()
 {
 }
 
-void McAnnotationApplicationContext::insertRegistry(const QString &typeName) noexcept 
-{
-    Q_ASSERT(!typeName.isEmpty());
-    auto isSingleton = true;    //!< 默认为单例
-    //! 默认为类型名首字母小写
-    auto beanName = typeName.at(0).toLower() + typeName.right(typeName.size() - 1);
-    auto type = QMetaType::type(typeName.toLocal8Bit());
-    if(type == QMetaType::UnknownType) {
-        qCritical() << "it's unregistered for class:" << typeName;
-        return;
-    }
-    //! type存在，metaObj一定不为null
-    auto metaObj = QMetaType::metaObjectForType(type);
-    auto singletonIndex = metaObj->indexOfClassInfo(MC_SINGLETON_TAG);
-    auto beanNameIndex = metaObj->indexOfClassInfo(MC_BEANNAME_TAG);
-    if(singletonIndex != -1) {
-        auto classInfo = metaObj->classInfo(singletonIndex);
-        bool isTrue = classInfo.value() == QString("true");
-        bool isFalse = classInfo.value() == QString("false");
-        if(!isTrue && !isFalse) {
-            qCritical() << "the singleton value for classInfo must be true or false of string";
-        }else{
-            isSingleton = isTrue ? true : false;
-        }
-    }
-    if(beanNameIndex != -1) {
-        auto classInfo = metaObj->classInfo(beanNameIndex);
-        beanName = classInfo.value();
-    }
-    
-    McBeanDefinitionContainter *ar = mcAutowiredRegistry;
-    auto beanDefinition = (*ar)[beanName];
-    if(!beanDefinition) {
-        beanDefinition = McRootBeanDefinitionPtr::create();
-        (*ar)[beanName] = beanDefinition;
-    }
-    if(!beanDefinition->getClassName().isEmpty()) {
-        qCritical() << "injected fail. the beanName is exists. it's typeName is" << beanDefinition->getClassName()
-                    << ". want inject typeName:" << typeName << "beanName:" << beanName;
-        return;
-    }
-    beanDefinition->setBeanMetaObject(metaObj);
-    beanDefinition->setClassName(typeName);
-    beanDefinition->setSingleton(isSingleton);
-}
-
-void McAnnotationApplicationContext::addConnect(
-        const QString &beanName,
-        const QString &sender,
-        const QString &signal,
-        const QString &receiver,
-        const QString &slot,
-        Qt::ConnectionType type) noexcept 
+void McAnnotationApplicationContext::addConnect(const QString &beanName,
+                                                const QString &sender,
+                                                const QString &signal,
+                                                const QString &receiver,
+                                                const QString &slot,
+                                                Qt::ConnectionType type) noexcept
 {
     McBeanDefinitionContainter *ar = mcAutowiredRegistry;
     auto beanDefinition = (*ar)[beanName];

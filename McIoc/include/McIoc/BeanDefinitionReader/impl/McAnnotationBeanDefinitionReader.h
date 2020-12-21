@@ -6,8 +6,7 @@ MC_FORWARD_DECL_CLASS(IMcBeanDefinition);
 
 MC_FORWARD_DECL_PRIVATE_DATA(McAnnotationBeanDefinitionReader);
 
-class MCIOC_EXPORT McAnnotationBeanDefinitionReader 
-        : public McAbstractBeanDefinitionReader 
+class MCIOC_EXPORT McAnnotationBeanDefinitionReader : public McAbstractBeanDefinitionReader
 {
     Q_OBJECT
 public:

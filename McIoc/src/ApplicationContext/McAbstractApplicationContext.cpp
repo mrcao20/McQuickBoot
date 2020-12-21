@@ -9,8 +9,7 @@ QList<IMcApplicationContextPtr> relatedAppCtx;
 MC_DECL_PRIVATE_DATA_END
 
 McAbstractApplicationContext::McAbstractApplicationContext(
-        IMcConfigurableBeanFactoryConstPtrRef factory
-        , QObject *parent)
+    IMcConfigurableBeanFactoryConstPtrRef factory, QObject *parent)
     : QObject(parent)
 {
     MC_NEW_PRIVATE_DATA(McAbstractApplicationContext)
@@ -21,8 +20,7 @@ McAbstractApplicationContext::~McAbstractApplicationContext()
 {
 }
 
-QObjectPtr McAbstractApplicationContext::getBean(
-        const QString &name, QThread *thread) noexcept 
+QObjectPtr McAbstractApplicationContext::getBean(const QString &name, QThread *thread) noexcept
 {
     auto var = getBeanToVariant(name, thread);
     if(!var.isValid())
@@ -30,8 +28,8 @@ QObjectPtr McAbstractApplicationContext::getBean(
     return var.value<QObjectPtr>();
 }
 
-QVariant McAbstractApplicationContext::getBeanToVariant(
-        const QString &name, QThread *thread) noexcept 
+QVariant McAbstractApplicationContext::getBeanToVariant(const QString &name,
+                                                        QThread *thread) noexcept
 {
     QVariant var;
     if(d->configurableBeanFactory->containsBean(name)) {
@@ -80,8 +78,7 @@ bool McAbstractApplicationContext::isSingleton(const QString &name) noexcept
 }
 
 void McAbstractApplicationContext::registerBeanDefinition(
-        const QString &name,
-        IMcBeanDefinitionConstPtrRef beanDefinition) noexcept 
+    const QString &name, IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
 {
     registerBeanDefinitionSelf(name, beanDefinition);
 }
@@ -147,8 +144,7 @@ bool McAbstractApplicationContext::isSingletonSelf(const QString &name) noexcept
 }
 
 void McAbstractApplicationContext::registerBeanDefinitionSelf(
-        const QString &name
-        , IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
+    const QString &name, IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
 {
     d->configurableBeanFactory->registerBeanDefinition(name, beanDefinition);
 }

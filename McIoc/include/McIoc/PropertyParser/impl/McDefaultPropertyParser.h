@@ -2,8 +2,7 @@
 
 #include "McAbstractPropertyParser.h"
 
-class MCIOC_EXPORT McDefaultPropertyParser 
-        : public McAbstractPropertyParser 
+class MCIOC_EXPORT McDefaultPropertyParser : public McAbstractPropertyParser
 {
     Q_OBJECT
 public:

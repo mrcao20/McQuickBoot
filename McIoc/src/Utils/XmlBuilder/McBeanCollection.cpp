@@ -31,7 +31,7 @@ QDomDocument McBeanCollection::toDomDocument() const noexcept
     QDomDocument doc;
     auto xmlInstruction = doc.createProcessingInstruction("xml", R"(version="1.0" encoding="UTF-8")");
     doc.appendChild(xmlInstruction);
-    QDomElement root = doc.createElement(MC_BEANS_TAG);
+    QDomElement root = doc.createElement(Mc::Constant::Tag::Xml::beans);
     doc.appendChild(root);
     for(auto bean : d->beans) {
         root.appendChild(bean->toDomElement(doc));

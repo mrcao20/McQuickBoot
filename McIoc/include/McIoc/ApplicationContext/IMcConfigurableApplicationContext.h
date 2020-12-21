@@ -3,9 +3,8 @@
 #include "IMcApplicationContext.h"
 #include "IMcRelatableApplicationContext.h"
 
-class IMcConfigurableApplicationContext
-        : public IMcApplicationContext
-        , public IMcRelatableApplicationContext
+class IMcConfigurableApplicationContext : public IMcApplicationContext,
+                                          public IMcRelatableApplicationContext
 {
 public:
     virtual ~IMcConfigurableApplicationContext() = default;

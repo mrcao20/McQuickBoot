@@ -3,9 +3,7 @@
 #include "IMcBeanFactory.h"
 #include "IMcBeanDefinitionRegistry.h"
 
-class IMcConfigurableBeanFactory
-        : public IMcBeanFactory
-        , public IMcBeanDefinitionRegistry 
+class IMcConfigurableBeanFactory : public IMcBeanFactory, public IMcBeanDefinitionRegistry
 {
 public:
     virtual ~IMcConfigurableBeanFactory() = default;

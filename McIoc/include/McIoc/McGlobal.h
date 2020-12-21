@@ -9,6 +9,7 @@
 #include <QtCore/qmutex.h>
 
 #include "McVersion.h"
+#include "McConstantGlobal.h"
 #include "BeanFactory/McBeanGlobal.h"
 
 MC_FORWARD_DECL_CLASS(IMcApplicationContext)
@@ -48,6 +49,8 @@ Lock mc_unique_lock(Mutex *mutex)
 {
     return mutex ? Lock(*mutex) : Lock() ;
 }
+
+QString getBeanName(const QMetaObject *metaObj) noexcept;
 
 }
 
@@ -130,6 +133,14 @@ namespace Ioc {
 
 MCIOC_EXPORT void connect(
         const QString &beanName,
+        const QString &sender,
+        const QString &signal,
+        const QString &receiver,
+        const QString &slot,
+        Qt::ConnectionType type = Qt::AutoConnection) noexcept;
+
+MCIOC_EXPORT void connect(
+        const QMetaObject *metaObj,
         const QString &sender,
         const QString &signal,
         const QString &receiver,

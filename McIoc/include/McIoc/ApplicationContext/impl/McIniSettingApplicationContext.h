@@ -2,8 +2,7 @@
 
 #include "McSettingApplicationContext.h"
 
-class MCIOC_EXPORT McIniSettingApplicationContext 
-        : public McSettingApplicationContext 
+class MCIOC_EXPORT McIniSettingApplicationContext : public McSettingApplicationContext
 {
     Q_OBJECT
 public:

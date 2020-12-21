@@ -7,7 +7,6 @@
 
 #include "McBoot/Controller/impl/McControllerContainer.h"
 #include "McBoot/Model/McModelContainer.h"
-#include "McBoot/Socket/impl/McQmlSocketContainer.h"
 #include "McBoot/BeanDefinitionReader/impl/McConfigurationFileBeanDefinitionReader.h"
 
 namespace {
@@ -23,7 +22,7 @@ MC_GLOBAL_STATIC(McQuickBootSimpleStaticData, mcQuickBootSimpleStaticData)
 
 MC_DECL_PRIVATE_DATA(McQuickBootSimple)
 McAnnotationApplicationContextPtr context;
-McQmlRequestorPtr requestor;
+McCppRequestorPtr requestor;
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McQuickBootSimple)
@@ -69,22 +68,16 @@ void McQuickBootSimple::init() noexcept
     
     auto modelContainer = appCtx->getBean<McModelContainer>("modelContainer");
     modelContainer->init(boot);
-    
-    auto socketContainer = appCtx->getBean<McQmlSocketContainer>("socketContainer");
-    socketContainer->init(boot);
-    
-    boot->d->requestor = appCtx->getBean<McQmlRequestor>("requestor");
+
+    boot->d->requestor = appCtx->getBean<McCppRequestor>("cppRequestor");
     boot->d->requestor->setControllerContainer(controllerContainer);
-    boot->d->requestor->setSocketContainer(socketContainer);
 }
 
-McQmlRequestorPtr McQuickBootSimple::requestor() noexcept
+McCppRequestor &McQuickBootSimple::requestor() noexcept
 {
     McQuickBootSimplePtr &boot = mcQuickBootSimpleStaticData->boot;
-    if(boot.isNull()) {
-        return McQmlRequestorPtr();
-    }
-    return boot->d->requestor;
+    Q_ASSERT_X(!boot.isNull(), "McQuickBootSimplePtr::requestor()", "please call init before");
+    return *boot->d->requestor.data();
 }
 
 IMcApplicationContextPtr McQuickBootSimple::getApplicationContext() const noexcept 

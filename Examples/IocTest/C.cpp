@@ -22,7 +22,7 @@ void R::slot_recv() noexcept
     qDebug() << "r slot recv";
 }
 
-#include <McIoc/ApplicationContext/McContainerGlobal.h>
+#include <McIoc/McGlobal.h>
 
 MC_STATIC()
 MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(C));   //!< 由于类C使用了MC_DEFINE_TYPELIST宏，则需要使用MC_TYPELIST宏

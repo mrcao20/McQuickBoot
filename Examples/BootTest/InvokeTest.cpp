@@ -3,7 +3,7 @@
 #include <QThread>
 #include <QDebug>
 
-#include <McIoc/ApplicationContext/McContainerGlobal.h>
+#include <McIoc/McGlobal.h>
 #include <McBoot/Controller/impl/McResult.h>
 #include <McBoot./Utils/McJsonUtils.h>
 #include <McBoot/McQuickBoot.h>
@@ -53,8 +53,8 @@ void InvokeTest::start() noexcept {
 #include <QTimer>
 void InvokeTest::end() noexcept {
     qDebug() << "InvokeTest construct finished" << thread() << QThread::currentThread();
-    QTimer::singleShot(1000, [](){
-        $->invoke("con.invoke4")->then([](const QVariant &var){
+    QTimer::singleShot(1000, []() {
+        $.invoke("con.invoke4").then([](const QVariant &var) {
             qDebug() << "---------------" << var;
         });
     });

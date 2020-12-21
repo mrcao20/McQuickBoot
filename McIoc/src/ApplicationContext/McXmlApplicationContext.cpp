@@ -10,29 +10,26 @@ McXmlApplicationContext::McXmlApplicationContext(QObject *parent)
 {
 }
 
-McXmlApplicationContext::McXmlApplicationContext(
-        QIODeviceConstPtrRef device, QObject *parent)
+McXmlApplicationContext::McXmlApplicationContext(QIODeviceConstPtrRef device, QObject *parent)
     : McXmlApplicationContext(QList<QIODevicePtr>() << device, parent)
 {
 }
 
-McXmlApplicationContext::McXmlApplicationContext(
-        const QList<QIODevicePtr> &devices, QObject *parent)
+McXmlApplicationContext::McXmlApplicationContext(const QList<QIODevicePtr> &devices, QObject *parent)
     : McXmlApplicationContext(parent)
 {
     setDevices(devices);
 }
 
-McXmlApplicationContext::McXmlApplicationContext(
-        IMcBeanDefinitionReaderConstPtrRef reader, QObject *parent)
+McXmlApplicationContext::McXmlApplicationContext(IMcBeanDefinitionReaderConstPtrRef reader,
+                                                 QObject *parent)
     : McReadableApplicationContext(reader, parent)
 {
 }
 
-McXmlApplicationContext::McXmlApplicationContext(
-        IMcConfigurableBeanFactoryConstPtrRef factory,
-        IMcBeanDefinitionReaderConstPtrRef reader,
-        QObject *parent)
+McXmlApplicationContext::McXmlApplicationContext(IMcConfigurableBeanFactoryConstPtrRef factory,
+                                                 IMcBeanDefinitionReaderConstPtrRef reader,
+                                                 QObject *parent)
     : McReadableApplicationContext(factory, reader, parent)
 {
 }

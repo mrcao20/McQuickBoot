@@ -3,9 +3,8 @@
 #include "../BeanFactory/IMcConfigurableBeanFactory.h"
 #include "IMcRefreshableApplicationContext.h"
 
-class IMcApplicationContext
-        : public IMcConfigurableBeanFactory
-        , public IMcRefreshableApplicationContext 
+class IMcApplicationContext : public IMcConfigurableBeanFactory,
+                              public IMcRefreshableApplicationContext
 {
 public:
     ~IMcApplicationContext() override = default;

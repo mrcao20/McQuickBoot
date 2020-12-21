@@ -71,7 +71,7 @@ void McXmlBeanDefinitionReader::readBeanDefinition(const QDomDocument &doc) noex
         qCritical() << "XML Error: Root element is NULL.";
         return;
     }
-    if (root.tagName() != MC_BEANS_TAG) {
+    if (root.tagName() != Mc::Constant::Tag::Xml::beans) {
         qCritical() << "XML Error: Root element is not beans.";
         return;
     }
@@ -85,7 +85,7 @@ void McXmlBeanDefinitionReader::readBeanDefinition(const QDomNodeList &nodes) no
         if(ele.isNull()) {
             continue;
         }
-        if (ele.tagName() != MC_BEAN_TAG || ele.attribute("name").isEmpty() ||
+        if (ele.tagName() != Mc::Constant::Tag::Xml::bean || ele.attribute("name").isEmpty() ||
             (ele.attribute("class").isEmpty() && ele.attribute("plugin").isEmpty())) {
             qCritical() << "node name must be 'bean', and it's not only contains attribute 'name' and 'class/plugin' but also this attribute not is able null!!";
             continue;
@@ -135,7 +135,7 @@ void McXmlBeanDefinitionReader::readBeanDefinition(
         QDomElement propEle = propNodes.at(i).toElement();
         if (propEle.isNull())
             continue;
-        if(propEle.tagName() == MC_CONNECT_TAG) {
+        if(propEle.tagName() == Mc::Constant::Tag::Xml::connect) {
             readBeanDefinitionForConnect(propEle, beanDefinition);
         }else{    //! 不判定标签是否为property，即除了connect以外均可以解析为property
             readBeanDefinitionForProperty(propEle, beanDefinition);
@@ -206,32 +206,32 @@ void McXmlBeanDefinitionReader::readBeanDefinitionForConnect(
         IMcBeanDefinitionConstPtrRef beanDefinition) noexcept 
 {
     McBeanConnectorPtr connector = McBeanConnectorPtr::create();
-    connector->setSender(MC_THIS_TAG);       //!< 如果没有指定sender，则默认为对象本身
-    connector->setReceiver(MC_THIS_TAG);     //!< 如果没有指定receiver，则默认为对象本身
+    connector->setSender(Mc::Constant::Tag::Xml::self);       //!< 如果没有指定sender，则默认为对象本身
+    connector->setReceiver(Mc::Constant::Tag::Xml::self);     //!< 如果没有指定receiver，则默认为对象本身
     connector->setType(Qt::ConnectionType::AutoConnection); //!< 默认为自动连接
     
     // connect attribute
-    if(propEle.hasAttribute(MC_SENDER_TAG)) {
-        connector->setSender(propEle.attribute(MC_SENDER_TAG));
+    if(propEle.hasAttribute(Mc::Constant::Tag::Xml::sender)) {
+        connector->setSender(propEle.attribute(Mc::Constant::Tag::Xml::sender));
     }
-    if(propEle.hasAttribute(MC_SIGNAL_TAG)) {
-        connector->setSignal(propEle.attribute(MC_SIGNAL_TAG));
+    if(propEle.hasAttribute(Mc::Constant::Tag::Xml::signal)) {
+        connector->setSignal(propEle.attribute(Mc::Constant::Tag::Xml::signal));
     }
-    if(propEle.hasAttribute(MC_RECEIVER_TAG)) {
-        connector->setReceiver(propEle.attribute(MC_RECEIVER_TAG));
+    if(propEle.hasAttribute(Mc::Constant::Tag::Xml::receiver)) {
+        connector->setReceiver(propEle.attribute(Mc::Constant::Tag::Xml::receiver));
     }
-    if(propEle.hasAttribute(MC_SLOT_TAG)) {
-        connector->setSlot(propEle.attribute(MC_SLOT_TAG));
+    if(propEle.hasAttribute(Mc::Constant::Tag::Xml::slot)) {
+        connector->setSlot(propEle.attribute(Mc::Constant::Tag::Xml::slot));
     }
-    if(propEle.hasAttribute(MC_CONNECTION_TYPE_TAG)) {
-        QString typeStr = propEle.attribute(MC_CONNECTION_TYPE_TAG);
+    if(propEle.hasAttribute(Mc::Constant::Tag::Xml::type)) {
+        QString typeStr = propEle.attribute(Mc::Constant::Tag::Xml::type);
         connector->setType(getConnectionType(typeStr));
     }
     
     // connect childNodes attribute and text
     auto childEle = propEle.firstChildElement();
     while(!childEle.isNull()) {
-        if(childEle.tagName() == MC_SENDER_TAG) {
+        if(childEle.tagName() == Mc::Constant::Tag::Xml::sender) {
             auto text = connector->getSender();
             if(childEle.hasAttribute("name")) {
                 text = childEle.attribute("name");
@@ -240,7 +240,7 @@ void McXmlBeanDefinitionReader::readBeanDefinitionForConnect(
                 text = childEle.text();
             }
             connector->setSender(text);
-        }else if(childEle.tagName() == MC_SIGNAL_TAG) {
+        }else if(childEle.tagName() == Mc::Constant::Tag::Xml::signal) {
             auto text = connector->getSignal();
             if(childEle.hasAttribute("name")) {
                 text = childEle.attribute("name");
@@ -249,7 +249,7 @@ void McXmlBeanDefinitionReader::readBeanDefinitionForConnect(
                 text = childEle.text();
             }
             connector->setSignal(text);
-        }else if(childEle.tagName() == MC_RECEIVER_TAG) {
+        }else if(childEle.tagName() == Mc::Constant::Tag::Xml::signal) {
             auto text = connector->getReceiver();
             if(childEle.hasAttribute("name")) {
                 text = childEle.attribute("name");
@@ -258,7 +258,7 @@ void McXmlBeanDefinitionReader::readBeanDefinitionForConnect(
                 text = childEle.text();
             }
             connector->setReceiver(text);
-        }else if(childEle.tagName() == MC_SLOT_TAG) {
+        }else if(childEle.tagName() == Mc::Constant::Tag::Xml::slot) {
             auto text = connector->getSlot();
             if(childEle.hasAttribute("name")) {
                 text = childEle.attribute("name");
@@ -267,7 +267,7 @@ void McXmlBeanDefinitionReader::readBeanDefinitionForConnect(
                 text = childEle.text();
             }
             connector->setSlot(text);
-        }else if(childEle.tagName() == MC_CONNECTION_TYPE_TAG) {
+        }else if(childEle.tagName() == Mc::Constant::Tag::Xml::type) {
             auto text = connector->getType();
             if(childEle.hasAttribute("name")) {
                 text = getConnectionType(childEle.attribute("name"));

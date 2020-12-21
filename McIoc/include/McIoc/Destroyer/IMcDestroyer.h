@@ -34,7 +34,7 @@ struct McCustomDeleter
 //            d->destroy();
 //        }
         //! 取消dynamic_cast
-        auto d = ptr->property(MC_CUSTOM_DELETER_PROPERTY_NAME).value<IMcDestroyer *>();
+        auto d = ptr->property(Mc::Constant::Property::customDeleter).value<IMcDestroyer *>();
         if(d != nullptr) {
             d->destroy();
         } else {

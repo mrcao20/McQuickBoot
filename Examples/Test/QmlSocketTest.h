@@ -3,7 +3,7 @@
 #include <QObject>
 
 #include <McIoc/McMacroGlobal.h>
-#include <McIoc/ApplicationContext/McContainerGlobal.h>
+#include <McIoc/McGlobal.h>
 #include <McBoot/Socket/IMcSession.h>
 
 class QmlSocketTest : public QObject {

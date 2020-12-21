@@ -1,27 +1,20 @@
 #include "McBoot/Controller/impl/McQmlResponse.h"
 
-#include <QCoreApplication>
 #include <QVariant>
 #include <QJSValue>
 #include <QJSEngine>
-#include <QEvent>
 
 #include <McIoc/Utils/McScopedFunction.h>
 
 MC_DECL_PRIVATE_DATA(McQmlResponse)
-MC_PADDING_CLANG(7)
-bool isSyncCall{false};         // 是否让线程回到主线程再执行callback，默认不需要
 QJSValue callback;
-QVariant body;
-std::function<void(const QVariant &)> innerCallback;
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McQmlResponse)
 qRegisterMetaType<McQmlResponse *>("McQmlResponse");
 MC_INIT_END
 
-McQmlResponse::McQmlResponse(QObject *parent)
-    : QObject(parent)
+McQmlResponse::McQmlResponse(QObject *parent) : McAbstractResponse(parent)
 {
     MC_NEW_PRIVATE_DATA(McQmlResponse);
 }
@@ -30,56 +23,25 @@ McQmlResponse::~McQmlResponse()
 {
 }
 
-void McQmlResponse::setBody(const QVariant &var) noexcept 
-{
-    //! 2020-9-18
-    //! 由于js为单线程语言，只能在创建该对象的线程中调用回调函数
-    d->isSyncCall = true;
-    
-    d->body = var;
-    
-    if(d->isSyncCall) {
-        //! 发布的事件由QT删除
-        qApp->postEvent(this, new QEvent(static_cast<QEvent::Type>(QEvent::Type::User + 1)));
-        return;
-    }
-    
-    callCallback();
-}
-
 McQmlResponse *McQmlResponse::then(const QJSValue &callback) noexcept 
 {
     d->callback = callback;
-    d->isSyncCall = false;
+    setAsyncCall(false);
     return this;
 }
 
-McQmlResponse *McQmlResponse::syncThen(const QJSValue &callback) noexcept 
+McQmlResponse *McQmlResponse::syncThen(const QJSValue &callback) noexcept
 {
     d->callback = callback;
-    d->isSyncCall = true;
+    setAsyncCall(false);
     return this;
 }
 
-McQmlResponse *McQmlResponse::then(const std::function<void(const QVariant &)> &callback) noexcept
+McQmlResponse *McQmlResponse::asyncThen(const QJSValue &callback) noexcept
 {
-    d->innerCallback = callback;
-    d->isSyncCall = false;
+    d->callback = callback;
+    setAsyncCall(true);
     return this;
-}
-
-McQmlResponse *McQmlResponse::syncThen(const std::function<void(const QVariant &)> &callback) noexcept
-{
-    d->innerCallback = callback;
-    d->isSyncCall = true;
-    return this;
-}
-
-void McQmlResponse::customEvent(QEvent *event) 
-{
-    if(event->type() == QEvent::Type::User + 1) {
-        callCallback();
-    }
 }
 
 void McQmlResponse::callCallback() noexcept 
@@ -88,11 +50,6 @@ void McQmlResponse::callCallback() noexcept
         this->deleteLater();
     });
     Q_UNUSED(func)
-    
-    if(d->innerCallback) {
-        d->innerCallback(d->body);
-        return;
-    }
     
     if(!d->callback.isCallable()) {
         return;
@@ -105,6 +62,6 @@ void McQmlResponse::callCallback() noexcept
     if(!engine) {
         return;
     }
-    auto arg = engine->toScriptValue(d->body);
+    auto arg = engine->toScriptValue(body());
     d->callback.call(QJSValueList() << arg);
 }

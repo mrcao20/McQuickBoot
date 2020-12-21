@@ -43,6 +43,7 @@ int main(int argc, char *argv[])
     qWarning(MC_LOGGER("Lidar[0]")) << "Lidar[0]warning";
     qCritical(MC_LOGGER("Lidar[0]")) << "Lidar[0]critical";
     qInfo(MC_LOGGER("Lidar[0]")) << "Lidar[0]info";
+    qInfo(MC_LOGGER("TestLogger")) << "test logger";
     QtConcurrent::run([](){
         for(int i = 0; i < 100; i++) {
             qDebug() << i;

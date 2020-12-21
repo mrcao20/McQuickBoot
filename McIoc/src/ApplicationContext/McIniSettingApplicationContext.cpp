@@ -5,14 +5,14 @@ McIniSettingApplicationContext::McIniSettingApplicationContext(QObject *parent)
 {
 }
 
-McIniSettingApplicationContext::McIniSettingApplicationContext(
-        const QString &location, QObject *parent)
+McIniSettingApplicationContext::McIniSettingApplicationContext(const QString &location,
+                                                               QObject *parent)
     : McIniSettingApplicationContext(QStringList() << location, parent)
 {
 }
 
-McIniSettingApplicationContext::McIniSettingApplicationContext(
-        const QStringList &locations, QObject *parent)
+McIniSettingApplicationContext::McIniSettingApplicationContext(const QStringList &locations,
+                                                               QObject *parent)
     : McSettingApplicationContext(QSettings::IniFormat, locations, parent)
 {
 }

@@ -10,9 +10,8 @@ class MCIOC_EXPORT McDefaultBeanFactory : public McAbstractBeanFactory
 {
     Q_OBJECT
 public:
-    explicit McDefaultBeanFactory(
-            IMcPropertyConverterConstPtrRef converter,
-            QObject *parent = nullptr);
+    explicit McDefaultBeanFactory(IMcPropertyConverterConstPtrRef converter,
+                                  QObject *parent = nullptr);
     ~McDefaultBeanFactory() override;
     
 protected:

@@ -126,7 +126,7 @@ void McConfigurationFileBeanDefinitionReader::copyBeanDefinition(
     }
     
     copyBeanDefinition(setting, originSet, metaObj);
-    setting->setValue(MC_QSETTING_CLASS, metaObj->className());
+    setting->setValue(Mc::Constant::Tag::QSetting::clazz, metaObj->className());
     
     for(auto group : groups) {
         Q_UNUSED(group)
@@ -165,7 +165,7 @@ void McConfigurationFileBeanDefinitionReader::copyBeanDefinition(
             auto childProId = sharedIds.value(childProType)->qobjectPointerId;
             auto childMetaObj = QMetaType::metaObjectForType(childProId);
             copyBeanDefinition(setting, originSet, childMetaObj);
-            setting->setValue(MC_QSETTING_CLASS, childMetaObj->className());
+            setting->setValue(Mc::Constant::Tag::QSetting::clazz, childMetaObj->className());
         }
         originSet.endGroup();
         setting->endGroup();
@@ -206,7 +206,7 @@ QVariant McConfigurationFileBeanDefinitionReader::buildChildProperty(
             for(auto childKey : childProVar.keys()) {
                 childProVar[childKey] = buildChildProperty(childKey, childProVar.value(childKey), childMetaObj);
             }
-            childProVar.insert(MC_QSETTING_CLASS, childMetaObj->className());
+            childProVar.insert(Mc::Constant::Tag::QSetting::clazz, childMetaObj->className());
             p.second = childProVar;
             v = QVariant::fromValue(p);
         }
@@ -225,7 +225,7 @@ QVariant McConfigurationFileBeanDefinitionReader::buildChildProperty(
             for(auto childKey : map.keys()) {
                 map[childKey] = buildChildProperty(childKey, map.value(childKey), childMetaObj);
             }
-            map.insert(MC_QSETTING_CLASS, childMetaObj->className());
+            map.insert(Mc::Constant::Tag::QSetting::clazz, childMetaObj->className());
             v = map;
         }
         return varList;

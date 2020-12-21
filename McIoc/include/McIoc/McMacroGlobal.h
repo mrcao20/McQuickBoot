@@ -69,7 +69,11 @@
 
 #define MC_INIT(Class, ...) \
     const int Class::Class##_Static_Init = []() -> int { \
+        using ClassType = Class; \
         Mc::addPreRoutine(MC_ROUTINE_PRIORITY(__VA_ARGS__), [](){
+#define MC_AUTO_INIT(Class, ...) \
+    MC_INIT(Class, __VA_ARGS__) \
+    MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(Class))
 
 #define MC_DESTROY(...) \
     }); \
@@ -90,6 +94,9 @@
     }(); \
     }
 
+#define MC_CONNECT(sender, signal, receiver, slot, ...) \
+    Mc::Ioc::connect(&ClassType::staticMetaObject, sender, signal, receiver, slot, __VA_ARGS__)
+
 
 #ifndef Q_MOC_RUN            //!< 这行语句必须加，只有包围在这行语句之中的宏才能被识别为tag
 
@@ -98,10 +105,6 @@
 # define MC_THREAD_FINISHED   //!< 当bean的线程被移动之后调用
 
 #endif //! !Q_MOC_RUN
-
-//! Inner QObject Property
-#define MC_CUSTOM_DELETER_PROPERTY_NAME "__mc__customDeleter"
-//!< Inner QObject Property
 
 //! Q_CLASSINFO
 #define MC_COMPONENT_TAG "Component"
@@ -121,31 +124,6 @@
     Q_PROPERTY(Type name MEMBER name) \
     Type name __VA_ARGS__;
 //!< PROPERTY
-
-#define MC_BEANS_TAG "beans"
-#define MC_BEAN_TAG "bean"
-#define MC_PROPERTY_TAG "property"
-#define MC_CONNECT_TAG "connect"
-
-#define MC_THIS_TAG "this"
-#define MC_SENDER_TAG "sender"
-#define MC_SIGNAL_TAG "signal"
-#define MC_RECEIVER_TAG "receiver"
-#define MC_SLOT_TAG "slot"
-#define MC_CONNECTION_TYPE_TAG "type"
-
-//! QSetting Config
-#define MC_QSETTING_CLASS "Class"
-#define MC_QSETTING_PLUGIN "Plugin"
-#define MC_QSETTING_SINGLETON "Singleton"
-#define MC_QSETTING_CONNECTS "Connects"
-#define MC_QSETTING_SENDER "Sender"
-#define MC_QSETTING_SINGAL "Signal"
-#define MC_QSETTING_RECEIVER "Receiver"
-#define MC_QSETTING_SLOT "Slot"
-#define MC_QSETTING_TYPE "Type"
-#define MC_QSETTING_REF_TAG "$"
-//!< QSetting Config
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
 #define qInfo QMessageLogger(QT_MESSAGELOG_FILE, QT_MESSAGELOG_LINE, QT_MESSAGELOG_FUNC).debug

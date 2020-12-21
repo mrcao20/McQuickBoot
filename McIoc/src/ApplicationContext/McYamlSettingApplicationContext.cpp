@@ -10,14 +10,14 @@ McYamlSettingApplicationContext::McYamlSettingApplicationContext(QObject *parent
 {
 }
 
-McYamlSettingApplicationContext::McYamlSettingApplicationContext(
-        const QString &location, QObject *parent)
+McYamlSettingApplicationContext::McYamlSettingApplicationContext(const QString &location,
+                                                                 QObject *parent)
     : McYamlSettingApplicationContext(QStringList() << location, parent)
 {
 }
 
-McYamlSettingApplicationContext::McYamlSettingApplicationContext(
-        const QStringList &locations, QObject *parent)
+McYamlSettingApplicationContext::McYamlSettingApplicationContext(const QStringList &locations,
+                                                                 QObject *parent)
     : McSettingApplicationContext(McYaml::format(), locations, parent)
 {
 }

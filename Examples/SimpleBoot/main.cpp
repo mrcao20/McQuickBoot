@@ -14,9 +14,7 @@ int main(int argc, char *argv[])
         app.quit();
     });
     McQuickBootSimple::init();
-    $->invoke("aaa.bbb")->then([](const QVariant &var){
-        qDebug() << "-----" << var;
-    });
+    $.invoke("aaa.bbb").then([](const QVariant &var) { qDebug() << "-----" << var; });
     QHash<int, QString> hhh;
     hhh.insert(-10, "-1");
     hhh.insert(0, "0");

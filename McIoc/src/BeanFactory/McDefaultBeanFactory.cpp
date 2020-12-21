@@ -86,7 +86,7 @@ QVariant McDefaultBeanFactory::doCreate(
     auto customDeleter = var.value<IMcDestroyerPtr>();
     if(!customDeleter.isNull()) {
         //! 这里如果传递共享指针，那么该对象将永远不会析构
-        bean->setProperty(MC_CUSTOM_DELETER_PROPERTY_NAME, QVariant::fromValue(customDeleter.data()));
+        bean->setProperty(Mc::Constant::Property::customDeleter, QVariant::fromValue(customDeleter.data()));
     }
     return var;
 }
@@ -212,7 +212,7 @@ QObjectPtr McDefaultBeanFactory::getPropertyObject(QObjectConstPtrRef bean,
                                                    const QVariantMap &proValues) noexcept 
 {
     QObjectPtr obj;
-    if(proName == MC_THIS_TAG) {
+    if(proName == Mc::Constant::Tag::Xml::self) {
         obj = bean;
     }else{
         if(!proValues.contains(proName)) {

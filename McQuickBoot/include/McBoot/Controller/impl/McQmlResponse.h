@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../McBootGlobal.h"
+#include "McAbstractResponse.h"
 
 QT_BEGIN_NAMESPACE
 class QJSValue;
@@ -9,7 +9,7 @@ QT_END_NAMESPACE
 
 MC_FORWARD_DECL_PRIVATE_DATA(McQmlResponse);
 
-class MCQUICKBOOT_EXPORT McQmlResponse : public QObject 
+class MCQUICKBOOT_EXPORT McQmlResponse : public McAbstractResponse
 {
     Q_OBJECT
     MC_DECL_INIT(McQmlResponse)
@@ -17,20 +17,13 @@ public:
     explicit McQmlResponse(QObject *parent = nullptr);
     ~McQmlResponse() override;
     
-    void setBody(const QVariant &var) noexcept;
-
     Q_INVOKABLE McQmlResponse *then(const QJSValue &callback) noexcept;
     Q_INVOKABLE McQmlResponse *syncThen(const QJSValue &callback) noexcept;
-    
-    McQmlResponse *then(const std::function<void(const QVariant &)> &callback) noexcept;
-    McQmlResponse *syncThen(const std::function<void(const QVariant &)> &callback) noexcept;
+    Q_INVOKABLE McQmlResponse *asyncThen(const QJSValue &callback) noexcept;
     
 protected:
-    void customEvent(QEvent *event) override;
-    
-private:
-    void callCallback() noexcept;
-    
+    void callCallback() noexcept override;
+
 private:
     MC_DECL_PRIVATE(McQmlResponse)
 };

@@ -9,10 +9,11 @@
 #include <McIoc/ApplicationContext/impl/McAnnotationApplicationContext.h>
 #include <McIoc/BeanDefinition/IMcBeanDefinition.h>
 
+#include "McBoot/BeanDefinitionReader/impl/McConfigurationFileBeanDefinitionReader.h"
 #include "McBoot/Controller/impl/McControllerContainer.h"
 #include "McBoot/Model/McModelContainer.h"
+#include "McBoot/Requestor/McQmlRequestor.h"
 #include "McBoot/Socket/impl/McQmlSocketContainer.h"
-#include "McBoot/BeanDefinitionReader/impl/McConfigurationFileBeanDefinitionReader.h"
 
 namespace {
 
@@ -30,7 +31,7 @@ MC_GLOBAL_STATIC(McQuickBootStaticData, mcQuickBootStaticData)
 MC_DECL_PRIVATE_DATA(McQuickBoot)
 McAnnotationApplicationContextPtr context;
 QQmlEngine *engine{nullptr};
-McQmlRequestorPtr requestor;
+McCppRequestorPtr requestor;
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McQuickBoot)
@@ -78,14 +79,13 @@ void McQuickBoot::init(QCoreApplication *app, QQmlApplicationEngine *engine) noe
     
     auto socketContainer = appCtx->getBean<McQmlSocketContainer>("socketContainer");
     socketContainer->init(boot);
-    
-    auto requestor = appCtx->getBean<McQmlRequestor>("requestor");
+
+    auto requestor = appCtx->getBean<McQmlRequestor>("qmlRequestor");
     requestor->setControllerContainer(controllerContainer);
     requestor->setSocketContainer(socketContainer);
-    
-    boot->d->requestor = appCtx->getBean<McQmlRequestor>("requestor");
+
+    boot->d->requestor = appCtx->getBean<McCppRequestor>("cppRequestor");
     boot->d->requestor->setControllerContainer(controllerContainer);
-    boot->d->requestor->setSocketContainer(socketContainer);
     
     //! engine的newQObject函数会将其参数所有权转移到其返回的QJSValue中
     QJSValue jsObj = engine->newQObject(requestor.data());
@@ -123,13 +123,11 @@ void McQuickBoot::setAfterInitFunc(const function<void(QCoreApplication *, QQmlA
     mcQuickBootStaticData->afterInitFunc = func;
 }
 
-McQmlRequestorPtr McQuickBoot::requestor() noexcept
+McCppRequestor &McQuickBoot::requestor() noexcept
 {
     McQuickBootPtr &boot = mcQuickBootStaticData->boot;
-    if(boot.isNull()) {
-        return McQmlRequestorPtr();
-    }
-    return boot->d->requestor;
+    Q_ASSERT_X(!boot.isNull(), "McQuickBoot::requestor()", "please call init before");
+    return *boot->d->requestor.data();
 }
 
 void McQuickBoot::initBoot(QQmlEngine *engine) noexcept 

@@ -9,7 +9,6 @@
 MC_DECL_PRIVATE_DATA(McAbstractAppender)
 QString threshold;                  //!< 全小写
 QList<QtMsgType> types;
-MC_PADDING_CLANG(7)
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McAbstractAppender)

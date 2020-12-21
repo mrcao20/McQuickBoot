@@ -2,8 +2,7 @@
 
 #include "McAbstarctPropertyConverter.h"
 
-class MCIOC_EXPORT McDefaultPropertyConverter
-        : public McAbstarctPropertyConverter 
+class MCIOC_EXPORT McDefaultPropertyConverter : public McAbstarctPropertyConverter
 {
     Q_OBJECT
 public:

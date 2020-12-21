@@ -2,9 +2,7 @@
 
 #include "../IMcPropertyParser.h"
 
-class McAbstractPropertyParser
-        : public QObject
-        , public IMcPropertyParser 
+class McAbstractPropertyParser : public QObject, public IMcPropertyParser
 {
     Q_OBJECT
 public:

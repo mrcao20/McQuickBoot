@@ -10,10 +10,11 @@
 
 #include "Application/McSingleApplication.h"
 #include "Application/McSingleCoreApplication.h"
-#include "McBoot/Requestor/McQmlRequestor.h"
+#include "McBoot/Controller/impl/McCppResponse.h"
+#include "McBoot/Requestor/McCppRequestor.h"
 
 //! 此宏所对应的对象将在Application析构时销毁，所以一旦Application开始析构，就再也不要调用此宏
-#define $ McQuickBoot::requestor()
+#define $ (McQuickBoot::requestor())
 
 QT_BEGIN_NAMESPACE
 class QQuickView;
@@ -38,13 +39,14 @@ public:
     static QQuickView *createQuickView(const QString &source, QWindow *parent = nullptr) noexcept;
     
     static void setPreInitFunc(const function<void(QCoreApplication *)> &func) noexcept;
-    static void setAfterInitFunc(const function<void(QCoreApplication *, QQmlApplicationEngine *)> &func) noexcept;
-    
-    static McQmlRequestorPtr requestor() noexcept;
-    
+    static void setAfterInitFunc(
+        const function<void(QCoreApplication *, QQmlApplicationEngine *)> &func) noexcept;
+
+    static McCppRequestor &requestor() noexcept;
+
     template<typename T = QGuiApplication>
     static int run(int argc, char *argv[], const QString &path = "qrc:/main.qml") noexcept;
-    
+
     /*!
      * \brief singleRun
      * 

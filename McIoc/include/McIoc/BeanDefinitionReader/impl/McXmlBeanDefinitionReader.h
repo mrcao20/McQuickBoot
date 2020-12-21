@@ -19,12 +19,12 @@ class MCIOC_EXPORT McXmlBeanDefinitionReader : public McAbstractBeanDefinitionRe
     Q_OBJECT
     using McAbstractBeanDefinitionReader::readBeanDefinition;
 public:
-    explicit McXmlBeanDefinitionReader(
-        IMcPropertyParserConstPtrRef parser,
-        QIODeviceConstPtrRef device, QObject *parent = nullptr);
-    explicit McXmlBeanDefinitionReader(
-        IMcPropertyParserConstPtrRef parser,
-        const QList<QIODevicePtr> &devices, QObject *parent = nullptr);
+    explicit McXmlBeanDefinitionReader(IMcPropertyParserConstPtrRef parser,
+                                       QIODeviceConstPtrRef device,
+                                       QObject *parent = nullptr);
+    explicit McXmlBeanDefinitionReader(IMcPropertyParserConstPtrRef parser,
+                                       const QList<QIODevicePtr> &devices,
+                                       QObject *parent = nullptr);
     virtual ~McXmlBeanDefinitionReader() override;
 
 protected:

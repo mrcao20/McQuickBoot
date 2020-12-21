@@ -2,8 +2,7 @@
 
 #include "McSettingApplicationContext.h"
 
-class MCIOC_EXPORT McYamlSettingApplicationContext 
-        : public McSettingApplicationContext 
+class MCIOC_EXPORT McYamlSettingApplicationContext : public McSettingApplicationContext
 {
     Q_OBJECT
     MC_DECL_INIT(McYamlSettingApplicationContext)

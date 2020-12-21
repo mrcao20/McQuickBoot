@@ -11,7 +11,6 @@ HEADERS += \
     $$PWD/include/McIoc/ApplicationContext/IMcApplicationContext.h \
     $$PWD/include/McIoc/ApplicationContext/IMcReadableApplicationContext.h \
     $$PWD/include/McIoc/ApplicationContext/IMcRefreshableApplicationContext.h \
-    $$PWD/include/McIoc/ApplicationContext/McContainerGlobal.h \
     $$PWD/include/McIoc/ApplicationContext/impl/McAbstractApplicationContext.h \
     $$PWD/include/McIoc/ApplicationContext/impl/McAnnotationApplicationContext.h \
     $$PWD/include/McIoc/ApplicationContext/impl/McLocalPathApplicationContext.h \
@@ -36,6 +35,7 @@ HEADERS += \
     $$PWD/include/McIoc/BeanFactory/impl/McMetaTypeId.h \
     $$PWD/include/McIoc/Destroyer/IMcDestroyer.h \
     $$PWD/include/McIoc/Destroyer/impl/McNormalDestroyer.h \
+    $$PWD/include/McIoc/McConstantGlobal.h \
     $$PWD/include/McIoc/McVersion.h \
     $$PWD/include/McIoc/PropertyParser/IMcPropertyConverter.h \
     $$PWD/include/McIoc/PropertyParser/IMcPropertyParser.h \
@@ -47,6 +47,7 @@ HEADERS += \
     $$PWD/include/McIoc/Slot/IMcSlot.h \
     $$PWD/include/McIoc/Thread/IMcDeleteThreadWhenQuit.h \
     $$PWD/include/McIoc/Thread/impl/McDefaultDeleteThreadWhenQuit.h \
+    $$PWD/include/McIoc/Utils/IMcNonCopyable.h \
     $$PWD/include/McIoc/Utils/Macro/MacroFillingFunc.h \
     $$PWD/include/McIoc/Utils/Macro/MacroSize.h \
     $$PWD/include/McIoc/Utils/McScopedFunction.h \
@@ -77,7 +78,6 @@ HEADERS += \
 SOURCES += \
     $$PWD/src/ApplicationContext/McAbstractApplicationContext.cpp \
     $$PWD/src/ApplicationContext/McAnnotationApplicationContext.cpp \
-    $$PWD/src/ApplicationContext/McContainerGlobal.cpp \
     $$PWD/src/ApplicationContext/McLocalPathApplicationContext.cpp \
     $$PWD/src/ApplicationContext/McReadableApplicationContext.cpp \
     $$PWD/src/ApplicationContext/McXmlApplicationContext.cpp \

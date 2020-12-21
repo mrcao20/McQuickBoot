@@ -4,11 +4,11 @@
 #include <QPointer>
 #include <QDebug>
 
-#include "McBoot/Controller/impl/McQmlResponse.h"
 #include "McBoot/Controller/IMcControllerContainer.h"
+#include "McBoot/Controller/impl/McAbstractResponse.h"
 
 MC_DECL_PRIVATE_DATA(McRequestRunner)
-QPointer<McQmlResponse> response;
+QPointer<McAbstractResponse> response;
 IMcControllerContainerPtr controllerContainer;
 QString uri;
 QVariant body;
@@ -23,7 +23,7 @@ McRequestRunner::~McRequestRunner()
 {
 }
 
-void McRequestRunner::setResponse(McQmlResponse *val) noexcept 
+void McRequestRunner::setResponse(McAbstractResponse *val) noexcept
 {
     d->response = val;
 }

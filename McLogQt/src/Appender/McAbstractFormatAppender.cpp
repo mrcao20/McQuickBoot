@@ -115,6 +115,11 @@ void McAbstractFormatAppender::append_helper(const QString &msg) noexcept
         return;
     }
     out->write(msg.toLocal8Bit());
-    out->write("\n", 1);
+#ifdef Q_OS_WIN
+    QByteArray newLine = "\r\n";
+#else
+    QByteArray newLine = "\n";
+#endif
+    out->write(newLine);
     writeAfter();
 }

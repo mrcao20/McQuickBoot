@@ -19,12 +19,12 @@ MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(McLoggerRepository))
 MC_REGISTER_MAP_CONVERTER(LoggerMap)
 MC_INIT_END
 
-McLoggerRepository::McLoggerRepository() 
+McLoggerRepository::McLoggerRepository()
 {
     MC_NEW_PRIVATE_DATA(McLoggerRepository);
 }
 
-McLoggerRepository::~McLoggerRepository() 
+McLoggerRepository::~McLoggerRepository()
 {
     if(d->thread) {
         if(QThread::currentThread() == thread()) {
@@ -44,22 +44,22 @@ McLoggerRepository::~McLoggerRepository()
     }
 }
 
-QMap<QString, IMcLoggerPtr> McLoggerRepository::loggers() const noexcept 
+QMap<QString, IMcLoggerPtr> McLoggerRepository::loggers() const noexcept
 {
     return d->loggers;
 }
 
-void McLoggerRepository::addLogger(const QString &loggerName, IMcLoggerConstPtrRef logger) noexcept 
+void McLoggerRepository::addLogger(const QString &loggerName, IMcLoggerConstPtrRef logger) noexcept
 {
     d->loggers.insert(loggerName, logger);
 }
 
-void McLoggerRepository::setLogger(const QMap<QString, IMcLoggerPtr> &loggers) noexcept 
+void McLoggerRepository::setLogger(const QMap<QString, IMcLoggerPtr> &loggers) noexcept
 {
     d->loggers = loggers;
 }
 
-IMcLoggerPtr McLoggerRepository::getLogger(const QString &loggerName) noexcept 
+IMcLoggerPtr McLoggerRepository::getLogger(const QString &loggerName) noexcept
 {
     if(!d->loggers.contains(loggerName)) {
         return IMcLoggerPtr();

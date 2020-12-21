@@ -9,8 +9,7 @@ MC_FORWARD_DECL_PRIVATE_DATA(McDefaultDeleteThreadWhenQuit);
  * 
  * 继承该类之后，当对象析构时，会同时析构该对象的生存线程
  */
-class MCIOC_EXPORT McDefaultDeleteThreadWhenQuit 
-        : public IMcDeleteThreadWhenQuit 
+class MCIOC_EXPORT McDefaultDeleteThreadWhenQuit : public IMcDeleteThreadWhenQuit
 {
     MC_DEFINE_TYPELIST(MC_DECL_TYPELIST(IMcDeleteThreadWhenQuit))
 public:

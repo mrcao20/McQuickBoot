@@ -8,14 +8,14 @@ McLocalPathApplicationContext::McLocalPathApplicationContext(QObject *parent)
 {
 }
 
-McLocalPathApplicationContext::McLocalPathApplicationContext(
-        const QString &location, QObject *parent)
+McLocalPathApplicationContext::McLocalPathApplicationContext(const QString &location,
+                                                             QObject *parent)
     : McLocalPathApplicationContext(QStringList() << location, parent)
 {
 }
 
-McLocalPathApplicationContext::McLocalPathApplicationContext(
-        const QStringList &locations, QObject *parent)
+McLocalPathApplicationContext::McLocalPathApplicationContext(const QStringList &locations,
+                                                             QObject *parent)
     : McLocalPathApplicationContext(parent)
 {
     QList<QIODevicePtr> devices;

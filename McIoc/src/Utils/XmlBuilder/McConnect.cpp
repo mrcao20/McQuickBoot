@@ -46,12 +46,12 @@ void McConnect::setConnectionType(const QString &val) noexcept
 
 QDomElement McConnect::toDomElement(QDomDocument &doc) const noexcept
 {
-    QDomElement con = doc.createElement(MC_CONNECT_TAG);
-    con.setAttribute(MC_SENDER_TAG, d->sender);
-    con.setAttribute(MC_SIGNAL_TAG, d->signal);
-    con.setAttribute(MC_RECEIVER_TAG, d->receiver);
-    con.setAttribute(MC_SLOT_TAG, d->slot);
-    con.setAttribute(MC_CONNECTION_TYPE_TAG, d->connectionType);
+    QDomElement con = doc.createElement(Mc::Constant::Tag::Xml::connect);
+    con.setAttribute(Mc::Constant::Tag::Xml::sender, d->sender);
+    con.setAttribute(Mc::Constant::Tag::Xml::signal, d->signal);
+    con.setAttribute(Mc::Constant::Tag::Xml::receiver, d->receiver);
+    con.setAttribute(Mc::Constant::Tag::Xml::slot, d->slot);
+    con.setAttribute(Mc::Constant::Tag::Xml::type, d->connectionType);
     return con;
 }
 

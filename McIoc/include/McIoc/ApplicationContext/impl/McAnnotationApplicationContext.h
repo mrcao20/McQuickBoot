@@ -4,8 +4,7 @@
 
 MC_FORWARD_DECL_PRIVATE_DATA(McAnnotationApplicationContext);
 
-class MCIOC_EXPORT McAnnotationApplicationContext 
-        : public McReadableApplicationContext 
+class MCIOC_EXPORT McAnnotationApplicationContext : public McReadableApplicationContext
 {
     Q_OBJECT
 public:
@@ -18,7 +17,6 @@ public:
     
     ~McAnnotationApplicationContext() override;
     
-    static void insertRegistry(const QString &typeName) noexcept;
     static void addConnect(const QString &beanName,
                            const QString &sender,
                            const QString &signal,
