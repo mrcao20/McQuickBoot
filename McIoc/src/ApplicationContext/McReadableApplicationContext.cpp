@@ -55,14 +55,5 @@ void McReadableApplicationContext::setReader(
 {
     d->beanDefinitionReader = reader;
     
-    /* 默认不调用此函数，即context默认仍然为懒加载，在IOCBoot中默认调用此函数来达到其
-     * 预加载功能，即把是否懒加载的选择权交给用户代码
-     */
-//    refresh();
-    readBeans();
-}
-
-void McReadableApplicationContext::doRefresh() noexcept 
-{
     readBeans();
 }

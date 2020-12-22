@@ -1,8 +1,8 @@
 %{Cpp:LicenseTemplate}\
 @if "%{HdrDirPath}" == "%{SrcDirPath}"
-    #include "%{JS: Util.relativeFilePath('%{Path}/%{HdrFileName}', '%{Path}' + '/' + Util.path('%{SrcFileName}'))}"
+#include "%{JS: Util.relativeFilePath('%{Path}/%{HdrFileName}', '%{Path}' + '/' + Util.path('%{SrcFileName}'))}"
 @else
-    #include "%{JS: value('HdrPath').substr(value('IncludeBasePath').length)}"
+#include "%{JS: value('HdrPath').substr(value('IncludeBasePath').length)}"
 @endif
 %{JS: Cpp.openNamespaces('%{Class}')}
 MC_STATIC()

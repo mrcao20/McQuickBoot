@@ -1,7 +1,6 @@
 #include "McBoot/Requestor/McAbstractRequestor.h"
 
 #include <QCoreApplication>
-#include <QDebug>
 #include <QEvent>
 #include <QThreadPool>
 
@@ -46,12 +45,10 @@ McAbstractRequestor::McAbstractRequestor(QObject *parent) : QObject(parent)
 
 McAbstractRequestor::~McAbstractRequestor()
 {
-    qDebug() << "~McAbstractRequestor";
 }
 
 void McAbstractRequestor::destroy() noexcept
 {
-    qDebug() << "McAbstractRequestor is called destroy";
 }
 
 qint64 McAbstractRequestor::maxThreadCount() const noexcept

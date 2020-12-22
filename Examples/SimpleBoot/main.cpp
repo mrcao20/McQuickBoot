@@ -1,20 +1,38 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
-#include <McBoot/McQuickBootSimple.h>
 #include <McBoot/Controller/impl/McResult.h>
+#include <McBoot/McQuickBootSimple.h>
 
-#include <QTimer>
 #include <QDebug>
+#include <QJsonArray>
+#include <QTimer>
+
+#include "Param.h"
+#include "Test.h"
+
+Q_DECLARE_METATYPE(std::function<void(int)>)
 
 int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
-    QTimer::singleShot(2000, [&app](){
-        app.quit();
-    });
+    QTimer::singleShot(2000, [&app]() { app.quit(); });
+    auto metaObj = &Test::staticMetaObject;
+    for (int i = 0; i < metaObj->methodCount(); ++i) {
+        auto m = metaObj->method(i);
+        qDebug() << m.parameterTypes();
+    }
+    Test t;
+    qRegisterMetaType<std::function<void(int)>>("std::function<void(int)>");
+    std::function<void(int)> a = [](int b) { qDebug() << "++++++++++++++" << b; };
+    QMetaObject::invokeMethod(&t, "aaa", Q_ARG(std::function<void(int)>, a));
     McQuickBootSimple::init();
-    $.invoke("aaa.bbb").then([](const QVariant &var) { qDebug() << "-----" << var; });
+    ParamPtr p = ParamPtr::create();
+    p->aaa = 1000;
+    $.invoke("aaa.bbb",
+             QVariantList() << "lllllllll" << QJsonObject({{"zzz", "mmmm"}})
+                            << QVariant::fromValue(p) << QVariant::fromValue(a))
+        .then([](const QVariant &var) { qDebug() << "-----" << var; });
     QHash<int, QString> hhh;
     hhh.insert(-10, "-1");
     hhh.insert(0, "0");

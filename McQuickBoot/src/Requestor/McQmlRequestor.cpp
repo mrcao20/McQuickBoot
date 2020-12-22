@@ -19,10 +19,7 @@ McQmlRequestor::McQmlRequestor(QObject *parent) : McAbstractRequestor(parent)
     MC_NEW_PRIVATE_DATA(McQmlRequestor);
 }
 
-McQmlRequestor::~McQmlRequestor() 
-{
-    qDebug() << "~McQmlRequestor";
-}
+McQmlRequestor::~McQmlRequestor() {}
 
 void McQmlRequestor::setSocketContainer(IMcQmlSocketContainerConstPtrRef val) noexcept
 {
@@ -37,11 +34,11 @@ McQmlResponse *McQmlRequestor::invoke(const QString &uri) noexcept
     return response; //!< 没有指定父对象，该对象将在整个请求完毕时被析构
 }
 
-McQmlResponse *McQmlRequestor::invoke(const QString &uri, const QJsonObject &data) noexcept
+McQmlResponse *McQmlRequestor::invoke(const QString &uri, const QJSValue &data) noexcept
 {
     auto response = new McQmlResponse();
     QQmlEngine::setObjectOwnership(response, QQmlEngine::CppOwnership);
-    run(response, uri, data);
+    run(response, uri, data.toVariant());
     return response; //!< 没有指定父对象，该对象将在整个请求完毕时被析构
 }
 

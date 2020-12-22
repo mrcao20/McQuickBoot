@@ -44,7 +44,6 @@ McQuickBootSimple::McQuickBootSimple(QObject *parent)
 
 McQuickBootSimple::~McQuickBootSimple()
 {
-    qDebug() << "~McQuickBootSimple";
 }
 
 void McQuickBootSimple::init() noexcept
@@ -73,11 +72,16 @@ void McQuickBootSimple::init() noexcept
     boot->d->requestor->setControllerContainer(controllerContainer);
 }
 
-McCppRequestor &McQuickBootSimple::requestor() noexcept
+QSharedPointer<McQuickBootSimple> McQuickBootSimple::instance() noexcept
 {
     McQuickBootSimplePtr &boot = mcQuickBootSimpleStaticData->boot;
-    Q_ASSERT_X(!boot.isNull(), "McQuickBootSimplePtr::requestor()", "please call init before");
-    return *boot->d->requestor.data();
+    Q_ASSERT_X(!boot.isNull(), "McQuickBootSimplePtr::instance()", "please call init before");
+    return boot;
+}
+
+McCppRequestor &McQuickBootSimple::requestor() const noexcept
+{
+    return *d->requestor.data();
 }
 
 IMcApplicationContextPtr McQuickBootSimple::getApplicationContext() const noexcept 

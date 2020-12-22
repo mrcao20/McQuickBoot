@@ -1,0 +1,18 @@
+#include "Param.h"
+
+MC_STATIC()
+MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(Param))
+MC_STATIC_END
+
+MC_DECL_PRIVATE_DATA(Param)
+MC_DECL_PRIVATE_DATA_END
+
+Param::Param(QObject *parent) noexcept
+    : QObject(parent)
+{
+    MC_NEW_PRIVATE_DATA(Param);
+}
+
+Param::~Param()
+{
+}

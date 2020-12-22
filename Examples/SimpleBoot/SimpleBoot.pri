@@ -1,10 +1,12 @@
 INCLUDEPATH += $$PWD/include/
 
 HEADERS += \
+    $$PWD/include/Param.h \
     $$PWD/include/Test.h
 
 SOURCES += \
     $$PWD/main.cpp \
+    $$PWD/src/Param.cpp \
     $$PWD/src/Test.cpp
 
 RESOURCES += \

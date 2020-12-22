@@ -6,7 +6,7 @@
 #include "McBoot/Requestor/McCppRequestor.h"
 
 //! 此宏所对应的对象将在Application析构时销毁，所以一旦Application开始析构，就再也不要调用此宏
-#define $ (McQuickBootSimple::requestor())
+#define $ (McQuickBootSimple::instance()->requestor())
 
 MC_FORWARD_DECL_CLASS(IMcApplicationContext);
 
@@ -21,8 +21,9 @@ public:
     ~McQuickBootSimple() override;
     
     static void init() noexcept;
-    static McCppRequestor &requestor() noexcept;
+    static QSharedPointer<McQuickBootSimple> instance() noexcept;
 
+    McCppRequestor &requestor() const noexcept;
     IMcApplicationContextPtr getApplicationContext() const noexcept override;
 
 private:

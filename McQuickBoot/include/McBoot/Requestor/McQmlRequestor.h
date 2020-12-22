@@ -25,7 +25,7 @@ public:
     void setSocketContainer(IMcQmlSocketContainerConstPtrRef val) noexcept;
 
     Q_INVOKABLE McQmlResponse *invoke(const QString &uri) noexcept;
-    Q_INVOKABLE McQmlResponse *invoke(const QString &uri, const QJsonObject &data) noexcept;
+    Q_INVOKABLE McQmlResponse *invoke(const QString &uri, const QJSValue &data) noexcept;
     Q_INVOKABLE McQmlSocket *addConnect(const QString &uri) noexcept;
     Q_INVOKABLE McQmlSocket *addConnect(const QString &uri, const QJSValue &data) noexcept;
 

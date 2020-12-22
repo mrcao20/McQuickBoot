@@ -24,9 +24,6 @@ public:
     
     void setReader(IMcBeanDefinitionReaderConstPtrRef reader) noexcept override;
     
-protected:
-    void doRefresh() noexcept override;
-    
 private:
     MC_DECL_PRIVATE(McReadableApplicationContext)
 };

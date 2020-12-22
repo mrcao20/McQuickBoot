@@ -3,7 +3,10 @@
 #include <QObject>
 #include <McBoot/McBootGlobal.h>
 
+#include <QJsonArray>
 #include <QJsonObject>
+
+#include "Param.h"
 
 MC_FORWARD_DECL_PRIVATE_DATA(Test);
 
@@ -16,9 +19,14 @@ class Test : public QObject
 public:
     Q_INVOKABLE explicit Test(QObject *parent = nullptr);
     ~Test();
-    
-    Q_INVOKABLE QJsonObject bbb();
-    
+
+    Q_INVOKABLE QJsonObject bbb(const QString &a,
+                                const QJsonObject &obj,
+                                const ParamPtr &p,
+                                const std::function<void(int)> &func);
+
+    Q_INVOKABLE void aaa(const std::function<void(int)> &func);
+
 private:
     MC_DECL_PRIVATE(Test)
 };

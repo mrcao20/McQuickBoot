@@ -14,7 +14,7 @@
 #include "McBoot/Requestor/McCppRequestor.h"
 
 //! 此宏所对应的对象将在Application析构时销毁，所以一旦Application开始析构，就再也不要调用此宏
-#define $ (McQuickBoot::requestor())
+#define $ (McQuickBoot::instance()->requestor())
 
 QT_BEGIN_NAMESPACE
 class QQuickView;
@@ -37,12 +37,12 @@ public:
     static void init(QCoreApplication *app, QQmlApplicationEngine *engine) noexcept;
     static QQmlEngine *engine() noexcept;
     static QQuickView *createQuickView(const QString &source, QWindow *parent = nullptr) noexcept;
-    
+
+    static QSharedPointer<McQuickBoot> instance() noexcept;
+
     static void setPreInitFunc(const function<void(QCoreApplication *)> &func) noexcept;
     static void setAfterInitFunc(
         const function<void(QCoreApplication *, QQmlApplicationEngine *)> &func) noexcept;
-
-    static McCppRequestor &requestor() noexcept;
 
     template<typename T = QGuiApplication>
     static int run(int argc, char *argv[], const QString &path = "qrc:/main.qml") noexcept;
@@ -58,9 +58,10 @@ public:
      */
     template<typename T = McSingleApplication>
     static int singleRun(int argc, char *argv[], const QString &path = "qrc:/main.qml") noexcept;
- 
+
     void initBoot(QQmlEngine *engine) noexcept;
-    
+
+    McCppRequestor &requestor() const noexcept;
     IMcApplicationContextPtr getApplicationContext() const noexcept override;
     
     //! 获取所有被Component标记的bean

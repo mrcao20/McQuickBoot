@@ -116,8 +116,6 @@ QHash<QString, IMcBeanDefinitionPtr> McAbstractApplicationContext::getBeanDefini
 
 void McAbstractApplicationContext::refresh(QThread *thread) noexcept 
 {
-    doRefresh();
-    
     auto beanDefinitions = getBeanDefinitions();
     auto beanNames = beanDefinitions.keys();    //!< 获取所有beanName
     for(auto beanName : beanNames) {

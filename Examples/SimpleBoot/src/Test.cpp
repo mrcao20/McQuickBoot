@@ -21,8 +21,17 @@ Test::~Test()
 {
 }
 
-QJsonObject Test::bbb()
+QJsonObject Test::bbb(const QString &a,
+                      const QJsonObject &obj,
+                      const ParamPtr &p,
+                      const std::function<void(int)> &func)
 {
-    qDebug() << "bbb";
+    func(300);
+    qDebug() << "bbb" << a << obj << p->aaa;
     return QJsonObject({{"ccc", "bbb"}});
+}
+
+void Test::aaa(const std::function<void(int)> &func)
+{
+    func(200);
 }

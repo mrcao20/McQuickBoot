@@ -39,9 +39,6 @@ public:
     void removeRelatedApplicationContext(IMcApplicationContextConstPtrRef appCtx) noexcept override;
     QList<IMcApplicationContextPtr> getRelatedApplicationContexts() noexcept override;
     
-protected:
-    virtual void doRefresh() noexcept = 0;
-    
 private:
     MC_DECL_PRIVATE(McAbstractApplicationContext)
 };
