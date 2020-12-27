@@ -6,8 +6,9 @@
 #include <QDir>
 #include <QDebug>
 
-#include "McIoc/BeanFactory/impl/McBeanReference.h"
 #include "McIoc/BeanFactory/impl/McBeanEnum.h"
+#include "McIoc/BeanFactory/impl/McBeanPlaceholder.h"
+#include "McIoc/BeanFactory/impl/McBeanReference.h"
 
 McDefaultPropertyParser::McDefaultPropertyParser(QObject *parent)
     : McAbstractPropertyParser(parent)
@@ -73,46 +74,71 @@ QVariant McDefaultPropertyParser::parseMap(const QDomElement &ele) const noexcep
     QMap<QVariant, QVariant> map;
     
     auto childNodes = ele.childNodes();
-    for (int i = 0; i < childNodes.size(); ++i) {
-        auto ele = childNodes.at(i).toElement();
-        if (ele.isNull() || ele.tagName() != "entry")
-            continue;
-        QVariant mapKey, mapValue;
-        if(ele.hasAttribute("key")) {
-            mapKey = ele.attribute("key");
-        }
-        if(ele.hasAttribute("value")) {
-            mapValue = ele.attribute("value");
-        }
-        
-        auto entryChildEle = ele.firstChildElement();
-        while(!entryChildEle.isNull()) {
-            if(entryChildEle.tagName() == "key") {
-                auto keyChildEle = entryChildEle.firstChildElement();
-                if(keyChildEle.isNull()) {
-                    mapKey = entryChildEle.text();
-                }else{
-                    //! 递归解析
-                    mapKey = parse(keyChildEle);
+    if (ele.hasAttribute("plh")) {
+        auto plh = ele.attribute("plh");
+        for (int i = 0; i < childNodes.length(); ++i) {
+            auto ele = childNodes.at(i).toElement();
+            if (ele.isNull() || ele.tagName() != "list")
+                continue;
+            auto list = parse(ele).toList();
+            for (auto value : list) {
+                if (value.userType() != qMetaTypeId<McBeanReferencePtr>()) {
+                    qCritical() << "if you want to used plh in map tag."
+                                   "please make sure the value be ref tag.";
+                    continue;
                 }
-            }else if(entryChildEle.tagName() == "value") {
-                auto valueChildEle = entryChildEle.firstChildElement();
-                if(valueChildEle.isNull()) {
-                    mapValue = entryChildEle.text();
-                }else{
-                    //! 递归解析
-                    mapValue = parse(valueChildEle);
-                }
+                McBeanPlaceholderPtr beanPlh = McBeanPlaceholderPtr::create();
+                beanPlh->setPlaceholder(plh);
+                map.insert(QVariant::fromValue(beanPlh), value);
             }
-            
-            entryChildEle = entryChildEle.nextSiblingElement();
+            break;
         }
-        
-        if(mapKey.isValid() && mapValue.isValid()) {
-            map.insert(mapKey, mapValue);
+    } else {
+        for (int i = 0; i < childNodes.length(); ++i) {
+            auto ele = childNodes.at(i).toElement();
+            if (ele.isNull() || ele.tagName() != "entry")
+                continue;
+            QVariant mapKey, mapValue;
+            if (ele.hasAttribute("key")) {
+                mapKey = ele.attribute("key");
+            }
+            if (ele.hasAttribute("value")) {
+                mapValue = ele.attribute("value");
+            }
+
+            auto entryChildEle = ele.firstChildElement();
+            while (!entryChildEle.isNull()) {
+                if (entryChildEle.tagName() == "key") {
+                    auto keyChildEle = entryChildEle.firstChildElement();
+                    if (keyChildEle.isNull()) {
+                        mapKey = entryChildEle.text();
+                    } else if (keyChildEle.tagName() == "plh") {
+                        McBeanPlaceholderPtr beanPlh = McBeanPlaceholderPtr::create();
+                        beanPlh->setPlaceholder(keyChildEle.text());
+                        mapKey = QVariant::fromValue(beanPlh);
+                    } else {
+                        //! 递归解析
+                        mapKey = parse(keyChildEle);
+                    }
+                } else if (entryChildEle.tagName() == "value") {
+                    auto valueChildEle = entryChildEle.firstChildElement();
+                    if (valueChildEle.isNull()) {
+                        mapValue = entryChildEle.text();
+                    } else {
+                        //! 递归解析
+                        mapValue = parse(valueChildEle);
+                    }
+                }
+
+                entryChildEle = entryChildEle.nextSiblingElement();
+            }
+
+            if (mapKey.isValid() && mapValue.isValid()) {
+                map.insert(mapKey, mapValue);
+            }
         }
     }
-    
+
     return QVariant::fromValue(map);
 }
 

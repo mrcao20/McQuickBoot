@@ -26,8 +26,8 @@ public:
     Q_INVOKABLE explicit McControllerContainer(QObject *parent = nullptr);
     ~McControllerContainer() override;
 
-    void init(IMcQuickBootConstPtrRef boot) noexcept;
-    
+    void init(const IMcQuickBoot *boot) noexcept;
+
     QVariant invoke(const QString &uri, const QVariant &body) noexcept override;
     QVariant invoke(const QString &uri) noexcept override;
     QVariant invoke(const QString &uri, const QJsonObject &data) noexcept override;

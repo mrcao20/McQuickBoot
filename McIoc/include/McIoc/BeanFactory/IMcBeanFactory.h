@@ -20,12 +20,11 @@ public:
      * 提供此函数仅用于提供一种方便的向目标类型转换的方式
      */
     template<typename T>
-    typename McPrivate::TypeSelector<T>::Type getBean(
-            const QString &name,
-            QThread *thread = nullptr) noexcept 
+    typename McPrivate::SharedTypeSelector<T>::Type getBean(const QString &name,
+                                                            QThread *thread = nullptr) noexcept
     {
         QVariant var = getBeanToVariant(name, thread);
-        return var.value<typename McPrivate::TypeSelector<T>::Type>();
+        return var.value<typename McPrivate::SharedTypeSelector<T>::Type>();
     }
     /*!
      * \brief getBean

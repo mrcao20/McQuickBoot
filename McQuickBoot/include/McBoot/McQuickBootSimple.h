@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IMcQuickBoot.h"
+#include "McAbstractQuickBoot.h"
 
 #include "McBoot/Controller/impl/McCppResponse.h"
 #include "McBoot/Requestor/McCppRequestor.h"
@@ -12,10 +12,10 @@ MC_FORWARD_DECL_CLASS(IMcApplicationContext);
 
 MC_FORWARD_DECL_PRIVATE_DATA(McQuickBootSimple);
 
-class MCQUICKBOOT_EXPORT McQuickBootSimple : public QObject, public IMcQuickBoot
+class MCQUICKBOOT_EXPORT McQuickBootSimple : public McAbstractQuickBoot
 {
     Q_OBJECT
-    MC_DECL_INIT(McQuickBootSimple);
+    MC_DECL_INIT(McQuickBootSimple)
 public:
     explicit McQuickBootSimple(QObject *parent = nullptr);
     ~McQuickBootSimple() override;
@@ -24,7 +24,12 @@ public:
     static QSharedPointer<McQuickBootSimple> instance() noexcept;
 
     McCppRequestor &requestor() const noexcept;
+    //! 如果重新或新加载了某些组件，则调用此函数
+    void refresh() const noexcept;
     IMcApplicationContextPtr getApplicationContext() const noexcept override;
+
+private:
+    void initContainer() const noexcept;
 
 private:
     MC_DECL_PRIVATE(McQuickBootSimple)

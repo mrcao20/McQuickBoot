@@ -361,27 +361,60 @@ void addPostRoutine(int priority, const CleanUpFunction &func) noexcept
 namespace Ioc {
 
 void connect(const QString &beanName,
-               const QString &sender,
-               const QString &signal,
-               const QString &receiver,
-               const QString &slot,
-               Qt::ConnectionType type) noexcept 
+             const QString &sender,
+             const QString &signal,
+             const QString &receiver,
+             const QString &slot,
+             Qt::ConnectionType type) noexcept
 {
     McAnnotationApplicationContext::addConnect(beanName, sender, signal, receiver, slot, type);
 }
 
 void connect(const QMetaObject *metaObj,
-               const QString &sender,
-               const QString &signal,
-               const QString &receiver,
-               const QString &slot,
-               Qt::ConnectionType type) noexcept 
+             const QString &sender,
+             const QString &signal,
+             const QString &receiver,
+             const QString &slot,
+             Qt::ConnectionType type) noexcept
 {
     Q_ASSERT(metaObj != nullptr);
     QString beanName = McPrivate::getBeanName(metaObj);
     connect(beanName, sender, signal, receiver, slot, type);
 }
 
+QMetaObject::Connection connect(IMcApplicationContextConstPtrRef appCtx,
+                                const QString &sender,
+                                const QString &signal,
+                                const QString &receiver,
+                                const QString &slot,
+                                Qt::ConnectionType type) noexcept
+{
+    Q_ASSERT(!appCtx.isNull());
+    auto senderObj = appCtx->getBean<QObject>(sender);
+    auto receiverObj = appCtx->getBean<QObject>(receiver);
+    if (senderObj.isNull() || receiverObj.isNull()) {
+        qCritical("not exists bean '%s' or '%s'", qPrintable(sender), qPrintable(receiver));
+        return QMetaObject::Connection();
+    }
+    auto signalMetaObj = senderObj->metaObject();
+    int signalIndex = signalMetaObj->indexOfSignal(signal.toLocal8Bit());
+    if (signalIndex == -1) {
+        qCritical("not exists signal named '%s' for bean '%s'\n",
+                  qPrintable(signal),
+                  signalMetaObj->className());
+        return QMetaObject::Connection();
+    }
+    auto signalMethod = signalMetaObj->method(signalIndex);
+    auto slotMetaObj = receiverObj->metaObject();
+    int slotIndex = slotMetaObj->indexOfMethod(slot.toLocal8Bit());
+    if (slotIndex == -1) {
+        qCritical("not exists slot named '%s' for bean '%s'\n",
+                  qPrintable(slot),
+                  slotMetaObj->className());
+        return QMetaObject::Connection();
+    }
+    auto slotMethod = slotMetaObj->method(slotIndex);
+    return QObject::connect(senderObj.data(), signalMethod, receiverObj.data(), slotMethod, type);
 }
-
-}
+} // namespace Ioc
+} // namespace Mc

@@ -25,6 +25,10 @@
 # define MC_ON_MESSAGE
 //!< end QML Socket
 
+//! 声明式bean
+#define MC_BEAN
+//!< end
+
 #endif //! !Q_MOC_RUN
 
 

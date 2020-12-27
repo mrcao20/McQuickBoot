@@ -53,5 +53,28 @@
                 </entry>
             </map>
         </property>
+        <property name="hrs2">
+            <!-- 同list -->
+            <map>
+                <entry>
+                    <key><plh>className</plh></key>
+                    <value><ref>r</ref></value>
+                </entry>
+                <entry>
+                    <key><plh>objectName</plh></key>
+                    <value><ref>r</ref></value>
+                </entry>
+            </map>
+        </property>
+        <property name="hrs3">
+            <!-- 同list -->
+            <map plh="custom">
+                <list>
+                    <ref bean="r"></ref>
+                    <ref>r</ref>
+                    <ref>r</ref>
+                </list>
+            </map>
+        </property>
     </bean>
 </beans>

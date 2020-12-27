@@ -92,6 +92,9 @@ void McXmlBeanDefinitionReader::readBeanDefinition(const QDomNodeList &nodes) no
         }
         //! 获取给定元素的 name 属性
         QString name = ele.attribute("name");
+        if (registry()->isContained(name)) {
+            continue; //!< 如果存在则不再处理
+        }
         bool isSingleton = !ele.hasAttribute("isSingleton") 
                 || ele.attribute("isSingleton") == "true";
         //! 创建一个bean定义对象
@@ -101,7 +104,6 @@ void McXmlBeanDefinitionReader::readBeanDefinition(const QDomNodeList &nodes) no
             return;
         }
         readBeanDefinition(ele.childNodes(), beanDefinition);
-        //! 向注册容器 添加bean名称和bean定义. 如果存在则替换
         registry()->registerBeanDefinition(name, beanDefinition);
     }
 }
@@ -249,7 +251,7 @@ void McXmlBeanDefinitionReader::readBeanDefinitionForConnect(
                 text = childEle.text();
             }
             connector->setSignal(text);
-        }else if(childEle.tagName() == Mc::Constant::Tag::Xml::signal) {
+        } else if (childEle.tagName() == Mc::Constant::Tag::Xml::receiver) {
             auto text = connector->getReceiver();
             if(childEle.hasAttribute("name")) {
                 text = childEle.attribute("name");
@@ -258,7 +260,7 @@ void McXmlBeanDefinitionReader::readBeanDefinitionForConnect(
                 text = childEle.text();
             }
             connector->setReceiver(text);
-        }else if(childEle.tagName() == Mc::Constant::Tag::Xml::slot) {
+        } else if (childEle.tagName() == Mc::Constant::Tag::Xml::slot) {
             auto text = connector->getSlot();
             if(childEle.hasAttribute("name")) {
                 text = childEle.attribute("name");
@@ -267,7 +269,7 @@ void McXmlBeanDefinitionReader::readBeanDefinitionForConnect(
                 text = childEle.text();
             }
             connector->setSlot(text);
-        }else if(childEle.tagName() == Mc::Constant::Tag::Xml::type) {
+        } else if (childEle.tagName() == Mc::Constant::Tag::Xml::type) {
             auto text = connector->getType();
             if(childEle.hasAttribute("name")) {
                 text = getConnectionType(childEle.attribute("name"));
@@ -277,7 +279,7 @@ void McXmlBeanDefinitionReader::readBeanDefinitionForConnect(
             }
             connector->setType(text);
         }
-        
+
         childEle = childEle.nextSiblingElement();
     }
     

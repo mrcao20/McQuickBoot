@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IMcQuickBoot.h"
+#include "McAbstractQuickBoot.h"
 
 #include <functional>
 
@@ -26,7 +26,7 @@ MC_FORWARD_DECL_PRIVATE_DATA(McQuickBoot);
 
 using std::function;
 
-class MCQUICKBOOT_EXPORT McQuickBoot : public QObject, public IMcQuickBoot
+class MCQUICKBOOT_EXPORT McQuickBoot : public McAbstractQuickBoot
 {
     Q_OBJECT
     MC_DECL_INIT(McQuickBoot)
@@ -62,13 +62,13 @@ public:
     void initBoot(QQmlEngine *engine) noexcept;
 
     McCppRequestor &requestor() const noexcept;
+    //! 如果重新或新加载了某些组件，则调用此函数
+    void refresh() const noexcept;
     IMcApplicationContextPtr getApplicationContext() const noexcept override;
     
-    //! 获取所有被Component标记的bean
-    QList<QString> getAllComponent() noexcept;
-    //! 获取所有组建类型为componentType的bean的名称
-    QList<QString> getComponents(const QString &componentType) noexcept;
-    
+private:
+    void initContainer() const noexcept;
+
 private:
     MC_DECL_PRIVATE(McQuickBoot)
 };

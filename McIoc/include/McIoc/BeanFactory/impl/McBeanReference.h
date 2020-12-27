@@ -5,7 +5,6 @@
 class MCIOC_EXPORT McBeanReference : public QObject 
 {
     Q_OBJECT
-    MC_DECL_INIT(McBeanReference)
 public:
     QString getName() const noexcept 
     { return m_name; }

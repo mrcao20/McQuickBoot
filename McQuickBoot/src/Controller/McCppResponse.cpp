@@ -1,8 +1,11 @@
 #include "McBoot/Controller/impl/McCppResponse.h"
 
+#include <QQmlEngine>
 #include <QVariant>
 
 #include <McIoc/Utils/McScopedFunction.h>
+
+#include "McBoot/Controller/impl/McResult.h"
 
 MC_DECL_PRIVATE_DATA(McCppResponse)
 std::function<void(const QVariant &)> callback;
@@ -47,5 +50,10 @@ void McCppResponse::callCallback() noexcept
     if (!d->callback) {
         return;
     }
-    d->callback(body());
+    auto arg = body();
+    if (strcmp(arg.typeName(), "McResult*") == 0) {
+        McResult *result = arg.value<McResult *>();
+        QQmlEngine::setObjectOwnership(result, QQmlEngine::CppOwnership);
+    }
+    d->callback(arg);
 }

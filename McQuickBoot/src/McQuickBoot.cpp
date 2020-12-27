@@ -10,6 +10,7 @@
 #include <McIoc/BeanDefinition/IMcBeanDefinition.h>
 
 #include "McBoot/BeanDefinitionReader/impl/McConfigurationFileBeanDefinitionReader.h"
+#include "McBoot/Configuration/McConfigurationContainer.h"
 #include "McBoot/Controller/impl/McControllerContainer.h"
 #include "McBoot/Model/McModelContainer.h"
 #include "McBoot/Requestor/McQmlRequestor.h"
@@ -45,10 +46,9 @@ delete requestor;
 mcQuickBootStaticData->boot.reset();
 MC_INIT_END
 
-McQuickBoot::McQuickBoot(QObject *parent)
-    : QObject(parent)
+McQuickBoot::McQuickBoot(QObject *parent) : McAbstractQuickBoot(parent)
 {
-    MC_NEW_PRIVATE_DATA(McQuickBoot)
+    MC_NEW_PRIVATE_DATA(McQuickBoot);
 }
 
 McQuickBoot::~McQuickBoot()
@@ -69,23 +69,20 @@ void McQuickBoot::init(QCoreApplication *app, QQmlApplicationEngine *engine) noe
     McQuickBootPtr &boot = mcQuickBootStaticData->boot;
     boot->initBoot(engine);
     auto appCtx = boot->d->context;
-    
+
+    boot->initContainer();
+
     auto controllerContainer = appCtx->getBean<McControllerContainer>("controllerContainer");
-    controllerContainer->init(boot);
-    
     auto modelContainer = appCtx->getBean<McModelContainer>("modelContainer");
-    modelContainer->init(boot);
-    
     auto socketContainer = appCtx->getBean<McQmlSocketContainer>("socketContainer");
-    socketContainer->init(boot);
+
+    boot->d->requestor = appCtx->getBean<McCppRequestor>("cppRequestor");
+    boot->d->requestor->setControllerContainer(controllerContainer);
 
     auto requestor = appCtx->getBean<McQmlRequestor>("qmlRequestor");
     requestor->setControllerContainer(controllerContainer);
     requestor->setSocketContainer(socketContainer);
 
-    boot->d->requestor = appCtx->getBean<McCppRequestor>("cppRequestor");
-    boot->d->requestor->setControllerContainer(controllerContainer);
-    
     //! engine的newQObject函数会将其参数所有权转移到其返回的QJSValue中
     QJSValue jsObj = engine->newQObject(requestor.data());
     engine->globalObject().setProperty("$", jsObj);
@@ -147,17 +144,32 @@ McCppRequestor &McQuickBoot::requestor() const noexcept
     return *d->requestor.data();
 }
 
+void McQuickBoot::refresh() const noexcept
+{
+    d->context->generateReader();
+    auto reader = McConfigurationFileBeanDefinitionReaderPtr::create(d->context);
+    reader->readBeanDefinition(d->context.data());
+    d->context->refresh();
+    initContainer();
+}
+
 IMcApplicationContextPtr McQuickBoot::getApplicationContext() const noexcept 
 {
     return d->context;
 }
 
-QList<QString> McQuickBoot::getAllComponent() noexcept
+void McQuickBoot::initContainer() const noexcept
 {
-    return Mc::getAllComponent(getApplicationContext());
-}
+    auto controllerContainer = d->context->getBean<McControllerContainer>("controllerContainer");
+    controllerContainer->init(this);
 
-QList<QString> McQuickBoot::getComponents(const QString &componentType) noexcept 
-{
-    return Mc::getComponents(getApplicationContext(), componentType);
+    auto modelContainer = d->context->getBean<McModelContainer>("modelContainer");
+    modelContainer->init(this);
+
+    auto socketContainer = d->context->getBean<McQmlSocketContainer>("socketContainer");
+    socketContainer->init(this);
+
+    auto configurationContainer = d->context->getBean<McConfigurationContainer>(
+        "configurationContainer");
+    configurationContainer->init(this);
 }

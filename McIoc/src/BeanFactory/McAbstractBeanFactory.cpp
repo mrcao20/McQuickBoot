@@ -18,11 +18,10 @@ McAbstractBeanFactory::McAbstractBeanFactory(QObject *parent)
     MC_NEW_PRIVATE_DATA(McAbstractBeanFactory)
 }
 
-McAbstractBeanFactory::~McAbstractBeanFactory() 
-{
-}
+McAbstractBeanFactory::~McAbstractBeanFactory()
+{}
 
-QObjectPtr McAbstractBeanFactory::getBean(const QString &name, QThread *thread) noexcept 
+QObjectPtr McAbstractBeanFactory::getBean(const QString &name, QThread *thread) noexcept
 {
     auto var = getBeanToVariant(name, thread);
     if(!var.isValid())

@@ -48,6 +48,7 @@ ApplicationWindow {
             console.log("con");
             console.log(">>>>>>>>>.", result, result.errMsg);
         });
+        console.log("sync invoke", JSON.stringify($.syncInvoke("con.invoke4")));
 //        var data1 = {
 //            o: {
 //                text: "aaa",

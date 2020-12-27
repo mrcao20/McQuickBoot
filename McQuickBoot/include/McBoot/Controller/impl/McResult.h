@@ -40,8 +40,11 @@ public:
         return result;
     }
 
+    friend MCQUICKBOOT_EXPORT QDebug operator<<(QDebug dbg, McResult *r);
+    friend MCQUICKBOOT_EXPORT QDebug operator<<(QDebug dbg, const QSharedPointer<McResult> &r);
+
 private:
     MC_DECL_PRIVATE(McResult)
 };
 
-Q_DECLARE_METATYPE(McResult *)
+MC_DECL_METATYPE(McResult)

@@ -1,7 +1,7 @@
 #include "McBoot/Model/McModelContainer.h"
 
+#include <QDebug>
 #include <QQmlEngine>
-#include <QtDebug>
 
 #include <McIoc/ApplicationContext/IMcApplicationContext.h>
 
@@ -23,7 +23,7 @@ McModelContainer::~McModelContainer()
 {
 }
 
-void McModelContainer::init(IMcQuickBootConstPtrRef boot) noexcept 
+void McModelContainer::init(const IMcQuickBoot *boot) noexcept
 {
     auto appCtx = boot->getApplicationContext();
     auto beanNames = Mc::getComponents(appCtx, MC_MODEL_TAG);

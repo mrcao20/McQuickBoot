@@ -18,9 +18,9 @@ class MCQUICKBOOT_EXPORT McQmlSocketContainer
 public:
     Q_INVOKABLE McQmlSocketContainer(QObject *parent = nullptr);
     ~McQmlSocketContainer() override;
-    
-    void init(IMcQuickBootConstPtrRef boot) noexcept;
-    
+
+    void init(const IMcQuickBoot *boot) noexcept;
+
     McQmlSocket *addConnect(const QString &uri) noexcept override;
     McQmlSocket *addConnect(const QString &uri, const QJSValue &data) noexcept override;
     

@@ -38,6 +38,7 @@ public:
 
     qint64 maxThreadCount() const noexcept;
     void setMaxThreadCount(int val) noexcept;
+    IMcControllerContainerPtr controllerContainer() const noexcept;
     void setControllerContainer(IMcControllerContainerConstPtrRef val) noexcept;
 
     Q_INVOKABLE QVariant syncInvoke(const QString &uri) noexcept;

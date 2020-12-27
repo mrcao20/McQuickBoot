@@ -32,8 +32,9 @@ McQmlSocketContainer::~McQmlSocketContainer()
 {
 }
 
-void McQmlSocketContainer::init(IMcQuickBootConstPtrRef boot) noexcept 
+void McQmlSocketContainer::init(const IMcQuickBoot *boot) noexcept
 {
+    d->sockets.clear();
     auto appCtx = boot->getApplicationContext();
     auto beanNames = Mc::getComponents(appCtx, MC_QML_SOCKET_TAG);
     for (const auto &beanName : beanNames) {

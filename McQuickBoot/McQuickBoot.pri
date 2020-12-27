@@ -5,6 +5,7 @@ INCLUDEPATH += $$PWD/include/
 SOURCES += \
     $$PWD/src/Application/McSingleApplication.cpp \
     $$PWD/src/Application/McSingleCoreApplication.cpp \
+    $$PWD/src/Configuration/McConfigurationContainer.cpp \
     $$PWD/src/Configuration/McRequestorConfig.cpp \
     $$PWD/src/Controller/InnerController/McApplicationController.cpp \
     $$PWD/src/Controller/McAbstractResponse.cpp \
@@ -13,6 +14,7 @@ SOURCES += \
     $$PWD/src/Controller/McQmlResponse.cpp \
     $$PWD/src/Controller/McRequestRunner.cpp \
     $$PWD/src/Controller/McResult.cpp \
+    $$PWD/src/McAbstractQuickBoot.cpp \
     $$PWD/src/McQuickBoot.cpp \
     $$PWD/src/McQuickBootSimple.cpp \
     $$PWD/src/Model/McModelContainer.cpp \
@@ -30,7 +32,9 @@ SOURCES += \
 HEADERS +=  \
     $$PWD/include/McBoot/Application/McSingleApplication.h \
     $$PWD/include/McBoot/Application/McSingleCoreApplication.h \
+    $$PWD/include/McBoot/Configuration/McConfigurationContainer.h \
     $$PWD/include/McBoot/Configuration/McRequestorConfig.h \
+    $$PWD/include/McBoot/Configuration/McSimpleBeanDefinition.h \
     $$PWD/include/McBoot/Controller/IMcControllerContainer.h \
     $$PWD/include/McBoot/Controller/InnerController/McApplicationController.h \
     $$PWD/include/McBoot/Controller/impl/McAbstractResponse.h \
@@ -40,6 +44,7 @@ HEADERS +=  \
     $$PWD/include/McBoot/Controller/impl/McRequestRunner.h \
     $$PWD/include/McBoot/Controller/impl/McResult.h \
     $$PWD/include/McBoot/IMcQuickBoot.h \
+    $$PWD/include/McBoot/McAbstractQuickBoot.h \
     $$PWD/include/McBoot/McBootGlobal.h \
     $$PWD/include/McBoot/McBootMacroGlobal.h \
     $$PWD/include/McBoot/McQuickBoot.h \

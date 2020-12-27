@@ -14,9 +14,13 @@ public:
     McAnnotationApplicationContext(IMcBeanDefinitionReaderConstPtrRef reader,
                                    QObject *parent = nullptr);
     McAnnotationApplicationContext(QObject *parent = nullptr);
-    
+
     ~McAnnotationApplicationContext() override;
-    
+
+    void generateReader() noexcept;
+
+    static void init() noexcept;
+
     static void addConnect(const QString &beanName,
                            const QString &sender,
                            const QString &signal,

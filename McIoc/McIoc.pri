@@ -17,6 +17,7 @@ HEADERS += \
     $$PWD/include/McIoc/ApplicationContext/impl/McReadableApplicationContext.h \
     $$PWD/include/McIoc/ApplicationContext/impl/McXmlApplicationContext.h \
     $$PWD/include/McIoc/BeanDefinition/IMcBeanDefinition.h \
+    $$PWD/include/McIoc/BeanDefinition/IMcCustomPlaceholder.h \
     $$PWD/include/McIoc/BeanDefinition/impl/McRootBeanDefinition.h \
     $$PWD/include/McIoc/BeanDefinitionReader/IMcBeanDefinitionReader.h \
     $$PWD/include/McIoc/BeanDefinitionReader/impl/McAbstractBeanDefinitionReader.h \
@@ -30,6 +31,7 @@ HEADERS += \
     $$PWD/include/McIoc/BeanFactory/impl/McAbstractBeanFactory.h \
     $$PWD/include/McIoc/BeanFactory/impl/McBeanConnector.h \
     $$PWD/include/McIoc/BeanFactory/impl/McBeanEnum.h \
+    $$PWD/include/McIoc/BeanFactory/impl/McBeanPlaceholder.h \
     $$PWD/include/McIoc/BeanFactory/impl/McBeanReference.h \
     $$PWD/include/McIoc/BeanFactory/impl/McDefaultBeanFactory.h \
     $$PWD/include/McIoc/BeanFactory/impl/McMetaTypeId.h \
@@ -55,6 +57,7 @@ HEADERS += \
     $$PWD/include/McIoc/McMacroGlobal.h \
     $$PWD/include/McIoc/Utils/XmlBuilder/impl/McBean.h \
     $$PWD/include/McIoc/Utils/XmlBuilder/impl/McBeanCollection.h \
+    $$PWD/include/McIoc/Utils/XmlBuilder/impl/McPlaceholder.h \
     $$PWD/include/McIoc/Utils/XmlBuilder/impl/McProperty.h \
     $$PWD/include/McIoc/Utils/XmlBuilder/IMcXml.h \
     $$PWD/include/McIoc/Utils/XmlBuilder/IMcBean.h \
@@ -85,11 +88,9 @@ SOURCES += \
     $$PWD/src/BeanDefinitionReader/McAnnotationBeanDefinitionReader.cpp \
     $$PWD/src/BeanDefinitionReader/McXmlBeanDefinitionReader.cpp \
     $$PWD/src/BeanFactory/McAbstractBeanFactory.cpp \
-    $$PWD/src/BeanFactory/McBeanConnector.cpp \
-    $$PWD/src/BeanFactory/McBeanEnum.cpp \
-    $$PWD/src/BeanFactory/McBeanReference.cpp \
     $$PWD/src/BeanFactory/McDefaultBeanFactory.cpp \
     $$PWD/src/BeanFactory/McMetaTypeId.cpp \
+    $$PWD/src/McInitGlobal.cpp \
     $$PWD/src/PropertyParser/McAbstarctPropertyConverter.cpp \
     $$PWD/src/PropertyParser/McAbstractPropertyParser.cpp \
     $$PWD/src/PropertyParser/McDefaultPropertyConverter.cpp \
@@ -98,6 +99,7 @@ SOURCES += \
     $$PWD/src/McGlobal.cpp \
     $$PWD/src/Utils/XmlBuilder/McBeanCollection.cpp \
     $$PWD/src/Utils/XmlBuilder/McBean.cpp \
+    $$PWD/src/Utils/XmlBuilder/McPlaceholder.cpp \
     $$PWD/src/Utils/XmlBuilder/McProperty.cpp \
     $$PWD/src/Utils/XmlBuilder/McConnect.cpp \
     $$PWD/src/Utils/XmlBuilder/McEnum.cpp \

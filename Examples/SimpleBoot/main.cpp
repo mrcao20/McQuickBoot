@@ -3,6 +3,7 @@
 
 #include <McBoot/Controller/impl/McResult.h>
 #include <McBoot/McQuickBootSimple.h>
+#include <McIoc/ApplicationContext/IMcApplicationContext.h>
 
 #include <QDebug>
 #include <QJsonArray>
@@ -33,10 +34,21 @@ int main(int argc, char *argv[])
              QVariantList() << "lllllllll" << QJsonObject({{"zzz", "mmmm"}})
                             << QVariant::fromValue(p) << QVariant::fromValue(a))
         .then([](const QVariant &var) { qDebug() << "-----" << var; });
+    $.invoke("aaa.bbb").then(
+        [](const QVariant &var) { qDebug() << ">>>>>>>>>>>>>>>>>>>>>>>>>>>" << var; });
+    $.invoke("aaa.ccc").then([](const QVariant &var) {
+        qDebug() << var;
+        qDebug() << var.value<ParamPtr>()->aaa;
+    });
+    auto res = $.syncInvoke("aaa.ccc");
+    qDebug() << res;
+    qDebug() << res.value<ParamPtr>()->aaa;
     QHash<int, QString> hhh;
     hhh.insert(-10, "-1");
     hhh.insert(0, "0");
     hhh.insert(10, "1");
     qDebug() << hhh << hhh.keys();
+    qDebug() << "1111111111111_>>>>>>"
+             << McQuickBootSimple::instance()->getApplicationContext()->getBean<ParamPtr>("param");
     return app.exec();
 }

@@ -16,7 +16,7 @@ public:
     Q_INVOKABLE explicit McModelContainer(QObject *parent = nullptr);
     ~McModelContainer() override;
 
-    void init(IMcQuickBootConstPtrRef boot) noexcept;
+    void init(const IMcQuickBoot *boot) noexcept;
 
 private:
     MC_DECL_PRIVATE(McModelContainer)

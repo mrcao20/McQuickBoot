@@ -1,14 +1,18 @@
 #include "McBoot/Controller/impl/McResult.h"
 
+#include <QDebug>
+#include <QJsonDocument>
+#include <QJsonObject>
+
 MC_DECL_PRIVATE_DATA(McResult)
-MC_PADDING_CLANG(7)
 bool isSuccess{false};
 QString errMsg;
 QVariant result;
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McResult)
-qRegisterMetaType<McResult *>("McResult");
+MC_REGISTER_BEAN_FACTORY(McResult);
+QMetaType::registerDebugStreamOperator<McResult *>();
 MC_INIT_END
 
 McResult::McResult(QObject *parent)
@@ -49,4 +53,26 @@ QVariant McResult::result() const noexcept
 void McResult::setResult(const QVariant &val) noexcept 
 {
     d->result = val;
+}
+
+QDebug operator<<(QDebug dbg, McResult *r)
+{
+    QDebugStateSaver saver(dbg);
+    QJsonObject jsonObj;
+    jsonObj.insert("isSuccess", r->isSuccess());
+    jsonObj.insert("result", QJsonValue::fromVariant(r->result()));
+    jsonObj.insert("errMsg", r->errMsg());
+    dbg.noquote() << QJsonDocument(jsonObj).toJson();
+    return dbg;
+}
+
+QDebug operator<<(QDebug dbg, const QSharedPointer<McResult> &r)
+{
+    QDebugStateSaver saver(dbg);
+    QJsonObject jsonObj;
+    jsonObj.insert("isSuccess", r->isSuccess());
+    jsonObj.insert("result", QJsonValue::fromVariant(r->result()));
+    jsonObj.insert("errMsg", r->errMsg());
+    dbg.noquote() << QJsonDocument(jsonObj).toJson();
+    return dbg;
 }

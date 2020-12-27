@@ -1,11 +1,13 @@
 #pragma once
+#include <McIoc/BeanDefinition/IMcCustomPlaceholder.h>
 #include <McIoc/McGlobal.h>
 #include <QVector>
 
-class R : public QObject
+class R : public QObject, public IMcCustomPlaceholder
 {
     Q_OBJECT
     MC_DECL_INIT(R)
+    MC_DEFINE_TYPELIST(IMcCustomPlaceholder)
     Q_CLASSINFO(MC_BEANNAME_TAG, "r")
     Q_PROPERTY(QString text READ text WRITE setText);
 public:
@@ -13,7 +15,13 @@ public:
     
     QString text() const noexcept;
     void setText(const QString &val) noexcept;
-    
+
+    QVariant getKey() const noexcept override;
+
+    Q_INVOKABLE
+    MC_BEAN_START
+    void start() noexcept;
+
 public slots:
     void slot_recv() noexcept;
     
@@ -43,7 +51,7 @@ typedef QHash<QString, RPtr> RHash;
 class C : public QObject, public IB
 {
     Q_OBJECT
-//    MC_DECL_INIT(C)                     //!< 这个宏主要用来实现一个类似于java静态代码块的功能。这里只是声明，真正实现在cpp中
+    //    MC_DECL_INIT(C)                     //!< 这个宏主要用来实现一个类似于java静态代码块的功能。这里只是声明，真正实现在cpp中
     //! 同理，由于C实现至IB接口，并且可能转换到IB，所以这里需要使用该宏。
     //! 这里需要使用MC_DECL_TYPELIST宏的原因在于IB继承了其他父接口，并且C也可能转换到IB的其他父接口，所以需要使用该宏额外标识。注意：IB必须使用过MC_DEFINE_TYPELIST后才能使用该宏
     //! 这里不需要额外指定QOBject，容器会自动指定。但如果C继承至其他类，比如QWidget，那么需要先使用MC_DECL_METATYPE声明QWidget，再使用MC_DEFINE_TYPELIST(QWidget, MC_DECL_TYPELIST(IB))，
@@ -57,6 +65,8 @@ class C : public QObject, public IB
     Q_PROPERTY(QVector<RPtr> rs MEMBER m_rs)
     Q_PROPERTY(StringMap mtexts MEMBER m_mtexts)
     Q_PROPERTY(RHash hrs MEMBER m_hrs)
+    Q_PROPERTY(RHash hrs2 MEMBER m_hrs2)
+    Q_PROPERTY(RHash hrs3 MEMBER m_hrs3)
     Q_PROPERTY(Qt::AlignmentFlag align MEMBER m_align)
 public:
     Q_INVOKABLE C(){}
@@ -104,5 +114,7 @@ private:
     QVector<RPtr> m_rs;                 //!< 对象数组
     QMap<QString, QString> m_mtexts;    //!< 字符串映射表
     QHash<QString, RPtr> m_hrs;         //!< 对象哈希表
+    QHash<QString, RPtr> m_hrs2;        //!< 对象哈希表
+    QHash<QString, RPtr> m_hrs3;        //!< 对象哈希表
 };
 MC_DECL_METATYPE(C);

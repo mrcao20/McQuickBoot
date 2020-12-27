@@ -20,8 +20,14 @@ public:
     ~McCppRequestor() override;
 
     McCppResponse &invoke(const QString &uri) noexcept;
+    McCppResponse &invoke(const QString &uri, const QJsonObject &data) noexcept;
     McCppResponse &invoke(const QString &uri, const QVariant &data) noexcept;
     McCppResponse &invoke(const QString &uri, const QVariantList &data) noexcept;
+
+    QVariant syncInvoke(const QString &uri) noexcept;
+    QVariant syncInvoke(const QString &uri, const QJsonObject &data) noexcept;
+    QVariant syncInvoke(const QString &uri, const QVariant &data) noexcept;
+    QVariant syncInvoke(const QString &uri, const QVariantList &data) noexcept;
 
 private:
     MC_DECL_PRIVATE(McCppRequestor)

@@ -38,13 +38,15 @@ void McSettingBeanDefinitionReader::doReadBeanDefinition() noexcept
     for(auto s : d->settings) {
         auto beanNames = s->childGroups();
         for(auto beanName : beanNames) {
+            if (registry()->isContained(beanName)) {
+                continue; //!< 如果存在则不处理
+            }
             s->beginGroup(beanName);
             auto beanDefinition = buildBeanDefinition(s);
             if(beanDefinition.isNull()) {
                 qCritical("build '%s' occurred error\n", qPrintable(beanName));
                 continue;
             }
-            //! 向注册容器 添加bean名称和bean定义. 如果存在则替换
             registry()->registerBeanDefinition(beanName, beanDefinition);
             s->endGroup();
         }

@@ -2,6 +2,8 @@
 
 #include "McAbstractRequestor.h"
 
+#include <QJSValue>
+
 MC_FORWARD_DECL_PRIVATE_DATA(McQmlRequestor);
 
 MC_FORWARD_DECL_CLASS(IMcQmlSocketContainer);
@@ -26,6 +28,8 @@ public:
 
     Q_INVOKABLE McQmlResponse *invoke(const QString &uri) noexcept;
     Q_INVOKABLE McQmlResponse *invoke(const QString &uri, const QJSValue &data) noexcept;
+    Q_INVOKABLE QJSValue syncInvoke(const QString &uri) noexcept;
+    Q_INVOKABLE QJSValue syncInvoke(const QString &uri, const QJSValue &data) noexcept;
     Q_INVOKABLE McQmlSocket *addConnect(const QString &uri) noexcept;
     Q_INVOKABLE McQmlSocket *addConnect(const QString &uri, const QJSValue &data) noexcept;
 

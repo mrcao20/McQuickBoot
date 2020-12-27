@@ -5,7 +5,6 @@
 class MCIOC_EXPORT McBeanEnum : public QObject
 {
     Q_OBJECT
-    MC_DECL_INIT(McBeanEnum)
 public:
     explicit McBeanEnum(QObject *parent = nullptr)
         : QObject(parent)

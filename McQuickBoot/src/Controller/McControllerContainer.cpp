@@ -30,8 +30,9 @@ McControllerContainer::~McControllerContainer()
 {
 }
 
-void McControllerContainer::init(IMcQuickBootConstPtrRef &boot) noexcept 
+void McControllerContainer::init(const IMcQuickBoot *boot) noexcept
 {
+    d->controllers.clear();
     auto appCtx = boot->getApplicationContext();
     auto beanNames = Mc::getComponents(appCtx, MC_CONTROLLER_TAG);
     for (const auto &beanName : beanNames) {
@@ -337,6 +338,7 @@ QVariant McControllerContainer::invokeForArgs(QObjectConstPtrRef bean,
         return fail("failed invoke function");
     
     if(strcmp(method.typeName(), "McResult*") == 0) {
+        returnValue.convert(qMetaTypeId<McResult *>());
         McResult *result = returnValue.value<McResult *>();
         QQmlEngine::setObjectOwnership(result, QQmlEngine::JavaScriptOwnership);
     }
@@ -400,6 +402,7 @@ QVariant McControllerContainer::invokeForArgs(QObjectConstPtrRef bean,
         return fail("failed invoke function");
 
     if (strcmp(method.typeName(), "McResult*") == 0) {
+        returnValue.convert(qMetaTypeId<McResult *>());
         McResult *result = returnValue.value<McResult *>();
         QQmlEngine::setObjectOwnership(result, QQmlEngine::JavaScriptOwnership);
     }
@@ -597,17 +600,17 @@ bool McControllerContainer::isSharedPointerObject(const QByteArray &typeName,
 QVariant McControllerContainer::ok(const QVariant &val) const noexcept 
 {
     McResult *result = McResult::ok(val);
-    
+
     QQmlEngine::setObjectOwnership(result, QQmlEngine::JavaScriptOwnership);
-    
-    return QVariant::fromValue(qobject_cast<QObject *>(result));
+
+    return QVariant::fromValue(result);
 }
 
 QVariant McControllerContainer::fail(const QString &val) const noexcept 
 {
     McResult *result = McResult::fail(val);
-    
+
     QQmlEngine::setObjectOwnership(result, QQmlEngine::JavaScriptOwnership);
-    
-    return QVariant::fromValue(qobject_cast<QObject *>(result));
+
+    return QVariant::fromValue(result);
 }

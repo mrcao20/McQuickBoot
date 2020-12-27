@@ -5,7 +5,6 @@
 class MCIOC_EXPORT McBeanConnector : public QObject
 {
     Q_OBJECT
-    MC_DECL_INIT(McBeanConnector)
 public:
     explicit McBeanConnector(QObject *parent = nullptr)
         : QObject(parent)

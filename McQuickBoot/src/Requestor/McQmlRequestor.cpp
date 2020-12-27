@@ -3,6 +3,7 @@
 #include <QQmlEngine>
 #include <QVariant>
 
+#include "McBoot/Controller/IMcControllerContainer.h"
 #include "McBoot/Controller/impl/McQmlResponse.h"
 #include "McBoot/Socket/IMcQmlSocketContainer.h"
 #include "McBoot/Socket/impl/McQmlSocket.h"
@@ -40,6 +41,36 @@ McQmlResponse *McQmlRequestor::invoke(const QString &uri, const QJSValue &data) 
     QQmlEngine::setObjectOwnership(response, QQmlEngine::CppOwnership);
     run(response, uri, data.toVariant());
     return response; //!< 没有指定父对象，该对象将在整个请求完毕时被析构
+}
+
+QJSValue McQmlRequestor::syncInvoke(const QString &uri) noexcept
+{
+    auto body = controllerContainer()->invoke(uri, QVariant());
+#if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
+    auto engine = QQmlEngine::contextForObject(this)->engine();
+#else
+    auto engine = qjsEngine(this);
+#endif
+    if (!engine) {
+        return QJSValue();
+    }
+    auto arg = engine->toScriptValue(body);
+    return arg;
+}
+
+QJSValue McQmlRequestor::syncInvoke(const QString &uri, const QJSValue &data) noexcept
+{
+    auto body = controllerContainer()->invoke(uri, data.toVariant());
+#if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
+    auto engine = QQmlEngine::contextForObject(this)->engine();
+#else
+    auto engine = qjsEngine(this);
+#endif
+    if (!engine) {
+        return QJSValue();
+    }
+    auto arg = engine->toScriptValue(body);
+    return arg;
 }
 
 McQmlSocket *McQmlRequestor::addConnect(const QString &uri) noexcept

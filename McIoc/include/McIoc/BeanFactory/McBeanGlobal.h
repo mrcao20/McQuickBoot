@@ -133,19 +133,19 @@ void mcRegisterBeanFactory(const char *typeName, const char *constRefTypeName)
 namespace McPrivate {
 
 template<typename T>
-struct TypeSelector 
+struct SharedTypeSelector
 {
     typedef T BaseType; 
     typedef QSharedPointer<T> Type;
 };
 template<typename T>
-struct TypeSelector<T *> 
+struct SharedTypeSelector<T *>
 {
     typedef T BaseType;
     typedef QSharedPointer<T> Type;
 };
 template<typename T>
-struct TypeSelector<QSharedPointer<T>> 
+struct SharedTypeSelector<QSharedPointer<T>>
 {
     typedef T BaseType;
     typedef QSharedPointer<T> Type;

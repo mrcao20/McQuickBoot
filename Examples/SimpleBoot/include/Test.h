@@ -26,6 +26,7 @@ public:
                                 const std::function<void(int)> &func);
 
     Q_INVOKABLE void aaa(const std::function<void(int)> &func);
+    Q_INVOKABLE ParamPtr ccc();
 
 private:
     MC_DECL_PRIVATE(Test)

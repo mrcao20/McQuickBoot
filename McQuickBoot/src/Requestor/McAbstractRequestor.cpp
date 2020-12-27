@@ -61,6 +61,11 @@ void McAbstractRequestor::setMaxThreadCount(int val) noexcept
     d->threadPool->setMaxThreadCount(val);
 }
 
+IMcControllerContainerPtr McAbstractRequestor::controllerContainer() const noexcept
+{
+    return d->controllerContainer;
+}
+
 void McAbstractRequestor::setControllerContainer(IMcControllerContainerConstPtrRef val) noexcept
 {
     d->controllerContainer = val;

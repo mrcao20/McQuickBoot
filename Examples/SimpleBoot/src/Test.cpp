@@ -35,3 +35,10 @@ void Test::aaa(const std::function<void(int)> &func)
 {
     func(200);
 }
+
+ParamPtr Test::ccc()
+{
+    auto p = ParamPtr::create();
+    p->aaa = 1111111;
+    return p;
+}

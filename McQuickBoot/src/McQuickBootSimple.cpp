@@ -5,9 +5,10 @@
 #include <McIoc/ApplicationContext/impl/McAnnotationApplicationContext.h>
 #include <McIoc/BeanDefinition/IMcBeanDefinition.h>
 
+#include "McBoot/BeanDefinitionReader/impl/McConfigurationFileBeanDefinitionReader.h"
+#include "McBoot/Configuration/McConfigurationContainer.h"
 #include "McBoot/Controller/impl/McControllerContainer.h"
 #include "McBoot/Model/McModelContainer.h"
-#include "McBoot/BeanDefinitionReader/impl/McConfigurationFileBeanDefinitionReader.h"
 
 namespace {
 
@@ -36,15 +37,12 @@ delete requestor;
 mcQuickBootSimpleStaticData->boot.reset();
 MC_INIT_END
 
-McQuickBootSimple::McQuickBootSimple(QObject *parent)
-    : QObject(parent)
+McQuickBootSimple::McQuickBootSimple(QObject *parent) : McAbstractQuickBoot(parent)
 {
-    MC_NEW_PRIVATE_DATA(McQuickBootSimple)
+    MC_NEW_PRIVATE_DATA(McQuickBootSimple);
 }
 
-McQuickBootSimple::~McQuickBootSimple()
-{
-}
+McQuickBootSimple::~McQuickBootSimple() {}
 
 void McQuickBootSimple::init() noexcept
 {
@@ -61,13 +59,10 @@ void McQuickBootSimple::init() noexcept
         boot->d->context->refresh();  //!< 预加载bean
     }
     auto appCtx = boot->d->context;
-    
-    auto controllerContainer = appCtx->getBean<McControllerContainer>("controllerContainer");
-    controllerContainer->init(boot);
-    
-    auto modelContainer = appCtx->getBean<McModelContainer>("modelContainer");
-    modelContainer->init(boot);
 
+    boot->initContainer();
+
+    auto controllerContainer = appCtx->getBean<McControllerContainer>("controllerContainer");
     boot->d->requestor = appCtx->getBean<McCppRequestor>("cppRequestor");
     boot->d->requestor->setControllerContainer(controllerContainer);
 }
@@ -84,7 +79,29 @@ McCppRequestor &McQuickBootSimple::requestor() const noexcept
     return *d->requestor.data();
 }
 
+void McQuickBootSimple::refresh() const noexcept
+{
+    d->context->generateReader();
+    auto reader = McConfigurationFileBeanDefinitionReaderPtr::create(d->context);
+    reader->readBeanDefinition(d->context.data());
+    d->context->refresh();
+    initContainer();
+}
+
 IMcApplicationContextPtr McQuickBootSimple::getApplicationContext() const noexcept 
 {
     return d->context;
+}
+
+void McQuickBootSimple::initContainer() const noexcept
+{
+    auto controllerContainer = d->context->getBean<McControllerContainer>("controllerContainer");
+    controllerContainer->init(this);
+
+    auto modelContainer = d->context->getBean<McModelContainer>("modelContainer");
+    modelContainer->init(this);
+
+    auto configurationContainer = d->context->getBean<McConfigurationContainer>(
+        "configurationContainer");
+    configurationContainer->init(this);
 }

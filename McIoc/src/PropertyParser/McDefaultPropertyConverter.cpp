@@ -3,9 +3,11 @@
 #include <QMetaEnum>
 #include <QDebug>
 
-#include "McIoc/BeanFactory/impl/McBeanReference.h"
-#include "McIoc/BeanFactory/impl/McBeanEnum.h"
+#include "McIoc/BeanDefinition/IMcCustomPlaceholder.h"
 #include "McIoc/BeanFactory/IMcBeanReferenceResolver.h"
+#include "McIoc/BeanFactory/impl/McBeanEnum.h"
+#include "McIoc/BeanFactory/impl/McBeanPlaceholder.h"
+#include "McIoc/BeanFactory/impl/McBeanReference.h"
 
 McDefaultPropertyConverter::McDefaultPropertyConverter(QObject *parent)
     : McAbstarctPropertyConverter(parent)
@@ -85,13 +87,29 @@ QVariant McDefaultPropertyConverter::convertMap(const QVariant &value) const noe
         auto item = itr.next();
         auto key = item.key();
         auto value = item.value();
-        
+
         QVariant resultKey, resultValue;
-        
-        resultKey = convert(resolver(), key);
+
         resultValue = convert(resolver(), value);
-        
-        if(resultKey.isValid() && resultValue.isValid()) {
+        if (key.userType() == qMetaTypeId<McBeanPlaceholderPtr>()) {
+            auto valueObj = resultValue.value<QObjectPtr>();
+            auto keyPlh = key.value<McBeanPlaceholderPtr>();
+            auto plh = keyPlh->getPlaceholder();
+            if (plh == "className") {
+                resultKey = valueObj->metaObject()->className();
+            } else if (plh == "objectName") {
+                resultKey = valueObj->objectName();
+            } else if (plh == "custom") {
+                auto customPlh = resultValue.value<IMcCustomPlaceholderPtr>();
+                resultKey = customPlh->getKey();
+            } else {
+                qCritical() << "the plh must be one of className/objectName/custom";
+            }
+        } else {
+            resultKey = convert(resolver(), key);
+        }
+
+        if (resultKey.isValid() && resultValue.isValid()) {
             result.insert(resultKey, resultValue);
         }
     }

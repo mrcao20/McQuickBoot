@@ -176,7 +176,9 @@ bool McDefaultBeanFactory::addObjectConnect(QObjectConstPtrRef bean,
         }
         int signalIndex = signalMetaObj->indexOfSignal(signalStr.toLocal8Bit());
         if(signalIndex == -1) {
-            qCritical("not exists signal named '%s' for bean '%s'\n", signalMetaObj->className(), qPrintable(signalStr));
+            qCritical("not exists signal named '%s' for bean '%s'\n",
+                      qPrintable(signalStr),
+                      signalMetaObj->className());
             return false;
         }
         signal = signalMetaObj->method(signalIndex);
@@ -195,7 +197,9 @@ bool McDefaultBeanFactory::addObjectConnect(QObjectConstPtrRef bean,
         }
         int slotIndex = slotMetaObj->indexOfMethod(slotStr.toLocal8Bit());
         if(slotIndex == -1) {
-            qCritical("not exists slot named '%s' for bean '%s'\n", slotMetaObj->className(), qPrintable(slotStr));
+            qCritical("not exists slot named '%s' for bean '%s'\n",
+                      qPrintable(slotStr),
+                      slotMetaObj->className());
             return false;
         }
         slot = slotMetaObj->method(slotIndex);

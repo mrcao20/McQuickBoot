@@ -57,6 +57,11 @@ void McConfigurationFileBeanDefinitionReader::doReadBeanDefinition() noexcept
         if(index == -1) {
             continue;
         }
+        auto tmpBean = value->getBean();
+        if (tmpBean.isValid()) {
+            continue;
+        }
+
         d->appCtx->unregisterBeanDefinition(key);
         auto pathIndex = metaObj->indexOfClassInfo(MC_PROPERTY_SOURCE_TAG);
         QString configPath;
@@ -64,11 +69,10 @@ void McConfigurationFileBeanDefinitionReader::doReadBeanDefinition() noexcept
             configPath = defaultConfigPath;
         } else {
             auto classInfo = metaObj->classInfo(pathIndex);
-            configPath = classInfo.value();
+            configPath = Mc::toAbsolutePath(classInfo.value());
         }
         if(!QFile::exists(configPath)) {
-            qCritical("file not exist of default or specific for class: %s\n"
-                      , metaObj->className());
+            qCritical("file not exist of default or specific for class: %s\n", metaObj->className());
             continue;
         }
         QString prefix = metaObj->classInfo(index).value();

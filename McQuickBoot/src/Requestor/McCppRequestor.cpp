@@ -2,6 +2,7 @@
 
 #include <QVariant>
 
+#include "McBoot/Controller/IMcControllerContainer.h"
 #include "McBoot/Controller/impl/McCppResponse.h"
 
 MC_AUTO_INIT(McCppRequestor)
@@ -26,6 +27,13 @@ McCppResponse &McCppRequestor::invoke(const QString &uri) noexcept
     return *response; //!< 没有指定父对象，该对象将在整个请求完毕时被析构
 }
 
+McCppResponse &McCppRequestor::invoke(const QString &uri, const QJsonObject &data) noexcept
+{
+    auto response = new McCppResponse();
+    run(response, uri, data);
+    return *response; //!< 没有指定父对象，该对象将在整个请求完毕时被析构
+}
+
 McCppResponse &McCppRequestor::invoke(const QString &uri, const QVariant &data) noexcept
 {
     return invoke(uri, QVariantList() << data);
@@ -36,4 +44,24 @@ McCppResponse &McCppRequestor::invoke(const QString &uri, const QVariantList &da
     auto response = new McCppResponse();
     run(response, uri, data);
     return *response; //!< 没有指定父对象，该对象将在整个请求完毕时被析构
+}
+
+QVariant McCppRequestor::syncInvoke(const QString &uri) noexcept
+{
+    return controllerContainer()->invoke(uri, QVariant());
+}
+
+QVariant McCppRequestor::syncInvoke(const QString &uri, const QJsonObject &data) noexcept
+{
+    return controllerContainer()->invoke(uri, data);
+}
+
+QVariant McCppRequestor::syncInvoke(const QString &uri, const QVariant &data) noexcept
+{
+    return syncInvoke(uri, QVariantList() << data);
+}
+
+QVariant McCppRequestor::syncInvoke(const QString &uri, const QVariantList &data) noexcept
+{
+    return controllerContainer()->invoke(uri, data);
 }

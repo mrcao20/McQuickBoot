@@ -4,8 +4,11 @@
 #include <QDebug>
 
 MC_INIT(R)
-MC_REGISTER_BEAN_FACTORY(R);    //!< 由于类R没有使用MC_DEFINE_TYPELIST宏，则这里只需要传入R即可
+MC_REGISTER_BEAN_FACTORY(
+    MC_TYPELIST(R)); //!< 由于类R没有使用MC_DEFINE_TYPELIST宏，则这里只需要传入R即可
 MC_INIT_END
+
+static int i = 0;
 
 QString R::text() const noexcept
 {
@@ -15,6 +18,16 @@ QString R::text() const noexcept
 void R::setText(const QString &val) noexcept
 {
     m_text = val;
+}
+
+QVariant R::getKey() const noexcept
+{
+    return "customKey-" + QString::number(i++);
+}
+
+void R::start() noexcept
+{
+    setObjectName("R-" + QString::number(i++));
 }
 
 void R::slot_recv() noexcept
@@ -39,15 +52,10 @@ MC_STATIC_END
 
 void C::a() noexcept
 {
-    qDebug() << "m_text:" << m_text
-             << "m_r:" << m_r << m_r->text()
-             << "m_texts:" << m_texts
-             << "m_rs:" << m_rs
-             << "m_mtexts:" << m_mtexts
-             << "m_hrs:" << m_hrs
-             << "obj thread:" << thread()
-             << "cur thread:" << QThread::currentThread()
-             << "align" << m_align;
+    qDebug() << "m_text:" << m_text << "m_r:" << m_r << m_r->text() << "m_texts:" << m_texts
+             << "m_rs:" << m_rs << "m_mtexts:" << m_mtexts << "m_hrs:" << m_hrs
+             << "m_hrs2:" << m_hrs2 << "m_hrs3:" << m_hrs3 << "obj thread:" << thread()
+             << "cur thread:" << QThread::currentThread() << "align" << m_align;
     emit signal_send();
 }
 

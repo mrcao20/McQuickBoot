@@ -39,6 +39,9 @@ void McAnnotationBeanDefinitionReader::doReadBeanDefinition() noexcept
 void McAnnotationBeanDefinitionReader::inject(const QString &beanName,
                                               IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
 {
+    if (registry()->isContained(beanName)) {
+        return; //!< 如果存在则不处理
+    }
     const QMetaObject *metaObj = beanDefinition->getBeanMetaObject();
     Q_ASSERT_X(metaObj != nullptr
             , "McAnnotationBeanDefinitionReader"

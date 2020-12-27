@@ -14,6 +14,19 @@
 
 MC_FORWARD_DECL_CLASS(IMcApplicationContext)
 
+template<>
+inline bool qMapLessThanKey(const QVariant &key1, const QVariant &key2)
+{
+    auto qobjectIds = McMetaTypeId::qobjectPointerIds();
+    auto sharedIds = McMetaTypeId::sharedPointerIds();
+    auto type1 = key1.userType();
+    auto type2 = key2.userType();
+    if (type1 == type2 && (qobjectIds.contains(type1) || sharedIds.contains(type1))) {
+        return qMapLessThanKey(key1.data(), key2.data());
+    }
+    return key1 < key2;
+}
+
 namespace McPrivate {
 
 class McGlobal
@@ -131,22 +144,25 @@ MCIOC_EXPORT void addPostRoutine(int priority, const CleanUpFunction &func) noex
 
 namespace Ioc {
 
-MCIOC_EXPORT void connect(
-        const QString &beanName,
-        const QString &sender,
-        const QString &signal,
-        const QString &receiver,
-        const QString &slot,
-        Qt::ConnectionType type = Qt::AutoConnection) noexcept;
+MCIOC_EXPORT void connect(const QString &beanName,
+                          const QString &sender,
+                          const QString &signal,
+                          const QString &receiver,
+                          const QString &slot,
+                          Qt::ConnectionType type = Qt::AutoConnection) noexcept;
 
-MCIOC_EXPORT void connect(
-        const QMetaObject *metaObj,
-        const QString &sender,
-        const QString &signal,
-        const QString &receiver,
-        const QString &slot,
-        Qt::ConnectionType type = Qt::AutoConnection) noexcept;
+MCIOC_EXPORT void connect(const QMetaObject *metaObj,
+                          const QString &sender,
+                          const QString &signal,
+                          const QString &receiver,
+                          const QString &slot,
+                          Qt::ConnectionType type = Qt::AutoConnection) noexcept;
 
-}
-
-}
+MCIOC_EXPORT QMetaObject::Connection connect(IMcApplicationContextConstPtrRef appCtx,
+                                             const QString &sender,
+                                             const QString &signal,
+                                             const QString &receiver,
+                                             const QString &slot,
+                                             Qt::ConnectionType type = Qt::AutoConnection) noexcept;
+} // namespace Ioc
+} // namespace Mc
