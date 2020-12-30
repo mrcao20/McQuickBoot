@@ -26,8 +26,10 @@ QJsonObject Test::bbb(const QString &a,
                       const ParamPtr &p,
                       const std::function<void(int)> &func)
 {
+    emit signal_sig();
+    emit signal_sig2();
     func(300);
-    qDebug() << "bbb" << a << obj << p->aaa;
+    qDebug() << "bbb" << a << obj << p->aaa << param;
     return QJsonObject({{"ccc", "bbb"}});
 }
 

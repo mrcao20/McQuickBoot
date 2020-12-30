@@ -44,6 +44,34 @@ McQuickBootSimple::McQuickBootSimple(QObject *parent) : McAbstractQuickBoot(pare
 
 McQuickBootSimple::~McQuickBootSimple() {}
 
+QMetaObject::Connection McQuickBootSimple::connect(const QString &sender,
+                                                   const QString &signal,
+                                                   const QString &receiver,
+                                                   const QString &slot,
+                                                   Qt::ConnectionType type) noexcept
+{
+    return Mc::Ioc::connect(McQuickBootSimple::instance()->getApplicationContext(),
+                            sender,
+                            signal,
+                            receiver,
+                            slot,
+                            type);
+}
+
+QMetaObject::Connection McQuickBootSimple::connect(const QString &sender,
+                                                   const QString &signal,
+                                                   QObject *receiver,
+                                                   const QString &slot,
+                                                   Qt::ConnectionType type) noexcept
+{
+    return Mc::Ioc::connect(McQuickBootSimple::instance()->getApplicationContext(),
+                            sender,
+                            signal,
+                            receiver,
+                            slot,
+                            type);
+}
+
 void McQuickBootSimple::init() noexcept
 {
     if(!mcQuickBootSimpleStaticData->boot.isNull()) {
@@ -54,13 +82,9 @@ void McQuickBootSimple::init() noexcept
     McQuickBootSimplePtr &boot = mcQuickBootSimpleStaticData->boot;
     if(boot->d->context.isNull()) {
         boot->d->context = McAnnotationApplicationContextPtr::create();
-        auto reader = McConfigurationFileBeanDefinitionReaderPtr::create(boot->d->context);
-        reader->readBeanDefinition(boot->d->context.data());
-        boot->d->context->refresh();  //!< 预加载bean
+        boot->doRefresh();
     }
     auto appCtx = boot->d->context;
-
-    boot->initContainer();
 
     auto controllerContainer = appCtx->getBean<McControllerContainer>("controllerContainer");
     boot->d->requestor = appCtx->getBean<McCppRequestor>("cppRequestor");
@@ -79,18 +103,26 @@ McCppRequestor &McQuickBootSimple::requestor() const noexcept
     return *d->requestor.data();
 }
 
-void McQuickBootSimple::refresh() const noexcept
+void McQuickBootSimple::refresh() noexcept
 {
     d->context->generateReader();
-    auto reader = McConfigurationFileBeanDefinitionReaderPtr::create(d->context);
-    reader->readBeanDefinition(d->context.data());
-    d->context->refresh();
-    initContainer();
+    doRefresh();
 }
 
 IMcApplicationContextPtr McQuickBootSimple::getApplicationContext() const noexcept 
 {
     return d->context;
+}
+
+void McQuickBootSimple::doRefresh() noexcept
+{
+    auto reader = McConfigurationFileBeanDefinitionReaderPtr::create(d->context);
+    reader->readBeanDefinition(d->context.data());
+    auto configurationContainer = d->context->getBean<McConfigurationContainer>(
+        "configurationContainer");
+    configurationContainer->init(this);
+    d->context->refresh(); //!< 预加载bean
+    initContainer();
 }
 
 void McQuickBootSimple::initContainer() const noexcept
@@ -100,8 +132,4 @@ void McQuickBootSimple::initContainer() const noexcept
 
     auto modelContainer = d->context->getBean<McModelContainer>("modelContainer");
     modelContainer->init(this);
-
-    auto configurationContainer = d->context->getBean<McConfigurationContainer>(
-        "configurationContainer");
-    configurationContainer->init(this);
 }

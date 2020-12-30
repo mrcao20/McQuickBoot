@@ -40,8 +40,20 @@ void McConfigurationContainer::init(const IMcQuickBoot *boot) noexcept
         auto metaObj = obj->metaObject();
         for (int i = 0; i < metaObj->methodCount(); ++i) {
             auto method = metaObj->method(i);
-            QString tags = method.tag();
-            if (!tags.contains(MC_MACRO_STR(MC_BEAN))) {
+            QString tag = method.tag();
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+            auto tags = tag.split(' ', QString::SkipEmptyParts);
+#else
+            auto tags = tag.split(' ', Qt::SkipEmptyParts);
+#endif
+            bool isContained = false;
+            for (auto t : tags) {
+                if (t == MC_MACRO_STR(MC_BEAN)) {
+                    isContained = true;
+                    break;
+                }
+            }
+            if (!isContained) {
                 continue;
             }
             auto newBeanName = method.name();

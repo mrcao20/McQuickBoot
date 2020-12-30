@@ -397,7 +397,11 @@ QMetaObject::Connection connect(IMcApplicationContextConstPtrRef appCtx,
         return QMetaObject::Connection();
     }
     auto signalMetaObj = senderObj->metaObject();
-    int signalIndex = signalMetaObj->indexOfSignal(signal.toLocal8Bit());
+    QString signalStr = signal;
+    if (signalStr.startsWith(QString::number(QSIGNAL_CODE))) {
+        signalStr.remove(0, 1);
+    }
+    int signalIndex = signalMetaObj->indexOfSignal(signalStr.toLocal8Bit());
     if (signalIndex == -1) {
         qCritical("not exists signal named '%s' for bean '%s'\n",
                   qPrintable(signal),
@@ -406,7 +410,11 @@ QMetaObject::Connection connect(IMcApplicationContextConstPtrRef appCtx,
     }
     auto signalMethod = signalMetaObj->method(signalIndex);
     auto slotMetaObj = receiverObj->metaObject();
-    int slotIndex = slotMetaObj->indexOfMethod(slot.toLocal8Bit());
+    auto slotStr = slot;
+    if (slotStr.startsWith(QString::number(QSLOT_CODE))) {
+        slotStr.remove(0, 1);
+    }
+    int slotIndex = slotMetaObj->indexOfMethod(slotStr.toLocal8Bit());
     if (slotIndex == -1) {
         qCritical("not exists slot named '%s' for bean '%s'\n",
                   qPrintable(slot),
@@ -415,6 +423,34 @@ QMetaObject::Connection connect(IMcApplicationContextConstPtrRef appCtx,
     }
     auto slotMethod = slotMetaObj->method(slotIndex);
     return QObject::connect(senderObj.data(), signalMethod, receiverObj.data(), slotMethod, type);
+}
+
+QMetaObject::Connection connect(IMcApplicationContextConstPtrRef appCtx,
+                                const QString &sender,
+                                const QString &signal,
+                                QObject *receiver,
+                                const QString &slot,
+                                Qt::ConnectionType type) noexcept
+{
+    Q_ASSERT(!appCtx.isNull());
+    auto senderObj = appCtx->getBean<QObject>(sender);
+    if (senderObj.isNull()) {
+        qCritical("not exists bean '%s'", qPrintable(sender));
+        return QMetaObject::Connection();
+    }
+    QString signalStr = signal;
+    if (!signalStr.startsWith(QString::number(QSIGNAL_CODE))) {
+        signalStr = QString::number(QSIGNAL_CODE) + signalStr;
+    }
+    auto slotStr = slot;
+    if (!slotStr.startsWith(QString::number(QSLOT_CODE))) {
+        slotStr = QString::number(QSLOT_CODE) + slotStr;
+    }
+    return QObject::connect(senderObj.data(),
+                            signalStr.toLocal8Bit(),
+                            receiver,
+                            slotStr.toLocal8Bit(),
+                            type);
 }
 } // namespace Ioc
 } // namespace Mc

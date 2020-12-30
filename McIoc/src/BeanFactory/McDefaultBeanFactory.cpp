@@ -170,6 +170,9 @@ bool McDefaultBeanFactory::addObjectConnect(QObjectConstPtrRef bean,
         auto signalMetaObj = sender->metaObject();
         
         QString signalStr = con->getSignal();
+        if (signalStr.startsWith(QString::number(QSIGNAL_CODE))) {
+            signalStr.remove(0, 1);
+        }
         if(signalStr.isEmpty()) {
             qCritical() << "signal is not exists";
             return false;
@@ -191,6 +194,9 @@ bool McDefaultBeanFactory::addObjectConnect(QObjectConstPtrRef bean,
         auto slotMetaObj = receiver->metaObject();
         
         QString slotStr = con->getSlot();
+        if (slotStr.startsWith(QString::number(QSLOT_CODE))) {
+            slotStr.remove(0, 1);
+        }
         if(slotStr.isEmpty()) {
             qCritical() << "slot is not exists";
             return false;

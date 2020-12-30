@@ -1,5 +1,7 @@
 #include "Config.h"
 
+#include <QDebug>
+
 #include "Param.h"
 #include "Test.h"
 
@@ -20,8 +22,18 @@ Config::~Config()
 {
 }
 
-ParamPtr Config::param(const TestPtr &aaa) const noexcept
+ParamPtr Config::param() const noexcept
 {
-    qDebug() << "Config>>>>>>>>>>>>" << aaa << aaa->ccc();
     return ParamPtr::create();
+}
+
+#include <McBoot/McQuickBootSimple.h>
+void Config::finished()
+{
+    McQuickBootSimple::connect("aaa", SIGNAL(signal_sig2()), this, SLOT(slot_slt2()));
+}
+
+void Config::slot_slt2()
+{
+    qDebug() << "Param::slot_slt2()";
 }

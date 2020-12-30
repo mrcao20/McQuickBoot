@@ -28,6 +28,7 @@ int main(int argc, char *argv[])
     std::function<void(int)> a = [](int b) { qDebug() << "++++++++++++++" << b; };
     QMetaObject::invokeMethod(&t, "aaa", Q_ARG(std::function<void(int)>, a));
     McQuickBootSimple::init();
+    McQuickBootSimple::connect("aaa", SIGNAL(signal_sig()), "param", SLOT(slot_slt()));
     ParamPtr p = ParamPtr::create();
     p->aaa = 1000;
     $.invoke("aaa.bbb",

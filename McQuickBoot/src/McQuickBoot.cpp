@@ -55,6 +55,34 @@ McQuickBoot::~McQuickBoot()
 {
 }
 
+QMetaObject::Connection McQuickBoot::connect(const QString &sender,
+                                             const QString &signal,
+                                             const QString &receiver,
+                                             const QString &slot,
+                                             Qt::ConnectionType type) noexcept
+{
+    return Mc::Ioc::connect(McQuickBoot::instance()->getApplicationContext(),
+                            sender,
+                            signal,
+                            receiver,
+                            slot,
+                            type);
+}
+
+QMetaObject::Connection McQuickBoot::connect(const QString &sender,
+                                             const QString &signal,
+                                             QObject *receiver,
+                                             const QString &slot,
+                                             Qt::ConnectionType type) noexcept
+{
+    return Mc::Ioc::connect(McQuickBoot::instance()->getApplicationContext(),
+                            sender,
+                            signal,
+                            receiver,
+                            slot,
+                            type);
+}
+
 void McQuickBoot::init(QCoreApplication *app, QQmlApplicationEngine *engine) noexcept
 {
     if(mcQuickBootStaticData->preInitFunc) {
@@ -69,8 +97,6 @@ void McQuickBoot::init(QCoreApplication *app, QQmlApplicationEngine *engine) noe
     McQuickBootPtr &boot = mcQuickBootStaticData->boot;
     boot->initBoot(engine);
     auto appCtx = boot->d->context;
-
-    boot->initContainer();
 
     auto controllerContainer = appCtx->getBean<McControllerContainer>("controllerContainer");
     auto modelContainer = appCtx->getBean<McModelContainer>("modelContainer");
@@ -134,9 +160,7 @@ void McQuickBoot::initBoot(QQmlEngine *engine) noexcept
     }
     d->engine = engine;
     d->context = McAnnotationApplicationContextPtr::create();
-    auto reader = McConfigurationFileBeanDefinitionReaderPtr::create(d->context);
-    reader->readBeanDefinition(d->context.data());
-    d->context->refresh();  //!< 预加载bean
+    doRefresh();
 }
 
 McCppRequestor &McQuickBoot::requestor() const noexcept
@@ -144,18 +168,26 @@ McCppRequestor &McQuickBoot::requestor() const noexcept
     return *d->requestor.data();
 }
 
-void McQuickBoot::refresh() const noexcept
+void McQuickBoot::refresh() noexcept
 {
     d->context->generateReader();
-    auto reader = McConfigurationFileBeanDefinitionReaderPtr::create(d->context);
-    reader->readBeanDefinition(d->context.data());
-    d->context->refresh();
-    initContainer();
+    doRefresh();
 }
 
 IMcApplicationContextPtr McQuickBoot::getApplicationContext() const noexcept 
 {
     return d->context;
+}
+
+void McQuickBoot::doRefresh() noexcept
+{
+    auto reader = McConfigurationFileBeanDefinitionReaderPtr::create(d->context);
+    reader->readBeanDefinition(d->context.data());
+    auto configurationContainer = d->context->getBean<McConfigurationContainer>(
+        "configurationContainer");
+    configurationContainer->init(this);
+    d->context->refresh(); //!< 预加载bean
+    initContainer();
 }
 
 void McQuickBoot::initContainer() const noexcept
@@ -168,8 +200,4 @@ void McQuickBoot::initContainer() const noexcept
 
     auto socketContainer = d->context->getBean<McQmlSocketContainer>("socketContainer");
     socketContainer->init(this);
-
-    auto configurationContainer = d->context->getBean<McConfigurationContainer>(
-        "configurationContainer");
-    configurationContainer->init(this);
 }

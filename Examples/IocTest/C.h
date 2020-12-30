@@ -8,6 +8,7 @@ class R : public QObject, public IMcCustomPlaceholder
     Q_OBJECT
     MC_DECL_INIT(R)
     MC_DEFINE_TYPELIST(IMcCustomPlaceholder)
+    MC_COMPONENT
     Q_CLASSINFO(MC_BEANNAME_TAG, "r")
     Q_PROPERTY(QString text READ text WRITE setText);
 public:
@@ -57,6 +58,7 @@ class C : public QObject, public IB
     //! 这里不需要额外指定QOBject，容器会自动指定。但如果C继承至其他类，比如QWidget，那么需要先使用MC_DECL_METATYPE声明QWidget，再使用MC_DEFINE_TYPELIST(QWidget, MC_DECL_TYPELIST(IB))，
     //! 当然，如果不需要从C转换到QWidget，也就不需要额外声明QWidget
     MC_DEFINE_TYPELIST(MC_DECL_TYPELIST(IB))
+    MC_COMPONENT
     MC_BEANNAME("c")
     Q_PROPERTY(QString text READ text WRITE setText)    //!< 使用getter和setter形式
     MC_AUTOWIRED("r")

@@ -12,12 +12,3 @@ McAbstractQuickBoot::McAbstractQuickBoot(QObject *parent) : QObject(parent)
 }
 
 McAbstractQuickBoot::~McAbstractQuickBoot() {}
-
-QMetaObject::Connection McAbstractQuickBoot::connect(const QString &sender,
-                                                     const QString &signal,
-                                                     const QString &receiver,
-                                                     const QString &slot,
-                                                     Qt::ConnectionType type) noexcept
-{
-    return Mc::Ioc::connect(getApplicationContext(), sender, signal, receiver, slot, type);
-}

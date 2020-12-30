@@ -17,18 +17,32 @@ class MCQUICKBOOT_EXPORT McQuickBootSimple : public McAbstractQuickBoot
     Q_OBJECT
     MC_DECL_INIT(McQuickBootSimple)
 public:
+    using QObject::connect;
+
     explicit McQuickBootSimple(QObject *parent = nullptr);
     ~McQuickBootSimple() override;
-    
+
+    static QMetaObject::Connection connect(const QString &sender,
+                                           const QString &signal,
+                                           const QString &receiver,
+                                           const QString &slot,
+                                           Qt::ConnectionType type = Qt::AutoConnection) noexcept;
+    static QMetaObject::Connection connect(const QString &sender,
+                                           const QString &signal,
+                                           QObject *receiver,
+                                           const QString &slot,
+                                           Qt::ConnectionType type = Qt::AutoConnection) noexcept;
+
     static void init() noexcept;
     static QSharedPointer<McQuickBootSimple> instance() noexcept;
 
     McCppRequestor &requestor() const noexcept;
     //! 如果重新或新加载了某些组件，则调用此函数
-    void refresh() const noexcept;
+    void refresh() noexcept;
     IMcApplicationContextPtr getApplicationContext() const noexcept override;
 
 private:
+    void doRefresh() noexcept;
     void initContainer() const noexcept;
 
 private:

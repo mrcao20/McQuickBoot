@@ -20,7 +20,14 @@ public:
 
     Q_INVOKABLE
     MC_BEAN
-    ParamPtr param(const TestPtr &aaa) const noexcept;
+    ParamPtr param() const noexcept;
+
+    Q_INVOKABLE
+    MC_BEAN_FINISHED
+    void finished();
+
+private slots:
+    void slot_slt2();
 
 private:
     MC_DECL_PRIVATE(Config)

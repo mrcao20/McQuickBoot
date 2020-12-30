@@ -1,5 +1,7 @@
 #include "Param.h"
 
+#include <QDebug>
+
 MC_STATIC()
 MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(Param))
 MC_STATIC_END
@@ -15,4 +17,9 @@ Param::Param(QObject *parent) noexcept
 
 Param::~Param()
 {
+}
+
+void Param::slot_slt()
+{
+    qDebug() << "Param::slot_slt()";
 }

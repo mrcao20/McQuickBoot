@@ -15,6 +15,9 @@ public:
 
     MC_POCO_PROPERTY(int, aaa);
 
+private slots:
+    void slot_slt();
+
 private:
     MC_DECL_PRIVATE(Param)
 };

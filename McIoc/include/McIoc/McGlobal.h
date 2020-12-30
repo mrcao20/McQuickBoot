@@ -164,5 +164,12 @@ MCIOC_EXPORT QMetaObject::Connection connect(IMcApplicationContextConstPtrRef ap
                                              const QString &receiver,
                                              const QString &slot,
                                              Qt::ConnectionType type = Qt::AutoConnection) noexcept;
+
+MCIOC_EXPORT QMetaObject::Connection connect(IMcApplicationContextConstPtrRef appCtx,
+                                             const QString &sender,
+                                             const QString &signal,
+                                             QObject *receiver,
+                                             const QString &slot,
+                                             Qt::ConnectionType type = Qt::AutoConnection) noexcept;
 } // namespace Ioc
 } // namespace Mc
