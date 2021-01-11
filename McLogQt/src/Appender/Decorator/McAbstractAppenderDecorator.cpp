@@ -6,7 +6,7 @@
 
 MC_INIT(McAbstractAppenderDecorator)
 MC_REGISTER_BEAN_FACTORY(McAppenderSeparator)
-MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(McAbstractAppenderDecorator))
+MC_REGISTER_BEAN_FACTORY(McAbstractAppenderDecorator)
 MC_REGISTER_LIST_CONVERTER(QList<IMcConfigurableAppenderPtr>)
 MC_INIT_END
 

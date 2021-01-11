@@ -5,7 +5,7 @@
 #include <QDateTime>
 
 MC_INIT(McDailyRollingFileAppender)
-MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(McDailyRollingFileAppender))
+MC_REGISTER_BEAN_FACTORY(McDailyRollingFileAppender)
 MC_INIT_END
 
 McDailyRollingFileAppender::McDailyRollingFileAppender() 

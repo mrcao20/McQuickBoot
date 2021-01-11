@@ -11,7 +11,7 @@ class MCLOGQT_EXPORT McAbstractAppender
 {
     Q_OBJECT
     MC_DECL_INIT(McAbstractAppender)
-    MC_DEFINE_TYPELIST(QObject, MC_DECL_TYPELIST(IMcConfigurableAppender))
+    MC_TYPELIST(QObject, IMcConfigurableAppender)
     Q_PROPERTY(QString threshold READ threshold WRITE setThreshold)
 public:
     McAbstractAppender();

@@ -6,7 +6,7 @@ class MCLOGQT_EXPORT McFileDeviceAppender : public McAbstractFormatAppender
 {
     Q_OBJECT
     MC_DECL_INIT(McFileDeviceAppender)
-    MC_DEFINE_TYPELIST(MC_DECL_TYPELIST(McAbstractFormatAppender))
+    MC_TYPELIST(McAbstractFormatAppender)
 public:
     Q_INVOKABLE McFileDeviceAppender();
     ~McFileDeviceAppender() override;

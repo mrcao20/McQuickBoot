@@ -9,7 +9,7 @@ MC_FORWARD_DECL_PRIVATE_DATA(McDaoLoader);
 class MCORM_EXPORT McDaoLoader : public QObject, public IMcDaoLoader
 {
     Q_OBJECT
-    MC_DEFINE_TYPELIST(IMcDaoLoader)
+    MC_TYPELIST(IMcDaoLoader)
     MC_DECL_INIT(McDaoLoader)
     MC_COMPONENT
     MC_BEANNAME("daoLoader")

@@ -3,7 +3,7 @@
 #include <QFile>
 
 MC_INIT(McConsoleAppender)
-MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(McConsoleAppender))
+MC_REGISTER_BEAN_FACTORY(McConsoleAppender)
 MC_INIT_END
 
 McConsoleAppender::McConsoleAppender() 

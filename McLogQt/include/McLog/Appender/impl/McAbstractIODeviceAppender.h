@@ -11,7 +11,8 @@ class MCLOGQT_EXPORT McAbstractIODeviceAppender
 {
     Q_OBJECT
     MC_DECL_INIT(McAbstractIODeviceAppender)
-    MC_DEFINE_TYPELIST(MC_DECL_TYPELIST(McAbstractAppender), MC_DECL_TYPELIST(IMcWritableAppender));
+    MC_TYPELIST(McAbstractAppender, IMcWritableAppender);
+
 public:
     McAbstractIODeviceAppender();
     ~McAbstractIODeviceAppender();

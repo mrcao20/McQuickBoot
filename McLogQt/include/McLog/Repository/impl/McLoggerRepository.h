@@ -20,9 +20,9 @@ class MCLOGQT_EXPORT McLoggerRepository
     Q_OBJECT
     MC_DECL_INIT(McLoggerRepository)
 #ifndef MC_NO_IOC
-    MC_DEFINE_TYPELIST(QObject, MC_DECL_TYPELIST(IMcLoggerRepository), MC_DECL_TYPELIST(IMcDeleteThreadWhenQuit))
+    MC_TYPELIST(QObject, IMcLoggerRepository, IMcDeleteThreadWhenQuit)
 #else
-    MC_DEFINE_TYPELIST(QObject, MC_DECL_TYPELIST(IMcLoggerRepository))
+    MC_TYPELIST(QObject, IMcLoggerRepository)
 #endif
     typedef QMap<QString, IMcLoggerPtr> LoggerMap;
     Q_PROPERTY(LoggerMap loggers READ loggers WRITE setLogger)

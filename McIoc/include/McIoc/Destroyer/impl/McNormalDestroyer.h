@@ -4,7 +4,7 @@
 
 class McNormalDestroyer : public IMcDestroyer
 {
-    MC_DEFINE_TYPELIST(IMcDestroyer);
+    MC_TYPELIST(IMcDestroyer);
 public:
     ~McNormalDestroyer() override = default;
     

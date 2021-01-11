@@ -12,7 +12,7 @@ class MCLOGQT_EXPORT McLogger : public QObject, public IMcLogger
 {
     Q_OBJECT
     MC_DECL_INIT(McLogger)
-    MC_DEFINE_TYPELIST(QObject, MC_DECL_TYPELIST(IMcLogger))
+    MC_TYPELIST(QObject, IMcLogger)
     Q_PROPERTY(QString threshold READ threshold WRITE setThreshold)
     Q_PROPERTY(QList<IMcConfigurableAppenderPtr> appenders READ appenders WRITE setAppenders)
 public:

@@ -11,7 +11,7 @@ MC_FORWARD_DECL_PRIVATE_DATA(McDefaultDeleteThreadWhenQuit);
  */
 class MCIOC_EXPORT McDefaultDeleteThreadWhenQuit : public IMcDeleteThreadWhenQuit
 {
-    MC_DEFINE_TYPELIST(MC_DECL_TYPELIST(IMcDeleteThreadWhenQuit))
+    MC_TYPELIST(IMcDeleteThreadWhenQuit)
 public:
     McDefaultDeleteThreadWhenQuit() noexcept;
     ~McDefaultDeleteThreadWhenQuit() override;

@@ -6,7 +6,7 @@ class MCLOGQT_EXPORT McNormalLayout : public McPatternLayout
 {
     Q_OBJECT
     MC_DECL_INIT(McNormalLayout)
-    MC_DEFINE_TYPELIST(MC_DECL_TYPELIST(McPatternLayout))
+    MC_TYPELIST(McPatternLayout)
 public:
     Q_INVOKABLE McNormalLayout(){}
     

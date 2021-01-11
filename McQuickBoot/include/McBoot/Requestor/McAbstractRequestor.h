@@ -26,7 +26,7 @@ class MCQUICKBOOT_EXPORT McAbstractRequestor : public QObject,
 {
     Q_OBJECT
     MC_DECL_INIT(McAbstractRequestor)
-    MC_DEFINE_TYPELIST(IMcDestroyer)
+    MC_TYPELIST(IMcDestroyer)
     MC_AUTOWIRED("requestorConfig")
     Q_PRIVATE_PROPERTY(d, McRequestorConfigPtr requestorConfig MEMBER requestorConfig)
 public:

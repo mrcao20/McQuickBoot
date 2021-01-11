@@ -15,7 +15,7 @@ class MCLOGQT_EXPORT McAbstractAppenderDecorator
 {
     Q_OBJECT
     MC_DECL_INIT(McAbstractAppenderDecorator)
-    MC_DEFINE_TYPELIST(MC_DECL_TYPELIST(IMcConfigurableAppender));
+    MC_TYPELIST(IMcConfigurableAppender);
     Q_PROPERTY(McAppenderSeparatorPtr separator READ separator WRITE setSeparator)
     Q_PROPERTY(QList<IMcConfigurableAppenderPtr> appenders READ appenders WRITE setAppenders)
 public:

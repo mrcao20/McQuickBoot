@@ -73,7 +73,7 @@
         Mc::addPreRoutine(MC_ROUTINE_PRIORITY(__VA_ARGS__), [](){
 #define MC_AUTO_INIT(Class, ...) \
     MC_INIT(Class, __VA_ARGS__) \
-    MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(Class))
+    MC_REGISTER_BEAN_FACTORY(Class)
 
 #define MC_DESTROY(...) \
     }); \
@@ -95,10 +95,9 @@
     }
 
 #define MC_CONNECT(sender, signal, receiver, slot, ...) \
-    Mc::Ioc::connect(&ClassType::staticMetaObject, sender, signal, receiver, slot, __VA_ARGS__)
+    Mc::Ioc::connect(&ClassType::staticMetaObject, sender, signal, receiver, slot, ##__VA_ARGS__)
 
-
-#ifndef Q_MOC_RUN            //!< 这行语句必须加，只有包围在这行语句之中的宏才能被识别为tag
+#ifndef Q_MOC_RUN //!< 这行语句必须加，只有包围在这行语句之中的宏才能被识别为tag
 
 # define MC_BEAN_START      //!< 当bean被构造，但还未注入属性时调用
 # define MC_BEAN_FINISHED   //!< 当bean完全被构造完成之后调用

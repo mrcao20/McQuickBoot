@@ -9,7 +9,8 @@ class MCLOGQT_EXPORT McAppenderPostDecorator
 {
     Q_OBJECT
     MC_DECL_INIT(McAppenderPostDecorator)
-    MC_DEFINE_TYPELIST(MC_DECL_TYPELIST(McAbstractAppenderDecorator));
+    MC_TYPELIST(McAbstractAppenderDecorator);
+
 public:
     Q_INVOKABLE explicit McAppenderPostDecorator(QObject *parent = nullptr);
     ~McAppenderPostDecorator() override;

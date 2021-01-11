@@ -3,7 +3,7 @@
 #include "McLog/Appender/Decorator/McAppenderSeparator.h"
 
 MC_INIT(McAppenderFrontDecorator)
-MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(McAppenderFrontDecorator))
+MC_REGISTER_BEAN_FACTORY(McAppenderFrontDecorator)
 MC_INIT_END
 
 MC_DECL_PRIVATE_DATA(McAppenderFrontDecorator)

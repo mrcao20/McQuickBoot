@@ -8,7 +8,7 @@ QList<IMcConfigurableAppenderPtr> appenders;
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McLogger)
-MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(McLogger))
+MC_REGISTER_BEAN_FACTORY(McLogger)
 MC_REGISTER_LIST_CONVERTER(QList<IMcConfigurableAppenderPtr>)
 MC_INIT_END
 

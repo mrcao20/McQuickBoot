@@ -7,7 +7,7 @@
 #include "McOrm/McOrmMacroGlobal.h"
 
 MC_INIT(McAbstractParser)
-MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(McAbstractParser))
+MC_REGISTER_BEAN_FACTORY(McAbstractParser)
 MC_INIT_END
 
 void McAbstractParser::parse(const QList<QObjectPtr> &beans) noexcept

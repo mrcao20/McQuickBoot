@@ -11,7 +11,7 @@ class QmlSocketTest : public QObject {
     MC_QML_SOCKET
     Q_CLASSINFO(MC_BEANNAME_TAG, "socket")
     MC_DECL_INIT(QmlSocketTest)
-    MC_DEFINE_TYPELIST(QObject)
+    MC_TYPELIST(QObject)
 public:
     Q_INVOKABLE explicit QmlSocketTest(QObject *parent = nullptr);
     ~QmlSocketTest();

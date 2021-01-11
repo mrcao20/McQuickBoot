@@ -8,7 +8,7 @@ McPrivate::McMessagePatternPtr messagePattern;
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McPatternLayout)
-MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(McPatternLayout))
+MC_REGISTER_BEAN_FACTORY(McPatternLayout)
 MC_INIT_END
 
 McPatternLayout::McPatternLayout() 

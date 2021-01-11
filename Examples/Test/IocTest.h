@@ -12,7 +12,7 @@ class IocTest : public QObject, public McDefaultDeleteThreadWhenQuit
 {
     Q_OBJECT
     MC_DECL_INIT(IocTest)
-    MC_DEFINE_TYPELIST(QObject, MC_DECL_TYPELIST(McDefaultDeleteThreadWhenQuit))
+    MC_TYPELIST(QObject, McDefaultDeleteThreadWhenQuit)
     MC_COMPONENT
     MC_BEANNAME("test")
     MC_SINGLETON(false)

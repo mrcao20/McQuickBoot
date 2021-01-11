@@ -8,7 +8,7 @@ class MCLOGQT_EXPORT McRollingFileAppender : public McFileAppender
 {
     Q_OBJECT
     MC_DECL_INIT(McRollingFileAppender)
-    MC_DEFINE_TYPELIST(MC_DECL_TYPELIST(McFileAppender))
+    MC_TYPELIST(McFileAppender)
     Q_PROPERTY(QString backupDirPath READ backupDirPath WRITE setBackupDirPath)
     Q_PROPERTY(QString backupDirPattern READ backupDirPattern WRITE setBackupDirPattern)
 public:

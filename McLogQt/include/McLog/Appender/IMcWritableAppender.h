@@ -8,7 +8,6 @@ QT_END_NAMESPACE
 
 class IMcWritableAppender 
 {
-    MC_DEFINE_TYPELIST()
 public:
     virtual ~IMcWritableAppender() = default;
     

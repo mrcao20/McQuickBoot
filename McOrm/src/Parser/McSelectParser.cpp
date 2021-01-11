@@ -4,7 +4,7 @@
 #include "McOrm/SqlSlot/impl/McSelectSqlSlot.h"
 
 MC_INIT(McSelectParser)
-MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(McSelectParser))
+MC_REGISTER_BEAN_FACTORY(McSelectParser)
 MC_INIT_END
 
 MC_DECL_PRIVATE_DATA(McSelectParser)

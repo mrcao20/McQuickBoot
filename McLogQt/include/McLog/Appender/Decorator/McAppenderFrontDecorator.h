@@ -9,7 +9,8 @@ class MCLOGQT_EXPORT McAppenderFrontDecorator
 {
     Q_OBJECT
     MC_DECL_INIT(McAppenderFrontDecorator)
-    MC_DEFINE_TYPELIST(MC_DECL_TYPELIST(McAbstractAppenderDecorator));
+    MC_TYPELIST(McAbstractAppenderDecorator);
+
 public:
     Q_INVOKABLE explicit McAppenderFrontDecorator(QObject *parent = nullptr);
     ~McAppenderFrontDecorator() override;

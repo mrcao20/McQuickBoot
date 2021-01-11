@@ -7,7 +7,7 @@ class R : public QObject, public IMcCustomPlaceholder
 {
     Q_OBJECT
     MC_DECL_INIT(R)
-    MC_DEFINE_TYPELIST(IMcCustomPlaceholder)
+    MC_TYPELIST(IMcCustomPlaceholder)
     MC_COMPONENT
     Q_CLASSINFO(MC_BEANNAME_TAG, "r")
     Q_PROPERTY(QString text READ text WRITE setText);
@@ -38,11 +38,12 @@ public:
     
     virtual void a() noexcept = 0;
 };
-MC_DECL_METATYPE(IA);                   //!< 这里必须使用该宏声明，否则无法从C转换到该接口。
+MC_DECL_METATYPE(IA); //!< 这里必须使用该宏声明，否则无法从C转换到该接口。
 
 class IB : public IA
 {
-    MC_DEFINE_TYPELIST(IA);             //!< 由于本接口有一个父接口，并且可能存在从IB转换到IA，所以这里需要使用这个宏保存父接口
+    MC_TYPELIST(
+        IA); //!< 由于本接口有一个父接口，并且可能存在从IB转换到IA，所以这里需要使用这个宏保存父接口
 public:
 };
 MC_DECL_METATYPE(IB);
@@ -54,10 +55,9 @@ class C : public QObject, public IB
     Q_OBJECT
     //    MC_DECL_INIT(C)                     //!< 这个宏主要用来实现一个类似于java静态代码块的功能。这里只是声明，真正实现在cpp中
     //! 同理，由于C实现至IB接口，并且可能转换到IB，所以这里需要使用该宏。
-    //! 这里需要使用MC_DECL_TYPELIST宏的原因在于IB继承了其他父接口，并且C也可能转换到IB的其他父接口，所以需要使用该宏额外标识。注意：IB必须使用过MC_DEFINE_TYPELIST后才能使用该宏
-    //! 这里不需要额外指定QOBject，容器会自动指定。但如果C继承至其他类，比如QWidget，那么需要先使用MC_DECL_METATYPE声明QWidget，再使用MC_DEFINE_TYPELIST(QWidget, MC_DECL_TYPELIST(IB))，
+    //! 这里不需要额外指定QOBject，容器会自动指定。但如果C继承至其他类，比如QWidget，那么需要先使用MC_DECL_POINTER声明QWidget，再使用MC_TYPELIST(QWidget, IB)，
     //! 当然，如果不需要从C转换到QWidget，也就不需要额外声明QWidget
-    MC_DEFINE_TYPELIST(MC_DECL_TYPELIST(IB))
+    MC_TYPELIST(IB)
     MC_COMPONENT
     MC_BEANNAME("c")
     Q_PROPERTY(QString text READ text WRITE setText)    //!< 使用getter和setter形式

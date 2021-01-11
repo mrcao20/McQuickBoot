@@ -9,7 +9,7 @@ class MCLOGQT_EXPORT McVSDebugDevice : public QIODevice
 {
     Q_OBJECT
     MC_DECL_INIT(McVSDebugDevice)
-    MC_DEFINE_TYPELIST();
+    MC_TYPELIST();
 public:
     Q_INVOKABLE explicit McVSDebugDevice(QObject *parent = nullptr) noexcept;
     ~McVSDebugDevice() override;

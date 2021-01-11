@@ -4,8 +4,7 @@
 #include <QDebug>
 
 MC_INIT(R)
-MC_REGISTER_BEAN_FACTORY(
-    MC_TYPELIST(R)); //!< 由于类R没有使用MC_DEFINE_TYPELIST宏，则这里只需要传入R即可
+MC_REGISTER_BEAN_FACTORY(R); //!< 注册IOC
 MC_INIT_END
 
 static int i = 0;
@@ -38,7 +37,7 @@ void R::slot_recv() noexcept
 #include <McIoc/McGlobal.h>
 
 MC_STATIC()
-MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(C));   //!< 由于类C使用了MC_DEFINE_TYPELIST宏，则需要使用MC_TYPELIST宏
+MC_REGISTER_BEAN_FACTORY(C);                        //!< 注册IOC
 MC_REGISTER_CONTAINER_CONVERTER(QList<QString>);    //!< 容器需要额外注册，只需注册一次即可到处使用，此宏多次调用只生效一次
 MC_REGISTER_LIST_CONVERTER(QVector<RPtr>);  //!< 和MC_REGISTER_CONTAINER_CONVERTER效果一样
 MC_REGISTER_MAP_CONVERTER(StringMap);       //!< 重定义之后需要使用重定义之后的类型

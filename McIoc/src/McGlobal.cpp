@@ -184,11 +184,13 @@ const QVariant::Handler mc_custom_variant_handler = {
 #endif
 };
 
-MC_INIT(McGlobal)
-auto pId = qRegisterMetaType<QObject *>(MC_MACRO_STR(QObject));
-auto sId = qRegisterMetaType<QObjectPtr>(MC_MACRO_STR(QObjectConstPtrRef));
+MC_INIT(McGlobal, Mc::RoutinePriority::Max)
+auto pId = qRegisterMetaType<QObject *>();
+auto sId = qRegisterMetaType<QObjectPtr>();
 McMetaTypeId::addQObjectPointerIds(pId, sId);
 McMetaTypeId::addSharedPointerId(sId, pId);
+qRegisterMetaType<QObjectPtr>(MC_MACRO_STR(QObjectPtr));
+qRegisterMetaType<QObjectPtr>(MC_MACRO_STR(QObjectConstPtrRef));
 
 auto kernelHandler = qcoreVariantHandler();
 QVariantPrivate::registerHandler(QModulesPrivate::Core, kernelHandler);

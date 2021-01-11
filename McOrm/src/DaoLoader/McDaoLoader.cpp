@@ -7,7 +7,7 @@
 #include "McOrm/Parser/impl/McSelectParser.h"
 
 MC_INIT(McDaoLoader)
-MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(McDaoLoader))
+MC_REGISTER_BEAN_FACTORY(McDaoLoader)
 MC_INIT_END
 
 MC_DECL_PRIVATE_DATA(McDaoLoader)

@@ -8,7 +8,7 @@ qint64 maxFileSizeBytes{-1};        //!< 单位: byte，默认-1表示用不创�
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McSizeRollingFileAppender)
-MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(McSizeRollingFileAppender))
+MC_REGISTER_BEAN_FACTORY(McSizeRollingFileAppender)
 MC_INIT_END
 
 McSizeRollingFileAppender::McSizeRollingFileAppender() 

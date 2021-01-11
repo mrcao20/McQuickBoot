@@ -39,7 +39,7 @@ class InvokeTest : public ClassTestB
 {
     Q_OBJECT
     MC_DECL_INIT(InvokeTest)
-    MC_DEFINE_TYPELIST(ClassTestB)
+    MC_TYPELIST(ClassTestB)
     MC_CONTROLLER
     MC_BEANNAME("con")
 public:

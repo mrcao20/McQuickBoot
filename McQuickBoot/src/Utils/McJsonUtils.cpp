@@ -115,3 +115,45 @@ QJsonObject McJsonUtils::toJson(void *gadget, const QMetaObject *mobj) noexcept
     return jsonObj;
 }
 #endif
+
+void McJsonUtils::fromJson(const QJsonObject &jsonObj, QObject *obj) noexcept
+{
+    Q_ASSERT(obj != nullptr);
+    auto metaObj = obj->metaObject();
+    auto keys = jsonObj.keys();
+    auto seqMetaTypeIds = McMetaTypeId::sequentialIds();
+    for (auto key : keys) {
+        auto proIndex = metaObj->indexOfProperty(key.toLocal8Bit());
+        if (proIndex == -1) {
+            continue;
+        }
+        auto pro = metaObj->property(proIndex);
+        auto type = pro.userType();
+        auto value = jsonObj.value(key);
+        if (type >= QMetaType::User) {
+            //            auto flags = QMetaType::typeFlags(type);
+            //            if (flags.testFlag(QMetaType::TypeFlag::PointerToQObject)) {
+            //                auto variant = McJsonUtils::toJson(var.value<QObject *>());
+            //                jsonValue = QJsonValue::fromVariant(variant);
+            //            } else if (flags.testFlag(QMetaType::TypeFlag::SharedPointerToQObject)) {
+            //                auto variant = McJsonUtils::toJson(var.value<QObjectPtr>());
+            //                jsonValue = QJsonValue::fromVariant(variant);
+            //            } else if (seqMetaTypeIds.contains(type)) {
+            //                QVariantList varList = var.value<QVariantList>();
+            //                jsonValue = toJson(varList);
+            //            } else {
+            //                //! 不提示
+            //            }
+        } else {
+            pro.write(obj, value.toVariant());
+        }
+    }
+}
+
+void McJsonUtils::fromJson(const QJsonArray &jsonArr, const QList<QObject *> &objs) noexcept
+{
+    Q_ASSERT(jsonArr.size() == objs.size());
+    for (int i = 0; i < jsonArr.size(); ++i) {
+        fromJson(jsonArr.at(i).toObject(), objs.at(i));
+    }
+}

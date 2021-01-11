@@ -4,7 +4,6 @@
 
 class IMcLayout 
 {
-    MC_DEFINE_TYPELIST()
 public:
     virtual ~IMcLayout() = default;
     

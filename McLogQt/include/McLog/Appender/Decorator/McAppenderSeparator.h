@@ -17,4 +17,3 @@ public:
 };
 
 MC_DECL_METATYPE(McAppenderSeparator)
-

@@ -1,7 +1,7 @@
 #include "McLog/Layout/impl/McNormalLayout.h"
 
 MC_INIT(McNormalLayout)
-MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(McNormalLayout))
+MC_REGISTER_BEAN_FACTORY(McNormalLayout)
 MC_INIT_END
 
 void McNormalLayout::finished() noexcept 

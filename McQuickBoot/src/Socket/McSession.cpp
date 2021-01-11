@@ -4,7 +4,7 @@
 #include <QJsonObject>
 
 MC_INIT(McSession)
-MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(McSession))
+MC_REGISTER_BEAN_FACTORY(McSession)
 MC_INIT_END
 
 McSession::McSession(QObject *parent)

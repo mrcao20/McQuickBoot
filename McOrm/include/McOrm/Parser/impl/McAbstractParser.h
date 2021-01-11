@@ -7,7 +7,7 @@ class IMcSqlSlot;
 class McAbstractParser : public QObject, public IMcParser
 {
     Q_OBJECT
-    MC_DEFINE_TYPELIST(IMcParser)
+    MC_TYPELIST(IMcParser)
     MC_DECL_INIT(McAbstractParser);
 public:
     ~McAbstractParser() override = default;

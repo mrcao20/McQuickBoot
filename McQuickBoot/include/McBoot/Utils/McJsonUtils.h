@@ -33,6 +33,17 @@ public:
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     static QJsonObject toJson(void *gadget, const QMetaObject *mobj) noexcept;
 #endif
+
+    static void fromJson(const QJsonObject &jsonObj, QObject *obj) noexcept;
+    static void fromJson(const QJsonArray &jsonArr, const QList<QObject *> &objs) noexcept;
+    template<typename T>
+    struct QObjectFromJson
+    {
+        using Type = T;
+    };
+
+    template<typename T>
+    static typename QObjectFromJson<T>::Type fromJson(const QJsonObject &jsonObj) noexcept;
 };
 
 template<typename T>

@@ -1,7 +1,7 @@
 #include "McLog/Utils/Packager/impl/McLogPackager.h"
 
 MC_STATIC()
-MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(McLogPackager))
+MC_REGISTER_BEAN_FACTORY(McLogPackager)
 MC_STATIC_END
 
 MC_DECL_PRIVATE_DATA(McLogPackager)

@@ -13,7 +13,7 @@ MC_FORWARD_DECL_PRIVATE_DATA(Test);
 class Test : public QObject
 {
     Q_OBJECT
-    MC_DEFINE_TYPELIST();
+    MC_TYPELIST();
     MC_CONTROLLER
     MC_BEANNAME("aaa")
     //    MC_AUTOWIRED("param")
@@ -41,4 +41,3 @@ private:
 };
 
 MC_DECL_METATYPE(Test)
-

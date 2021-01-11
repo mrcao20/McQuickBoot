@@ -15,7 +15,7 @@ IMcLogPackagerPtr logPackager;
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McLoggerRepository)
-MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(McLoggerRepository))
+MC_REGISTER_BEAN_FACTORY(McLoggerRepository)
 MC_REGISTER_MAP_CONVERTER(LoggerMap)
 MC_INIT_END
 

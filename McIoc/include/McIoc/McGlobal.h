@@ -8,9 +8,9 @@
 #include <QEvent>
 #include <QtCore/qmutex.h>
 
-#include "McVersion.h"
-#include "McConstantGlobal.h"
 #include "BeanFactory/McBeanGlobal.h"
+#include "McConstantGlobal.h"
+#include "McVersion.h"
 
 MC_FORWARD_DECL_CLASS(IMcApplicationContext)
 
@@ -68,7 +68,23 @@ QString getBeanName(const QMetaObject *metaObj) noexcept;
 }
 
 MC_DECL_POINTER(QObject)
-Q_DECLARE_METATYPE(QObjectPtr)
+
+//QT_BEGIN_NAMESPACE
+//template<typename T>
+//struct QMetaTypeId<T *>
+//{
+//    enum { Defined = 1 };
+//    static int qt_metatype_id()
+//    {
+//        static QBasicAtomicInt metatype_id = Q_BASIC_ATOMIC_INITIALIZER(0);
+//        if (const int id = metatype_id.loadAcquire())
+//            return id;
+//        const int newId = qRegisterMetaType<T *>("", reinterpret_cast<T **>(quintptr(-1)));
+//        metatype_id.storeRelease(newId);
+//        return newId;
+//    }
+//};
+//QT_END_NAMESPACE
 
 class MCIOC_EXPORT McCustomEvent : public QEvent {
 public:

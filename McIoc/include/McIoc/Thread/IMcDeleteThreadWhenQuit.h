@@ -9,7 +9,6 @@
  */
 class IMcDeleteThreadWhenQuit 
 {
-    MC_DEFINE_TYPELIST()
 public:
     virtual ~IMcDeleteThreadWhenQuit() = default;
     

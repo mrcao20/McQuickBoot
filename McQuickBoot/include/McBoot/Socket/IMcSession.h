@@ -4,7 +4,6 @@
 
 class IMcSession 
 {
-    MC_DEFINE_TYPELIST(IMcSession)
 public:
     virtual ~IMcSession() = default;
     

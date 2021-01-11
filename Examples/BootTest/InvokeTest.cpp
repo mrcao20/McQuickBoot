@@ -10,7 +10,7 @@
 #include <McBoot/Controller/impl/McQmlResponse.h>
 
 MC_INIT(InvokeTest)
-MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(InvokeTest))
+MC_REGISTER_BEAN_FACTORY(InvokeTest)
 MC_INIT_END
 
 InvokeTest::InvokeTest(QObject *parent) 

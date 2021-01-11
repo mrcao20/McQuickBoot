@@ -4,7 +4,6 @@
 
 class IMcLogger 
 {
-    MC_DEFINE_TYPELIST()
 public:
     virtual ~IMcLogger() = default;
     

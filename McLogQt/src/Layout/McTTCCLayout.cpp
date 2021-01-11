@@ -1,7 +1,7 @@
 #include "McLog/Layout/impl/McTTCCLayout.h"
 
 MC_INIT(McTTCCLayout)
-MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(McTTCCLayout))
+MC_REGISTER_BEAN_FACTORY(McTTCCLayout)
 MC_INIT_END
 
 void McTTCCLayout::finished() noexcept 

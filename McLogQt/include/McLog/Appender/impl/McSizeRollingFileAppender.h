@@ -8,7 +8,7 @@ class MCLOGQT_EXPORT McSizeRollingFileAppender : public McRollingFileAppender
 {
     Q_OBJECT
     MC_DECL_INIT(McSizeRollingFileAppender)
-    MC_DEFINE_TYPELIST(MC_DECL_TYPELIST(McRollingFileAppender))
+    MC_TYPELIST(McRollingFileAppender)
     Q_PROPERTY(QString maxFileSize READ maxFileSize WRITE setMaxFileSize)
     Q_PROPERTY(qint64 maxFileSizeBytes READ maxFileSizeBytes WRITE setMaxFileSizeBytes)
 public:

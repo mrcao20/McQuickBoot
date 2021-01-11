@@ -11,7 +11,7 @@ class MCLOGQT_EXPORT McAbstractFormatAppender
 {
     Q_OBJECT
     MC_DECL_INIT(McAbstractFormatAppender)
-    MC_DEFINE_TYPELIST(MC_DECL_TYPELIST(McAbstractIODeviceAppender))
+    MC_TYPELIST(McAbstractIODeviceAppender)
     Q_PROPERTY(IMcLayoutPtr layout READ layout WRITE setLayout)
     Q_PROPERTY(bool immediateFlush READ immediateFlush WRITE setImmediateFlush)
 public:

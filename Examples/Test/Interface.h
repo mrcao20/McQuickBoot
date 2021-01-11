@@ -4,7 +4,7 @@
 
 class Interface
 {
-    MC_DEFINE_TYPELIST()
+    MC_TYPELIST()
 public:
     virtual ~Interface() = default;
     

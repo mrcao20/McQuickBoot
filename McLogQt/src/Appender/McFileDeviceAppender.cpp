@@ -3,7 +3,7 @@
 #include <QFileDevice>
 
 MC_INIT(McFileDeviceAppender)
-MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(McFileDeviceAppender))
+MC_REGISTER_BEAN_FACTORY(McFileDeviceAppender)
 MC_INIT_END
 
 McFileDeviceAppender::McFileDeviceAppender() 

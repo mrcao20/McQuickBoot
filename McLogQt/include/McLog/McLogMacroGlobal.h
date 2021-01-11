@@ -98,9 +98,7 @@
 
 #define MC_INIT(...)
 #define MC_INIT_END
-#define MC_DEFINE_TYPELIST(...)
-#define MC_DECL_TYPELIST(...)
-#define MC_TYPELIST(...) MC_DECL_TYPELIST(__VA_ARGS__)
+#define MC_TYPELIST(...)
 #define MC_REGISTER_BEAN_FACTORY(...)
 #define MC_REGISTER_LIST_CONVERTER(...)
 #define MC_REGISTER_MAP_CONVERTER(...)

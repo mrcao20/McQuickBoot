@@ -8,7 +8,7 @@ MC_FORWARD_DECL_PRIVATE_DATA(McLogDeleter);
 class MCLOGQT_EXPORT McLogDeleter : public QObject, public IMcLogDeleter
 {
     Q_OBJECT
-    MC_DEFINE_TYPELIST(IMcLogDeleter);
+    MC_TYPELIST(IMcLogDeleter);
     Q_PRIVATE_PROPERTY(d, QString basePath MEMBER basePath)
     Q_PRIVATE_PROPERTY(d, int maxDepth MEMBER maxDepth)
     Q_PRIVATE_PROPERTY(d, QString age MEMBER age)

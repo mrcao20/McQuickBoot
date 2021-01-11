@@ -8,7 +8,7 @@ class MCLOGQT_EXPORT McFileAppender : public McFileDeviceAppender
 {
     Q_OBJECT
     MC_DECL_INIT(McFileAppender)
-    MC_DEFINE_TYPELIST(MC_DECL_TYPELIST(McFileDeviceAppender))
+    MC_TYPELIST(McFileDeviceAppender)
     Q_PROPERTY(QString dirPath READ dirPath WRITE setDirPath)
     Q_PROPERTY(QString fileNamePattern READ fileNamePattern WRITE setFileNamePattern)
     Q_PROPERTY(bool append READ isAppend WRITE setAppend)

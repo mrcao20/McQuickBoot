@@ -12,7 +12,7 @@ MC_FORWARD_DECL_PRIVATE_DATA(Config);
 class Config : public QObject
 {
     Q_OBJECT
-    MC_DEFINE_TYPELIST();
+    MC_TYPELIST();
     MC_CONFIGURATION
 public:
     Q_INVOKABLE explicit Config(QObject *parent = nullptr) noexcept;

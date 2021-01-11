@@ -12,7 +12,7 @@ class MCQUICKBOOT_EXPORT McSession
 {
     Q_OBJECT
     MC_DECL_INIT(McSession)
-    MC_DEFINE_TYPELIST(QObject, MC_DECL_TYPELIST(IMcSession))
+    MC_TYPELIST(QObject, IMcSession)
 public:
     explicit McSession(QObject *parent = nullptr);
     ~McSession() override;

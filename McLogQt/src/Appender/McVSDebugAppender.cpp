@@ -3,7 +3,7 @@
 #include "McLog/Device/McVSDebugDevice.h"
 
 MC_INIT(McVSDebugAppender)
-MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(McVSDebugAppender))
+MC_REGISTER_BEAN_FACTORY(McVSDebugAppender)
 MC_INIT_END
 
 MC_DECL_PRIVATE_DATA(McVSDebugAppender)

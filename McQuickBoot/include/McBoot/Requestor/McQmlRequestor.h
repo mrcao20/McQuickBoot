@@ -15,7 +15,7 @@ class MCQUICKBOOT_EXPORT McQmlRequestor : public McAbstractRequestor
 {
     Q_OBJECT
     MC_DECL_INIT(McQmlRequestor)
-    MC_DEFINE_TYPELIST(MC_TYPELIST(McAbstractRequestor))
+    MC_TYPELIST(McAbstractRequestor)
     MC_COMPONENT
     MC_BEANNAME("qmlRequestor")
     //! 在容器中为非单例，但是McQuickBoot会控制其为单例
