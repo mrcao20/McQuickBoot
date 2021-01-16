@@ -1,6 +1,6 @@
 #pragma once
 
-#include "McIoc/McGlobal.h"
+#include <McBoot/McBootGlobal.h>
 
 class Interface
 {
@@ -36,6 +36,7 @@ class Object : public QObject, public Interface
 {
     Q_OBJECT
     MC_DECL_INIT(Object)
+    MC_JSON_SERIALIZATION
     MC_TYPELIST(QObject, Interface)
     MC_COMPONENT
     Q_CLASSINFO(MC_BEANNAME_TAG, "obj")     //!< 为本类重新指定beanName，beanName为obj
@@ -56,7 +57,7 @@ signals:
 public slots:
     
 public:
-    QString m_text;
+    QString m_text{"ttttttt"};
     QList<TmpPtr> m_t;
     THash m_tt;
 };

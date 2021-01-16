@@ -3,6 +3,10 @@
 #include <QThread>
 #include <QDebug>
 
+MC_STATIC()
+MC_REGISTER_BEAN_FACTORY(GadgetTest)
+MC_STATIC_END
+
 MC_INIT(R)
 MC_REGISTER_BEAN_FACTORY(R); //!< 注册IOC
 MC_INIT_END
@@ -36,8 +40,7 @@ void R::slot_recv() noexcept
 
 #include <McIoc/McGlobal.h>
 
-MC_STATIC()
-MC_REGISTER_BEAN_FACTORY(C);                        //!< 注册IOC
+MC_AUTO_INIT(C)
 MC_REGISTER_CONTAINER_CONVERTER(QList<QString>);    //!< 容器需要额外注册，只需注册一次即可到处使用，此宏多次调用只生效一次
 MC_REGISTER_LIST_CONVERTER(QVector<RPtr>);  //!< 和MC_REGISTER_CONTAINER_CONVERTER效果一样
 MC_REGISTER_MAP_CONVERTER(StringMap);       //!< 重定义之后需要使用重定义之后的类型
@@ -47,14 +50,15 @@ Mc::Ioc::connect("c", "this", "signal_send()", "r", "slot_recv()");
 //!< 所以建议其他正常操作都放在QCoreApplication构造后
 MC_DESTROY()
 qDebug() << "destroy.............";
-MC_STATIC_END
+MC_INIT_END
 
 void C::a() noexcept
 {
     qDebug() << "m_text:" << m_text << "m_r:" << m_r << m_r->text() << "m_texts:" << m_texts
              << "m_rs:" << m_rs << "m_mtexts:" << m_mtexts << "m_hrs:" << m_hrs
              << "m_hrs2:" << m_hrs2 << "m_hrs3:" << m_hrs3 << "obj thread:" << thread()
-             << "cur thread:" << QThread::currentThread() << "align" << m_align;
+             << "cur thread:" << QThread::currentThread() << "align" << m_align << "gadget"
+             << m_gadget;
     emit signal_send();
 }
 

@@ -85,14 +85,14 @@ int main(int argc, char *argv[])
     QTextStream stream(&file);
     doc.save(stream, 4);
 
-    //    auto appContext = McLocalPathApplicationContextPtr::create(
-    //        R"(E:\Code\QtCreator\McQuickBoot\Examples\IocTest\myspring.xml)");
-    //    auto appContext = McAnnotationApplicationContextPtr::create();
     QSharedPointer<QBuffer> buf = QSharedPointer<QBuffer>::create();
     buf->open(QIODevice::ReadWrite);
     bc.writeToDevice(buf.data());
 
-    auto appContext = McXmlApplicationContextPtr::create(buf.objectCast<QIODevice>());
+    //    auto appContext = McLocalPathApplicationContextPtr::create(
+    //        R"(..\..\Examples\IocTest\myspring.xml)");
+    auto appContext = McAnnotationApplicationContextPtr::create();
+    //    auto appContext = McXmlApplicationContextPtr::create(buf.objectCast<QIODevice>());
     QThread *t = new QThread(&a);
     t->start();
     qDebug() << "t:" << t;

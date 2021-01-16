@@ -21,6 +21,8 @@ public:
 
     static void init() noexcept;
 
+    static void initBeanDefinition(int type) noexcept;
+
     static void addConnect(const QString &beanName,
                            const QString &sender,
                            const QString &signal,

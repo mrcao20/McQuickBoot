@@ -1,6 +1,8 @@
 #pragma once
 
-#include "../../McBootGlobal.h"
+#include <McIoc/McGlobal.h>
+
+#include "../../McBootMacroGlobal.h"
 
 MC_FORWARD_DECL_PRIVATE_DATA(McAbstractResponse);
 

@@ -34,7 +34,7 @@ private:
 //# define MC_REGISTER_BEAN_FACTORY_IMPL(...) \
 //    mcRegisterBeanFactory<__VA_ARGS__>(MC_FIRST_TYPE_NAME(__VA_ARGS__), MC_FIRST_TYPE_NAME_CONST_REF(__VA_ARGS__));
 //#endif
-#define MC_REGISTER_BEAN_FACTORY(Class) McConverterRegister<Class>::registerConverter();
+#define MC_REGISTER_BEAN_FACTORY(Class) McPrivate::McConverterRegister<Class>::registerConverter();
 
 #define MC_REGISTER_CONTAINER_CONVERTER(Type) \
     McPrivate::McContainerConverterRegisterHelper<Type>::registerConverter(#Type);
@@ -106,7 +106,6 @@ struct McRegisterConverterHelper<From, McPrivate::McTypeList<>, void>
     static void registerConverter()
     {}
 };
-} // namespace McPrivate
 
 template<typename From, typename To>
 To mcConverterQSharedPointerObject(const From &from) 
@@ -115,31 +114,76 @@ To mcConverterQSharedPointerObject(const From &from)
 }
 
 template<typename T>
+QSharedPointer<T> mcConverterGadget(T *from)
+{
+    return QSharedPointer<T>(from);
+}
+
+template<typename T, typename Enable = void>
+struct McRegisterBeanFactory
+{
+    static void registerBeanFactory()
+    {
+        using TPtr = QSharedPointer<T>;
+        using QObjectPtr = QSharedPointer<QObject>;
+        if (!QMetaType::hasRegisteredConverterFunction<TPtr, QObjectPtr>()) {
+            QMetaType::registerConverter<TPtr, QObjectPtr>();
+        }
+        if (!QMetaType::hasRegisteredConverterFunction<QObjectPtr, TPtr>()) {
+            QMetaType::registerConverter<QObjectPtr, TPtr>(
+                mcConverterQSharedPointerObject<QObjectPtr, TPtr>);
+        }
+        auto pId = qRegisterMetaType<T *>();
+        auto sId = qRegisterMetaType<TPtr>();
+        McMetaTypeId::addQObjectPointerIds(pId, sId);
+        McMetaTypeId::addSharedPointerId(sId, pId);
+
+        const char *const cName = T::staticMetaObject.className();
+        QByteArray typeName;
+        typeName.append("QSharedPointer<").append(cName).append('>');
+        qRegisterMetaType<TPtr>(typeName);
+
+        typeName.clear();
+        typeName.reserve(int(strlen(cName)) + 11);
+        typeName.append(cName).append("ConstPtrRef");
+        qRegisterMetaType<TPtr>(typeName);
+    }
+};
+
+template<typename T>
+struct McRegisterBeanFactory<T,
+                             typename std::enable_if<QtPrivate::IsGadgetHelper<T>::IsRealGadget>::type>
+{
+    static void registerBeanFactory()
+    {
+        using TPtr = QSharedPointer<T>;
+        if (!QMetaType::hasRegisteredConverterFunction<T *, TPtr>()) {
+            QMetaType::registerConverter<T *, TPtr>(mcConverterGadget<T>);
+        }
+        auto gId = qRegisterMetaType<T>();
+        auto pId = qRegisterMetaType<T *>();
+        auto sId = qRegisterMetaType<TPtr>();
+
+        McMetaTypeId::addGadget(gId, pId, sId);
+
+        const char *const cName = T::staticMetaObject.className();
+        QByteArray typeName;
+        typeName.append("QSharedPointer<").append(cName).append('>');
+        qRegisterMetaType<TPtr>(typeName);
+
+        typeName.clear();
+        typeName.reserve(int(strlen(cName)) + 11);
+        typeName.append(cName).append("ConstPtrRef");
+        qRegisterMetaType<TPtr>(typeName);
+    }
+};
+
+template<typename T>
 void mcRegisterBeanFactory()
 {
-    using TPtr = QSharedPointer<T>;
-    using QObjectPtr = QSharedPointer<QObject>;
-    Q_STATIC_ASSERT_X(!std::is_pointer<T>::value, "mcRegisterBeanFactory's template type must not be a pointer type");
-    if (!QMetaType::hasRegisteredConverterFunction<TPtr, QObjectPtr>()) {
-        QMetaType::registerConverter<TPtr, QObjectPtr>();
-    }
-    if (!QMetaType::hasRegisteredConverterFunction<QObjectPtr, TPtr>()) {
-        QMetaType::registerConverter<QObjectPtr, TPtr>(mcConverterQSharedPointerObject<QObjectPtr, TPtr>);
-    }
-    auto pId = qRegisterMetaType<T *>();
-    auto sId = qRegisterMetaType<TPtr>();
-    McMetaTypeId::addQObjectPointerIds(pId, sId);
-    McMetaTypeId::addSharedPointerId(sId, pId);
-
-    const char *const cName = T::staticMetaObject.className();
-    QByteArray typeName;
-    typeName.append("QSharedPointer<").append(cName).append('>');
-    qRegisterMetaType<TPtr>(typeName);
-
-    typeName.clear();
-    typeName.reserve(int(strlen(cName)) + 11);
-    typeName.append(cName).append("ConstPtrRef");
-    qRegisterMetaType<TPtr>(typeName);
+    Q_STATIC_ASSERT_X(!std::is_pointer<T>::value,
+                      "mcRegisterBeanFactory's template type must not be a pointer type");
+    McRegisterBeanFactory<T>::registerBeanFactory();
 }
 
 template<typename From, typename To>
@@ -161,8 +205,6 @@ struct McConverterRegister<T, typename T::McPrivateTypeListHelper>
 {
     static void registerConverter() { mcRegisterBeanFactory<T, typename T::McPrivateTypeList>(); }
 };
-
-namespace McPrivate {
 
 template<typename T>
 struct SharedTypeSelector
@@ -186,10 +228,7 @@ struct SharedTypeSelector<QSharedPointer<T>>
 template<typename From, typename To>
 struct McConverterList
 {
-    static To registerConverter(const From &from)
-    {
-        Q_UNUSED(from);
-    }
+    static To registerConverter(const From &from) { Q_UNUSED(from); }
 };
 
 template<typename To>
@@ -257,9 +296,7 @@ struct McConverterMap<From, QMap<QVariant, QVariant>>
     }
 };
 
-template<typename T, int =
-    QtPrivate::IsSharedPointerToTypeDerivedFromQObject<T>::Value ? QMetaType::SharedPointerToQObject :
-    QtPrivate::IsPointerToTypeDerivedFromQObject<T>::Value ? QMetaType::PointerToQObject : 0>
+template<typename T, typename Enable = void>
 struct McMetaTypeIdHelper
 {
     static int metaTypeId()
@@ -269,17 +306,21 @@ struct McMetaTypeIdHelper
 };
 
 template<typename T>
-struct McMetaTypeIdHelper<T, QMetaType::SharedPointerToQObject>
+struct McMetaTypeIdHelper<
+    T,
+    typename std::enable_if<QtPrivate::IsSharedPointerToTypeDerivedFromQObject<T>::Value>::type>
 {
     static int metaTypeId()
     {
         typedef typename T::Type ObjType;
-        return qMetaTypeId<ObjType *>();
+        return qMetaTypeId<QSharedPointer<ObjType>>();
     }
 };
 
 template<typename T>
-struct McMetaTypeIdHelper<T, QMetaType::PointerToQObject>
+struct McMetaTypeIdHelper<
+    T,
+    typename std::enable_if<QtPrivate::IsPointerToTypeDerivedFromQObject<T>::Value>::type>
 {
     static int metaTypeId()
     {
@@ -287,10 +328,6 @@ struct McMetaTypeIdHelper<T, QMetaType::PointerToQObject>
         return qMetaTypeId<ObjType *>();
     }
 };
-
-}
-
-namespace McPrivate {
 
 template<typename From, typename To>
 struct McListConverterRegisterHelper
@@ -324,9 +361,7 @@ struct McMapConverterRegisterHelper
     }
 };
 
-template<typename T, int = 
-         QtPrivate::IsSequentialContainer<T>::Value ? 1 :
-         QtPrivate::IsAssociativeContainer<T>::Value ? 2 : 0>
+template<typename T, typename Enable = void>
 struct McContainerConverterRegisterHelper
 {
     static void registerConverter(const char *typeName)
@@ -336,7 +371,9 @@ struct McContainerConverterRegisterHelper
 };
 
 template<typename T>
-struct McContainerConverterRegisterHelper<T, 1>
+struct McContainerConverterRegisterHelper<
+    T,
+    typename std::enable_if<QtPrivate::IsSequentialContainer<T>::Value>::type>
 {
     static void registerConverter(const char *typeName)
     {
@@ -354,7 +391,9 @@ struct McContainerConverterRegisterHelper<T, 1>
 };
 
 template<typename T>
-struct McContainerConverterRegisterHelper<T, 2>
+struct McContainerConverterRegisterHelper<
+    T,
+    typename std::enable_if<QtPrivate::IsAssociativeContainer<T>::Value>::type>
 {
     static void registerConverter(const char *typeName)
     {

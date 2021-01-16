@@ -32,7 +32,7 @@ public:
 
 MC_DECL_METATYPE(ClassTestB)
 
-class McResult;
+MC_FORWARD_DECL_CLASS(McResult);
 
 #include <QJsonObject>
 class InvokeTest : public ClassTestB
@@ -46,7 +46,8 @@ public:
     Q_INVOKABLE explicit InvokeTest(QObject *parent = nullptr);
     
     Q_INVOKABLE void invoke1() noexcept;
-    Q_INVOKABLE McResult *invoke2() noexcept;
+    Q_INVOKABLE McResultPtr invoke2() noexcept;
+    Q_INVOKABLE McResult *invoke22() noexcept;
     Q_INVOKABLE void invoke3(const ObjectPtr &o) noexcept;
     Q_INVOKABLE QJsonObject invoke4() noexcept;
     

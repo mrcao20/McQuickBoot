@@ -23,18 +23,10 @@ MC_GLOBAL_STATIC(McQuickBootSimpleStaticData, mcQuickBootSimpleStaticData)
 
 MC_DECL_PRIVATE_DATA(McQuickBootSimple)
 McAnnotationApplicationContextPtr context;
-McCppRequestorPtr requestor;
+
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McQuickBootSimple)
-MC_DESTROY()
-if(!mcQuickBootSimpleStaticData.exists()) {
-    return;
-}
-auto requestor = mcQuickBootSimpleStaticData->boot->d->requestor.data();
-mcQuickBootSimpleStaticData->boot->d->requestor.clear();
-delete requestor;
-mcQuickBootSimpleStaticData->boot.reset();
 MC_INIT_END
 
 McQuickBootSimple::McQuickBootSimple(QObject *parent) : McAbstractQuickBoot(parent)
@@ -44,34 +36,6 @@ McQuickBootSimple::McQuickBootSimple(QObject *parent) : McAbstractQuickBoot(pare
 
 McQuickBootSimple::~McQuickBootSimple() {}
 
-QMetaObject::Connection McQuickBootSimple::connect(const QString &sender,
-                                                   const QString &signal,
-                                                   const QString &receiver,
-                                                   const QString &slot,
-                                                   Qt::ConnectionType type) noexcept
-{
-    return Mc::Ioc::connect(McQuickBootSimple::instance()->getApplicationContext(),
-                            sender,
-                            signal,
-                            receiver,
-                            slot,
-                            type);
-}
-
-QMetaObject::Connection McQuickBootSimple::connect(const QString &sender,
-                                                   const QString &signal,
-                                                   QObject *receiver,
-                                                   const QString &slot,
-                                                   Qt::ConnectionType type) noexcept
-{
-    return Mc::Ioc::connect(McQuickBootSimple::instance()->getApplicationContext(),
-                            sender,
-                            signal,
-                            receiver,
-                            slot,
-                            type);
-}
-
 void McQuickBootSimple::init() noexcept
 {
     if(!mcQuickBootSimpleStaticData->boot.isNull()) {
@@ -79,6 +43,7 @@ void McQuickBootSimple::init() noexcept
         return;
     }
     mcQuickBootSimpleStaticData->boot = McQuickBootSimplePtr::create();
+    McAbstractQuickBoot::setInstance(mcQuickBootSimpleStaticData->boot);
     McQuickBootSimplePtr &boot = mcQuickBootSimpleStaticData->boot;
     if(boot->d->context.isNull()) {
         boot->d->context = McAnnotationApplicationContextPtr::create();
@@ -87,8 +52,9 @@ void McQuickBootSimple::init() noexcept
     auto appCtx = boot->d->context;
 
     auto controllerContainer = appCtx->getBean<McControllerContainer>("controllerContainer");
-    boot->d->requestor = appCtx->getBean<McCppRequestor>("cppRequestor");
-    boot->d->requestor->setControllerContainer(controllerContainer);
+    auto requestor = appCtx->getBean<McCppRequestor>("cppRequestor");
+    requestor->setControllerContainer(controllerContainer);
+    boot->setRequestor(requestor);
 }
 
 QSharedPointer<McQuickBootSimple> McQuickBootSimple::instance() noexcept
@@ -96,11 +62,6 @@ QSharedPointer<McQuickBootSimple> McQuickBootSimple::instance() noexcept
     McQuickBootSimplePtr &boot = mcQuickBootSimpleStaticData->boot;
     Q_ASSERT_X(!boot.isNull(), "McQuickBootSimplePtr::instance()", "please call init before");
     return boot;
-}
-
-McCppRequestor &McQuickBootSimple::requestor() const noexcept
-{
-    return *d->requestor.data();
 }
 
 void McQuickBootSimple::refresh() noexcept

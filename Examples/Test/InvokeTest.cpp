@@ -20,11 +20,17 @@ void InvokeTest::invoke1() noexcept {
     qDebug() << "invoke1";
 }
 
-McResult *InvokeTest::invoke2() noexcept {
+McResultPtr InvokeTest::invoke2() noexcept
+{
     static quint64 i = 0;
     qDebug() << "-----------" << i++;
     auto obj = McResult::fail("");
     return obj;
+}
+
+McResult *InvokeTest::invoke22() noexcept
+{
+    return new McResult();
 }
 
 void InvokeTest::invoke3(const ObjectPtr &o) noexcept {

@@ -15,7 +15,7 @@ ApplicationWindow {
             return;
         console.log("con", index++);
         console.log(result, result.errMsg);
-        $.get("con.invoke2").syncThen(function(){
+        $.get("con.invoke2").then(function(){
             console.log("aaaaaaaaaa>>>>>>>>>");
         });
 //        $.post("con.invoke3", data);
@@ -28,57 +28,68 @@ ApplicationWindow {
                 console.log("qml onOpen aaaaaaaaa");
                 ws.send("bbbbbbbb");
             },
-            isOpenSync: true,
             onMessage: function(msg){
                 console.log("qml message", msg);
             },
-            isMessageSync: true,
             onClose: function() {
                 console.log("ccccccccc");
             }
         };
 //        ws = $.qs("socket", data);
         
-        $.get("con1.invoke1").syncThen(function(result) {
+        $.get("con.invoke1?aaa=b");
+        $.get("con.invoke22").then(function(res){
+            console.log("invoke22", JSON.stringify(res));
+        });
+        $.get("con1.invoke1?aaa=b").then(function(result) {
             console.log("con1");
-            console.log(">>>>>>>>>1.", result, result.errMsg);
+            console.log(">>>>>>>>>1.", JSON.stringify(result));
         });
 //        aaa({errMsg: "aaa"});
-        $.get("con.invoke2").syncThen(function(result){
+        $.get("con.invoke2").then(function(result){
             console.log("con");
             console.log(">>>>>>>>>.", result, result.errMsg);
         });
         console.log("sync invoke", JSON.stringify($.syncInvoke("con.invoke4")));
-//        var data1 = {
-//            o: {
-//                text: "aaa",
-//                t: [{
-//                        aaa: "bbbb"
-//                    },
-//                    {
-//                        aaa: "ccccc"
-//                    }
-//                ],
-//                tt: {
-//                    999: [
-//                        {
-//                            aaa: "qqqq"
-//                        }
-//                    ]
-//                }
-//            }
-//        };
+        var data1 = {
+            o: {
+                text: "aaa",
+                t: [{
+                        aaa: "bbbb"
+                    },
+                    {
+                        aaa: "ccccc"
+                    }
+                ],
+                tt: {
+                    999: [
+                        {
+                            aaa: "qqqq"
+                        }
+                    ]
+                },
+                t2: {
+                    text2: "text2"
+                }
+            }
+        };
 
 //        console.log($.__proto__.post);
 //        console.log($);
-//        $.post("con.invoke3", data1);
+        $.post("con.invoke3", data1);
+        $.post("con.invoke5", data1).then(function(res){
+            console.log("invoke5", JSON.stringify(res));
+        });
+        $.post("con.invoke6", data1).then(function(res){
+            console.log("invoke6", JSON.stringify(res));
+        });
         
-//        $.get("app.dirPath").syncThen(function(result){
+//        $.get("app.dirPath").then(function(result){
 //            console.log("dir path:", result)
 //        });
 //        console.log("file path:", $.syncInvoke("app.filePath"));
         
-//        $.get("con.invoke4").syncThen(function(result) {
+//        $.get("con.invoke4").then(function(result) {
 //            console.log("invoke4>>>>>>>>>", JSON.stringify(result));
 //            $.post("con.invoke3", {
 //                       o: result

@@ -72,14 +72,7 @@ private:
                             int maxParamSize,
                             QVariant *errMsg = nullptr,
                             bool *ok = nullptr) noexcept;
-    QVariant makeValue(const QByteArray &typeName, const QVariant &arg) noexcept;
-    
-    QVariant makePlanValue(const QByteArray &typeName, const QVariant &arg) noexcept;
-    QVariant makeListValue(const QVariant &arg, McSequentialMetaIdConstPtrRef seqMetaId) noexcept;
-    QVariant makeMapValue(const QVariant &arg, McAssociativeMetaIdConstPtrRef assMetaId) noexcept;
-    QVariant makeObjectValue(const QByteArray &typeName, const QVariant &arg) noexcept;
-    bool isSharedPointerObject(const QByteArray &typeName, QByteArray &objTypeName) noexcept;
-    
+
     QVariant ok(const QVariant &val) const noexcept;
     QVariant fail(const QString &val) const noexcept;
 

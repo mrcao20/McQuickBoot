@@ -35,6 +35,12 @@ int main(int argc, char *argv[])
              QVariantList() << "lllllllll" << QJsonObject({{"zzz", "mmmm"}})
                             << QVariant::fromValue(p) << QVariant::fromValue(a))
         .then([](const QVariant &var) { qDebug() << "-----" << var; });
+    $.invoke("aaa.bbb",
+             "lllllllll",
+             QJsonObject({{"zzz", "mmmm"}}),
+             QVariant::fromValue(p),
+             QVariant::fromValue(a))
+        .then([](const QVariant &var) { qDebug() << "-----" << var; });
     $.invoke("aaa.bbb").then(
         [](const QVariant &var) { qDebug() << ">>>>>>>>>>>>>>>>>>>>>>>>>>>" << var; });
     $.invoke("aaa.ccc").then([](const QVariant &var) {

@@ -71,16 +71,6 @@ void McAbstractRequestor::setControllerContainer(IMcControllerContainerConstPtrR
     d->controllerContainer = val;
 }
 
-QVariant McAbstractRequestor::syncInvoke(const QString &uri) noexcept
-{
-    return d->controllerContainer->invoke(uri);
-}
-
-QVariant McAbstractRequestor::syncInvoke(const QString &uri, const QJsonObject &data) noexcept
-{
-    return d->controllerContainer->invoke(uri, data);
-}
-
 void McAbstractRequestor::customEvent(QEvent *event)
 {
     if (event->type() == QEvent::Type::User + 1) {

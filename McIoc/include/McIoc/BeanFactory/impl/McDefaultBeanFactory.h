@@ -36,6 +36,7 @@ private:
      * \param tag
      */
     void callTagFunction(QObjectConstPtrRef bean, const char *tag) noexcept;
+    void callTagFunction(void *bean, const QMetaObject *metaObj, const char *tag) noexcept;
     /*!
      * \brief callStartFunction
      * 
@@ -43,6 +44,8 @@ private:
      * \param bean
      */
     void callStartFunction(QObjectConstPtrRef bean) noexcept;
+    void callStartFunction(void *bean, const QMetaObject *metaObj) noexcept;
+    QVariant parseOnGadget(IMcBeanDefinitionConstPtrRef beanDefinition) noexcept;
     /*!
      * \brief addPropertyValue
      * 
@@ -56,7 +59,10 @@ private:
     bool addPropertyValue(QObjectConstPtrRef bean,
                           IMcBeanDefinitionConstPtrRef beanDefinition,
                           QVariantMap &proValues) noexcept;
-    
+    bool addPropertyValue(void *bean,
+                          const QMetaObject *metaObj,
+                          IMcBeanDefinitionConstPtrRef beanDefinition) noexcept;
+
     /*!
      * \brief addObjectConnect
      * 
@@ -90,6 +96,7 @@ private:
      * \param bean
      */
     void callFinishedFunction(QObjectConstPtrRef bean) noexcept;
+    void callFinishedFunction(void *bean, const QMetaObject *metaObj) noexcept;
     /*!
      * \brief callThreadFinishedFunction
      * 
@@ -97,7 +104,7 @@ private:
      * \param bean
      */
     void callThreadFinishedFunction(QObjectConstPtrRef bean) noexcept;
-    
+
 private:
     MC_DECL_PRIVATE(McDefaultBeanFactory)
 };

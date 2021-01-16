@@ -13,6 +13,7 @@ MC_DECL_PRIVATE_DATA_END
 MC_INIT(McResult)
 MC_REGISTER_BEAN_FACTORY(McResult);
 QMetaType::registerDebugStreamOperator<McResult *>();
+QMetaType::registerDebugStreamOperator<McResultPtr>();
 MC_INIT_END
 
 McResult::McResult(QObject *parent)

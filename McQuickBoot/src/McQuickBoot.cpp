@@ -32,18 +32,9 @@ MC_GLOBAL_STATIC(McQuickBootStaticData, mcQuickBootStaticData)
 MC_DECL_PRIVATE_DATA(McQuickBoot)
 McAnnotationApplicationContextPtr context;
 QQmlEngine *engine{nullptr};
-McCppRequestorPtr requestor;
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McQuickBoot)
-MC_DESTROY()
-if(!mcQuickBootStaticData.exists()) {
-    return;
-}
-auto requestor = mcQuickBootStaticData->boot->d->requestor.data();
-mcQuickBootStaticData->boot->d->requestor.clear();
-delete requestor;
-mcQuickBootStaticData->boot.reset();
 MC_INIT_END
 
 McQuickBoot::McQuickBoot(QObject *parent) : McAbstractQuickBoot(parent)
@@ -53,34 +44,6 @@ McQuickBoot::McQuickBoot(QObject *parent) : McAbstractQuickBoot(parent)
 
 McQuickBoot::~McQuickBoot()
 {
-}
-
-QMetaObject::Connection McQuickBoot::connect(const QString &sender,
-                                             const QString &signal,
-                                             const QString &receiver,
-                                             const QString &slot,
-                                             Qt::ConnectionType type) noexcept
-{
-    return Mc::Ioc::connect(McQuickBoot::instance()->getApplicationContext(),
-                            sender,
-                            signal,
-                            receiver,
-                            slot,
-                            type);
-}
-
-QMetaObject::Connection McQuickBoot::connect(const QString &sender,
-                                             const QString &signal,
-                                             QObject *receiver,
-                                             const QString &slot,
-                                             Qt::ConnectionType type) noexcept
-{
-    return Mc::Ioc::connect(McQuickBoot::instance()->getApplicationContext(),
-                            sender,
-                            signal,
-                            receiver,
-                            slot,
-                            type);
 }
 
 void McQuickBoot::init(QCoreApplication *app, QQmlApplicationEngine *engine) noexcept
@@ -94,6 +57,7 @@ void McQuickBoot::init(QCoreApplication *app, QQmlApplicationEngine *engine) noe
         return;
     }
     mcQuickBootStaticData->boot = McQuickBootPtr::create();
+    McAbstractQuickBoot::setInstance(mcQuickBootStaticData->boot);
     McQuickBootPtr &boot = mcQuickBootStaticData->boot;
     boot->initBoot(engine);
     auto appCtx = boot->d->context;
@@ -102,8 +66,9 @@ void McQuickBoot::init(QCoreApplication *app, QQmlApplicationEngine *engine) noe
     auto modelContainer = appCtx->getBean<McModelContainer>("modelContainer");
     auto socketContainer = appCtx->getBean<McQmlSocketContainer>("socketContainer");
 
-    boot->d->requestor = appCtx->getBean<McCppRequestor>("cppRequestor");
-    boot->d->requestor->setControllerContainer(controllerContainer);
+    auto cppRequestor = appCtx->getBean<McCppRequestor>("cppRequestor");
+    cppRequestor->setControllerContainer(controllerContainer);
+    boot->setRequestor(cppRequestor);
 
     auto requestor = appCtx->getBean<McQmlRequestor>("qmlRequestor");
     requestor->setControllerContainer(controllerContainer);
@@ -161,11 +126,6 @@ void McQuickBoot::initBoot(QQmlEngine *engine) noexcept
     d->engine = engine;
     d->context = McAnnotationApplicationContextPtr::create();
     doRefresh();
-}
-
-McCppRequestor &McQuickBoot::requestor() const noexcept
-{
-    return *d->requestor.data();
 }
 
 void McQuickBoot::refresh() noexcept

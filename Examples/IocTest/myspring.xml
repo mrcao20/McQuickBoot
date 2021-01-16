@@ -4,6 +4,10 @@
     <bean name="r" class="R">
         <property name="text" value="test r" />
     </bean>
+    <bean name="gadgetTest" class="GadgetTest">
+        <property name="aaa" value="1111" />
+        <property name="bbb" value="gadgetTest bbbb" />
+    </bean>
     <bean name="c" class="C">
         <connect sender=" this">
             <signal>signal_send()</signal>
@@ -76,5 +80,6 @@
                 </list>
             </map>
         </property>
+        <property name="gadget" ref="gadgetTest"></property>
     </bean>
 </beans>

@@ -1,6 +1,8 @@
 #pragma once
 
-#include "../McBootGlobal.h"
+#include <McIoc/McGlobal.h>
+
+#include "../McBootMacroGlobal.h"
 
 #include <QJsonObject>
 
@@ -40,9 +42,6 @@ public:
     void setMaxThreadCount(int val) noexcept;
     IMcControllerContainerPtr controllerContainer() const noexcept;
     void setControllerContainer(IMcControllerContainerConstPtrRef val) noexcept;
-
-    Q_INVOKABLE QVariant syncInvoke(const QString &uri) noexcept;
-    Q_INVOKABLE QVariant syncInvoke(const QString &uri, const QJsonObject &data) noexcept;
 
 protected:
     void customEvent(QEvent *event) override;

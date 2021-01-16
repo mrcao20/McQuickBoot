@@ -61,44 +61,53 @@ void McAnnotationApplicationContext::generateReader() noexcept
 
 void McAnnotationApplicationContext::init() noexcept
 {
-    McBeanDefinitionContainter *ar = mcAutowiredRegistry;
     auto qobjectMetaTypeIds = McMetaTypeId::qobjectPointerIds();
     for (auto type : qobjectMetaTypeIds.keys()) {
-        Q_ASSERT_X(QMetaType::isRegistered(type),
-                   "McAnnotationApplicationContext",
-                   "type not registered");
-        auto metaObj = QMetaType::metaObjectForType(type);
-        Q_ASSERT_X(metaObj, "McAnnotationApplicationContext", "cannot get meta object");
-        auto componentIndex = metaObj->indexOfClassInfo(MC_COMPONENT_TAG);
-        if (componentIndex == -1) {
-            continue;
-        }
-
-        QString beanName = McPrivate::getBeanName(metaObj);
-        auto beanDefinition = (*ar)[beanName];
-        if (!beanDefinition) {
-            beanDefinition = McRootBeanDefinitionPtr::create();
-            (*ar)[beanName] = beanDefinition;
-        }
-        if (!beanDefinition->getClassName().isEmpty()) {
-            continue;
-        }
-        auto isSingleton = true; //!< 默认为单例
-        auto singletonIndex = metaObj->indexOfClassInfo(MC_SINGLETON_TAG);
-        if (singletonIndex != -1) {
-            auto classInfo = metaObj->classInfo(singletonIndex);
-            bool isTrue = classInfo.value() == QString("true");
-            bool isFalse = classInfo.value() == QString("false");
-            if (!isTrue && !isFalse) {
-                qCritical() << "the singleton value for classInfo must be true or false of string";
-            } else {
-                isSingleton = isTrue ? true : false;
-            }
-        }
-        beanDefinition->setBeanMetaObject(metaObj);
-        beanDefinition->setClassName(metaObj->className());
-        beanDefinition->setSingleton(isSingleton);
+        initBeanDefinition(type);
     }
+    auto gadgetIds = McMetaTypeId::gadgetIds();
+    for (auto type : gadgetIds.keys()) {
+        initBeanDefinition(type);
+    }
+}
+
+void McAnnotationApplicationContext::initBeanDefinition(int type) noexcept
+{
+    Q_ASSERT_X(QMetaType::isRegistered(type),
+               "McAnnotationApplicationContext",
+               "type not registered");
+    auto metaObj = QMetaType::metaObjectForType(type);
+    Q_ASSERT_X(metaObj, "McAnnotationApplicationContext", "cannot get meta object");
+    auto componentIndex = metaObj->indexOfClassInfo(MC_COMPONENT_TAG);
+    if (componentIndex == -1) {
+        return;
+    }
+
+    QString beanName = McPrivate::getBeanName(metaObj);
+    McBeanDefinitionContainter *ar = mcAutowiredRegistry;
+    auto beanDefinition = (*ar)[beanName];
+    if (!beanDefinition) {
+        beanDefinition = McRootBeanDefinitionPtr::create();
+        (*ar)[beanName] = beanDefinition;
+    }
+    if (!beanDefinition->getClassName().isEmpty()) {
+        return;
+    }
+    auto isSingleton = true; //!< 默认为单例
+    auto singletonIndex = metaObj->indexOfClassInfo(MC_SINGLETON_TAG);
+    if (singletonIndex != -1) {
+        auto classInfo = metaObj->classInfo(singletonIndex);
+        bool isTrue = classInfo.value() == QString("true");
+        bool isFalse = classInfo.value() == QString("false");
+        if (!isTrue && !isFalse) {
+            qCritical() << "the singleton value for classInfo must be true or false of string";
+        } else {
+            isSingleton = isTrue ? true : false;
+        }
+    }
+    beanDefinition->setBeanMetaObject(metaObj);
+    beanDefinition->setClassName(metaObj->className());
+    beanDefinition->setSingleton(isSingleton);
 }
 
 void McAnnotationApplicationContext::addConnect(const QString &beanName,

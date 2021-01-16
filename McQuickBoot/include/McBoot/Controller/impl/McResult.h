@@ -8,6 +8,7 @@ class MCQUICKBOOT_EXPORT McResult : public QObject
 {
     Q_OBJECT
     MC_DECL_INIT(McResult)
+    MC_JSON_SERIALIZATION
     Q_PROPERTY(bool success READ isSuccess)
     Q_PROPERTY(QString errMsg READ errMsg)
     Q_PROPERTY(QVariant result READ result)
@@ -23,18 +24,18 @@ public:
     
     QVariant result() const noexcept;
     void setResult(const QVariant &val) noexcept;
-    
-    static McResult *ok(const QVariant &val) noexcept 
+
+    static QSharedPointer<McResult> ok(const QVariant &val) noexcept
     {
-        McResult *result = new McResult();
+        auto result = QSharedPointer<McResult>::create();
         result->setSuccess(true);
         result->setResult(val);
         return result;
     }
-    
-    static McResult *fail(const QString &val) noexcept 
+
+    static QSharedPointer<McResult> fail(const QString &val) noexcept
     {
-        McResult *result = new McResult();
+        auto result = QSharedPointer<McResult>::create();
         result->setSuccess(false);
         result->setErrMsg(val);
         return result;

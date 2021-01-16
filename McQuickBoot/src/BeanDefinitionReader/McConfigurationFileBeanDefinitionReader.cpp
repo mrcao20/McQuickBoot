@@ -203,7 +203,14 @@ QVariant McConfigurationFileBeanDefinitionReader::buildChildProperty(
             return value;
         }
         auto assId = assIds.value(mapType);
-        auto childMetaObj = QMetaType::metaObjectForType(assId->valueId);
+        auto sharedMetaIds = McMetaTypeId::sharedPointerIds();
+        const QMetaObject *childMetaObj = nullptr;
+        if (sharedMetaIds.contains(assId->valueId)) {
+            childMetaObj = QMetaType::metaObjectForType(
+                sharedMetaIds.value(assId->valueId)->qobjectPointerId);
+        } else {
+            childMetaObj = QMetaType::metaObjectForType(assId->valueId);
+        }
         for(auto &v : varList) {
             auto p = v.value<QPair<QString, QVariant>>();
             auto childProVar = p.second.value<QVariantMap>();
@@ -223,7 +230,14 @@ QVariant McConfigurationFileBeanDefinitionReader::buildChildProperty(
             return value;
         }
         auto seqId = seqIds.value(listType);
-        auto childMetaObj = QMetaType::metaObjectForType(seqId->valueId);
+        auto sharedMetaIds = McMetaTypeId::sharedPointerIds();
+        const QMetaObject *childMetaObj = nullptr;
+        if (sharedMetaIds.contains(seqId->valueId)) {
+            childMetaObj = QMetaType::metaObjectForType(
+                sharedMetaIds.value(seqId->valueId)->qobjectPointerId);
+        } else {
+            childMetaObj = QMetaType::metaObjectForType(seqId->valueId);
+        }
         for(auto &v : varList) {
             auto map = v.value<QVariantMap>();
             for(auto childKey : map.keys()) {

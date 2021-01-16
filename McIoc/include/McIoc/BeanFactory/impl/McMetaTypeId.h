@@ -177,14 +177,22 @@ struct McPointerMetaId
     int qobjectPointerId{-1};
     int sharedPointerId{-1};
 };
-typedef QSharedPointer<McPointerMetaId> McPointerMetaIdPtr;
+MC_DECL_POINTER(McPointerMetaId)
+
+struct McGadgetMetaId
+{
+    int gadgetId{-1};
+    int pointerId{-1};
+    int sharedId{-1};
+};
+MC_DECL_POINTER(McGadgetMetaId)
 
 struct McSequentialMetaId
 {
     int id{-1};
     int valueId{-1}; //!< 如果是指针类型，那么此ID指待的是QObject *而不是QObjectPtr
 };
-typedef QSharedPointer<McSequentialMetaId> McSequentialMetaIdPtr;
+MC_DECL_POINTER(McSequentialMetaId)
 
 struct McAssociativeMetaId
 {
@@ -192,9 +200,10 @@ struct McAssociativeMetaId
     int keyId{-1};  //!< 同list
     int valueId{-1}; //!< 同list
 };
-typedef QSharedPointer<McAssociativeMetaId> McAssociativeMetaIdPtr;
+MC_DECL_POINTER(McAssociativeMetaId)
 
 typedef QHash<int, McPointerMetaIdPtr> McPointerType;
+typedef QHash<int, McGadgetMetaIdPtr> McGadgetType;
 typedef QHash<int, McSequentialMetaIdPtr> McSequentialType;
 typedef QHash<int, McAssociativeMetaIdPtr> McAssociativeType;
 
@@ -206,7 +215,10 @@ public:
     
     static McPointerType sharedPointerIds() noexcept;
     static void addSharedPointerId(int id, int qobjectId) noexcept;
-    
+
+    static McGadgetType gadgetIds() noexcept;
+    static void addGadget(int gId, int pId, int sId) noexcept;
+
     static McSequentialType sequentialIds() noexcept;
     static void addSequentialId(int id, int valueId) noexcept;
     

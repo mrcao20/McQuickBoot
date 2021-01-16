@@ -4,6 +4,7 @@
 
 MC_GLOBAL_STATIC(McPointerType, mcQObjectPointerIds)
 MC_GLOBAL_STATIC(McPointerType, mcSharedPointerIds)
+MC_GLOBAL_STATIC(McGadgetType, mcGadgetIds)
 MC_GLOBAL_STATIC(McSequentialType, mcSequentialIds)
 MC_GLOBAL_STATIC(McAssociativeType, mcAssociativeIds)
 
@@ -39,6 +40,23 @@ void McMetaTypeId::addSharedPointerId(int id, int qobjectId) noexcept
     pId->sharedPointerId = id;
     pId->qobjectPointerId = qobjectId;
     ids->insert(id, pId);
+}
+
+McGadgetType McMetaTypeId::gadgetIds() noexcept
+{
+    return *mcGadgetIds;
+}
+void McMetaTypeId::addGadget(int gId, int pId, int sId) noexcept
+{
+    McGadgetType *ids = mcGadgetIds;
+    if (ids->contains(pId)) {
+        return;
+    }
+    McGadgetMetaIdPtr id = McGadgetMetaIdPtr::create();
+    id->gadgetId = gId;
+    id->pointerId = pId;
+    id->sharedId = sId;
+    ids->insert(gId, id);
 }
 
 McSequentialType McMetaTypeId::sequentialIds() noexcept

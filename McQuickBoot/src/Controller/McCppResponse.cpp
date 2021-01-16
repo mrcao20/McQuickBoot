@@ -50,10 +50,5 @@ void McCppResponse::callCallback() noexcept
     if (!d->callback) {
         return;
     }
-    auto arg = body();
-    if (strcmp(arg.typeName(), "McResult*") == 0) {
-        McResult *result = arg.value<McResult *>();
-        QQmlEngine::setObjectOwnership(result, QQmlEngine::CppOwnership);
-    }
-    d->callback(arg);
+    d->callback(body());
 }

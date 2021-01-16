@@ -45,6 +45,11 @@ QVariant McDefaultBeanFactory::doCreate(
         }
         obj = loader.instance();
     }else{
+        auto isGadget = (QMetaType::type(beanDefinition->getClassName().toLocal8Bit())
+                         != QMetaType::UnknownType);
+        if (isGadget) {
+            return parseOnGadget(beanDefinition);
+        }
         auto beanMetaObj = beanDefinition->getBeanMetaObject();
         if (!beanMetaObj) {
             qCritical() << QString("the class '%1' is not in meta-object system").arg(beanDefinition->getClassName());
@@ -104,9 +109,54 @@ void McDefaultBeanFactory::callTagFunction(QObjectConstPtrRef bean, const char *
     }
 }
 
+void McDefaultBeanFactory::callTagFunction(void *bean,
+                                           const QMetaObject *metaObj,
+                                           const char *tag) noexcept
+{
+    for (int i = 0; i < metaObj->methodCount(); ++i) {
+        auto method = metaObj->method(i);
+        QString tags = method.tag();
+        if (tags.contains(tag)) {
+            method.invokeOnGadget(bean);
+        }
+    }
+}
+
 void McDefaultBeanFactory::callStartFunction(QObjectConstPtrRef bean) noexcept 
 {
     callTagFunction(bean, MC_MACRO_STR(MC_BEAN_START));
+}
+
+void McDefaultBeanFactory::callStartFunction(void *bean, const QMetaObject *metaObj) noexcept
+{
+    callTagFunction(bean, metaObj, MC_MACRO_STR(MC_BEAN_START));
+}
+
+QVariant McDefaultBeanFactory::parseOnGadget(IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
+{
+    auto type = QMetaType::type(beanDefinition->getClassName().toLocal8Bit());
+    auto bean = QMetaType::create(type);
+    if (bean == nullptr) {
+        qCritical() << "Cannot make gadget for:" << beanDefinition->getClassName();
+        return QVariant();
+    }
+    auto beanMetaObj = beanDefinition->getBeanMetaObject();
+    callStartFunction(bean, beanMetaObj); //!< 调用构造开始函数
+    if (!addPropertyValue(bean, beanMetaObj, beanDefinition)) {
+        qCritical() << QString("failed to init definition '%1'").arg(beanMetaObj->className());
+        return QVariant();
+    }
+    callFinishedFunction(bean, beanMetaObj); //!< 调用构造完成函数
+    QByteArray clazzName = beanMetaObj->className();
+    clazzName.append('*');
+    QVariant var(QMetaType::type(clazzName), &bean);
+    QByteArray typeName = beanMetaObj->className();
+    typeName.append("Ptr");
+    if (!var.convert(QMetaType::type(typeName))) {
+        qCritical() << QString("failed convert VoidPtr to '%1'").arg(typeName.data());
+        return QVariant();
+    }
+    return var;
 }
 
 bool McDefaultBeanFactory::addPropertyValue(QObjectConstPtrRef bean,
@@ -139,6 +189,38 @@ bool McDefaultBeanFactory::addPropertyValue(QObjectConstPtrRef bean,
                 qCritical("bean '%s' write property named for '%s' failure\n"
                           , bean->metaObject()->className()
                           , itr.key().toLocal8Bit().data());
+            }
+        }
+    }
+    return true;
+}
+
+bool McDefaultBeanFactory::addPropertyValue(void *bean,
+                                            const QMetaObject *metaObj,
+                                            IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
+{
+    //! 循环给定 bean 的属性集合
+    auto props = beanDefinition->getProperties();
+    for (auto itr = props.cbegin(); itr != props.cend(); ++itr) {
+        //! 获取定义的属性中的对象
+        auto value = itr.value();
+
+        //! 解析value
+        value = d->converter->convert(this, value);
+        //! 根据给定属性名称获取 给定的bean中的属性对象
+        auto index = metaObj->indexOfProperty(itr.key().toLocal8Bit());
+        if (index == -1) {
+            qDebug() << QString("bean '%1' cannot found property named for '%2'.")
+                            .arg(metaObj->className(), itr.key());
+        } else {
+            auto metaProperty = metaObj->property(index);
+#if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
+            value.convert(QMetaType::type(metaProperty.typeName()));
+#endif
+            if (!metaProperty.writeOnGadget(bean, value)) {
+                qCritical("bean '%s' write property named for '%s' failure\n",
+                          metaObj->className(),
+                          itr.key().toLocal8Bit().data());
             }
         }
     }
@@ -239,6 +321,11 @@ QObjectPtr McDefaultBeanFactory::getPropertyObject(QObjectConstPtrRef bean,
 void McDefaultBeanFactory::callFinishedFunction(QObjectConstPtrRef bean) noexcept 
 {
     callTagFunction(bean, MC_MACRO_STR(MC_BEAN_FINISHED));
+}
+
+void McDefaultBeanFactory::callFinishedFunction(void *bean, const QMetaObject *metaObj) noexcept
+{
+    callTagFunction(bean, metaObj, MC_MACRO_STR(MC_BEAN_FINISHED));
 }
 
 void McDefaultBeanFactory::callThreadFinishedFunction(QObjectConstPtrRef bean) noexcept 

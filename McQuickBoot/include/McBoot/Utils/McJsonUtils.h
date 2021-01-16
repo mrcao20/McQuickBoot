@@ -31,19 +31,17 @@ public:
     static QJsonObject toJson(const QMap<QString, QObjectPtr> &objs) noexcept;
     static QJsonObject toJson(const QVariantMap &objs) noexcept;
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
-    static QJsonObject toJson(void *gadget, const QMetaObject *mobj) noexcept;
+    static QJsonObject toJson(const void *gadget, const QMetaObject *mobj) noexcept;
 #endif
 
-    static void fromJson(const QJsonObject &jsonObj, QObject *obj) noexcept;
-    static void fromJson(const QJsonArray &jsonArr, const QList<QObject *> &objs) noexcept;
+    static QVariant fromJson(const QByteArray &typeName, const QVariant &value) noexcept;
+    static QVariant fromJson(int type, const QVariant &value) noexcept;
     template<typename T>
-    struct QObjectFromJson
-    {
-        using Type = T;
-    };
-
+    static T fromJson(const QVariant &value) noexcept;
     template<typename T>
-    static typename QObjectFromJson<T>::Type fromJson(const QJsonObject &jsonObj) noexcept;
+    static T fromJson(const QJsonObject &value) noexcept;
+    template<typename T>
+    static T fromJson(const QJsonArray &value) noexcept;
 };
 
 template<typename T>
@@ -72,4 +70,28 @@ QJsonArray McJsonUtils::toJson(const QList<T *> &objs) noexcept
         result.append(QJsonValue(McJsonUtils::toJson(obj)));
     }
     return result;
+}
+
+template<typename T>
+T McJsonUtils::fromJson(const QVariant &value) noexcept
+{
+    return McJsonUtils::fromJson(qMetaTypeId<T>(), value).template value<T>();
+}
+
+template<typename T>
+T McJsonUtils::fromJson(const QJsonObject &value) noexcept
+{
+    return McJsonUtils::fromJson<T>(QVariant(value));
+}
+
+template<typename T>
+T McJsonUtils::fromJson(const QJsonArray &value) noexcept
+{
+    Q_STATIC_ASSERT(QtPrivate::IsSequentialContainer<T>::Value);
+    typedef typename T::value_type ValueType;
+    T list;
+    for (auto jsonValue : value) {
+        list.append(McJsonUtils::fromJson<ValueType>(jsonValue.toVariant()));
+    }
+    return list;
 }

@@ -7,10 +7,11 @@
 #include <QQmlEngine>
 
 #include <McIoc/ApplicationContext/IMcApplicationContext.h>
+#include <McIoc/BeanFactory/impl/McMetaTypeId.h>
 
-#include "McBoot/IMcQuickBoot.h"
 #include "McBoot/Controller/impl/McResult.h"
-#include "McIoc/BeanFactory/impl/McMetaTypeId.h"
+#include "McBoot/IMcQuickBoot.h"
+#include "McBoot/Utils/McJsonUtils.h"
 
 MC_INIT(McControllerContainer)
 MC_REGISTER_BEAN_FACTORY(McControllerContainer)
@@ -207,46 +208,15 @@ bool McControllerContainer::isMethodMatching(const QMetaMethod &m,
                                              const QList<QString> &names) noexcept
 {
     QList<QByteArray> methodParamNames = m.parameterNames();
-    if (methodParamNames.size() > names.size())
+    if (methodParamNames.size() != names.size())
         return false;
     QList<QString> argNames = names;
-    if (methodParamNames.size() == argNames.size()) {
-        QList<QByteArray> list;
-        removeDuplication(argNames, methodParamNames, list);
-        if (methodParamNames.isEmpty())
-            return true;
-        else
-            return false;
-    }
-    else {
-        QList<QByteArray> methodParamTypes = m.parameterTypes();
-        removeDuplication(argNames, methodParamNames, methodParamTypes);
-        if (methodParamNames.isEmpty())
-            return false;
-        for (QByteArray type : methodParamTypes) {
-            if (!type.endsWith("Ptr") 
-                    && !type.endsWith("ConstPtrRef"))
-                return false;
-            if(type.endsWith("Ptr")) {
-                type.remove(type.length() - 3, 3);
-            }else{
-                type.remove(type.length() - 11, 11);
-            }
-            int typeId = QMetaType::type(type);
-            if (typeId == QMetaType::UnknownType)
-                return false;
-            const QMetaObject *mobj = QMetaType::metaObjectForType(typeId);
-            for (const QString &name : argNames) {
-                if (mobj->indexOfProperty(name.toLocal8Bit()) == -1)
-                    continue;
-                argNames.removeOne(name);
-            }
-        }
-        if (argNames.isEmpty())
-            return true;
-        else
-            return false;
-    }
+    QList<QByteArray> list;
+    removeDuplication(argNames, methodParamNames, list);
+    if (methodParamNames.isEmpty())
+        return true;
+    else
+        return false;
 }
 
 bool McControllerContainer::isMethodMatching(const QMetaMethod &m, const QVariantList &args) noexcept
@@ -285,9 +255,7 @@ QVariant McControllerContainer::invokeForArgs(QObjectConstPtrRef bean,
                                               const QVariantMap &args) noexcept
 {
     auto returnType = method.returnType();
-    if(strcmp(method.typeName(), "QAbstractItemModel*") == 0
-            || strcmp(method.typeName(), "McResult*") == 0) {
-        
+    if (strcmp(method.typeName(), "QAbstractItemModel*") == 0) {
         returnType = QMetaType::type("QObject*");
     }
     if(returnType == QMetaType::Type::UnknownType) {
@@ -323,7 +291,7 @@ QVariant McControllerContainer::invokeForArgs(QObjectConstPtrRef bean,
         arguments.replace(i, QGenericArgument("QVariant", values[i].data()));
     }
     if (!method.invoke(bean.data(),
-                       Qt::DirectConnection, 
+                       Qt::DirectConnection,
                        returnArg,
                        arguments.at(0),
                        arguments.at(1),
@@ -334,13 +302,8 @@ QVariant McControllerContainer::invokeForArgs(QObjectConstPtrRef bean,
                        arguments.at(6),
                        arguments.at(7),
                        arguments.at(8),
-                       arguments.at(9)))
+                       arguments.at(9))) {
         return fail("failed invoke function");
-    
-    if(strcmp(method.typeName(), "McResult*") == 0) {
-        returnValue.convert(qMetaTypeId<McResult *>());
-        McResult *result = returnValue.value<McResult *>();
-        QQmlEngine::setObjectOwnership(result, QQmlEngine::JavaScriptOwnership);
     }
     return returnValue;
 }
@@ -350,8 +313,7 @@ QVariant McControllerContainer::invokeForArgs(QObjectConstPtrRef bean,
                                               const QVariantList &args) noexcept
 {
     auto returnType = method.returnType();
-    if (strcmp(method.typeName(), "QAbstractItemModel*") == 0
-        || strcmp(method.typeName(), "McResult*") == 0) {
+    if (strcmp(method.typeName(), "QAbstractItemModel*") == 0) {
         returnType = QMetaType::type("QObject*");
     }
     if (returnType == QMetaType::Type::UnknownType) {
@@ -398,13 +360,8 @@ QVariant McControllerContainer::invokeForArgs(QObjectConstPtrRef bean,
                        arguments.at(6),
                        arguments.at(7),
                        arguments.at(8),
-                       arguments.at(9)))
+                       arguments.at(9))) {
         return fail("failed invoke function");
-
-    if (strcmp(method.typeName(), "McResult*") == 0) {
-        returnValue.convert(qMetaTypeId<McResult *>());
-        McResult *result = returnValue.value<McResult *>();
-        QQmlEngine::setObjectOwnership(result, QQmlEngine::JavaScriptOwnership);
     }
     return returnValue;
 }
@@ -435,7 +392,7 @@ QVariantList McControllerContainer::makeValues(const QMetaMethod &method,
         QByteArray type = paramTypes.at(i).simplified();
         QByteArray name = paramNames.at(i).simplified();
         QVariant value = args[name];     //!< 由于调用此函数时参数名一定存在，所以这里一定有值
-        list.append(makeValue(type, value));
+        list.append(McJsonUtils::fromJson(type, value));
     }
     *ok = true;
     return list;
@@ -478,139 +435,14 @@ QVariantList McControllerContainer::makeValues(const QMetaMethod &method,
     return list;
 }
 
-QVariant McControllerContainer::makeValue(const QByteArray &typeName, const QVariant &arg) noexcept
-{
-    auto type = QMetaType::type(typeName);
-    auto flags = QMetaType::typeFlags(type);
-    auto seqMetaTypeIds = McMetaTypeId::sequentialIds();
-    auto assMetaTypeIds = McMetaTypeId::associativeIds();
-    if(flags.testFlag(QMetaType::TypeFlag::SharedPointerToQObject)
-            || flags.testFlag(QMetaType::TypeFlag::PointerToQObject)) {
-        return makeObjectValue(typeName, arg);
-    } else if(seqMetaTypeIds.contains(type) && seqMetaTypeIds.value(type)->valueId >= QMetaType::User) {
-        return makeListValue(arg, seqMetaTypeIds.value(type));
-    } else if(assMetaTypeIds.contains(type) && assMetaTypeIds.value(type)->valueId >= QMetaType::User) {
-        return makeMapValue(arg, assMetaTypeIds.value(type));
-    } else {
-        return makePlanValue(typeName, arg);
-    }
-}
-
-QVariant McControllerContainer::makePlanValue(const QByteArray &typeName,
-                                              const QVariant &arg) noexcept
-{
-    auto value = arg;
-    if (typeName == MC_MACRO_STR(QJsonObject) && arg.type() == QVariant::Map) {
-        value = QJsonObject::fromVariantMap(arg.value<QVariantMap>());
-    } else if (typeName == MC_MACRO_STR(QJsonArray) && arg.type() == QVariant::List) {
-        value = QJsonArray::fromVariantList(arg.value<QVariantList>());
-    } else if (!value.convert(QMetaType::type(typeName))) {
-        qCritical() << "property convert failure. origin type name:" << arg.typeName()
-                    << "typeid:" << arg.type() << "target typeName:" << typeName;
-        return arg;
-    }
-    return value;
-}
-
-QVariant McControllerContainer::makeListValue(const QVariant &arg,
-                                              McSequentialMetaIdConstPtrRef seqMetaId) noexcept
-{
-    QVariantList resList;
-    auto list = arg.toList();
-    auto valueId = seqMetaId->valueId;
-    auto valueTypeName = QMetaType::typeName(valueId);
-    for(auto var : list) {
-        resList.append(makeValue(valueTypeName, var));
-    }
-    return resList;
-}
-
-QVariant McControllerContainer::makeMapValue(const QVariant &arg,
-                                             McAssociativeMetaIdConstPtrRef assMetaId) noexcept
-{
-    QMap<QVariant, QVariant> resMap;
-    auto map = arg.toMap();
-    auto keyId = assMetaId->keyId;
-    auto valueId = assMetaId->valueId;
-    auto keyTypeName = QMetaType::typeName(keyId);
-    auto valueTypeName = QMetaType::typeName(valueId);
-    QMapIterator<QString, QVariant> itr(map);
-    while(itr.hasNext()) {
-        auto item = itr.next();
-        resMap.insert(makeValue(keyTypeName, item.key()), makeValue(valueTypeName, item.value()));
-    }
-    return QVariant::fromValue(resMap);
-}
-
-QVariant McControllerContainer::makeObjectValue(const QByteArray &typeName,
-                                                const QVariant &arg) noexcept
-{
-    QByteArray objTypeName;
-    if(!isSharedPointerObject(typeName, objTypeName)) {
-        return arg;
-    }
-    
-    int typeId = QMetaType::type(objTypeName);
-    if (typeId == QMetaType::UnknownType) {
-        qCritical("this class for type '%s' is not register\n", objTypeName.data());
-        return QVariant();
-    }
-    const QMetaObject *mobj = QMetaType::metaObjectForType(typeId);
-    QObject *obj = mobj->newInstance();
-    int count = mobj->propertyCount();
-    auto args = arg.toMap();
-    for (int i = 0; i < count; ++i) {
-        QMetaProperty pro = mobj->property(i);
-        auto name = pro.name();
-        if(!args.contains(name))
-            continue;
-        auto value = args[name];
-        value = makeValue(pro.typeName(), value);
-        if (!pro.write(obj, value))
-            qCritical("cannot dynamic write value to property '%s' for class '%s'\n", objTypeName.data(), pro.name());
-    }
-    QObjectPtr objPtr(obj);
-    QVariant var;
-    var.setValue(objPtr);
-    var.convert(QMetaType::type(objTypeName.append("Ptr")));
-    return var;
-}
-
-bool McControllerContainer::isSharedPointerObject(const QByteArray &typeName,
-                                                  QByteArray &objTypeName) noexcept
-{
-    objTypeName = typeName;
-    auto qobjectPointerIds = McMetaTypeId::qobjectPointerIds();
-    auto sharedPointerIds = McMetaTypeId::sharedPointerIds();
-    auto type = QMetaType::type(typeName);
-    if(qobjectPointerIds.contains(type)) {
-        objTypeName.remove(objTypeName.length() - 1, 1);
-        return true;
-    } else if(sharedPointerIds.contains(type)) {
-        if(typeName.endsWith("Ptr")) {
-            objTypeName.remove(objTypeName.length() - 3, 3);
-        } else {
-            objTypeName.remove(objTypeName.length() - 11, 11);
-        }
-        return true;
-    }
-    return false;
-}
-
 QVariant McControllerContainer::ok(const QVariant &val) const noexcept 
 {
-    McResult *result = McResult::ok(val);
-
-    QQmlEngine::setObjectOwnership(result, QQmlEngine::JavaScriptOwnership);
-
+    auto result = McResult::ok(val);
     return QVariant::fromValue(result);
 }
 
 QVariant McControllerContainer::fail(const QString &val) const noexcept 
 {
-    McResult *result = McResult::fail(val);
-
-    QQmlEngine::setObjectOwnership(result, QQmlEngine::JavaScriptOwnership);
-
+    auto result = McResult::fail(val);
     return QVariant::fromValue(result);
 }

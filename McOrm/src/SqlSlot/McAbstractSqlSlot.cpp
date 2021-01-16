@@ -61,7 +61,12 @@ const QMetaObject *McAbstractSqlSlot::getMetaObject(int type) noexcept
     if(sharedMetaIds.contains(type)) {
         mo = QMetaType::metaObjectForType(sharedMetaIds.value(type)->qobjectPointerId);
     } else if (seqMetaIds.contains(type)) {
-        mo = QMetaType::metaObjectForType(seqMetaIds.value(type)->valueId);
+        auto seq = seqMetaIds.value(type);
+        if (sharedMetaIds.contains(seq->valueId)) {
+            mo = QMetaType::metaObjectForType(sharedMetaIds.value(seq->valueId)->qobjectPointerId);
+        } else {
+            mo = QMetaType::metaObjectForType(seq->valueId);
+        }
     }
     return mo;
 }
