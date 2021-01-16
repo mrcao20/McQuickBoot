@@ -5,8 +5,7 @@
 #include <McIoc/Thread/IMcDeleteThreadWhenQuit.h>
 #endif
 
-MC_FORWARD_DECL_CLASS(IMcLogDeleter);
-MC_FORWARD_DECL_CLASS(IMcLogPackager);
+MC_FORWARD_DECL_CLASS(IMcAdditionalTask);
 
 MC_FORWARD_DECL_PRIVATE_DATA(McLoggerRepository);
 
@@ -26,8 +25,8 @@ class MCLOGQT_EXPORT McLoggerRepository
 #endif
     typedef QMap<QString, IMcLoggerPtr> LoggerMap;
     Q_PROPERTY(LoggerMap loggers READ loggers WRITE setLogger)
-    Q_PRIVATE_PROPERTY(d, IMcLogDeleterPtr logDeleter MEMBER logDeleter)
-    Q_PRIVATE_PROPERTY(d, IMcLogPackagerPtr logPackager MEMBER logPackager)
+    Q_PRIVATE_PROPERTY(d, QList<IMcAdditionalTaskPtr> parallelTasks MEMBER parallelTasks)
+    Q_PRIVATE_PROPERTY(d, QList<IMcAdditionalTaskPtr> sequentialTasks MEMBER sequentialTasks)
 public:
     Q_INVOKABLE McLoggerRepository();
     ~McLoggerRepository() override;
@@ -42,7 +41,14 @@ public:
 #else
     void deleteWhenQuit() noexcept;
 #endif
-    
+
+    Q_INVOKABLE
+    MC_BEAN_FINISHED
+    void finished() noexcept;
+
+private slots:
+    void executeTasks() noexcept;
+
 private:
     Q_INVOKABLE void processEvents() noexcept;
     

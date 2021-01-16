@@ -1,15 +1,15 @@
 #pragma once
 
-#include "../IMcLogDeleter.h"
-#include "../../../McLogGlobal.h"
+#include "../../McLogGlobal.h"
+#include "../../Repository/IMcAdditionalTask.h"
 
 MC_FORWARD_DECL_PRIVATE_DATA(McLogDeleter);
 
-class MCLOGQT_EXPORT McLogDeleter : public QObject, public IMcLogDeleter
+class MCLOGQT_EXPORT McLogDeleter : public QObject, public IMcAdditionalTask
 {
     Q_OBJECT
-    MC_TYPELIST(IMcLogDeleter);
-    Q_PRIVATE_PROPERTY(d, QString basePath MEMBER basePath)
+    MC_TYPELIST(IMcAdditionalTask)
+    Q_PRIVATE_PROPERTY(d, QList<QString> basePaths MEMBER basePaths)
     Q_PRIVATE_PROPERTY(d, int maxDepth MEMBER maxDepth)
     Q_PRIVATE_PROPERTY(d, QString age MEMBER age)
     Q_PRIVATE_PROPERTY(d, QList<QString> filters MEMBER filters)
@@ -20,10 +20,9 @@ public:
     Q_INVOKABLE
     MC_BEAN_FINISHED
     void finished() noexcept;
-    
-private slots:
-    void check() noexcept;
-    
+
+    void execute() noexcept override;
+
 private:
     void checkFiles(int depth, const QString &path) noexcept;
     bool fileNameCheck(const QString &fileName) noexcept;

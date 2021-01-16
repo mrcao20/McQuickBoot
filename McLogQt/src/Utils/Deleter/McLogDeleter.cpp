@@ -1,4 +1,4 @@
-#include "McLog/Utils/Deleter/impl/McLogDeleter.h"
+#include "McLog/Utils/Deleter/McLogDeleter.h"
 
 #include <QRegularExpression>
 #include <QDateTime>
@@ -13,21 +13,17 @@ MC_REGISTER_CONTAINER_CONVERTER(QList<QString>)
 MC_STATIC_END
 
 MC_DECL_PRIVATE_DATA(McLogDeleter)
-QString basePath;
+QList<QString> basePaths;
 int maxDepth{1};
 QString age{"14D"};
 int ageNumeric{14};
 QList<QString> filters;
-QTimer checkTimer;
 MC_DECL_PRIVATE_DATA_END
 
 McLogDeleter::McLogDeleter(QObject *parent) noexcept
     : QObject(parent)
 {
     MC_NEW_PRIVATE_DATA(McLogDeleter);
-    
-    //! 回归到当前线程执行
-    connect(&d->checkTimer, &QTimer::timeout, this, &McLogDeleter::check, Qt::QueuedConnection);
 }
 
 McLogDeleter::~McLogDeleter()
@@ -47,14 +43,14 @@ void McLogDeleter::finished() noexcept
     if(isOk) {
         d->ageNumeric = num;
     }
-    d->checkTimer.start(std::chrono::hours(1));
-    QTimer::singleShot(std::chrono::milliseconds(1000), this, &McLogDeleter::check);
 }
 
-void McLogDeleter::check() noexcept
+void McLogDeleter::execute() noexcept
 {
-    auto path = Mc::toAbsolutePath(d->basePath);
-    checkFiles(0, path);
+    for (auto &basePath : qAsConst(d->basePaths)) {
+        auto path = Mc::toAbsolutePath(basePath);
+        checkFiles(0, path);
+    }
 }
 
 void McLogDeleter::checkFiles(int depth, const QString &path) noexcept

@@ -1,3 +1,5 @@
+QT *= concurrent
+
 INCLUDEPATH += $$PWD/include/
 
 SOURCES += \
@@ -60,11 +62,10 @@ HEADERS += \
     $$PWD/include/McLog/McLogGlobal.h \
     $$PWD/include/McLog/McLogMacroGlobal.h \
     $$PWD/include/McLog/McLogManager.h \
+    $$PWD/include/McLog/Repository/IMcAdditionalTask.h \
     $$PWD/include/McLog/Repository/IMcLoggerRepository.h \
     $$PWD/include/McLog/Repository/impl/McLoggerRepository.h \
     $$PWD/include/McLog/Appender/impl/McAbstractFormatAppender.h \
-    $$PWD/include/McLog/Utils/Deleter/IMcLogDeleter.h \
-    $$PWD/include/McLog/Utils/Deleter/impl/McLogDeleter.h \
+    $$PWD/include/McLog/Utils/Deleter/McLogDeleter.h \
     $$PWD/include/McLog/Utils/McMessagePattern.h \
-    $$PWD/include/McLog/Utils/Packager/IMcLogPackager.h \
-    $$PWD/include/McLog/Utils/Packager/impl/McLogPackager.h
+    $$PWD/include/McLog/Utils/Packager/McLogPackager.h

@@ -1,27 +1,37 @@
 #include "McLog/Repository/impl/McLoggerRepository.h"
 
-#include <QThread>
 #include <QAbstractEventDispatcher>
+#include <QThread>
+#include <QTimer>
+#include <QtConcurrent>
 
 #include "McLog/Logger/IMcLogger.h"
-#include "McLog/Utils/Deleter/IMcLogDeleter.h"
-#include "McLog/Utils/Packager/IMcLogPackager.h"
+#include "McLog/Repository/IMcAdditionalTask.h"
 
 MC_DECL_PRIVATE_DATA(McLoggerRepository)
 QMap<QString, IMcLoggerPtr> loggers;
 QThread *thread{nullptr};
-IMcLogDeleterPtr logDeleter;
-IMcLogPackagerPtr logPackager;
+QList<IMcAdditionalTaskPtr> parallelTasks;
+QList<IMcAdditionalTaskPtr> sequentialTasks;
+QTimer taskTimer;
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McLoggerRepository)
 MC_REGISTER_BEAN_FACTORY(McLoggerRepository)
 MC_REGISTER_MAP_CONVERTER(LoggerMap)
+MC_REGISTER_LIST_CONVERTER(QList<IMcAdditionalTaskPtr>);
 MC_INIT_END
 
 McLoggerRepository::McLoggerRepository()
 {
     MC_NEW_PRIVATE_DATA(McLoggerRepository);
+
+    //! 回归到当前线程执行
+    connect(&d->taskTimer,
+            &QTimer::timeout,
+            this,
+            &McLoggerRepository::executeTasks,
+            Qt::QueuedConnection);
 }
 
 McLoggerRepository::~McLoggerRepository()
@@ -70,6 +80,22 @@ IMcLoggerPtr McLoggerRepository::getLogger(const QString &loggerName) noexcept
 void McLoggerRepository::deleteWhenQuit() noexcept
 {
     d->thread = thread();
+}
+
+void McLoggerRepository::finished() noexcept
+{
+    d->taskTimer.start(std::chrono::hours(1));
+    QTimer::singleShot(std::chrono::milliseconds(1000), this, &McLoggerRepository::executeTasks);
+}
+
+void McLoggerRepository::executeTasks() noexcept
+{
+    for (auto &parallelTask : qAsConst(d->parallelTasks)) {
+        QtConcurrent::run([parallelTask]() { parallelTask->execute(); });
+    }
+    for (auto &sequentialTask : qAsConst(d->sequentialTasks)) {
+        sequentialTask->execute();
+    }
 }
 
 void McLoggerRepository::processEvents() noexcept

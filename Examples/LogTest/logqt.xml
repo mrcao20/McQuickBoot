@@ -91,23 +91,47 @@
     </bean>
     
     <bean name="packager" class="McLogPackager">
+        <property name="scanPaths">
+            <list>
+                <value>./log/rollingFile/backup/</value>
+            </list>
+        </property>
+        <property name="maxDepth" value="2" />
+        <property name="age" value="5D" />
+        <property name="filters">
+            <list>
+                <value>.*.log</value>
+            </list>
+        </property>
+        <property name="dstPath" value="./log/rollingFile/backup/" />
+        <property name="fileNamePattern" value="%{time yyyy-MM-dd_hh-mm-ss}.zip"></property>
     </bean>
 
     <bean name="deleter" class="McLogDeleter">
-        <property name="basePath" value="./log/rollingFile/backup/" />
+        <property name="basePaths">
+            <list>
+                <value>./log/rollingFile/backup/</value>
+            </list>
+        </property>
         <property name="maxDepth" value="2" />
         <property name="age" value="14D" />
         <property name="filters">
             <list>
                 <value>.*.log</value>
+                <value>.*.zip</value>
             </list>
         </property>
     </bean>
     
     <!-- 必须有一个名为defaultLoggerRepository的bean -->
     <bean name="defaultLoggerRepository" class="McLoggerRepository">
-        <property name="logDeleter" ref="deleter" />
-        <property name="logPackager" ref="packager" />
+        <!-- 顺序任务执行器，执行顺序为list的顺序 -->
+        <property name="sequentialTasks">
+            <list>
+                <ref>packager</ref>
+                <ref>deleter</ref>
+            </list>
+        </property>
         <map name="loggers">
             <entry>
                 <key>default</key>

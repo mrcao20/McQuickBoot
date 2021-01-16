@@ -8,12 +8,10 @@
 
 #include <McIoc/McGlobal.h>
 %{JS: Cpp.openNamespaces('%{CN}')}
-struct %{CN} : public QObject
+struct %{CN}
 {
-    Q_OBJECT
+    Q_GADGET
 public:
-    Q_INVOKABLE %{CN}() noexcept = default;
-    
     MC_POCO_PROPERTY()
 };
 
