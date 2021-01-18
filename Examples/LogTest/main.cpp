@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     McXMLConfigurator::configure(path);
 //    McINIConfigurator::configure(R"(E:\QtCreator\McLogQt\Test\logqt.ini)");
     McLogManager::installQtMessageHandler();
-    
+
     qDebug() << "debug";
     qWarning() << "warning";
     qCritical() << "critical";
@@ -44,15 +44,16 @@ int main(int argc, char *argv[])
     qCritical(MC_LOGGER("Lidar[0]")) << "Lidar[0]critical";
     qInfo(MC_LOGGER("Lidar[0]")) << "Lidar[0]info";
     qInfo(MC_LOGGER("TestLogger")) << "test logger";
-    QtConcurrent::run([](){
-        for(int i = 0; i < 100; i++) {
+    qInfo(MC_LOGGER("TestLogger2")) << "test logger";
+    QtConcurrent::run([]() {
+        for (int i = 0; i < 100; i++) {
             qDebug() << i;
-            if(i == 10) {
-//                qFatal("aa");
+            if (i == 10) {
+                //                qFatal("aa");
             }
         }
     });
-    
+
     QQmlApplicationEngine engine;
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,

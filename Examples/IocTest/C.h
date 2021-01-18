@@ -51,6 +51,20 @@ public:
 };
 MC_DECL_METATYPE(IA); //!< 这里必须使用该宏声明，否则无法从C转换到该接口。
 
+class PointerTest : public QObject, public IA
+{
+    Q_OBJECT
+    MC_TYPELIST(IA)
+    MC_COMPONENT
+    MC_BEANNAME("pointerTest")
+    MC_POINTER(true)
+public:
+    Q_INVOKABLE PointerTest() = default;
+
+    void a() noexcept override {}
+};
+MC_DECL_METATYPE(PointerTest)
+
 class IB : public IA
 {
     MC_TYPELIST(
@@ -76,6 +90,8 @@ class C : public QObject, public IB
     MC_AUTOWIRED("r")
     //!< 如果外界并不需要使用对象r，则可以直接使用MEMBER形式。具体请查阅QT官方文档
     Q_PROPERTY(QSharedPointer<R> r MEMBER m_r)
+    MC_AUTOWIRED("pointerTest")
+    Q_PROPERTY(PointerTest *pointerTest MEMBER m_pointerTest)
     Q_PROPERTY(QList<QString> texts MEMBER m_texts)
     Q_PROPERTY(QVector<QSharedPointer<R>> rs MEMBER m_rs)
     Q_PROPERTY(StringMap mtexts MEMBER m_mtexts)
@@ -127,6 +143,7 @@ private:
     Qt::AlignmentFlag m_align;
     QString m_text;                     //!< 普通字符串
     QSharedPointer<R> m_r;              //!< 对象
+    PointerTest *m_pointerTest;
     QList<QString> m_texts;             //!< 字符串列表
     QVector<RPtr> m_rs;                 //!< 对象数组
     QMap<QString, QString> m_mtexts;    //!< 字符串映射表

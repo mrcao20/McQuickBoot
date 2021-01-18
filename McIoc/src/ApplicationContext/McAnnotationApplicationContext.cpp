@@ -105,9 +105,22 @@ void McAnnotationApplicationContext::initBeanDefinition(int type) noexcept
             isSingleton = isTrue ? true : false;
         }
     }
+    bool isPointer = false; //! 默认不为原始指针
+    auto pointerIndex = metaObj->indexOfClassInfo(MC_POINTER_TAG);
+    if (pointerIndex != -1) {
+        auto classInfo = metaObj->classInfo(pointerIndex);
+        bool isTrue = classInfo.value() == QString("true");
+        bool isFalse = classInfo.value() == QString("false");
+        if (!isTrue && !isFalse) {
+            qCritical() << "the pointer value for classInfo must be true or false of string";
+        } else {
+            isPointer = isTrue ? true : false;
+        }
+    }
     beanDefinition->setBeanMetaObject(metaObj);
     beanDefinition->setClassName(metaObj->className());
     beanDefinition->setSingleton(isSingleton);
+    beanDefinition->setPointer(isPointer);
 }
 
 void McAnnotationApplicationContext::addConnect(const QString &beanName,

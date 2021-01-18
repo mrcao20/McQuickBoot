@@ -33,6 +33,7 @@ namespace QSetting {
 constexpr const char *clazz = "Class";
 constexpr const char *plugin = "Plugin";
 constexpr const char *singleton = "Singleton";
+constexpr const char *pointer = "Pointer";
 constexpr const char *connects = "Connects";
 constexpr const char *sender = "Sender";
 constexpr const char *signal = "Signal";

@@ -2,18 +2,18 @@
 
 #include "McAbstractBeanFactory.h"
 
-MC_FORWARD_DECL_PRIVATE_DATA(McDefaultBeanFactory);
+MC_FORWARD_DECL_PRIVATE_DATA(McAbstractNormalBeanFactory);
 
-MC_FORWARD_DECL_CLASS(IMcPropertyConverter);
-
-class MCIOC_EXPORT McDefaultBeanFactory : public McAbstractBeanFactory 
+class MCIOC_EXPORT McAbstractNormalBeanFactory : public McAbstractBeanFactory
 {
     Q_OBJECT
 public:
-    explicit McDefaultBeanFactory(IMcPropertyConverterConstPtrRef converter,
-                                  QObject *parent = nullptr);
-    ~McDefaultBeanFactory() override;
-    
+    McAbstractNormalBeanFactory(QObject *parent = nullptr);
+    ~McAbstractNormalBeanFactory() override;
+
+    IMcPropertyConverterPtr getPropertyConverter() const noexcept override;
+    void setPropertyConverter(IMcPropertyConverterConstPtrRef converter) noexcept override;
+
 protected:
     /*!
      * \brief doCreate
@@ -26,7 +26,11 @@ protected:
      */
     QVariant doCreate(IMcBeanDefinitionConstPtrRef beanDefinition,
                       QThread *thread) noexcept override;
-    
+
+protected:
+    virtual QVariant convertToQVariant(QObject *obj) noexcept = 0;
+    virtual QVariant convertToQVariant(void *gadget, const QMetaObject *metaObj) noexcept = 0;
+
 private:
     /*!
      * \brief callTagFunction
@@ -35,7 +39,9 @@ private:
      * \param bean
      * \param tag
      */
-    void callTagFunction(QObjectConstPtrRef bean, const char *tag) noexcept;
+    void callTagFunction(QObject *bean,
+                         const char *tag,
+                         Qt::ConnectionType type = Qt::DirectConnection) noexcept;
     void callTagFunction(void *bean, const QMetaObject *metaObj, const char *tag) noexcept;
     /*!
      * \brief callStartFunction
@@ -43,7 +49,7 @@ private:
      * 调用构造开始函数
      * \param bean
      */
-    void callStartFunction(QObjectConstPtrRef bean) noexcept;
+    void callStartFunction(QObject *bean) noexcept;
     void callStartFunction(void *bean, const QMetaObject *metaObj) noexcept;
     QVariant parseOnGadget(IMcBeanDefinitionConstPtrRef beanDefinition) noexcept;
     /*!
@@ -56,7 +62,7 @@ private:
      * \param proValues 获取到的属性值
      * \return 是否全部成功
      */
-    bool addPropertyValue(QObjectConstPtrRef bean,
+    bool addPropertyValue(QObject *bean,
                           IMcBeanDefinitionConstPtrRef beanDefinition,
                           QVariantMap &proValues) noexcept;
     bool addPropertyValue(void *bean,
@@ -72,10 +78,10 @@ private:
      * \param proValues bean中的属性
      * \return 是否全部成功
      */
-    bool addObjectConnect(QObjectConstPtrRef bean,
+    bool addObjectConnect(QObject *bean,
                           IMcBeanDefinitionConstPtrRef beanDefinition,
                           const QVariantMap &proValues) noexcept;
-    
+
     /*!
      * \brief getPropertyObject
      * \param bean
@@ -85,17 +91,17 @@ private:
      * \param proValues bean中已经注入的属性
      * \return 获取到的属性。可能为空
      */
-    QObjectPtr getPropertyObject(QObjectConstPtrRef bean,
-                                 const QString &proName,
-                                 const QVariantMap &proValues) noexcept;
-    
+    QObject *getPropertyObject(QObject *,
+                               const QString &proName,
+                               const QVariantMap &proValues) noexcept;
+
     /*!
      * \brief callFinishedFunction
      * 
      * 调用构造完成函数
      * \param bean
      */
-    void callFinishedFunction(QObjectConstPtrRef bean) noexcept;
+    void callFinishedFunction(QObject *) noexcept;
     void callFinishedFunction(void *bean, const QMetaObject *metaObj) noexcept;
     /*!
      * \brief callThreadFinishedFunction
@@ -103,10 +109,10 @@ private:
      * 调用线程移动结束函数，如果线程未被移动，则不会调用
      * \param bean
      */
-    void callThreadFinishedFunction(QObjectConstPtrRef bean) noexcept;
+    void callThreadFinishedFunction(QObject *bean) noexcept;
 
 private:
-    MC_DECL_PRIVATE(McDefaultBeanFactory)
+    MC_DECL_PRIVATE(McAbstractNormalBeanFactory)
 };
 
-MC_DECL_POINTER(McDefaultBeanFactory)
+MC_DECL_POINTER(McAbstractNormalBeanFactory)

@@ -58,6 +58,7 @@ IMcBeanDefinitionPtr McSettingBeanDefinitionReader::buildBeanDefinition(QSetting
     McRootBeanDefinitionPtr beanDefinition = McRootBeanDefinitionPtr::create();
     bool isSingleton = setting->value(Mc::Constant::Tag::QSetting::singleton, true).toBool();
     beanDefinition->setSingleton(isSingleton);
+    beanDefinition->setPointer(setting->value(Mc::Constant::Tag::QSetting::pointer, false).toBool());
     if(setting->contains(Mc::Constant::Tag::QSetting::clazz)) {
         beanDefinition->setClassName(setting->value(Mc::Constant::Tag::QSetting::clazz).toString());
     } else if(setting->contains(Mc::Constant::Tag::QSetting::plugin)) {

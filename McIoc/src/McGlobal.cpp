@@ -189,8 +189,8 @@ auto pId = qRegisterMetaType<QObject *>();
 auto sId = qRegisterMetaType<QObjectPtr>();
 McMetaTypeId::addQObjectPointerIds(pId, sId);
 McMetaTypeId::addSharedPointerId(sId, pId);
-qRegisterMetaType<QObjectPtr>(MC_MACRO_STR(QObjectPtr));
-qRegisterMetaType<QObjectPtr>(MC_MACRO_STR(QObjectConstPtrRef));
+qRegisterMetaType<QObjectPtr>(MC_STRINGIFY(QObjectPtr));
+qRegisterMetaType<QObjectPtr>(MC_STRINGIFY(QObjectConstPtrRef));
 
 auto kernelHandler = qcoreVariantHandler();
 QVariantPrivate::registerHandler(QModulesPrivate::Core, kernelHandler);
@@ -215,7 +215,7 @@ QString getBeanName(const QMetaObject *metaObj) noexcept
     return beanName;
 }
 
-}
+} // namespace McPrivate
 
 McCustomEvent::~McCustomEvent() noexcept
 {

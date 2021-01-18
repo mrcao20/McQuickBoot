@@ -9,6 +9,9 @@ public:
     QVariant getBean() const noexcept override { return m_bean; }
     void setBean(const QVariant &bean) noexcept override { m_bean = bean; }
 
+    bool isPointer() const noexcept override { return false; }
+    void setPointer(bool val) noexcept override { Q_UNUSED(val) }
+
     bool isSingleton() const noexcept override { return true; }
     void setSingleton(bool val) noexcept override { Q_UNUSED(val) }
 

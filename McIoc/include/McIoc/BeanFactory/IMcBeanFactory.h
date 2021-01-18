@@ -26,6 +26,20 @@ public:
         QVariant var = getBeanToVariant(name, thread);
         return var.value<typename McPrivate::SharedTypeSelector<T>::Type>();
     }
+
+    /*!
+     * \brief 根据传入的参数和类型返回一个指针类型的bean
+     * \see getBeanToVariant
+     * \note 此函数并不符合接口的设计，因为C++模板不能作用在纯虚函数上，
+     * 提供此函数仅用于提供一种方便的向目标类型转换的方式
+     */
+    template<typename T>
+    typename McPrivate::PointerTypeSelector<T>::Type getBeanPointer(
+        const QString &name, QThread *thread = nullptr) noexcept
+    {
+        QVariant var = getBeanToVariant(name, thread);
+        return var.value<typename McPrivate::PointerTypeSelector<T>::Type>();
+    }
     /*!
      * \brief getBean
      * 
@@ -36,7 +50,18 @@ public:
      * \return 返回获取到的对象，可能为空
      */
     virtual QObjectPtr getBean(const QString &name, QThread *thread = nullptr) noexcept = 0;
-    
+
+    /*!
+     * \brief getBeanPointer
+     * 
+     * 根据bean的名称从容器中获取bean对象。
+     * note 此函数是线程安全的.
+     * \param name beanName
+     * \param thread 目标线程
+     * \return 返回获取到的对象，可能为空
+     */
+    virtual QObject *getBeanPointer(const QString &name, QThread *thread = nullptr) noexcept = 0;
+
     /*!
      * \brief getBeanToVariant
      * 

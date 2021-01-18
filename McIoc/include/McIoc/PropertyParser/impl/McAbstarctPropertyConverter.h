@@ -10,13 +10,14 @@ class McAbstarctPropertyConverter : public QObject, public IMcPropertyConverter
 public:
     explicit McAbstarctPropertyConverter(QObject *parent = nullptr);
     ~McAbstarctPropertyConverter() override;
-    
-    QVariant convert(IMcBeanReferenceResolver *resolver,
-                     const QVariant &value) const noexcept override;
-    
+
+    QVariant convert(const QVariant &value) const noexcept override;
+
+    void addReferenceResolver(IMcBeanReferenceResolver *resolver) noexcept override;
+
 protected:
-    IMcBeanReferenceResolver *resolver() const noexcept;
-    
+    QList<IMcBeanReferenceResolver *> resolvers() const noexcept;
+
     virtual QVariant convertRef(const QVariant &value) const noexcept = 0;
     virtual QVariant convertEnum(const QVariant &value) const noexcept = 0;
     virtual QVariant convertList(const QVariant &value) const noexcept = 0;

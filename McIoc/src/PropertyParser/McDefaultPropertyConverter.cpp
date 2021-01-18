@@ -23,8 +23,15 @@ QVariant McDefaultPropertyConverter::convertRef(const QVariant &value) const noe
         qCritical() << "cannot inject beanReference";
         return QVariant();
     }
+    QVariant objVar;
     //! 调用IMcBeanReferenceResolver的resolveBeanReferenceToQVariant方法，根据bean获取实例，此处即是递归
-    auto objVar = resolver()->resolveBeanReferenceToQVariant(ref);
+    auto rs = resolvers();
+    for (auto r : rs) {
+        if (r->canResolve(ref)) {
+            objVar = r->resolveBeanReferenceToQVariant(ref);
+            break;
+        }
+    }
     if (!objVar.isValid()) {
         //! 失败，记录错误信息
         qCritical() << "cannot get bean from beanReference";
@@ -70,7 +77,7 @@ QVariant McDefaultPropertyConverter::convertList(const QVariant &value) const no
     auto list = value.value<QVariantList>();
     
     for(const auto &var : list) {
-        result << convert(resolver(), var);
+        result << convert(var);
     }
     
     return result;
@@ -90,7 +97,7 @@ QVariant McDefaultPropertyConverter::convertMap(const QVariant &value) const noe
 
         QVariant resultKey, resultValue;
 
-        resultValue = convert(resolver(), value);
+        resultValue = convert(value);
         if (key.userType() == qMetaTypeId<McBeanPlaceholderPtr>()) {
             auto valueObj = resultValue.value<QObjectPtr>();
             auto keyPlh = key.value<McBeanPlaceholderPtr>();
@@ -106,7 +113,7 @@ QVariant McDefaultPropertyConverter::convertMap(const QVariant &value) const noe
                 qCritical() << "the plh must be one of className/objectName/custom";
             }
         } else {
-            resultKey = convert(resolver(), key);
+            resultKey = convert(key);
         }
 
         if (resultKey.isValid() && resultValue.isValid()) {

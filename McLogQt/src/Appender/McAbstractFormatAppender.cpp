@@ -67,7 +67,7 @@ void McAbstractFormatAppender::append(QtMsgType type, const QMessageLogContext &
             append_helper(message);
         }else{
             QMetaObject::invokeMethod(this
-                                      , MC_MACRO_STR(append_helper)
+                                      , MC_STRINGIFY(append_helper)
                                       , Qt::BlockingQueuedConnection
                                       , Q_ARG(QString, message));
         }

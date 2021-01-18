@@ -29,6 +29,14 @@ QObjectPtr McAbstractBeanFactory::getBean(const QString &name, QThread *thread) 
     return var.value<QObjectPtr>();
 }
 
+QObject *McAbstractBeanFactory::getBeanPointer(const QString &name, QThread *thread) noexcept
+{
+    auto var = getBeanToVariant(name, thread);
+    if (!var.isValid())
+        return nullptr;
+    return var.value<QObject *>();
+}
+
 QVariant McAbstractBeanFactory::getBeanToVariant(const QString &name, QThread *thread)  noexcept 
 {
     QMutexLocker locker(&d->mtx);
@@ -67,12 +75,16 @@ bool McAbstractBeanFactory::isSingleton(const QString &name) noexcept
     return def->isSingleton();
 }
 
-void McAbstractBeanFactory::registerBeanDefinition(
-        const QString &name, IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
+bool McAbstractBeanFactory::registerBeanDefinition(
+    const QString &name, IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
 {
+    if (!canRegister(beanDefinition)) {
+        return false;
+    }
     QMutexLocker locker(&d->mtx);
     //! 如果存在则替换
     d->hash.insert(name, beanDefinition);
+    return true;
 }
 
 IMcBeanDefinitionPtr McAbstractBeanFactory::unregisterBeanDefinition(const QString &name) noexcept
@@ -89,6 +101,12 @@ bool McAbstractBeanFactory::isContained(const QString &name) noexcept
     return containsBean(name);
 }
 
+bool McAbstractBeanFactory::canRegister(IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
+{
+    Q_UNUSED(beanDefinition)
+    return true;
+}
+
 QHash<QString, IMcBeanDefinitionPtr> McAbstractBeanFactory::getBeanDefinitions() noexcept 
 {
     QMutexLocker locker(&d->mtx);
@@ -101,6 +119,15 @@ QObjectPtr McAbstractBeanFactory::resolveBeanReference(McBeanReferenceConstPtrRe
     if(!var.isValid())
         return QObjectPtr();
     return var.value<QObjectPtr>();
+}
+
+QObject *McAbstractBeanFactory::resolveBeanReferencePointer(
+    McBeanReferenceConstPtrRef beanRef) noexcept
+{
+    auto var = resolveBeanReferenceToQVariant(beanRef);
+    if (!var.isValid())
+        return nullptr;
+    return var.value<QObject *>();
 }
 
 QVariant McAbstractBeanFactory::resolveBeanReferenceToQVariant(McBeanReferenceConstPtrRef beanRef) noexcept 

@@ -65,7 +65,7 @@ Lock mc_unique_lock(Mutex *mutex)
 
 QString getBeanName(const QMetaObject *metaObj) noexcept;
 
-}
+} // namespace McPrivate
 
 MC_DECL_POINTER(QObject)
 

@@ -22,14 +22,14 @@ private:
 //#ifdef Q_CC_MSVC
 //# define MC_FIRST_TYPE_NAME(par) MC_FIRST_TYPE_NAME_I par
 //# define MC_FIRST_TYPE_NAME_CONST_REF(par) MC_FIRST_TYPE_NAME_CONST_REF_I par
-//# define MC_FIRST_TYPE_NAME_I(Class, ...) MC_MACRO_STR(Class)
-//# define MC_FIRST_TYPE_NAME_CONST_REF_I(Class, ...) MC_MACRO_STR(Class##ConstPtrRef)
+//# define MC_FIRST_TYPE_NAME_I(Class, ...) MC_STRINGIFY(Class)
+//# define MC_FIRST_TYPE_NAME_CONST_REF_I(Class, ...) MC_STRINGIFY(Class##ConstPtrRef)
 //# define MC_REGISTER_BEAN_FACTORY(par) MC_REGISTER_BEAN_FACTORY_IMPL(MC_FIRST_TYPE_NAME((par)), MC_FIRST_TYPE_NAME_CONST_REF((par)), par)
 //# define MC_REGISTER_BEAN_FACTORY_IMPL(CN, CCRN, ...) \
 //    mcRegisterBeanFactory<__VA_ARGS__>(CN, CCRN);
 //#else
-//# define MC_FIRST_TYPE_NAME(Class, ...) MC_MACRO_STR(Class)
-//# define MC_FIRST_TYPE_NAME_CONST_REF(Class, ...) MC_MACRO_STR(Class##ConstPtrRef)
+//# define MC_FIRST_TYPE_NAME(Class, ...) MC_STRINGIFY(Class)
+//# define MC_FIRST_TYPE_NAME_CONST_REF(Class, ...) MC_STRINGIFY(Class##ConstPtrRef)
 //# define MC_REGISTER_BEAN_FACTORY(...) MC_REGISTER_BEAN_FACTORY_IMPL(__VA_ARGS__)
 //# define MC_REGISTER_BEAN_FACTORY_IMPL(...) \
 //    mcRegisterBeanFactory<__VA_ARGS__>(MC_FIRST_TYPE_NAME(__VA_ARGS__), MC_FIRST_TYPE_NAME_CONST_REF(__VA_ARGS__));
@@ -65,6 +65,9 @@ struct McRegisterConverterHelper
         if (!QMetaType::hasRegisteredConverterFunction<FromPtr, ToPtr>()) {
             QMetaType::registerConverter<FromPtr, ToPtr>();
         }
+        if (!QMetaType::hasRegisteredConverterFunction<From *, To *>()) {
+            QMetaType::registerConverter<From *, To *>();
+        }
     }
 };
 
@@ -77,6 +80,9 @@ struct McRegisterConverterHelper<From, To, typename To::McPrivateTypeListHelper>
     {
         if (!QMetaType::hasRegisteredConverterFunction<FromPtr, ToPtr>()) {
             QMetaType::registerConverter<FromPtr, ToPtr>();
+        }
+        if (!QMetaType::hasRegisteredConverterFunction<From *, To *>()) {
+            QMetaType::registerConverter<From *, To *>();
         }
         McRegisterConverterHelper<From, typename To::McPrivateTypeList>::registerConverter();
     }
@@ -223,6 +229,17 @@ struct SharedTypeSelector<QSharedPointer<T>>
 {
     typedef T BaseType;
     typedef QSharedPointer<T> Type;
+};
+
+template<typename T>
+struct PointerTypeSelector
+{
+    typedef T *Type;
+};
+template<typename T>
+struct PointerTypeSelector<T *>
+{
+    typedef T *Type;
 };
 
 template<typename From, typename To>

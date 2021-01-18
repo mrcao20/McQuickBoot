@@ -4,6 +4,8 @@
     <bean name="r" class="R">
         <property name="text" value="test r" />
     </bean>
+    <bean name="pointerTest" class="PointerTest" isPointer="true">
+    </bean>
     <bean name="gadgetTest" class="GadgetTest">
         <property name="aaa" value="1111" />
         <property name="bbb" value="gadgetTest bbbb" />
@@ -19,6 +21,7 @@
             <value>test c</value>
         </property>
         <property name="r" ref="r"></property>
+        <property name="pointerTest" ref="pointerTest"></property>
         <property name="texts">
             <list>
                 <value>停封</value>

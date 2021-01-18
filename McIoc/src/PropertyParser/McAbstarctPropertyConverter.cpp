@@ -4,7 +4,7 @@
 #include "McIoc/BeanFactory/impl/McBeanEnum.h"
 
 MC_DECL_PRIVATE_DATA(McAbstarctPropertyConverter)
-IMcBeanReferenceResolver *resolver;
+QList<IMcBeanReferenceResolver *> resolvers;
 MC_DECL_PRIVATE_DATA_END
 
 McAbstarctPropertyConverter::McAbstarctPropertyConverter(QObject *parent)
@@ -17,10 +17,8 @@ McAbstarctPropertyConverter::~McAbstarctPropertyConverter()
 {
 }
 
-QVariant McAbstarctPropertyConverter::convert(IMcBeanReferenceResolver *resolver,
-                                              const QVariant &value) const noexcept 
+QVariant McAbstarctPropertyConverter::convert(const QVariant &value) const noexcept
 {
-    d->resolver = resolver;
     if(value.canConvert<McBeanReferencePtr>()) {
         return convertRef(value);
     } else if(value.canConvert<McBeanEnumPtr>()) {
@@ -34,7 +32,12 @@ QVariant McAbstarctPropertyConverter::convert(IMcBeanReferenceResolver *resolver
     }
 }
 
-IMcBeanReferenceResolver *McAbstarctPropertyConverter::resolver() const noexcept 
+void McAbstarctPropertyConverter::addReferenceResolver(IMcBeanReferenceResolver *resolver) noexcept
 {
-    return d->resolver;
+    d->resolvers.append(resolver);
+}
+
+QList<IMcBeanReferenceResolver *> McAbstarctPropertyConverter::resolvers() const noexcept
+{
+    return d->resolvers;
 }

@@ -17,7 +17,9 @@ public:
      * \return 根据相关信息生成的对象
      */
     virtual QObjectPtr resolveBeanReference(McBeanReferenceConstPtrRef beanRef) noexcept = 0;
-    
+    virtual QObject *resolveBeanReferencePointer(McBeanReferenceConstPtrRef beanRef) noexcept = 0;
+
+    virtual bool canResolve(McBeanReferenceConstPtrRef beanRef) noexcept = 0;
     /*!
      * \brief resolveBeanReferenceToQVariant
      * 

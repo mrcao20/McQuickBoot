@@ -30,7 +30,8 @@ ParamPtr Config::param() const noexcept
 #include <McBoot/McQuickBootSimple.h>
 void Config::finished()
 {
-    McQuickBootSimple::connect("aaa", SIGNAL(signal_sig2()), this, SLOT(slot_slt2()));
+    // 和Test中的MC_AUTOWIRED("param")之间必须注释一个
+    //    McQuickBootSimple::connect("aaa", SIGNAL(signal_sig2()), this, SLOT(slot_slt2()));
 }
 
 void Config::slot_slt2()

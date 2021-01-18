@@ -5,7 +5,7 @@
 
 MC_DECL_PRIVATE_DATA(McAbstractApplicationContext)
 IMcConfigurableBeanFactoryPtr configurableBeanFactory;
-QList<IMcApplicationContextPtr> relatedAppCtx;
+QList<IMcConfigurableBeanFactoryPtr> relatedBeanFactory;
 MC_DECL_PRIVATE_DATA_END
 
 McAbstractApplicationContext::McAbstractApplicationContext(
@@ -20,12 +20,31 @@ McAbstractApplicationContext::~McAbstractApplicationContext()
 {
 }
 
+IMcPropertyConverterPtr McAbstractApplicationContext::getPropertyConverter() const noexcept
+{
+    return d->configurableBeanFactory->getPropertyConverter();
+}
+
+void McAbstractApplicationContext::setPropertyConverter(
+    IMcPropertyConverterConstPtrRef converter) noexcept
+{
+    d->configurableBeanFactory->setPropertyConverter(converter);
+}
+
 QObjectPtr McAbstractApplicationContext::getBean(const QString &name, QThread *thread) noexcept
 {
     auto var = getBeanToVariant(name, thread);
     if(!var.isValid())
         return QObjectPtr();
     return var.value<QObjectPtr>();
+}
+
+QObject *McAbstractApplicationContext::getBeanPointer(const QString &name, QThread *thread) noexcept
+{
+    auto var = getBeanToVariant(name, thread);
+    if (!var.isValid())
+        return nullptr;
+    return var.value<QObject *>();
 }
 
 QVariant McAbstractApplicationContext::getBeanToVariant(const QString &name,
@@ -35,9 +54,9 @@ QVariant McAbstractApplicationContext::getBeanToVariant(const QString &name,
     if(d->configurableBeanFactory->containsBean(name)) {
         var = d->configurableBeanFactory->getBeanToVariant(name, thread);
     } else {
-        for(auto appCtx : d->relatedAppCtx) {
-            if(appCtx->containsBean(name)) {
-                var = appCtx->getBeanToVariant(name, thread);
+        for (auto beanFactory : d->relatedBeanFactory) {
+            if (beanFactory->containsBean(name)) {
+                var = beanFactory->getBeanToVariant(name, thread);
                 break;
             }
         }
@@ -51,8 +70,8 @@ bool McAbstractApplicationContext::containsBean(const QString &name) noexcept
     if(d->configurableBeanFactory->containsBean(name)) {
         isContained = true;
     } else {
-        for(auto appCtx : d->relatedAppCtx) {
-            if(appCtx->containsBean(name)) {
+        for (auto beanFactory : d->relatedBeanFactory) {
+            if (beanFactory->containsBean(name)) {
                 isContained = true;
                 break;
             }
@@ -67,8 +86,8 @@ bool McAbstractApplicationContext::isSingleton(const QString &name) noexcept
     if(d->configurableBeanFactory->isSingleton(name)) {
         has = true;
     } else {
-        for(auto appCtx : d->relatedAppCtx) {
-            if(appCtx->isSingleton(name)) {
+        for (auto beanFactory : d->relatedBeanFactory) {
+            if (beanFactory->isSingleton(name)) {
                 has = true;
                 break;
             }
@@ -77,10 +96,20 @@ bool McAbstractApplicationContext::isSingleton(const QString &name) noexcept
     return has;
 }
 
-void McAbstractApplicationContext::registerBeanDefinition(
+bool McAbstractApplicationContext::registerBeanDefinition(
     const QString &name, IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
 {
-    registerBeanDefinitionSelf(name, beanDefinition);
+    if (d->configurableBeanFactory->canRegister(beanDefinition)) {
+        d->configurableBeanFactory->registerBeanDefinition(name, beanDefinition);
+        return true;
+    }
+    for (auto beanFactory : d->relatedBeanFactory) {
+        if (beanFactory->canRegister(beanDefinition)) {
+            beanFactory->registerBeanDefinition(name, beanDefinition);
+            return true;
+        }
+    }
+    return false;
 }
 
 IMcBeanDefinitionPtr McAbstractApplicationContext::unregisterBeanDefinition(const QString &name) noexcept
@@ -88,13 +117,26 @@ IMcBeanDefinitionPtr McAbstractApplicationContext::unregisterBeanDefinition(cons
     if(d->configurableBeanFactory->containsBean(name)) {
         return d->configurableBeanFactory->unregisterBeanDefinition(name);
     } else {
-        for(auto appCtx : d->relatedAppCtx) {
-            if(appCtx->containsBean(name)) {
-                return appCtx->unregisterBeanDefinition(name);
+        for (auto beanFactory : d->relatedBeanFactory) {
+            if (beanFactory->containsBean(name)) {
+                return beanFactory->unregisterBeanDefinition(name);
             }
         }
     }
     return IMcBeanDefinitionPtr();
+}
+
+bool McAbstractApplicationContext::canRegister(IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
+{
+    if (d->configurableBeanFactory->canRegister(beanDefinition)) {
+        return true;
+    }
+    for (auto beanFactory : d->relatedBeanFactory) {
+        if (beanFactory->canRegister(beanDefinition)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 bool McAbstractApplicationContext::isContained(const QString &name) noexcept 
@@ -105,8 +147,8 @@ bool McAbstractApplicationContext::isContained(const QString &name) noexcept
 QHash<QString, IMcBeanDefinitionPtr> McAbstractApplicationContext::getBeanDefinitions() noexcept 
 {
     auto beanDefinitions = d->configurableBeanFactory->getBeanDefinitions();
-    for(auto appCtx : d->relatedAppCtx) {
-        auto child = appCtx->getBeanDefinitions();
+    for (auto beanFactory : d->relatedBeanFactory) {
+        auto child = beanFactory->getBeanDefinitions();
         for(auto key : child.keys()) {
             beanDefinitions.insert(key, child.value(key));
         }
@@ -126,54 +168,25 @@ void McAbstractApplicationContext::refresh(QThread *thread) noexcept
     }
 }
 
-QVariant McAbstractApplicationContext::getBeanSelf(const QString &name, QThread *thread) noexcept
+void McAbstractApplicationContext::addRelatedBeanFactory(
+    IMcConfigurableBeanFactoryConstPtrRef beanFac) noexcept
 {
-    return d->configurableBeanFactory->getBeanToVariant(name, thread);
-}
-
-bool McAbstractApplicationContext::containsBeanSelf(const QString &name) noexcept
-{
-    return d->configurableBeanFactory->containsBean(name);
-}
-
-bool McAbstractApplicationContext::isSingletonSelf(const QString &name) noexcept
-{
-    return d->configurableBeanFactory->isSingleton(name);
-}
-
-void McAbstractApplicationContext::registerBeanDefinitionSelf(
-    const QString &name, IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
-{
-    d->configurableBeanFactory->registerBeanDefinition(name, beanDefinition);
-}
-
-IMcBeanDefinitionPtr McAbstractApplicationContext::unregisterBeanDefinitionSelf(const QString &name) noexcept
-{
-    return d->configurableBeanFactory->unregisterBeanDefinition(name);
-}
-
-QHash<QString, IMcBeanDefinitionPtr> McAbstractApplicationContext::getBeanDefinitionsSelf() noexcept
-{
-    return d->configurableBeanFactory->getBeanDefinitions();
-}
-
-void McAbstractApplicationContext::addRelatedApplicationContext(IMcApplicationContextConstPtrRef appCtx) noexcept
-{
-    if(d->relatedAppCtx.contains(appCtx)) {
+    if (d->relatedBeanFactory.contains(beanFac)) {
         return;
     }
-    d->relatedAppCtx.append(appCtx);
+    d->relatedBeanFactory.append(beanFac);
 }
 
-void McAbstractApplicationContext::removeRelatedApplicationContext(IMcApplicationContextConstPtrRef appCtx) noexcept
+void McAbstractApplicationContext::removeRelatedBeanFactory(
+    IMcConfigurableBeanFactoryConstPtrRef beanFac) noexcept
 {
-    if(!d->relatedAppCtx.contains(appCtx)) {
+    if (!d->relatedBeanFactory.contains(beanFac)) {
         return;
     }
-    d->relatedAppCtx.removeAll(appCtx);
+    d->relatedBeanFactory.removeAll(beanFac);
 }
 
-QList<IMcApplicationContextPtr> McAbstractApplicationContext::getRelatedApplicationContexts() noexcept
+QList<IMcConfigurableBeanFactoryPtr> McAbstractApplicationContext::getRelatedBeanFactories() noexcept
 {
-    return d->relatedAppCtx;
+    return d->relatedBeanFactory;
 }

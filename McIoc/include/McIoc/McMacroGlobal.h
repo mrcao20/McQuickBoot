@@ -19,7 +19,7 @@
 # define MCIOC_EXPORT
 #endif
 
-#define MC_MACRO_STR(m) #m
+#define MC_STRINGIFY(x) #x
 
 #define MC_DECL_POINTER(Class) \
     using Class##Ptr = QSharedPointer<Class>; \
@@ -102,6 +102,8 @@
 # define MC_BEAN_START      //!< 当bean被构造，但还未注入属性时调用
 # define MC_BEAN_FINISHED   //!< 当bean完全被构造完成之后调用
 # define MC_THREAD_FINISHED   //!< 当bean的线程被移动之后调用
+//!< 注意：以上三个tag标记的函数调用线程为getBean时的线程
+#define MC_ALL_FINISHED //!< 当bean完全被构造之后，且线程移动之后调用，使用队列方式，调用线程回归到对象的生存线程
 
 #endif //! !Q_MOC_RUN
 
@@ -109,11 +111,13 @@
 #define MC_COMPONENT_TAG "Component"
 
 #define MC_SINGLETON_TAG "isSingleton"
+#define MC_POINTER_TAG "isPointer"
 #define MC_BEANNAME_TAG "beanName"
 #define MC_AUTOWIRED_TAG "autowired"
 
 #define MC_COMPONENT Q_CLASSINFO(MC_COMPONENT_TAG, MC_COMPONENT_TAG)
-#define MC_SINGLETON(arg) Q_CLASSINFO(MC_SINGLETON_TAG, MC_MACRO_STR(arg))
+#define MC_SINGLETON(arg) Q_CLASSINFO(MC_SINGLETON_TAG, MC_STRINGIFY(arg))
+#define MC_POINTER(arg) Q_CLASSINFO(MC_POINTER_TAG, MC_STRINGIFY(arg))
 #define MC_BEANNAME(name) Q_CLASSINFO(MC_BEANNAME_TAG, name)
 #define MC_AUTOWIRED(v) Q_CLASSINFO(MC_AUTOWIRED_TAG, v)
 //!< Q_CLASSINFO

@@ -18,8 +18,10 @@ public:
      * \param name beanName
      * \param beanDefinition bean的定义，包含bean中所有相关数据
      */
-    virtual void registerBeanDefinition(const QString &name, IMcBeanDefinitionConstPtrRef beanDefinition) noexcept = 0;
-    
+    virtual bool registerBeanDefinition(const QString &name,
+                                        IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
+        = 0;
+
     /*!
      * \brief unregisterBeanDefinition
      * 
@@ -28,7 +30,9 @@ public:
      * \return 被移除的beanDefinition，如果不存在则返回空
      */
     virtual IMcBeanDefinitionPtr unregisterBeanDefinition(const QString &name) noexcept = 0;
-    
+
+    virtual bool canRegister(IMcBeanDefinitionConstPtrRef beanDefinition) noexcept = 0;
+
     /*!
      * \brief isContained
      * 

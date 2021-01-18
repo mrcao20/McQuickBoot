@@ -11,6 +11,9 @@ public:
     virtual QVariant getBean() const noexcept = 0;
     virtual void setBean(const QVariant &bean) noexcept = 0;
 
+    virtual bool isPointer() const noexcept = 0;
+    virtual void setPointer(bool val) noexcept = 0;
+
     virtual bool isSingleton() const noexcept = 0;
     virtual void setSingleton(bool val) noexcept = 0;
 

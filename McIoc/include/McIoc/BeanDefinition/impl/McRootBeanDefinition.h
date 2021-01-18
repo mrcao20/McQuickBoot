@@ -8,8 +8,10 @@ class McRootBeanDefinition : public QObject, public IMcBeanDefinition
 public:
     QVariant getBean() const noexcept override 
     { return m_bean; }
-    void setBean(const QVariant& bean) noexcept override 
-    { m_bean = bean; }
+    void setBean(const QVariant &bean) noexcept override { m_bean = bean; }
+
+    bool isPointer() const noexcept override { return m_isPointer; }
+    void setPointer(bool val) noexcept override { m_isPointer = val; }
 
     bool isSingleton() const noexcept override 
     { return m_isSingleton; }
@@ -59,6 +61,7 @@ public:
 
 private:
     QVariant m_bean;                                    //!< 包含bean的QVariant。此对象不再删除该bean
+    bool m_isPointer{false};                            //!< 是否为指针类型，默认否
     bool m_isSingleton{true};                           //!< 该bean是否是单例，默认是
     const QMetaObject *m_beanMetaObject{ nullptr };     //!< bean的MetaObject对象
     QString m_className;                                //!< bean的类全限定名称

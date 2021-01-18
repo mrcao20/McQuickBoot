@@ -16,7 +16,7 @@ class Test : public QObject
     MC_TYPELIST();
     MC_CONTROLLER
     MC_BEANNAME("aaa")
-    //    MC_AUTOWIRED("param")
+    MC_AUTOWIRED("param")
     Q_PROPERTY(ParamPtr param MEMBER param)
 public:
     Q_INVOKABLE explicit Test(QObject *parent = nullptr);

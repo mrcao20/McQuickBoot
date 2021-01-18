@@ -16,7 +16,7 @@ protected:
     QVariant parseEnum(const QDomElement &ele) const noexcept override;
     
 private:
-    QVariantList getList(const QString &dirPath) const noexcept;
+    QVariantList getList(const QString &dirPath, bool isPointer) const noexcept;
 };
 
 MC_DECL_POINTER(McDefaultPropertyParser)

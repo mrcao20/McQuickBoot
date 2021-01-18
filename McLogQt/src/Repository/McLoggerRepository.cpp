@@ -5,12 +5,15 @@
 #include <QTimer>
 #include <QtConcurrent>
 
-#include "McLog/Logger/IMcLogger.h"
+#include "McLog/Appender/impl/McConsoleAppender.h"
+#include "McLog/Logger/impl/McLogger.h"
 #include "McLog/Repository/IMcAdditionalTask.h"
 
 MC_DECL_PRIVATE_DATA(McLoggerRepository)
 QMap<QString, IMcLoggerPtr> loggers;
+IMcLoggerPtr notCapturedLogger;
 QThread *thread{nullptr};
+int taskTimeout{3600000};
 QList<IMcAdditionalTaskPtr> parallelTasks;
 QList<IMcAdditionalTaskPtr> sequentialTasks;
 QTimer taskTimer;
@@ -72,7 +75,7 @@ void McLoggerRepository::setLogger(const QMap<QString, IMcLoggerPtr> &loggers) n
 IMcLoggerPtr McLoggerRepository::getLogger(const QString &loggerName) noexcept
 {
     if(!d->loggers.contains(loggerName)) {
-        return IMcLoggerPtr();
+        return d->notCapturedLogger;
     }
     return d->loggers.value(loggerName);
 }
@@ -84,7 +87,21 @@ void McLoggerRepository::deleteWhenQuit() noexcept
 
 void McLoggerRepository::finished() noexcept
 {
-    d->taskTimer.start(std::chrono::hours(1));
+    d->taskTimer.start(d->taskTimeout);
+}
+
+void McLoggerRepository::allFinished() noexcept
+{
+    if (d->notCapturedLogger.isNull()) {
+        auto logger = McLoggerPtr::create();
+        QList<IMcConfigurableAppenderPtr> appenders;
+        auto consoleAppender = McConsoleAppenderPtr::create();
+        consoleAppender->finished();
+        appenders.append(consoleAppender);
+        logger->setAppenders(appenders);
+        logger->finished();
+        d->notCapturedLogger = logger;
+    }
     QTimer::singleShot(std::chrono::milliseconds(1000), this, &McLoggerRepository::executeTasks);
 }
 

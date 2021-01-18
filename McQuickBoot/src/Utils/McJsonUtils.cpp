@@ -52,9 +52,9 @@ QVariant JsonUtils::makeValue(const QByteArray &typeName, const QVariant &arg) n
 QVariant JsonUtils::makePlanValue(const QByteArray &typeName, const QVariant &arg) noexcept
 {
     auto value = arg;
-    if (typeName == MC_MACRO_STR(QJsonObject) && arg.type() == QVariant::Map) {
+    if (typeName == MC_STRINGIFY(QJsonObject) && arg.type() == QVariant::Map) {
         value = QJsonObject::fromVariantMap(arg.value<QVariantMap>());
-    } else if (typeName == MC_MACRO_STR(QJsonArray) && arg.type() == QVariant::List) {
+    } else if (typeName == MC_STRINGIFY(QJsonArray) && arg.type() == QVariant::List) {
         value = QJsonArray::fromVariantList(arg.value<QVariantList>());
     } else if (!value.convert(QMetaType::type(typeName))) {
         qCritical() << "property convert failure. origin type name:" << arg.typeName()

@@ -29,12 +29,14 @@ HEADERS += \
     $$PWD/include/McIoc/BeanFactory/IMcConfigurableBeanFactory.h \
     $$PWD/include/McIoc/BeanFactory/McBeanGlobal.h \
     $$PWD/include/McIoc/BeanFactory/impl/McAbstractBeanFactory.h \
+    $$PWD/include/McIoc/BeanFactory/impl/McAbstractNormalBeanFactory.h \
     $$PWD/include/McIoc/BeanFactory/impl/McBeanConnector.h \
     $$PWD/include/McIoc/BeanFactory/impl/McBeanEnum.h \
     $$PWD/include/McIoc/BeanFactory/impl/McBeanPlaceholder.h \
     $$PWD/include/McIoc/BeanFactory/impl/McBeanReference.h \
-    $$PWD/include/McIoc/BeanFactory/impl/McDefaultBeanFactory.h \
     $$PWD/include/McIoc/BeanFactory/impl/McMetaTypeId.h \
+    $$PWD/include/McIoc/BeanFactory/impl/McPointerBeanFactory.h \
+    $$PWD/include/McIoc/BeanFactory/impl/McSharedBeanFactory.h \
     $$PWD/include/McIoc/Destroyer/IMcDestroyer.h \
     $$PWD/include/McIoc/Destroyer/impl/McNormalDestroyer.h \
     $$PWD/include/McIoc/McConstantGlobal.h \
@@ -88,8 +90,10 @@ SOURCES += \
     $$PWD/src/BeanDefinitionReader/McAnnotationBeanDefinitionReader.cpp \
     $$PWD/src/BeanDefinitionReader/McXmlBeanDefinitionReader.cpp \
     $$PWD/src/BeanFactory/McAbstractBeanFactory.cpp \
-    $$PWD/src/BeanFactory/McDefaultBeanFactory.cpp \
+    $$PWD/src/BeanFactory/McAbstractNormalBeanFactory.cpp \
     $$PWD/src/BeanFactory/McMetaTypeId.cpp \
+    $$PWD/src/BeanFactory/McPointerBeanFactory.cpp \
+    $$PWD/src/BeanFactory/McSharedBeanFactory.cpp \
     $$PWD/src/McInitGlobal.cpp \
     $$PWD/src/PropertyParser/McAbstarctPropertyConverter.cpp \
     $$PWD/src/PropertyParser/McAbstractPropertyParser.cpp \

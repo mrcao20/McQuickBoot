@@ -6,6 +6,6 @@ QT.mclogqt.includes = $$QT_MODULE_INCLUDE_BASE $$QT_MODULE_INCLUDE_BASE/McLogQt
 QT.mclogqt.bins = $$QT_MODULE_BIN_BASE
 QT.mclogqt.libexecs = $$QT_MODULE_LIBEXEC_BASE
 QT.mclogqt.imports = $$QT_MODULE_IMPORT_BASE
-QT.mclogqt.depends = mcioc
+QT.mclogqt.depends = mcioc concurrent
 QT.mclogqt.DEFINES = MC_LOGQT_LIB
 QT_MODULES += mclogqt

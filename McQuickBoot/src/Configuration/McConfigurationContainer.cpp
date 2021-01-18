@@ -48,7 +48,7 @@ void McConfigurationContainer::init(const IMcQuickBoot *boot) noexcept
 #endif
             bool isContained = false;
             for (auto t : tags) {
-                if (t == MC_MACRO_STR(MC_BEAN)) {
+                if (t == MC_STRINGIFY(MC_BEAN)) {
                     isContained = true;
                     break;
                 }

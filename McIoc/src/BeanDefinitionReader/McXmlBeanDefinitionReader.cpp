@@ -126,6 +126,7 @@ bool McXmlBeanDefinitionReader::parseBeanClass(const QDomElement &ele, IMcBeanDe
         qCritical() << "bean must be class or plugin, please check!!!";
         return false;
     }
+    beanDefinition->setPointer(ele.attribute("isPointer", "false") == "true");
     return true;
 }
 

@@ -56,8 +56,8 @@ void McInnerSocket::opened(IMcSessionConstPtrRef session) noexcept
     
     QVector<QGenericArgument> arguments;
     arguments.resize(10);
-    
-    int sessionTypeId = QMetaType::type(MC_MACRO_STR(IMcSessionPtr));
+
+    int sessionTypeId = QMetaType::type(MC_STRINGIFY(IMcSessionPtr));
     for(int i = 0; i < method.parameterCount(); ++i) {
         if(i >= 10) {
             break;
@@ -82,8 +82,8 @@ void McInnerSocket::closed(IMcSessionConstPtrRef session) noexcept
     
     QVector<QGenericArgument> arguments;
     arguments.resize(10);
-    
-    int sessionTypeId = QMetaType::type(MC_MACRO_STR(IMcSessionPtr));
+
+    int sessionTypeId = QMetaType::type(MC_STRINGIFY(IMcSessionPtr));
     for(int i = 0; i < method.parameterCount(); ++i) {
         if(i >= 10) {
             break;
@@ -108,9 +108,9 @@ void McInnerSocket::errored(IMcSessionConstPtrRef session, const QString &errMsg
     
     QVector<QGenericArgument> arguments;
     arguments.resize(10);
-    
-    int sessionTypeId = QMetaType::type(MC_MACRO_STR(IMcSessionPtr));
-    int stringTypeId = QMetaType::type(MC_MACRO_STR(QString));
+
+    int sessionTypeId = QMetaType::type(MC_STRINGIFY(IMcSessionPtr));
+    int stringTypeId = QMetaType::type(MC_STRINGIFY(QString));
     for(int i = 0; i < method.parameterCount(); ++i) {
         if(i >= 10) {
             break;
@@ -138,8 +138,8 @@ void McInnerSocket::receivedMsg(IMcSessionConstPtrRef session, const QVariant &m
     
     QVector<QGenericArgument> arguments;
     arguments.resize(10);
-    
-    int sessionTypeId = QMetaType::type(MC_MACRO_STR(IMcSessionPtr));
+
+    int sessionTypeId = QMetaType::type(MC_STRINGIFY(IMcSessionPtr));
     for(int i = 0; i < method.parameterCount(); ++i) {
         if(i >= 10) {
             break;

@@ -1,7 +1,8 @@
 #include "McIoc/ApplicationContext/impl/McReadableApplicationContext.h"
 
 #include "McIoc/BeanDefinitionReader/IMcBeanDefinitionReader.h"
-#include "McIoc/BeanFactory/impl/McDefaultBeanFactory.h"
+#include "McIoc/BeanFactory/impl/McPointerBeanFactory.h"
+#include "McIoc/BeanFactory/impl/McSharedBeanFactory.h"
 #include "McIoc/PropertyParser/impl/McDefaultPropertyConverter.h"
 
 MC_DECL_PRIVATE_DATA(McReadableApplicationContext)
@@ -9,9 +10,7 @@ IMcBeanDefinitionReaderPtr beanDefinitionReader;
 MC_DECL_PRIVATE_DATA_END
 
 McReadableApplicationContext::McReadableApplicationContext(QObject *parent)
-    : McReadableApplicationContext(
-          IMcConfigurableBeanFactoryPtr(
-              McDefaultBeanFactoryPtr::create(McDefaultPropertyConverterPtr::create())), parent)
+    : McReadableApplicationContext(McSharedBeanFactoryPtr::create(), parent)
 {
 }
 
@@ -21,6 +20,14 @@ McReadableApplicationContext::McReadableApplicationContext(
     : McAbstractApplicationContext(factory, parent)
 {
     MC_NEW_PRIVATE_DATA(McReadableApplicationContext);
+
+    auto related = McPointerBeanFactoryPtr::create();
+    auto converter = McDefaultPropertyConverterPtr::create();
+    converter->addReferenceResolver(factory.staticCast<McAbstractBeanFactory>().data());
+    converter->addReferenceResolver(related.data());
+    factory->setPropertyConverter(converter);
+    related->setPropertyConverter(converter);
+    addRelatedBeanFactory(related);
 }
 
 McReadableApplicationContext::McReadableApplicationContext(
@@ -32,12 +39,9 @@ McReadableApplicationContext::McReadableApplicationContext(
    setReader(reader);
 }
 
-McReadableApplicationContext::McReadableApplicationContext(
-        IMcBeanDefinitionReaderConstPtrRef reader,
-        QObject *parent)
-    : McReadableApplicationContext(
-          McDefaultBeanFactoryPtr::create(McDefaultPropertyConverterPtr::create()),
-          reader, parent)
+McReadableApplicationContext::McReadableApplicationContext(IMcBeanDefinitionReaderConstPtrRef reader,
+                                                           QObject *parent)
+    : McReadableApplicationContext(McSharedBeanFactoryPtr::create(), reader, parent)
 {
 }
 

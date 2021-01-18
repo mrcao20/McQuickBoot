@@ -43,12 +43,8 @@ QVariant McDefaultPropertyParser::parseList(const QDomElement &ele) const noexce
     
     if(ele.hasAttribute("plugins")) {
         QString pluginsPath = ele.attribute("plugins").simplified();
-        pluginsPath = QDir::toNativeSeparators(pluginsPath);
-        if(pluginsPath.startsWith(QString("%1%2").arg(".", QDir::separator()))
-                || pluginsPath.startsWith(QString("%1%2").arg("..", QDir::separator()))) {
-            pluginsPath = qApp->applicationDirPath() + "/" + pluginsPath;   //!< 补全为全路径
-        }
-        list = getList(pluginsPath);
+        pluginsPath = Mc::toAbsolutePath(pluginsPath);
+        list = getList(pluginsPath, ele.attribute("isPointer", "false") == "true");
     }
     
     auto childNodes = ele.childNodes();
@@ -190,7 +186,7 @@ QVariant McDefaultPropertyParser::parseEnum(const QDomElement &ele) const noexce
     return QVariant::fromValue(e);
 }
 
-QVariantList McDefaultPropertyParser::getList(const QString &dirPath) const noexcept 
+QVariantList McDefaultPropertyParser::getList(const QString &dirPath, bool isPointer) const noexcept
 {
     QVariantList list;
     
@@ -208,6 +204,7 @@ QVariantList McDefaultPropertyParser::getList(const QString &dirPath) const noex
         }
         QSharedPointer<McBeanReference> beanRef = QSharedPointer<McBeanReference>::create();
         beanRef->setPluginPath(pluginPath);
+        beanRef->setPointer(isPointer);
         list << QVariant::fromValue(beanRef);
     }
     

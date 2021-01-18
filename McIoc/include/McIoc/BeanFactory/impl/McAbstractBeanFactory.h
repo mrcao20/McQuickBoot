@@ -12,7 +12,8 @@ class MCIOC_EXPORT McAbstractBeanFactory : public QObject,
     Q_OBJECT
 public:
     using IMcBeanFactory::getBean;
-    
+    using IMcBeanFactory::getBeanPointer;
+
     explicit McAbstractBeanFactory(QObject *parent = nullptr);
     ~McAbstractBeanFactory() override;
 
@@ -26,6 +27,7 @@ public:
      * \return 返回获取到的对象
      */
     QObjectPtr getBean(const QString &name, QThread *thread) noexcept override;
+    QObject *getBeanPointer(const QString &name, QThread *thread = nullptr) noexcept override;
     /*!
      * \brief getBeanToVariant
      * 
@@ -61,8 +63,9 @@ public:
      * \param name beanName
      * \param beanDefinition bean的定义
      */
-    void registerBeanDefinition(const QString &name, IMcBeanDefinitionConstPtrRef beanDefinition) noexcept override;
-    
+    bool registerBeanDefinition(const QString &name,
+                                IMcBeanDefinitionConstPtrRef beanDefinition) noexcept override;
+
     IMcBeanDefinitionPtr unregisterBeanDefinition(const QString &name) noexcept override;
     
     /*!
@@ -75,6 +78,8 @@ public:
      * \retval false 没有被注册
      */
     bool isContained(const QString &name) noexcept override;
+
+    bool canRegister(IMcBeanDefinitionConstPtrRef beanDefinition) noexcept override;
     /*!
      * \brief getBeanDefinitions
      * 
@@ -92,6 +97,7 @@ public:
      * \return 
      */
     QObjectPtr resolveBeanReference(McBeanReferenceConstPtrRef beanRef) noexcept override;
+    QObject *resolveBeanReferencePointer(McBeanReferenceConstPtrRef beanRef) noexcept override;
     /*!
      * \brief resolveBeanReferenceToQVariant
      * 

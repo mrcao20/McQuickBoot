@@ -112,13 +112,13 @@ McInnerSocketPtr McQmlSocketContainer::getMethods(QObjectConstPtrRef bean) noexc
     for(int i = 0; i < mo->methodCount(); ++i) {
         auto method = mo->method(i);
         QString tags = method.tag();
-        if(tags.contains(MC_MACRO_STR(MC_ON_OPEN))) {
+        if(tags.contains(MC_STRINGIFY(MC_ON_OPEN))) {
             innerSocket->setOnOpen(method);
-        }else if(tags.contains(MC_MACRO_STR(MC_ON_CLOSE))) {
+        }else if(tags.contains(MC_STRINGIFY(MC_ON_CLOSE))) {
             innerSocket->setOnClose(method);
-        }else if(tags.contains(MC_MACRO_STR(MC_ON_ERROR))) {
+        }else if(tags.contains(MC_STRINGIFY(MC_ON_ERROR))) {
             innerSocket->setOnError(method);
-        }else if(tags.contains(MC_MACRO_STR(MC_ON_MESSAGE))) {
+        }else if(tags.contains(MC_STRINGIFY(MC_ON_MESSAGE))) {
             innerSocket->setOnMessage(method);
         }
     }

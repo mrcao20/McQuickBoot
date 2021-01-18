@@ -10,35 +10,32 @@ class MCIOC_EXPORT McAbstractApplicationContext : public QObject,
     Q_OBJECT
 public:
     using IMcBeanFactory::getBean;
-    
+    using IMcBeanFactory::getBeanPointer;
+
     McAbstractApplicationContext(IMcConfigurableBeanFactoryConstPtrRef factory,
                                  QObject *parent = nullptr);
     ~McAbstractApplicationContext() override;
 
+    IMcPropertyConverterPtr getPropertyConverter() const noexcept override;
+    void setPropertyConverter(IMcPropertyConverterConstPtrRef converter) noexcept override;
+
     QObjectPtr getBean(const QString &name, QThread *thread = nullptr) noexcept override;
+    QObject *getBeanPointer(const QString &name, QThread *thread = nullptr) noexcept override;
     QVariant getBeanToVariant(const QString &name, QThread *thread = nullptr)  noexcept override;
     bool containsBean(const QString &name) noexcept override;
     bool isSingleton(const QString &name) noexcept override;
-    void registerBeanDefinition(const QString &name,
+    bool registerBeanDefinition(const QString &name,
                                 IMcBeanDefinitionConstPtrRef beanDefinition) noexcept override;
     IMcBeanDefinitionPtr unregisterBeanDefinition(const QString &name) noexcept override;
+    bool canRegister(IMcBeanDefinitionConstPtrRef beanDefinition) noexcept override;
     bool isContained(const QString &name) noexcept override;
     QHash<QString, IMcBeanDefinitionPtr> getBeanDefinitions() noexcept override;
     void refresh(QThread *thread = nullptr) noexcept override;
     
-    QVariant getBeanSelf(const QString &name, QThread *thread = nullptr) noexcept override;
-    bool containsBeanSelf(const QString &name) noexcept override;
-    bool isSingletonSelf(const QString &name) noexcept override;
-    void registerBeanDefinitionSelf(
-            const QString &name,
-            IMcBeanDefinitionConstPtrRef beanDefinition) noexcept override;
-    IMcBeanDefinitionPtr unregisterBeanDefinitionSelf(const QString &name) noexcept override;
-    QHash<QString, IMcBeanDefinitionPtr> getBeanDefinitionsSelf() noexcept override;
-    
-    void addRelatedApplicationContext(IMcApplicationContextConstPtrRef appCtx) noexcept override;
-    void removeRelatedApplicationContext(IMcApplicationContextConstPtrRef appCtx) noexcept override;
-    QList<IMcApplicationContextPtr> getRelatedApplicationContexts() noexcept override;
-    
+    void addRelatedBeanFactory(IMcConfigurableBeanFactoryConstPtrRef beanFac) noexcept override;
+    void removeRelatedBeanFactory(IMcConfigurableBeanFactoryConstPtrRef beanFac) noexcept override;
+    QList<IMcConfigurableBeanFactoryPtr> getRelatedBeanFactories() noexcept override;
+
 private:
     MC_DECL_PRIVATE(McAbstractApplicationContext)
 };

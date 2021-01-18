@@ -25,6 +25,8 @@ class MCLOGQT_EXPORT McLoggerRepository
 #endif
     typedef QMap<QString, IMcLoggerPtr> LoggerMap;
     Q_PROPERTY(LoggerMap loggers READ loggers WRITE setLogger)
+    Q_PRIVATE_PROPERTY(d, IMcLoggerPtr notCapturedLogger MEMBER notCapturedLogger)
+    Q_PRIVATE_PROPERTY(d, int taskTimeout MEMBER taskTimeout)
     Q_PRIVATE_PROPERTY(d, QList<IMcAdditionalTaskPtr> parallelTasks MEMBER parallelTasks)
     Q_PRIVATE_PROPERTY(d, QList<IMcAdditionalTaskPtr> sequentialTasks MEMBER sequentialTasks)
 public:
@@ -45,6 +47,10 @@ public:
     Q_INVOKABLE
     MC_BEAN_FINISHED
     void finished() noexcept;
+
+    Q_INVOKABLE
+    MC_ALL_FINISHED
+    void allFinished() noexcept;
 
 private slots:
     void executeTasks() noexcept;
