@@ -10,6 +10,7 @@
 
 #include "BeanFactory/McBeanGlobal.h"
 #include "McConstantGlobal.h"
+#include "McMacroGlobal.h"
 #include "McVersion.h"
 
 MC_FORWARD_DECL_CLASS(IMcApplicationContext)

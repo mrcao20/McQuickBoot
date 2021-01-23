@@ -25,7 +25,7 @@ McLocalPathApplicationContext::McLocalPathApplicationContext(const QStringList &
             continue;
         }
         auto device = new QFile(location);
-        if (!device->open(QIODevice::ReadOnly)) {
+        if (!device->open(QIODevice::ReadOnly | QIODevice::Text)) {
             qCritical() << "open file '" << location << "' failure."
                         << "error code:" << device->error()
                         << "error msg:" << device->errorString();

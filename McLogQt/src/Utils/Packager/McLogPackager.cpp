@@ -47,10 +47,14 @@ void McLogPackager::finished() noexcept
 
 void McLogPackager::execute() noexcept
 {
-    QStringList filePaths;
+    QMap<QString, QStringList> filePaths;
     for (auto &scanPath : qAsConst(d->scanPaths)) {
         auto path = Mc::toAbsolutePath(scanPath);
-        filePaths.append(checkFiles(0, path));
+        auto files = checkFiles(0, path);
+        if (files.isEmpty()) {
+            continue;
+        }
+        filePaths[path].append(files);
     }
     if (filePaths.isEmpty()) {
         return;
@@ -59,9 +63,11 @@ void McLogPackager::execute() noexcept
     if (!McCompressor::compressFiles(tarPath, filePaths)) {
         return;
     }
-    for (auto filePath : filePaths) {
-        qInfo() << "The file has packed. deleted:" << filePath;
-        QFile::remove(filePath);
+    for (auto files : filePaths) {
+        for (auto file : files) {
+            qInfo() << "The file has packed. deleted:" << file;
+            QFile::remove(file);
+        }
     }
 }
 

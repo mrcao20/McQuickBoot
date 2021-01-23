@@ -110,10 +110,11 @@ void McXmlBeanDefinitionReader::readBeanDefinition(const QDomNodeList &nodes) no
 
 bool McXmlBeanDefinitionReader::parseBeanClass(const QDomElement &ele, IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
 {
-    if (ele.hasAttribute("class"))    //!< 如果指定的class，则通过class创建对象
+    if (ele.hasAttribute("class")) { //!< 如果指定的class，则通过class创建对象
         //! 设置bean 定义对象的 全限定类名
         beanDefinition->setClassName(ele.attribute("class"));
-    else if(ele.hasAttribute("plugin")){    //!< 如果指定的是plugin，则通过插件创建对象
+        beanDefinition->setPointer(ele.attribute("isPointer", "false") == "true");
+    } else if (ele.hasAttribute("plugin")) { //!< 如果指定的是plugin，则通过插件创建对象
         QString pluginPath = ele.attribute("plugin");
         pluginPath = Mc::toAbsolutePath(pluginPath);
         if(!QLibrary::isLibrary(pluginPath)){
@@ -122,11 +123,11 @@ bool McXmlBeanDefinitionReader::parseBeanClass(const QDomElement &ele, IMcBeanDe
         }
         beanDefinition->setPluginPath(pluginPath);
         beanDefinition->setSingleton(true);     //!< 插件必须是单例
-    }else{
+        beanDefinition->setPointer(ele.attribute("isPointer", "true") == "true");
+    } else {
         qCritical() << "bean must be class or plugin, please check!!!";
         return false;
     }
-    beanDefinition->setPointer(ele.attribute("isPointer", "false") == "true");
     return true;
 }
 

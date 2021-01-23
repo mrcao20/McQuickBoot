@@ -10,7 +10,8 @@ IMcBeanDefinitionReaderPtr beanDefinitionReader;
 MC_DECL_PRIVATE_DATA_END
 
 McReadableApplicationContext::McReadableApplicationContext(QObject *parent)
-    : McReadableApplicationContext(McSharedBeanFactoryPtr::create(), parent)
+    : McReadableApplicationContext(IMcConfigurableBeanFactoryPtr(McSharedBeanFactoryPtr::create()),
+                                   parent)
 {
 }
 
@@ -41,7 +42,9 @@ McReadableApplicationContext::McReadableApplicationContext(
 
 McReadableApplicationContext::McReadableApplicationContext(IMcBeanDefinitionReaderConstPtrRef reader,
                                                            QObject *parent)
-    : McReadableApplicationContext(McSharedBeanFactoryPtr::create(), reader, parent)
+    : McReadableApplicationContext(IMcConfigurableBeanFactoryPtr(McSharedBeanFactoryPtr::create()),
+                                   reader,
+                                   parent)
 {
 }
 

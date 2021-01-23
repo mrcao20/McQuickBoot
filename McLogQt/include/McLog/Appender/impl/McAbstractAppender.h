@@ -21,17 +21,13 @@ public:
     void setThreshold(const QString &val) noexcept override;
     
     QList<QtMsgType> types() const noexcept override;
-    
-    virtual
-    Q_INVOKABLE
-    MC_BEAN_FINISHED
-    void finished() noexcept;
-    
-    virtual
-    Q_INVOKABLE
-    MC_THREAD_FINISHED
-    void threadFinished() noexcept;
-    
+
+    virtual Q_INVOKABLE MC_BEAN_FINISHED void finished() noexcept;
+
+    virtual Q_INVOKABLE MC_THREAD_FINISHED void threadFinished() noexcept;
+
+    virtual Q_INVOKABLE MC_ALL_FINISHED void allFinished() noexcept;
+
 private:
     QList<QtMsgType> initThreshold(const QString &val) const noexcept;
     int strToEnum(const QString &val) const noexcept;

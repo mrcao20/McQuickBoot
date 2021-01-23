@@ -48,6 +48,8 @@ void McAbstractAppender::threadFinished() noexcept
 {
 }
 
+void McAbstractAppender::allFinished() noexcept {}
+
 QList<QtMsgType> McAbstractAppender::initThreshold(const QString &val) const noexcept 
 {
     auto typeStr = val.simplified();

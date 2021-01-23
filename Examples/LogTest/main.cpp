@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     QUrl u("file:///./a");
     qDebug() << "u:" << u.isLocalFile();
     //! 必须开启IOC支持
-    auto path = qApp->applicationDirPath() + "/logqt.xml";
+    auto path = R"(..\..\Examples\LogTest\logqt.xml)";
     McXMLConfigurator::configure(path);
 //    McINIConfigurator::configure(R"(E:\QtCreator\McLogQt\Test\logqt.ini)");
     McLogManager::installQtMessageHandler();
@@ -39,6 +39,9 @@ int main(int argc, char *argv[])
     qWarning() << "warning";
     qCritical() << "critical";
     qInfo() << "info";
+    qInfo() << "中文";
+    qInfo() << QStringLiteral("中文2");
+    qInfo() << QStringLiteral(u"中文3");
     qDebug(MC_LOGGER("Lidar[0]")) << "Lidar[0]debug";
     qWarning(MC_LOGGER("Lidar[0]")) << "Lidar[0]warning";
     qCritical(MC_LOGGER("Lidar[0]")) << "Lidar[0]critical";
@@ -47,6 +50,7 @@ int main(int argc, char *argv[])
     qInfo(MC_LOGGER("TestLogger2")) << "test logger";
     QtConcurrent::run([]() {
         for (int i = 0; i < 100; i++) {
+            //            QThread::msleep(100);
             qDebug() << i;
             if (i == 10) {
                 //                qFatal("aa");

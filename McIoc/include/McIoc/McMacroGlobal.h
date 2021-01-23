@@ -70,6 +70,10 @@
 #define MC_INIT(Class, ...) \
     const int Class::Class##_Static_Init = []() -> int { \
         using ClassType = Class; \
+        { \
+            ClassType *_ = nullptr; \
+            Q_UNUSED(_); \
+        } \
         Mc::addPreRoutine(MC_ROUTINE_PRIORITY(__VA_ARGS__), [](){
 #define MC_AUTO_INIT(Class, ...) \
     MC_INIT(Class, __VA_ARGS__) \
@@ -93,6 +97,11 @@
         return 0; \
     }(); \
     }
+
+#define MC_DECL_METATYPE(Class) \
+    MC_DECL_POINTER(Class) \
+    Q_DECLARE_METATYPE(Class##Ptr) \
+    Q_DECLARE_METATYPE(Class *)
 
 #define MC_CONNECT(sender, signal, receiver, slot, ...) \
     Mc::Ioc::connect(&ClassType::staticMetaObject, sender, signal, receiver, slot, ##__VA_ARGS__)

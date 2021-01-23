@@ -58,9 +58,10 @@ IMcBeanDefinitionPtr McSettingBeanDefinitionReader::buildBeanDefinition(QSetting
     McRootBeanDefinitionPtr beanDefinition = McRootBeanDefinitionPtr::create();
     bool isSingleton = setting->value(Mc::Constant::Tag::QSetting::singleton, true).toBool();
     beanDefinition->setSingleton(isSingleton);
-    beanDefinition->setPointer(setting->value(Mc::Constant::Tag::QSetting::pointer, false).toBool());
     if(setting->contains(Mc::Constant::Tag::QSetting::clazz)) {
         beanDefinition->setClassName(setting->value(Mc::Constant::Tag::QSetting::clazz).toString());
+        beanDefinition->setPointer(
+            setting->value(Mc::Constant::Tag::QSetting::pointer, false).toBool());
     } else if(setting->contains(Mc::Constant::Tag::QSetting::plugin)) {
         auto pluginPath = setting->value(Mc::Constant::Tag::QSetting::plugin).toString();
         pluginPath = Mc::toAbsolutePath(pluginPath);
@@ -70,6 +71,8 @@ IMcBeanDefinitionPtr McSettingBeanDefinitionReader::buildBeanDefinition(QSetting
         }
         beanDefinition->setPluginPath(pluginPath);
         beanDefinition->setSingleton(true);     //!< 插件必须是单例
+        beanDefinition->setPointer(
+            setting->value(Mc::Constant::Tag::QSetting::pointer, true).toBool());
     } else {
         qCritical("you must be set '%s' or '%s'\n", Mc::Constant::Tag::QSetting::clazz, 
                   Mc::Constant::Tag::QSetting::plugin);

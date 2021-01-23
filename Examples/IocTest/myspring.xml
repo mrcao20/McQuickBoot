@@ -21,6 +21,7 @@
             <value>test c</value>
         </property>
         <property name="r" ref="r"></property>
+        <property name="r2" ref="r"></property>
         <property name="pointerTest" ref="pointerTest"></property>
         <property name="texts">
             <list>
@@ -84,5 +85,6 @@
             </map>
         </property>
         <property name="gadget" ref="gadgetTest"></property>
+        <property name="gadget2" ref="gadgetTest"></property>
     </bean>
 </beans>

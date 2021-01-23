@@ -90,6 +90,7 @@ class C : public QObject, public IB
     MC_AUTOWIRED("r")
     //!< 如果外界并不需要使用对象r，则可以直接使用MEMBER形式。具体请查阅QT官方文档
     Q_PROPERTY(QSharedPointer<R> r MEMBER m_r)
+    Q_PROPERTY(R *r2 MEMBER m_r2)
     MC_AUTOWIRED("pointerTest")
     Q_PROPERTY(PointerTest *pointerTest MEMBER m_pointerTest)
     Q_PROPERTY(QList<QString> texts MEMBER m_texts)
@@ -101,6 +102,7 @@ class C : public QObject, public IB
     Q_PROPERTY(Qt::AlignmentFlag align MEMBER m_align)
     MC_AUTOWIRED("gadget = gadgetTest")
     Q_PROPERTY(GadgetTestPtr gadget MEMBER m_gadget)
+    Q_PROPERTY(GadgetTest *gadget2 MEMBER m_gadget2)
 public:
     Q_INVOKABLE C(){}
     
@@ -143,6 +145,7 @@ private:
     Qt::AlignmentFlag m_align;
     QString m_text;                     //!< 普通字符串
     QSharedPointer<R> m_r;              //!< 对象
+    R *m_r2;
     PointerTest *m_pointerTest;
     QList<QString> m_texts;             //!< 字符串列表
     QVector<RPtr> m_rs;                 //!< 对象数组
@@ -151,5 +154,6 @@ private:
     QHash<QString, RPtr> m_hrs2;        //!< 对象哈希表
     QHash<QString, RPtr> m_hrs3;        //!< 对象哈希表
     GadgetTestPtr m_gadget;
+    GadgetTest *m_gadget2;
 };
 MC_DECL_METATYPE(C);

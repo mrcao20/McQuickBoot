@@ -19,7 +19,12 @@ public:
     
     QIODevicePtr device() const noexcept;
     void setDevice(QIODeviceConstPtrRef device) noexcept override;
-    
+
+    void allFinished() noexcept override;
+
+protected:
+    QTextStream &textStream() noexcept;
+
 private:
     MC_DECL_PRIVATE(McAbstractIODeviceAppender)
 };

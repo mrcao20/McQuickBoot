@@ -105,7 +105,7 @@ void McFileAppender::finished() noexcept
     }
     
     file->setFileName(localFilePath);
-    QIODevice::OpenMode mode = QIODevice::WriteOnly;
+    QIODevice::OpenMode mode = QIODevice::WriteOnly | QIODevice::Text;
     if (d->isAppend)
         mode |= QIODevice::Append;
     file->open(mode);
