@@ -37,7 +37,8 @@ public:
     void addLogger(const QString &loggerName, IMcLoggerConstPtrRef logger) noexcept override;
     void setLogger(const QMap<QString, IMcLoggerPtr> &loggers) noexcept override;
     IMcLoggerPtr getLogger(const QString &loggerName) noexcept override;
-    
+    void runTask() noexcept override;
+
 #ifndef MC_NO_IOC
     void deleteWhenQuit() noexcept override;
 #else

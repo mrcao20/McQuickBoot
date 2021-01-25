@@ -89,9 +89,9 @@ int main(int argc, char *argv[])
     buf->open(QIODevice::ReadWrite);
     bc.writeToDevice(buf.data());
 
-    auto appContext = McLocalPathApplicationContextPtr::create(
-        R"(..\..\Examples\IocTest\myspring.xml)");
-    //    auto appContext = McAnnotationApplicationContextPtr::create();
+    //    auto appContext = McLocalPathApplicationContextPtr::create(
+    //        R"(..\..\Examples\IocTest\myspring.xml)");
+    auto appContext = McAnnotationApplicationContextPtr::create();
     //    auto appContext = McXmlApplicationContextPtr::create(buf.objectCast<QIODevice>());
     QThread *t = new QThread(&a);
     t->start();

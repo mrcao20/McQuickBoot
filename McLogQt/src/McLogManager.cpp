@@ -48,6 +48,11 @@ void McLogManager::uninstallQtMessageHandler() noexcept
     qInstallMessageHandler(nullptr);
 }
 
+void McLogManager::runTask() noexcept
+{
+    instance()->d->loggerRepository->runTask();
+}
+
 void McLogManager::customMessageHandler(QtMsgType msgType, const QMessageLogContext &msgLogCtx, const QString &msg) noexcept 
 {
     McLogManager::instance()->output(msgType, msgLogCtx, msg);

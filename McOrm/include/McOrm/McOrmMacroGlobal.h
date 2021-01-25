@@ -10,11 +10,13 @@
 #define MC_TABLE_COL_TAG "tableColumn"
 #define MC_PRIMARY_KEY_TAG "primaryKey"
 #define MC_FOREIGN_KEY_TAG "foreignKey"
+#define MC_NORMAL_SPLIT_SYMBOL "="
 
 #define MC_DB_TABLE(name) Q_CLASSINFO(MC_DB_TABLE_TAG, name)
-#define MC_TABLE_COL(name) Q_CLASSINFO(MC_TABLE_COL_TAG, name)
+#define MC_TABLE_COL(name, col) Q_CLASSINFO(MC_TABLE_COL_TAG, name MC_NORMAL_SPLIT_SYMBOL col)
 #define MC_PRIMARY_KEY(arg) Q_CLASSINFO(MC_PRIMARY_KEY_TAG, arg)
-#define MC_FOREIGN_KEY(arg, ...) Q_CLASSINFO(MC_FOREIGN_KEY_TAG, arg __VA_ARGS__)
+#define MC_FOREIGN_KEY(arg, arg2, ...) \
+    Q_CLASSINFO(MC_FOREIGN_KEY_TAG, arg MC_NORMAL_SPLIT_SYMBOL arg2 __VA_ARGS__)
 
 #define MC_MAPPED_SPLIT_SYMBOL "@"
 #define MC_ONE_TO_ONE_TAG "oneToOne"

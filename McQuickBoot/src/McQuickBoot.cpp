@@ -77,8 +77,8 @@ void McQuickBoot::init(QCoreApplication *app, QQmlApplicationEngine *engine) noe
     //! engine的newQObject函数会将其参数所有权转移到其返回的QJSValue中
     QJSValue jsObj = engine->newQObject(requestor.data());
     engine->globalObject().setProperty("$", jsObj);
-    engine->importModule(":/requestor.js.inl");
-    
+    engine->importModule(":/requestor.mjs");
+
     if(mcQuickBootStaticData->afterInitFunc) {
         mcQuickBootStaticData->afterInitFunc(app, engine);
     }

@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>requestor.js.inl</file>
+        <file>requestor.mjs</file>
     </qresource>
 </RCC>

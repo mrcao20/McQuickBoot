@@ -80,6 +80,15 @@ IMcLoggerPtr McLoggerRepository::getLogger(const QString &loggerName) noexcept
     return d->loggers.value(loggerName);
 }
 
+void McLoggerRepository::runTask() noexcept
+{
+    if (QThread::currentThread() == thread()) {
+        executeTasks();
+    } else {
+        QMetaObject::invokeMethod(this, MC_STRINGIFY(executeTasks), Qt::BlockingQueuedConnection);
+    }
+}
+
 void McLoggerRepository::deleteWhenQuit() noexcept
 {
     d->thread = thread();

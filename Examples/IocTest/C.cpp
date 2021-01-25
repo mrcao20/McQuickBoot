@@ -56,11 +56,11 @@ MC_INIT_END
 void C::a() noexcept
 {
     qDebug() << "m_text:" << m_text << "m_r:" << m_r << m_r->text() << "m_r2:" << m_r2
-             << m_r2->text() << "pointer test:" << m_pointerTest << "m_texts:" << m_texts
-             << "m_rs:" << m_rs << "m_mtexts:" << m_mtexts << "m_hrs:" << m_hrs
-             << "m_hrs2:" << m_hrs2 << "m_hrs3:" << m_hrs3 << "obj thread:" << thread()
+             << "pointer test:" << m_pointerTest << "m_texts:" << m_texts << "m_rs:" << m_rs
+             << "m_mtexts:" << m_mtexts << "m_hrs:" << m_hrs << "m_hrs2:" << m_hrs2
+             << "m_hrs3:" << m_hrs3 << "obj thread:" << thread()
              << "cur thread:" << QThread::currentThread() << "align" << m_align << "gadget"
-             << m_gadget << m_gadget->aaa << "gadget2:" << m_gadget2 << m_gadget2->aaa;
+             << m_gadget << m_gadget->aaa << "gadget2:" << m_gadget2;
     emit signal_send();
 }
 

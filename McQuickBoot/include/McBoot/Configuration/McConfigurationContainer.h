@@ -21,8 +21,7 @@ public:
 
 private:
     QVector<QVariant> buildArguments(IMcApplicationContextConstPtrRef appCtx,
-                                     const QMetaMethod &method,
-                                     const QString &beanName) const noexcept;
+                                     const QMetaMethod &method) const noexcept;
 
 private:
     MC_DECL_PRIVATE(McConfigurationContainer)

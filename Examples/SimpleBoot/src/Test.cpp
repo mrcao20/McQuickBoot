@@ -1,6 +1,7 @@
 #include "Test.h"
 
 #include <QDebug>
+#include <QThread>
 
 MC_STATIC()
 MC_REGISTER_BEAN_FACTORY(Test)
@@ -29,7 +30,7 @@ QJsonObject Test::bbb(const QString &a,
     emit signal_sig();
     emit signal_sig2();
     func(300);
-    qDebug() << "bbb" << a << obj << p->aaa << param;
+    qDebug() << "bbb" << a << obj << p->aaa << param << paramMap << threadTest;
     return QJsonObject({{"ccc", "bbb"}});
 }
 

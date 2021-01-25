@@ -21,6 +21,7 @@ MC_INIT_END
 InvokeTest::InvokeTest(QObject *parent) 
     : ClassTestB(parent)
 {
+    qDebug() << "InvokeTest()";
 }
 
 void InvokeTest::invoke1(const QString &aaa) noexcept

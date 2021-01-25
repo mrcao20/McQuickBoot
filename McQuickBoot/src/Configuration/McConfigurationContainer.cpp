@@ -28,87 +28,106 @@ McConfigurationContainer::~McConfigurationContainer()
 
 void McConfigurationContainer::init(const IMcQuickBoot *boot) noexcept
 {
+    QMap<QString, QList<QVariant>> vars;
     auto appCtx = boot->getApplicationContext();
     auto beanNames = Mc::getComponents(appCtx, MC_CONFIGURATION_TAG);
-    auto sharedIds = McMetaTypeId::sharedPointerIds();
     for (const auto &beanName : beanNames) {
-        auto obj = appCtx->getBean(beanName);
-        if (!obj) {
+        auto var = appCtx->getBeanToVariant(beanName);
+        if (!var.isValid()) {
             qCritical() << QString("Configuration for named '%1' not exists").arg(beanName);
             continue;
         }
+        QObject *obj = var.value<QObject *>();
+        if (obj == nullptr) {
+            obj = var.value<QObjectPtr>().data();
+        }
+        Q_ASSERT(obj != nullptr);
         auto metaObj = obj->metaObject();
-        for (int i = 0; i < metaObj->methodCount(); ++i) {
-            auto method = metaObj->method(i);
-            QString tag = method.tag();
+        int priorityIndex = metaObj->indexOfClassInfo(MC_CONFIGURATION_PRIORITY_TAG);
+        Q_ASSERT(priorityIndex != -1);
+        auto classInfo = metaObj->classInfo(priorityIndex);
+        QString priority = classInfo.value();
+        Q_ASSERT(!priority.isEmpty());
+        vars[priority].append(var);
+    }
+    auto keys = vars.keys();
+    for (int i = keys.size() - 1; i >= 0; --i) {
+        auto value = vars.value(keys.at(i));
+        for (auto v : value) {
+            QObject *obj = v.value<QObject *>();
+            if (obj == nullptr) {
+                obj = v.value<QObjectPtr>().data();
+            }
+            Q_ASSERT(obj != nullptr);
+            auto metaObj = obj->metaObject();
+            for (int i = 0; i < metaObj->methodCount(); ++i) {
+                auto method = metaObj->method(i);
+                QString tag = method.tag();
 #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-            auto tags = tag.split(' ', QString::SkipEmptyParts);
+                auto tags = tag.split(' ', QString::SkipEmptyParts);
 #else
-            auto tags = tag.split(' ', Qt::SkipEmptyParts);
+                auto tags = tag.split(' ', Qt::SkipEmptyParts);
 #endif
-            bool isContained = false;
-            for (auto t : tags) {
-                if (t == MC_STRINGIFY(MC_BEAN)) {
-                    isContained = true;
-                    break;
+                bool isContained = false;
+                for (auto t : tags) {
+                    if (t == MC_STRINGIFY(MC_BEAN)) {
+                        isContained = true;
+                        break;
+                    }
                 }
-            }
-            if (!isContained) {
-                continue;
-            }
-            auto newBeanName = method.name();
-            if (appCtx->isContained(newBeanName)) {
-                qCritical() << QString(
-                                   "want to inject bean '%1' is exists. the Configuration is '%2'")
-                                   .arg(newBeanName, beanName);
-                continue;
-            }
-            auto type = method.returnType();
-            if (!sharedIds.contains(type)) {
-                qCritical() << QString("return type is invalid of method '%1'. the bean is '%2'")
-                                   .arg(newBeanName, beanName);
-                continue;
-            }
-            QVector<QGenericArgument> arguments;
-            arguments.resize(10);
-            if (method.parameterCount() > arguments.length()) {
-                qCritical()
-                    << QString("argument length must less than 10 of method '%1'. the bean is '%2'")
-                           .arg(method.name(), beanName);
-                continue;
-            }
+                if (!isContained) {
+                    continue;
+                }
+                auto newBeanName = method.name();
+                if (appCtx->isContained(newBeanName)) {
+                    qCritical() << QString("want to inject bean '%1' is exists.")
+                                       .arg(QString(newBeanName));
+                    continue;
+                }
+                auto type = method.returnType();
+                if (type == QMetaType::UnknownType) {
+                    qCritical() << QString("return type is invalid of method '%1'.")
+                                       .arg(QString(newBeanName));
+                    continue;
+                }
+                QVector<QGenericArgument> arguments;
+                arguments.resize(10);
+                if (method.parameterCount() > arguments.length()) {
+                    qCritical() << QString("argument length must less than 10 of method '%1'.")
+                                       .arg(QString(method.name()));
+                    continue;
+                }
 
-            QVariant newBean(static_cast<QVariant::Type>(type));
-            QGenericReturnArgument returnArg(method.typeName(), newBean.data());
-            auto values = buildArguments(appCtx, method, beanName);
-            for (int i = 0; i < values.size(); ++i) {
-                arguments.replace(i, QGenericArgument("QVariant", values[i].data()));
+                QVariant newBean(static_cast<QVariant::Type>(type));
+                QGenericReturnArgument returnArg(method.typeName(), newBean.data());
+                auto values = buildArguments(appCtx, method);
+                for (int i = 0; i < values.size(); ++i) {
+                    arguments.replace(i, QGenericArgument("QVariant", values[i].data()));
+                }
+                method.invoke(obj,
+                              Qt::DirectConnection,
+                              returnArg,
+                              arguments.at(0),
+                              arguments.at(1),
+                              arguments.at(2),
+                              arguments.at(3),
+                              arguments.at(4),
+                              arguments.at(5),
+                              arguments.at(6),
+                              arguments.at(7),
+                              arguments.at(8),
+                              arguments.at(9));
+                McSimpleBeanDefinitionPtr beanDefinition = McSimpleBeanDefinitionPtr::create();
+                beanDefinition->setBean(newBean);
+                appCtx->registerBeanDefinition(newBeanName, beanDefinition);
             }
-            method.invoke(obj.data(),
-                          Qt::DirectConnection,
-                          returnArg,
-                          arguments.at(0),
-                          arguments.at(1),
-                          arguments.at(2),
-                          arguments.at(3),
-                          arguments.at(4),
-                          arguments.at(5),
-                          arguments.at(6),
-                          arguments.at(7),
-                          arguments.at(8),
-                          arguments.at(9));
-            McSimpleBeanDefinitionPtr beanDefinition = McSimpleBeanDefinitionPtr::create();
-            beanDefinition->setBean(newBean);
-            appCtx->registerBeanDefinition(newBeanName, beanDefinition);
         }
     }
 }
 
 QVector<QVariant> McConfigurationContainer::buildArguments(IMcApplicationContextConstPtrRef appCtx,
-                                                           const QMetaMethod &method,
-                                                           const QString &beanName) const noexcept
+                                                           const QMetaMethod &method) const noexcept
 {
-    auto sharedIds = McMetaTypeId::sharedPointerIds();
     QVector<QVariant> arguments;
     auto paramTypes = method.parameterTypes();
     auto paramNames = method.parameterNames();
@@ -116,13 +135,17 @@ QVector<QVariant> McConfigurationContainer::buildArguments(IMcApplicationContext
         auto paramTypeName = paramTypes.at(i);
         auto paramType = method.parameterType(i);
         auto paramName = paramNames.at(i);
-        if (!sharedIds.contains(paramType)) {
-            qCritical()
-                << QString("argument type named '%1' is invalid of method '%2'. the bean is '%3'")
-                       .arg(paramTypeName, method.name(), beanName);
+        if (paramType == QMetaType::UnknownType) {
+            qCritical() << QString("argument type named '%1' is invalid of method '%2'.")
+                               .arg(paramTypeName, method.name());
             return arguments;
         }
         auto bean = appCtx->getBeanToVariant(paramName);
+        if (!bean.isValid()) {
+            qCritical() << QString("cannot get bean '%1' from application context")
+                               .arg(QString(paramName));
+            return arguments;
+        }
         arguments.append(bean);
     }
     return arguments;

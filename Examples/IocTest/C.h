@@ -145,7 +145,7 @@ private:
     Qt::AlignmentFlag m_align;
     QString m_text;                     //!< 普通字符串
     QSharedPointer<R> m_r;              //!< 对象
-    R *m_r2;
+    R *m_r2{nullptr};
     PointerTest *m_pointerTest;
     QList<QString> m_texts;             //!< 字符串列表
     QVector<RPtr> m_rs;                 //!< 对象数组
@@ -154,6 +154,6 @@ private:
     QHash<QString, RPtr> m_hrs2;        //!< 对象哈希表
     QHash<QString, RPtr> m_hrs3;        //!< 对象哈希表
     GadgetTestPtr m_gadget;
-    GadgetTest *m_gadget2;
+    GadgetTest *m_gadget2{nullptr};
 };
 MC_DECL_METATYPE(C);

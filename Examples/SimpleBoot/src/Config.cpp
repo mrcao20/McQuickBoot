@@ -1,12 +1,15 @@
 #include "Config.h"
 
 #include <QDebug>
+#include <QThread>
 
 #include "Param.h"
 #include "Test.h"
 
 MC_STATIC()
 MC_REGISTER_BEAN_FACTORY(Config)
+MC_REGISTER_CONTAINER_CONVERTER(ParamMap)
+qRegisterMetaType<QThread *>();
 MC_STATIC_END
 
 MC_DECL_PRIVATE_DATA(Config)
@@ -22,9 +25,17 @@ Config::~Config()
 {
 }
 
-ParamPtr Config::param() const noexcept
+ParamPtr Config::param(QThread *threadTest) const noexcept
 {
+    qDebug() << "param>>>>" << threadTest;
     return ParamPtr::create();
+}
+
+ParamMap Config::paramMap() const noexcept
+{
+    ParamMap m;
+    m.insert("aaa", new Param());
+    return m;
 }
 
 #include <McBoot/McQuickBootSimple.h>

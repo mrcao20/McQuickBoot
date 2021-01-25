@@ -21,7 +21,8 @@ public:
     static McLogManager *instance() noexcept;
     static void installQtMessageHandler() noexcept;
     static void uninstallQtMessageHandler() noexcept;
-    
+    static void runTask() noexcept;
+
 private:
     static void customMessageHandler(QtMsgType msgType, const QMessageLogContext &msgLogCtx, const QString &msg) noexcept;
     

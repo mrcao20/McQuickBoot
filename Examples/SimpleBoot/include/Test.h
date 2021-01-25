@@ -10,6 +10,8 @@
 
 MC_FORWARD_DECL_PRIVATE_DATA(Test);
 
+using ParamMap = QMap<QString, Param *>;
+
 class Test : public QObject
 {
     Q_OBJECT
@@ -18,6 +20,10 @@ class Test : public QObject
     MC_BEANNAME("aaa")
     MC_AUTOWIRED("param")
     Q_PROPERTY(ParamPtr param MEMBER param)
+    MC_AUTOWIRED("paramMap")
+    Q_PROPERTY(ParamMap paramMap MEMBER paramMap)
+    MC_AUTOWIRED("t", "threadTest")
+    Q_PROPERTY(QThread *t MEMBER threadTest)
 public:
     Q_INVOKABLE explicit Test(QObject *parent = nullptr);
     ~Test();
@@ -31,6 +37,8 @@ public:
     Q_INVOKABLE ParamPtr ccc();
 
     ParamPtr param;
+    ParamMap paramMap;
+    QThread *threadTest;
 
 signals:
     void signal_sig();
