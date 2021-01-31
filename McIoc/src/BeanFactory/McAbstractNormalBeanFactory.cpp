@@ -1,9 +1,10 @@
 #include "McIoc/BeanFactory/impl/McAbstractNormalBeanFactory.h"
 
-#include <QPluginLoader>
+#include <QDebug>
 #include <QMetaObject>
 #include <QMetaProperty>
-#include <QDebug>
+#include <QPluginLoader>
+#include <QThread>
 
 #include "McIoc/BeanDefinition/IMcBeanDefinition.h"
 #include "McIoc/PropertyParser/IMcPropertyParser.h"
@@ -80,7 +81,16 @@ QVariant McAbstractNormalBeanFactory::doCreate(IMcBeanDefinitionConstPtrRef bean
         callThreadFinishedFunction(obj); //!< 调用线程移动结束函数
     }
     auto var = convertToQVariant(obj);
-    callTagFunction(obj, MC_STRINGIFY(MC_ALL_FINISHED), Qt::QueuedConnection);
+    Qt::ConnectionType conType = Qt::QueuedConnection;
+    if (obj->thread() == QThread::currentThread()) {
+        conType = Qt::DirectConnection;
+    } else if (obj->thread() != QThread::currentThread() && obj->thread()->isRunning()) {
+        conType = Qt::BlockingQueuedConnection;
+    } else {
+        qCritical() << "if you want to moved to other thread. please make sure call QThread::start "
+                       "before call getBean/refresh.";
+    }
+    callTagFunction(obj, MC_STRINGIFY(MC_ALL_FINISHED), conType);
     return var;
 }
 

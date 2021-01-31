@@ -2,12 +2,9 @@
 
 #include "../McLogMacroGlobal.h"
 
-class MCLOGQT_EXPORT McXMLConfigurator : public QObject 
+class MCLOGQT_EXPORT McXMLConfigurator
 {
-    Q_OBJECT
 public:
-    McXMLConfigurator();
-    
     static void configure(const QString &path, const QString &beanName = "defaultLoggerRepository") noexcept;
     static void configure(const QStringList &paths, const QString &beanName = "defaultLoggerRepository") noexcept;
     

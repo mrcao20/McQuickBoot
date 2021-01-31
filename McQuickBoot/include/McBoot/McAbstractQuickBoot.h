@@ -34,7 +34,10 @@ public:
 protected:
     static void setInstance(const QSharedPointer<McAbstractQuickBoot> &ins) noexcept;
 
+    virtual void initContainer() const noexcept = 0;
+
     void setRequestor(const McCppRequestorPtr &req) noexcept;
+    void doRefresh() noexcept;
 
 private:
     MC_DECL_PRIVATE(McAbstractQuickBoot)

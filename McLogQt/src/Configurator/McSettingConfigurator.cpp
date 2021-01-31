@@ -21,6 +21,8 @@ void McSettingConfigurator::configure(QSettings &settings) noexcept
     configurator.moveToThread(thread);
     configurator.doConfigure(settings);
     thread->start();
+
+    McLogManager::installQtMessageHandler();
 }
 
 void McSettingConfigurator::doConfigure(QSettings &settings) noexcept 

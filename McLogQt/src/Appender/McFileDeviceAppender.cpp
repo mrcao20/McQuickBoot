@@ -26,9 +26,9 @@ void McFileDeviceAppender::writeAfter() noexcept
     if(fileDevice.isNull()) {
         return;
     }
-    
+
     fileDevice->flush();
-    
+
     tryNextFile();
 }
 

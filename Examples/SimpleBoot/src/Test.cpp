@@ -31,6 +31,7 @@ QJsonObject Test::bbb(const QString &a,
     emit signal_sig2();
     func(300);
     qDebug() << "bbb" << a << obj << p->aaa << param << paramMap << threadTest;
+    qDebug() << "cur thread:" << QThread::currentThread() << "obj thread:" << thread();
     return QJsonObject({{"ccc", "bbb"}});
 }
 

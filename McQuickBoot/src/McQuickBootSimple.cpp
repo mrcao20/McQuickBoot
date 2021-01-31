@@ -5,8 +5,6 @@
 #include <McIoc/ApplicationContext/impl/McAnnotationApplicationContext.h>
 #include <McIoc/BeanDefinition/IMcBeanDefinition.h>
 
-#include "McBoot/BeanDefinitionReader/impl/McConfigurationFileBeanDefinitionReader.h"
-#include "McBoot/Configuration/McConfigurationContainer.h"
 #include "McBoot/Controller/impl/McControllerContainer.h"
 #include "McBoot/Model/McModelContainer.h"
 
@@ -73,17 +71,6 @@ void McQuickBootSimple::refresh() noexcept
 IMcApplicationContextPtr McQuickBootSimple::getApplicationContext() const noexcept 
 {
     return d->context;
-}
-
-void McQuickBootSimple::doRefresh() noexcept
-{
-    auto reader = McConfigurationFileBeanDefinitionReaderPtr::create(d->context);
-    reader->readBeanDefinition(d->context.data());
-    auto configurationContainer = d->context->getBean<McConfigurationContainer>(
-        "configurationContainer");
-    configurationContainer->init(this);
-    d->context->refresh(); //!< 预加载bean
-    initContainer();
 }
 
 void McQuickBootSimple::initContainer() const noexcept

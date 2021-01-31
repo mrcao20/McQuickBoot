@@ -21,3 +21,15 @@ QThread *Config2::threadTest() const noexcept
 {
     return new QThread();
 }
+
+//MC_SIMPLE_DEFINE_QUICKBOOT_WORK_THREAD(Config2)
+//MC_CUSTOM_DEFINE_QUICKBOOT_WORK_THREAD(Config2, { return new QThread(); })
+
+QThread *threadT()
+{
+    auto t = new CThread();
+    QObject::connect(t, &QThread::started, []() { qDebug() << "started........"; });
+    QObject::connect(t, &QThread::finished, []() { qDebug() << "finished........"; });
+    return t;
+}
+MC_CUSTOM_FUNC_DEFINE_QUICKBOOT_WORK_THREAD(Config2, threadT)

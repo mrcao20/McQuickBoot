@@ -11,9 +11,9 @@
 #include <QSettings>
 #include <QUrl>
 
-#include "McLog/McLogManager.h"
-#include "McLog/Configurator/McXMLConfigurator.h"
+#include "McLog/Configurator/McDefaultConfigurator.h"
 #include "McLog/Configurator/McINIConfigurator.h"
+#include "McLog/Configurator/McXMLConfigurator.h"
 
 #define MC_PRINT_ERR(...) \
     fprintf(stderr, __VA_ARGS__); \
@@ -32,8 +32,8 @@ int main(int argc, char *argv[])
     //! 必须开启IOC支持
     auto path = R"(..\..\Examples\LogTest\logqt.xml)";
     McXMLConfigurator::configure(path);
-//    McINIConfigurator::configure(R"(E:\QtCreator\McLogQt\Test\logqt.ini)");
-    McLogManager::installQtMessageHandler();
+    //    McDefaultConfigurator::configure();
+    //    McINIConfigurator::configure(R"(E:\QtCreator\McLogQt\Test\logqt.ini)");
 
     qDebug() << "debug";
     qWarning() << "warning";

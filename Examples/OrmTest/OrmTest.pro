@@ -4,9 +4,8 @@ QT += qml quick sql
 CONFIG += c++11
 
 SOURCES += main.cpp \
-    TestVo.cpp \
-    Article.cpp \
-    TestDao.cpp
+    src/MusicDao.cpp \
+    src/MusicVo.cpp
 
 RESOURCES += qml.qrc
 
@@ -58,6 +57,8 @@ INCLUDEPATH += $$PWD/../../McOrm/include
 DEPENDPATH += $$PWD/../../McOrm/include
 
 HEADERS += \
-    TestVo.h \
-    Article.h \
-    TestDao.h
+    include/Album.h \
+    include/MusicDao.h \
+    include/MusicVo.h
+    
+INCLUDEPATH += $$PWD/include

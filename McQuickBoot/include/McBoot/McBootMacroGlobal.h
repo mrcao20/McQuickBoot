@@ -54,3 +54,21 @@
 #define MC_QML_SOCKET Q_CLASSINFO(MC_COMPONENT_TAG, MC_QML_SOCKET_TAG)
 #define MC_JSON_SERIALIZATION Q_CLASSINFO(MC_SERIALIZATION_TAG, MC_JSON_SERIALIZATION_TAG)
 //!< Q_CLASSINFO
+
+#define MC_QUICKBOOT_WORK_THREAD_NAME __mc__quickBootWorkThread
+#define MC_DECL_QUICKBOOT_WORK_THREAD \
+    Q_INVOKABLE \
+    MC_BEAN \
+    QThread *MC_QUICKBOOT_WORK_THREAD_NAME() const noexcept;
+
+#define MC_SIMPLE_DEFINE_QUICKBOOT_WORK_THREAD(Class) \
+    QThread *Class::MC_QUICKBOOT_WORK_THREAD_NAME() const noexcept \
+    { \
+        return new QThread(); \
+    }
+
+#define MC_CUSTOM_DEFINE_QUICKBOOT_WORK_THREAD(Class, par) \
+    QThread *Class::MC_QUICKBOOT_WORK_THREAD_NAME() const noexcept par
+
+#define MC_CUSTOM_FUNC_DEFINE_QUICKBOOT_WORK_THREAD(Class, func) \
+    QThread *Class::MC_QUICKBOOT_WORK_THREAD_NAME() const noexcept { return func(); }

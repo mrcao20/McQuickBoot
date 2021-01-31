@@ -137,7 +137,7 @@ QVector<QVariant> McConfigurationContainer::buildArguments(IMcApplicationContext
         auto paramName = paramNames.at(i);
         if (paramType == QMetaType::UnknownType) {
             qCritical() << QString("argument type named '%1' is invalid of method '%2'.")
-                               .arg(paramTypeName, method.name());
+                               .arg(QString(paramTypeName), QString(method.name()));
             return arguments;
         }
         auto bean = appCtx->getBeanToVariant(paramName);

@@ -60,9 +60,8 @@ public:
     void refresh() noexcept;
     IMcApplicationContextPtr getApplicationContext() const noexcept override;
 
-private:
-    void doRefresh() noexcept;
-    void initContainer() const noexcept;
+protected:
+    void initContainer() const noexcept override;
 
 private:
     MC_DECL_PRIVATE(McQuickBoot)

@@ -7,6 +7,7 @@
 
 #include <QDebug>
 #include <QJsonArray>
+#include <QThread>
 #include <QTimer>
 
 #include "Param.h"
@@ -57,5 +58,6 @@ int main(int argc, char *argv[])
     qDebug() << hhh << hhh.keys();
     qDebug() << "1111111111111_>>>>>>"
              << McQuickBootSimple::instance()->getApplicationContext()->getBean<ParamPtr>("param");
+    qDebug() << "main thread:" << QThread::currentThread();
     return app.exec();
 }

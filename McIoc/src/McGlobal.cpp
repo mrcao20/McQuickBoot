@@ -1,7 +1,7 @@
 #include "McIoc/McGlobal.h"
 
-#include <private/qvariant_p.h>
-#include <private/qmetatype_p.h>
+//#include <private/qvariant_p.h>
+//#include <private/qmetatype_p.h>
 
 #include <QEventLoop>
 #include <QTimer>
@@ -57,7 +57,24 @@ int iocStaticInit()
     });
     return 1;
 }
+#ifdef Q_CC_GNU
+static void __attribute__((constructor)) __iocStaticInit__(void)
+{
+    iocStaticInit();
+}
+#elif Q_CC_MSVC
+#include <corecrt_startup.h>
+#define SECNAME ".CRT$XCY"
+#pragma section(SECNAME, long, read)
+int __iocStaticInit__()
+{
+    iocStaticInit();
+    return 0;
+}
+__declspec(allocate(SECNAME)) _PIFV dummy[] = {__iocStaticInit__};
+#else
 Q_CONSTRUCTOR_FUNCTION(iocStaticInit)
+#endif
 
 static const void *constData(const QVariant::Private &d)
 {
@@ -140,18 +157,18 @@ static bool customCompare(const QVariant::Private *a, const QVariant::Private *b
     return !memcmp(a_ptr, b_ptr, QMetaType::sizeOf(a->type));
 }
 
-static bool customConvert(const QVariant::Private *d, int t, void *result, bool *ok)
-{
-    if (d->type >= QMetaType::User || t >= QMetaType::User) {
-        if (QMetaType::convert(constData(*d), d->type, result, t)) {
-            if (ok)
-                *ok = true;
-            return true;
-        }
-    }
-    auto kernelHandler = qcoreVariantHandler();
-    return kernelHandler->convert(d, t, result, ok);
-}
+//static bool customConvert(const QVariant::Private *d, int t, void *result, bool *ok)
+//{
+//    if (d->type >= QMetaType::User || t >= QMetaType::User) {
+//        if (QMetaType::convert(constData(*d), d->type, result, t)) {
+//            if (ok)
+//                *ok = true;
+//            return true;
+//        }
+//    }
+//    auto kernelHandler = qcoreVariantHandler();
+//    return kernelHandler->convert(d, t, result, ok);
+//}
 
 #if !defined(QT_NO_DEBUG_STREAM)
 static void customStreamDebug(QDebug dbg, const QVariant &variant) {
@@ -166,23 +183,23 @@ static void customStreamDebug(QDebug dbg, const QVariant &variant) {
 }
 #endif
 
-const QVariant::Handler mc_custom_variant_handler = {
-    customConstruct,
-    customClear,
-    customIsNull,
-#ifndef QT_NO_DATASTREAM
-    nullptr,
-    nullptr,
-#endif
-    customCompare,
-    customConvert,
-    nullptr,
-#if !defined(QT_NO_DEBUG_STREAM)
-    customStreamDebug
-#else
-    nullptr
-#endif
-};
+//const QVariant::Handler mc_custom_variant_handler = {
+//    customConstruct,
+//    customClear,
+//    customIsNull,
+//#ifndef QT_NO_DATASTREAM
+//    nullptr,
+//    nullptr,
+//#endif
+//    customCompare,
+//    customConvert,
+//    nullptr,
+//#if !defined(QT_NO_DEBUG_STREAM)
+//    customStreamDebug
+//#else
+//    nullptr
+//#endif
+//};
 
 MC_INIT(McGlobal, Mc::RoutinePriority::Max)
 auto pId = qRegisterMetaType<QObject *>();
@@ -192,9 +209,9 @@ McMetaTypeId::addSharedPointerId(sId, pId);
 qRegisterMetaType<QObjectPtr>(MC_STRINGIFY(QObjectPtr));
 qRegisterMetaType<QObjectPtr>(MC_STRINGIFY(QObjectConstPtrRef));
 
-auto kernelHandler = qcoreVariantHandler();
-QVariantPrivate::registerHandler(QModulesPrivate::Core, kernelHandler);
-QVariantPrivate::registerHandler(QModulesPrivate::Unknown, &mc_custom_variant_handler);
+//auto kernelHandler = qcoreVariantHandler();
+//QVariantPrivate::registerHandler(QModulesPrivate::Core, kernelHandler);
+//QVariantPrivate::registerHandler(QModulesPrivate::Unknown, &mc_custom_variant_handler);
 MC_INIT_END
 
 QString getBeanName(const QMetaObject *metaObj) noexcept

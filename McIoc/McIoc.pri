@@ -1,5 +1,5 @@
 QT *= xml
-QT *= core-private
+#QT *= core-private
 
 include($$PWD/../3rdparty/yaml-cpp.pri)
 include($$PWD/../3rdparty/zlib.pri)

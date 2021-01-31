@@ -13,6 +13,7 @@ SOURCES += \
     $$PWD/src/Appender/McFileDeviceAppender.cpp \
     $$PWD/src/Appender/McRollingFileAppender.cpp \
     $$PWD/src/Appender/McSizeRollingFileAppender.cpp \
+    $$PWD/src/Configurator/McDefaultConfigurator.cpp \
     $$PWD/src/Configurator/McINIConfigurator.cpp \
     $$PWD/src/Configurator/McSettingConfigurator.cpp \
     $$PWD/src/Configurator/McXMLConfigurator.cpp \
@@ -48,6 +49,7 @@ HEADERS += \
     $$PWD/include/McLog/Appender/impl/McRollingFileAppender.h \
     $$PWD/include/McLog/Appender/impl/McSizeRollingFileAppender.h \
     $$PWD/include/McLog/Appender/impl/McVSDebugAppender.h \
+    $$PWD/include/McLog/Configurator/McDefaultConfigurator.h \
     $$PWD/include/McLog/Configurator/McINIConfigurator.h \
     $$PWD/include/McLog/Configurator/McSettingConfigurator.h \
     $$PWD/include/McLog/Configurator/McXMLConfigurator.h \
@@ -69,3 +71,5 @@ HEADERS += \
     $$PWD/include/McLog/Utils/Deleter/McLogDeleter.h \
     $$PWD/include/McLog/Utils/McMessagePattern.h \
     $$PWD/include/McLog/Utils/Packager/McLogPackager.h
+
+RESOURCES +=

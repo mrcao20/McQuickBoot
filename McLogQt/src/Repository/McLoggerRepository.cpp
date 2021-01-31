@@ -106,6 +106,8 @@ void McLoggerRepository::allFinished() noexcept
         QList<IMcConfigurableAppenderPtr> appenders;
         auto consoleAppender = McConsoleAppenderPtr::create();
         consoleAppender->finished();
+        consoleAppender->threadFinished();
+        consoleAppender->allFinished();
         appenders.append(consoleAppender);
         logger->setAppenders(appenders);
         logger->finished();

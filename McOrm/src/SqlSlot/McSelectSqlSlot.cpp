@@ -47,59 +47,9 @@ QVariant McSelectSqlSlot::queryForReturn(void **args, const QMetaMethod &sig) no
     }
     
     auto returnType = sig.returnType();
-    auto mo = getMetaObject(returnType);
-    auto paramNames = sig.parameterNames();
-    //! QMap<property, column>
-    auto proColMap = getProColMap(mo);
-    QSqlQuery sqlQuery;
-    QString sql = "SELECT";
-    for(auto value : proColMap.values()) {
-        sql += " `";
-        sql += value;
-        sql += "`,";
-    }
-    sql.remove(sql.length() - 1, 1);
-    
-    sql += " FROM `";
-    sql += mo->classInfo(mo->indexOfClassInfo(MC_DB_TABLE_TAG)).value();
-    sql += "`";
-    
-    if(!paramNames.isEmpty()) {
-        sql += " WHERE";
-        for(auto name : paramNames) {
-            sql += " `";
-            sql += proColMap.value(name);
-            sql += "` = ? AND";
-        }
-        sql.remove(sql.length() - 4, 4);
-    }
-    sqlQuery.prepare(sql);
-    for(auto param : params) {
-        sqlQuery.addBindValue(param);
-    }
-    sqlQuery.exec();
-    auto sharedPointer = McMetaTypeId::sharedPointerIds();
-    if(sharedPointer.contains(returnType)) {
-        QObjectPtr objPtr(mo->newInstance());
-        sqlQuery.next();
-        for(auto key : proColMap.keys()) {
-            objPtr->setProperty(key.toLocal8Bit(), sqlQuery.value(proColMap.value(key)));
-        }
-        QVariant var = QVariant::fromValue(objPtr);
-        return var;
-    } else {
-        QList<QVariant> list;
-        while(sqlQuery.next()) {
-            QObjectPtr objPtr(mo->newInstance());
-            for(auto key : proColMap.keys()) {
-                objPtr->setProperty(key.toLocal8Bit(), sqlQuery.value(proColMap.value(key)));
-            }
-            list.append(QVariant::fromValue(objPtr));
-        }
-        return list;
-    }
-    
-    return QVariant();
+    auto pns = sig.parameterNames();
+    QStringList paramNames(pns.constBegin(), pns.constEnd());
+    return queryObjectFromDb(returnType, paramNames, params);
 }
 
 void McSelectSqlSlot::queryForParam(QObjectConstPtrRef po) noexcept
@@ -112,6 +62,77 @@ void McSelectSqlSlot::queryForParam(const QVariantList &poVars) noexcept
     qDebug() << poVars;
 }
 
+QVariant McSelectSqlSlot::queryObjectFromDb(int type,
+                                            const QStringList &paramNames,
+                                            const QVariantList &params) noexcept
+{
+    auto mo = getMetaObject(type);
+    //! QMap<property, column>
+    auto proColMap = getProColMap(mo);
+    QSqlQuery sqlQuery;
+    QString sql = "SELECT";
+    for (auto value : proColMap.values()) {
+        sql += " `";
+        sql += value;
+        sql += "`,";
+    }
+    sql.remove(sql.length() - 1, 1);
+
+    sql += " FROM `";
+    sql += mo->classInfo(mo->indexOfClassInfo(MC_DB_TABLE_TAG)).value();
+    sql += "`";
+
+    if (!paramNames.isEmpty()) {
+        sql += " WHERE";
+        for (auto name : paramNames) {
+            sql += " `";
+            sql += proColMap.value(name);
+            sql += "` = ? AND";
+        }
+        sql.remove(sql.length() - 4, 4);
+    }
+    sqlQuery.prepare(sql);
+    for (auto param : params) {
+        sqlQuery.addBindValue(param);
+    }
+    sqlQuery.exec();
+    auto sharedPointer = McMetaTypeId::sharedPointerIds();
+    auto foreignKeys = getForeignKeyMap(mo);
+    if (sharedPointer.contains(type)) {
+        QObjectPtr objPtr(mo->newInstance());
+        sqlQuery.next();
+        for (auto key : proColMap.keys()) {
+            QVariant value = sqlQuery.value(proColMap.value(key));
+            if (foreignKeys.contains(key)) {
+                auto pro = mo->property(mo->indexOfProperty(key.toLocal8Bit()));
+                value = queryObjectFromDb(pro.userType(),
+                                          QStringList() << foreignKeys.value(key),
+                                          QVariantList() << value);
+            }
+            objPtr->setProperty(key.toLocal8Bit(), value);
+        }
+        QVariant var = QVariant::fromValue(objPtr);
+        return var;
+    } else {
+        QList<QVariant> list;
+        while (sqlQuery.next()) {
+            QObjectPtr objPtr(mo->newInstance());
+            for (auto key : proColMap.keys()) {
+                QVariant value = sqlQuery.value(proColMap.value(key));
+                if (foreignKeys.contains(key)) {
+                    auto pro = mo->property(mo->indexOfProperty(key.toLocal8Bit()));
+                    value = queryObjectFromDb(pro.userType(),
+                                              QStringList() << foreignKeys.value(key),
+                                              QVariantList() << value);
+                }
+                objPtr->setProperty(key.toLocal8Bit(), value);
+            }
+            list.append(QVariant::fromValue(objPtr));
+        }
+        return list;
+    }
+}
+
 QMap<QString, QString> McSelectSqlSlot::getProColMap(const QMetaObject *mo) noexcept
 {
     QMap<QString, QString> map;
@@ -122,13 +143,11 @@ QMap<QString, QString> McSelectSqlSlot::getProColMap(const QMetaObject *mo) noex
         }
         QString value = classInfo.value();
 #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-        auto list = value.split('=', QString::SkipEmptyParts);
+        auto list = value.split(MC_NORMAL_SPLIT_SYMBOL, QString::SkipEmptyParts);
 #else
-        auto list = value.split('=', Qt::SkipEmptyParts);
+        auto list = value.split(MC_NORMAL_SPLIT_SYMBOL, Qt::SkipEmptyParts);
 #endif
-        if(list.length() != 2) {
-            continue;
-        }
+        Q_ASSERT(list.length() == 2);
         map.insert(list.first().simplified(), list.last().simplified());
     }
     for(int i = QObject::staticMetaObject.propertyCount(); i < mo->propertyCount(); ++i) {
@@ -137,6 +156,33 @@ QMap<QString, QString> McSelectSqlSlot::getProColMap(const QMetaObject *mo) noex
             continue;
         }
         map.insert(pro.name(), pro.name());
+    }
+    return map;
+}
+
+QMap<QString, QString> McSelectSqlSlot::getForeignKeyMap(const QMetaObject *mo) noexcept
+{
+    QMap<QString, QString> map;
+    for (int i = 0; i < mo->classInfoCount(); ++i) {
+        auto classInfo = mo->classInfo(i);
+        if (qstrcmp(classInfo.name(), MC_FOREIGN_KEY_TAG) != 0) {
+            continue;
+        }
+        QString value = classInfo.value();
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+        auto list = value.split(MC_MAPPED_SPLIT_SYMBOL, QString::SkipEmptyParts);
+#else
+        auto list = value.split(MC_MAPPED_SPLIT_SYMBOL, Qt::SkipEmptyParts);
+#endif
+        Q_ASSERT(list.length() >= 1);
+        value = list.first();
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+        list = value.split(MC_NORMAL_SPLIT_SYMBOL, QString::SkipEmptyParts);
+#else
+        list = value.split(MC_NORMAL_SPLIT_SYMBOL, Qt::SkipEmptyParts);
+#endif
+        Q_ASSERT(list.length() == 2);
+        map.insert(list.first().simplified(), list.last().simplified());
     }
     return map;
 }
