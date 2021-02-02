@@ -1,10 +1,11 @@
 #include "McLog/Appender/impl/McRollingFileAppender.h"
 
 #include <QCoreApplication>
-#include <QDir>
 #include <QDateTime>
+#include <QDir>
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
+#include <QThread>
 
 MC_DECL_PRIVATE_DATA(McRollingFileAppender)
 QString backupDirPath;
@@ -43,6 +44,20 @@ void McRollingFileAppender::setBackupDirPattern(const QString &val) noexcept
     d->backupDirPattern = val;
 }
 
+void McRollingFileAppender::requestNextFile() noexcept
+{
+    QMetaObject::invokeMethod(this, MC_STRINGIFY(nextFile), Qt::QueuedConnection);
+}
+
+void McRollingFileAppender::forceRequestNextFile() noexcept
+{
+    if (thread() == QThread::currentThread()) {
+        nextFile();
+    } else {
+        QMetaObject::invokeMethod(this, MC_STRINGIFY(nextFile), Qt::BlockingQueuedConnection);
+    }
+}
+
 void McRollingFileAppender::finished() noexcept 
 {
     McFileAppender::finished();
@@ -55,35 +70,43 @@ void McRollingFileAppender::finished() noexcept
 
 void McRollingFileAppender::tryNextFile() noexcept 
 {
-    if(device().isNull()) {
-        return;
-    }
-    
     if(!isNewNextFile()) {
         return;
     }
-    
+
+    nextFile();
+}
+
+void McRollingFileAppender::nextFile() noexcept
+{
+    if (device().isNull()) {
+        return;
+    }
+
     auto file = device().staticCast<QFile>();
-    
+
     auto oldFilePath = file->fileName();
     auto newFilePath = this->newFilePath();
-    if(newFilePath == oldFilePath) {
+    if (newFilePath == oldFilePath) {
         return;
     }
     auto mode = file->openMode();
-    
+
     file->close();
-    
+
     auto backupPath = newBackupPath(oldFilePath);
     QDir dir(backupPath);
-    if(!dir.exists() && !dir.mkpath(backupPath)) {
+    if (!dir.exists() && !dir.mkpath(backupPath)) {
         MC_PRINT_ERR("mk the backup path: %s failure.\n", qPrintable(backupPath));
         return;
     }
     QFile::rename(oldFilePath, dir.absoluteFilePath(QFileInfo(oldFilePath).fileName()));
-    
+
     file->setFileName(newFilePath);
-    file->open(mode);
+    if (!file->open(mode)) {
+        MC_PRINT_ERR("error open file '%s' for write!!!\n", qPrintable(newFilePath));
+        return;
+    }
 }
 
 QString McRollingFileAppender::newBackupPath(const QString &oldFilePath) const noexcept 

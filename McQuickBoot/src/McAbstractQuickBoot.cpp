@@ -110,9 +110,9 @@ void McAbstractQuickBoot::doRefresh() noexcept
     if (context->containsBean(workThreadName)) {
         d->workThread = context->getBeanPointer<QThread *>(workThreadName);
     }
-    context->refresh(d->workThread); //!< 预加载bean
-    if (d->workThread != nullptr) {
+    if (d->workThread != nullptr && !d->workThread->isRunning()) {
         d->workThread->start();
     }
+    context->refresh(d->workThread); //!< 预加载bean
     initContainer();
 }

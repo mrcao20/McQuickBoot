@@ -2,6 +2,7 @@
 
 #include <McBoot/McBootGlobal.h>
 #include <McIoc/McGlobal.h>
+#include <QDebug>
 #include <QObject>
 #include <QThread>
 

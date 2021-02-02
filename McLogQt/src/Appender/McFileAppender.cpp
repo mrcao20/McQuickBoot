@@ -108,8 +108,11 @@ void McFileAppender::finished() noexcept
     QIODevice::OpenMode mode = QIODevice::WriteOnly | QIODevice::Text;
     if (d->isAppend)
         mode |= QIODevice::Append;
-    file->open(mode);
-    
+    if (!file->open(mode)) {
+        MC_PRINT_ERR("error open file '%s' for write!!!\n", qPrintable(localFilePath));
+        return;
+    }
+
     tryNextFile();
 }
 

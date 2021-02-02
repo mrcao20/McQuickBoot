@@ -1,9 +1,7 @@
 #pragma once
 
 #include "../IMcLoggerRepository.h"
-#ifndef MC_NO_IOC
 #include <McIoc/Thread/IMcDeleteThreadWhenQuit.h>
-#endif
 
 MC_FORWARD_DECL_CLASS(IMcAdditionalTask);
 
@@ -11,18 +9,12 @@ MC_FORWARD_DECL_PRIVATE_DATA(McLoggerRepository);
 
 class MCLOGQT_EXPORT McLoggerRepository 
         : public QObject
-#ifndef MC_NO_IOC
         , public IMcDeleteThreadWhenQuit
-#endif
         , public IMcLoggerRepository 
 {
     Q_OBJECT
     MC_DECL_INIT(McLoggerRepository)
-#ifndef MC_NO_IOC
     MC_TYPELIST(QObject, IMcLoggerRepository, IMcDeleteThreadWhenQuit)
-#else
-    MC_TYPELIST(QObject, IMcLoggerRepository)
-#endif
     typedef QMap<QString, IMcLoggerPtr> LoggerMap;
     Q_PROPERTY(LoggerMap loggers READ loggers WRITE setLogger)
     Q_PRIVATE_PROPERTY(d, IMcLoggerPtr notCapturedLogger MEMBER notCapturedLogger)
@@ -39,11 +31,7 @@ public:
     IMcLoggerPtr getLogger(const QString &loggerName) noexcept override;
     void runTask() noexcept override;
 
-#ifndef MC_NO_IOC
     void deleteWhenQuit() noexcept override;
-#else
-    void deleteWhenQuit() noexcept;
-#endif
 
     Q_INVOKABLE
     MC_BEAN_FINISHED

@@ -48,7 +48,14 @@ QVariant McSelectSqlSlot::queryForReturn(void **args, const QMetaMethod &sig) no
     
     auto returnType = sig.returnType();
     auto pns = sig.parameterNames();
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+    QStringList paramNames;
+    for (auto pn : pns) {
+        paramNames.append(pn);
+    }
+#else
     QStringList paramNames(pns.constBegin(), pns.constEnd());
+#endif
     return queryObjectFromDb(returnType, paramNames, params);
 }
 

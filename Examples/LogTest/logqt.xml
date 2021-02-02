@@ -23,7 +23,7 @@
         <property name="backupDirPath" value="./log/dailyRollingFile/backup/"></property>
         <property name="backupDirPattern" value="%{time yyyy-MM-dd}"></property>
         <property name="dirPath" value="./log/dailyRollingFile/"></property>
-        <property name="fileNamePattern" value="log_%{time yyyy-MM-dd}.log"></property>
+        <property name="fileNamePattern" value="log_%{time yyyy-MM-dd_hh-mm-ss}.log"></property>
         <property name="layout" ref="normalLayout"></property>
     </bean>
     <bean name="rollingFile" class="McSizeRollingFileAppender">

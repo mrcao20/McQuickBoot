@@ -87,24 +87,6 @@
 #define MC_DECL_INIT(Class) \
     static const int Class##_Static_Init;
 
-#ifdef MC_NO_IOC
-
-# define MC_BEAN_START
-# define MC_BEAN_FINISHED
-# define MC_THREAD_FINISHED
-
-#define MC_DECL_METATYPE(Class) \
-    MC_DECL_POINTER(Class)
-
-#define MC_INIT(...)
-#define MC_INIT_END
-#define MC_TYPELIST(...)
-#define MC_REGISTER_BEAN_FACTORY(...)
-#define MC_REGISTER_LIST_CONVERTER(...)
-#define MC_REGISTER_MAP_CONVERTER(...)
-
-#endif
-
 #include <QLoggingCategory>
 
 #define MC_LOGGER(name) QLoggingCategory(name)

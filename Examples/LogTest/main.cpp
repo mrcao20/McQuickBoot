@@ -11,6 +11,9 @@
 #include <QSettings>
 #include <QUrl>
 
+#include <McIoc/ApplicationContext/IMcApplicationContext.h>
+
+#include "McLog/Appender/IMcRequestableNextFile.h"
 #include "McLog/Configurator/McDefaultConfigurator.h"
 #include "McLog/Configurator/McINIConfigurator.h"
 #include "McLog/Configurator/McXMLConfigurator.h"
@@ -31,9 +34,12 @@ int main(int argc, char *argv[])
     qDebug() << "u:" << u.isLocalFile();
     //! 必须开启IOC支持
     auto path = R"(..\..\Examples\LogTest\logqt.xml)";
-    McXMLConfigurator::configure(path);
+    auto appCtx = McXMLConfigurator::configure(path);
     //    McDefaultConfigurator::configure();
     //    McINIConfigurator::configure(R"(E:\QtCreator\McLogQt\Test\logqt.ini)");
+    auto appender = appCtx->getBean<IMcRequestableNextFile>("dailyRollingFile");
+    qInfo() << appender;
+    appender->forceRequestNextFile();
 
     qDebug() << "debug";
     qWarning() << "warning";

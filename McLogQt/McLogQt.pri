@@ -39,6 +39,7 @@ HEADERS += \
     $$PWD/include/McLog/Appender/Decorator/McAppenderSeparator.h \
     $$PWD/include/McLog/Appender/IMcAppender.h \
     $$PWD/include/McLog/Appender/IMcConfigurableAppender.h \
+    $$PWD/include/McLog/Appender/IMcRequestableNextFile.h \
     $$PWD/include/McLog/Appender/IMcWritableAppender.h \
     $$PWD/include/McLog/Appender/impl/McAbstractAppender.h \
     $$PWD/include/McLog/Appender/impl/McAbstractIODeviceAppender.h \

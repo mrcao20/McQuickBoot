@@ -95,6 +95,7 @@ int main(int argc, char *argv[])
              << QMetaType::type("QObject");
     
     ThreadTest *t = new ThreadTest();
+    t->start();
     IMcApplicationContextPtr appCon;
     //! XML注入方式
 //    appCon = McLocalPathApplicationContextPtr::create(
@@ -114,8 +115,7 @@ int main(int argc, char *argv[])
     
 //    auto test2 = appCon->getBean<IocTestPtr>("test2");
 //    qDebug() << test2->m_innerBean.objectCast<Object>()->m_text;
-    
-    t->start();
+
     //!< end
     
     //! 声明式注入方式

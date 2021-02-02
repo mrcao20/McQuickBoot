@@ -4,47 +4,58 @@
 #include <QDir>
 #include <QThread>
 
-#ifndef MC_NO_IOC
 #include <McIoc/ApplicationContext/impl/McLocalPathApplicationContext.h>
 #include <McIoc/McGlobal.h>
-#endif
 
 #include "McLog/McLogManager.h"
 #include "McLog/Repository/IMcLoggerRepository.h"
 
-void McXMLConfigurator::configure(const QString &path, const QString &beanName) noexcept 
+IMcApplicationContextPtr McXMLConfigurator::configure(const QString &path,
+                                                      const QString &beanName) noexcept
 {
-    McXMLConfigurator::configure(QStringList() << path, beanName);
+    return McXMLConfigurator::configure(QStringList() << path, beanName);
 }
 
-void McXMLConfigurator::configure(const QStringList &paths, const QString &beanName) noexcept
+IMcApplicationContextPtr McXMLConfigurator::configure(const QStringList &paths,
+                                                      const QString &beanName) noexcept
 {
     McXMLConfigurator configurator;
-    configurator.doConfigure(paths, beanName);
+    return configurator.doConfigure(paths, beanName);
 }
 
-void McXMLConfigurator::doConfigure(const QStringList &paths, const QString &beanName) noexcept 
+void McXMLConfigurator::configure(IMcApplicationContextConstPtrRef appCtx,
+                                  const QString &beanName) noexcept
 {
-#ifdef MC_NO_IOC
-    Q_UNUSED(path)
-    Q_UNUSED(beanName)
-#else
+    McXMLConfigurator configurator;
+    configurator.doConfigure(appCtx, beanName);
+}
+
+IMcApplicationContextPtr McXMLConfigurator::doConfigure(const QStringList &paths,
+                                                        const QString &beanName) noexcept
+{
     QStringList xmlPaths;
     for(auto path : paths) {
         auto xmlPath = Mc::toAbsolutePath(path);
         xmlPaths << xmlPath;
     }
 
+    McLocalPathApplicationContextPtr appContext = McLocalPathApplicationContextPtr::create(xmlPaths);
+
+    doConfigure(appContext, beanName);
+
+    return appContext;
+}
+
+void McXMLConfigurator::doConfigure(IMcApplicationContextConstPtrRef appCtx,
+                                    const QString &beanName) noexcept
+{
     QThread *thread = new QThread(); //!< 此线程将在LoggerRepository被析构时退出和销毁
     thread->start();
 
-    McLocalPathApplicationContextPtr appContext = 
-            McLocalPathApplicationContextPtr::create(xmlPaths);
-    appContext->refresh(thread);
-    
-    auto rep = appContext->getBean<IMcLoggerRepository>(beanName);
+    appCtx->refresh(thread);
+
+    auto rep = appCtx->getBean<IMcLoggerRepository>(beanName);
     McLogManager::instance()->setLoggerRepository(rep);
-#endif
 
     McLogManager::installQtMessageHandler();
 }

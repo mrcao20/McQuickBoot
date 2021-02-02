@@ -1,8 +1,5 @@
 CONFIG += c++17
 
-# 去掉IOC容器的依赖部分
-#DEFINES += MC_NO_IOC
-
 CONFIG(release, debug|release) {
     DEFINES += QT_MESSAGELOGCONTEXT
 }
