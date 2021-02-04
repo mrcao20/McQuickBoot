@@ -170,16 +170,12 @@ bool McControllerContainer::makeCallback(QVariantMap &args, const QMetaMethod &m
         return false;
     }
     auto qmlSyncCallbackVar = args.value(Mc::QuickBoot::Constant::Argument::qmlCallback);
-    auto qmlSyncCallback = qmlSyncCallbackVar.value<McQmlSyncCallback *>();
+    auto qmlSyncCallback = qmlSyncCallbackVar.value<McQmlSyncCallbackPtr>();
     auto lastParamTypeName = paramTypeNames.last();
     auto lastParamType = QMetaType::type(lastParamTypeName);
     if (qMetaTypeId<McQmlSyncCallbackPtr>() == lastParamType
         || qMetaTypeId<McAbstractSyncCallbackPtr>() == lastParamType
         || qMetaTypeId<IMcCallbackPtr>() == lastParamType) {
-        auto temp = McQmlSyncCallbackPtr(new McQmlSyncCallback(*qmlSyncCallback),
-                                         IMcCallback::McCallbackDeleter());
-        temp->moveToThread(qmlSyncCallback->thread());
-        qmlSyncCallbackVar = QVariant::fromValue(temp);
     } else if (qMetaTypeId<McQmlSyncCallback *>() == lastParamType
                || qMetaTypeId<McAbstractSyncCallback *>() == lastParamType
                || qMetaTypeId<IMcCallback *>() == lastParamType) {

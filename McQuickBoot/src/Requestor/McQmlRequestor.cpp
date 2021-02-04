@@ -58,14 +58,16 @@ McQmlResponse *McQmlRequestor::invoke(const QString &uri,
     if (data1.isCallable()) {
         QVariantMap m;
         m.insert(Mc::QuickBoot::Constant::Argument::qmlCallback,
-                 QVariant::fromValue(new McQmlSyncCallback(data1, engine)));
+                 QVariant::fromValue(McQmlSyncCallbackPtr(new McQmlSyncCallback(data1, engine),
+                                                          IMcCallback::McCallbackDeleter())));
         run(response, uri, QVariant(m));
         return response;
     }
     auto m = data1.toVariant().toMap();
     if (!data2.isUndefined()) {
         m.insert(Mc::QuickBoot::Constant::Argument::qmlCallback,
-                 QVariant::fromValue(new McQmlSyncCallback(data2, engine)));
+                 QVariant::fromValue(McQmlSyncCallbackPtr(new McQmlSyncCallback(data2, engine),
+                                                          IMcCallback::McCallbackDeleter())));
     }
     run(response, uri, QVariant(m));
     return response;

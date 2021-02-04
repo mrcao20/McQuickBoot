@@ -6,7 +6,6 @@
 
 #include "McBoot/Controller/IMcControllerContainer.h"
 #include "McBoot/Controller/impl/McAbstractResponse.h"
-#include "McBoot/Utils/Callback/Impl/McQmlSyncCallback.h"
 
 MC_DECL_PRIVATE_DATA(McRequestRunner)
 QPointer<McAbstractResponse> response;
@@ -47,14 +46,6 @@ void McRequestRunner::setBody(const QVariant &body) noexcept
 void McRequestRunner::run() 
 {
     auto body = d->controllerContainer->invoke(d->uri, d->body);
-    if (static_cast<QMetaType::Type>(d->body.type()) == QMetaType::Type::QVariantMap) {
-        auto map = d->body.toMap();
-        if (map.contains(Mc::QuickBoot::Constant::Argument::qmlCallback)) {
-            auto qmlSyncCallbackVar = map.value(Mc::QuickBoot::Constant::Argument::qmlCallback);
-            auto qmlSyncCallback = qmlSyncCallbackVar.value<McQmlSyncCallback *>();
-            qmlSyncCallback->destroy();
-        }
-    }
     if(d->response.isNull()) {  //!< Response可能被QML析构
         qCritical() << "response is null. it's maybe destroyed of qmlengine";
         return;
