@@ -3,6 +3,8 @@
 
 #include <McBoot/Controller/impl/McResult.h>
 #include <McBoot/McQuickBootSimple.h>
+#include <McBoot/Utils/Callback/Impl/McCppAsyncCallback.h>
+#include <McBoot/Utils/Callback/Impl/McCppSyncCallback.h>
 #include <McIoc/ApplicationContext/IMcApplicationContext.h>
 
 #include <QDebug>
@@ -14,6 +16,16 @@
 #include "Test.h"
 
 Q_DECLARE_METATYPE(std::function<void(int)>)
+
+void callbackTest(const QJsonObject &var)
+{
+    qDebug() << "-----+++++++" << var;
+}
+
+void callbackTest2(const QVariant &str, QVariant ii)
+{
+    qDebug() << "callback test:" << str << ii;
+}
 
 int main(int argc, char *argv[])
 {
@@ -29,26 +41,27 @@ int main(int argc, char *argv[])
     std::function<void(int)> a = [](int b) { qDebug() << "++++++++++++++" << b; };
     QMetaObject::invokeMethod(&t, "aaa", Q_ARG(std::function<void(int)>, a));
     McQuickBootSimple::init();
-    McQuickBootSimple::connect("aaa", SIGNAL(signal_sig()), "param", SLOT(slot_slt()));
+    $.connect("aaa", SIGNAL(signal_sig()), "param", SLOT(slot_slt()));
     ParamPtr p = ParamPtr::create();
     p->aaa = 1000;
     $.invoke("aaa.bbb",
              QVariantList() << "lllllllll" << QJsonObject({{"zzz", "mmmm"}})
                             << QVariant::fromValue(p) << QVariant::fromValue(a))
-        .then([](const QVariant &var) { qDebug() << "-----" << var; });
+        .then([](const QJsonObject &var) { qDebug() << "-----" << var; });
     $.invoke("aaa.bbb",
              "lllllllll",
              QJsonObject({{"zzz", "mmmm"}}),
              QVariant::fromValue(p),
              QVariant::fromValue(a))
-        .then([](const QVariant &var) { qDebug() << "-----" << var; });
+        .then(callbackTest);
     $.invoke("aaa.bbb").then(
         [](const QVariant &var) { qDebug() << ">>>>>>>>>>>>>>>>>>>>>>>>>>>" << var; });
-    $.invoke("aaa.ccc").then([](const QVariant &var) {
-        qDebug() << var;
-        qDebug() << var.value<ParamPtr>()->aaa;
-    });
+    $.invoke("aaa.ccc").then(&t, &Test::callbackTest);
     auto res = $.syncInvoke("aaa.ccc");
+    auto ccc = [](const QVariant &str, int ii) { qDebug() << "callback test0:" << str << ii; };
+    $.invoke("aaa.vvv", McCppAsyncCallback::build(callbackTest2)).then([](const QVariant &var) {
+        qDebug() << "vvvvvvvvvvvvvv" << var;
+    });
     qDebug() << res;
     qDebug() << res.value<ParamPtr>()->aaa;
     QHash<int, QString> hhh;

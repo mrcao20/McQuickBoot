@@ -1,18 +1,22 @@
 #include "McBoot/Requestor/McQmlRequestor.h"
 
+#include <QDebug>
 #include <QQmlEngine>
+#include <QUuid>
 #include <QVariant>
 
+#include <McIoc/ApplicationContext/IMcApplicationContext.h>
+
+#include "McBoot/Connection/McQmlConnection.h"
 #include "McBoot/Controller/IMcControllerContainer.h"
 #include "McBoot/Controller/impl/McQmlResponse.h"
-#include "McBoot/Socket/IMcQmlSocketContainer.h"
-#include "McBoot/Socket/impl/McQmlSocket.h"
+#include "McBoot/Utils/Callback/Impl/McQmlSyncCallback.h"
 
 MC_AUTO_INIT(McQmlRequestor)
 MC_INIT_END
 
 MC_DECL_PRIVATE_DATA(McQmlRequestor)
-IMcQmlSocketContainerPtr qmlSocketContainer;
+QMap<QString, McQmlConnection *> qmlConnections;
 MC_DECL_PRIVATE_DATA_END
 
 McQmlRequestor::McQmlRequestor(QObject *parent) : McAbstractRequestor(parent)
@@ -20,27 +24,51 @@ McQmlRequestor::McQmlRequestor(QObject *parent) : McAbstractRequestor(parent)
     MC_NEW_PRIVATE_DATA(McQmlRequestor);
 }
 
-McQmlRequestor::~McQmlRequestor() {}
-
-void McQmlRequestor::setSocketContainer(IMcQmlSocketContainerConstPtrRef val) noexcept
+McQmlRequestor::~McQmlRequestor()
 {
-    d->qmlSocketContainer = val;
+    QMap<QString, McQmlConnection *> qmlConnections;
+    qmlConnections.swap(d->qmlConnections);
+    for (auto con : qmlConnections) {
+        delete con;
+    }
 }
 
-McQmlResponse *McQmlRequestor::invoke(const QString &uri) noexcept
+McQmlResponse *McQmlRequestor::invoke(const QString &uri,
+                                      const QJSValue &data1,
+                                      const QJSValue &data2) noexcept
 {
-    auto response = new McQmlResponse();
+    if (!data2.isUndefined() && !data2.isCallable()) {
+        qCritical() << "The third parameter for invoke method must be callback function";
+        return nullptr;
+    }
+#if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
+    auto engine = QQmlEngine::contextForObject(this)->engine();
+#else
+    auto engine = qjsEngine(this);
+#endif
+    if (!engine) {
+        return nullptr;
+    }
+    auto response = new McQmlResponse(); //!< 没有指定父对象，该对象将在整个请求完毕时被析构
     QQmlEngine::setObjectOwnership(response, QQmlEngine::CppOwnership);
-    run(response, uri, QVariant());
-    return response; //!< 没有指定父对象，该对象将在整个请求完毕时被析构
-}
-
-McQmlResponse *McQmlRequestor::invoke(const QString &uri, const QJSValue &data) noexcept
-{
-    auto response = new McQmlResponse();
-    QQmlEngine::setObjectOwnership(response, QQmlEngine::CppOwnership);
-    run(response, uri, data.toVariant());
-    return response; //!< 没有指定父对象，该对象将在整个请求完毕时被析构
+    if (data1.isUndefined()) {
+        run(response, uri, QVariant());
+        return response;
+    }
+    if (data1.isCallable()) {
+        QVariantMap m;
+        m.insert(Mc::QuickBoot::Constant::Argument::qmlCallback,
+                 QVariant::fromValue(new McQmlSyncCallback(data1, engine)));
+        run(response, uri, QVariant(m));
+        return response;
+    }
+    auto m = data1.toVariant().toMap();
+    if (!data2.isUndefined()) {
+        m.insert(Mc::QuickBoot::Constant::Argument::qmlCallback,
+                 QVariant::fromValue(new McQmlSyncCallback(data2, engine)));
+    }
+    run(response, uri, QVariant(m));
+    return response;
 }
 
 QJSValue McQmlRequestor::syncInvoke(const QString &uri) noexcept
@@ -73,16 +101,59 @@ QJSValue McQmlRequestor::syncInvoke(const QString &uri, const QJSValue &data) no
     return arg;
 }
 
-McQmlSocket *McQmlRequestor::addConnect(const QString &uri) noexcept
+QString McQmlRequestor::connect(const QString &beanName,
+                                const QString &signal,
+                                const QJSValue &callback) noexcept
 {
-    auto qs = d->qmlSocketContainer->addConnect(uri);
-    QQmlEngine::setObjectOwnership(qs, QQmlEngine::JavaScriptOwnership);
-    return qs;
+    if (!callback.isCallable()) {
+        qWarning() << "you have to pass in a callback function";
+        return "";
+    }
+    auto bean = Mc::getObject(appCtx(), beanName);
+    if (bean == nullptr) {
+        return "";
+    }
+#if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
+    auto engine = QQmlEngine::contextForObject(this)->engine();
+#else
+    auto engine = qjsEngine(this);
+#endif
+    if (engine == nullptr) {
+        return "";
+    }
+    auto qmlConnection = new McQmlConnection();
+    if (!qmlConnection->init(bean, signal, callback, engine)) {
+        qmlConnection->deleteLater();
+        return "";
+    }
+    QQmlEngine::setObjectOwnership(qmlConnection, QQmlEngine::CppOwnership);
+    auto uuid = QUuid::createUuid().toString(QUuid::WithoutBraces);
+    d->qmlConnections.insert(uuid, qmlConnection);
+    connect(qmlConnection, &QObject::destroyed, this, [this, uuid](QObject *) {
+        d->qmlConnections.remove(uuid);
+    });
+    return uuid;
 }
 
-McQmlSocket *McQmlRequestor::addConnect(const QString &uri, const QJSValue &data) noexcept
+void McQmlRequestor::disconnect(const QString &uuid) noexcept
 {
-    auto qs = d->qmlSocketContainer->addConnect(uri, data);
-    QQmlEngine::setObjectOwnership(qs, QQmlEngine::JavaScriptOwnership);
-    return qs;
+    if (!d->qmlConnections.contains(uuid)) {
+        return;
+    }
+    d->qmlConnections.value(uuid)->deleteLater();
+}
+
+void McQmlRequestor::disconnect(const QString &beanName,
+                                const QString &signal,
+                                const QJSValue &callback) noexcept
+{
+    auto bean = Mc::getObject(appCtx(), beanName);
+    if (bean == nullptr) {
+        return;
+    }
+    for (auto con : d->qmlConnections) {
+        if (con->check(bean, signal, callback)) {
+            con->deleteLater();
+        }
+    }
 }

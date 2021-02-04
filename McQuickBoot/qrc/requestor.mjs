@@ -1,18 +1,11 @@
-$.__proto__.get = function(uri) {
-    return $.invoke(uri);
+$.__proto__.get = function(uri, callback) {
+    return $.invoke(uri, callback);
 }
 
-$.__proto__.post = function(uri, body) {
-    return $.invoke(uri, body);
+$.__proto__.post = function(uri, body, callback) {
+    return $.invoke(uri, body, callback);
 }
 
-$.__proto__.qs = function(uri, data) {
-    if(data === undefined) {
-        return $.addConnect(uri);
-    }else{
-        return $.addConnect(uri, data);
-    }
-}
 String.prototype.format = function(args) {
     if(arguments.length <= 0) {
         return this;

@@ -13,11 +13,32 @@ class MCQUICKBOOT_EXPORT McCppRequestor : public McAbstractRequestor
     MC_TYPELIST(McAbstractRequestor)
     MC_COMPONENT
     MC_BEANNAME("cppRequestor")
-    //! 在容器中为非单例，但是McQuickBoot会控制其为单例
-    MC_SINGLETON(false)
 public:
+    using QObject::connect;
+    using QObject::disconnect;
+
     Q_INVOKABLE explicit McCppRequestor(QObject *parent = nullptr);
     ~McCppRequestor() override;
+
+    QMetaObject::Connection connect(const QString &sender,
+                                    const QString &signal,
+                                    const QString &receiver,
+                                    const QString &slot,
+                                    Qt::ConnectionType type = Qt::AutoConnection) noexcept;
+    QMetaObject::Connection connect(const QString &sender,
+                                    const QString &signal,
+                                    QObject *receiver,
+                                    const QString &slot,
+                                    Qt::ConnectionType type = Qt::AutoConnection) noexcept;
+    bool disconnect(const QString &sender,
+                    const QString &signal,
+                    const QString &receiver,
+                    const QString &slot) noexcept;
+
+    bool disconnect(const QString &sender,
+                    const QString &signal,
+                    QObject *receiver,
+                    const QString &slot) noexcept;
 
     McCppResponse &invoke(const QString &uri) noexcept;
     McCppResponse &invoke(const QString &uri, const QJsonObject &data) noexcept;
@@ -27,7 +48,7 @@ public:
     McCppResponse &invoke(const QString &uri, const Args &... args) noexcept
     {
         QVariantList vars;
-        (vars << ... << args);
+        (vars << ... << toQVariant(args));
         return invoke(uri, vars);
     }
 
@@ -39,8 +60,27 @@ public:
     QVariant syncInvoke(const QString &uri, const Args &... args) noexcept
     {
         QVariantList vars;
-        (vars << ... << args);
+        (vars << ... << toQVariant(args));
         return syncInvoke(uri, vars);
+    }
+
+private:
+    template<typename T>
+    typename std::enable_if<McPrivate::IsQVariantHelper<T>::Value, QVariant>::type toQVariant(
+        const T &t)
+    {
+        return QVariant::fromValue(t);
+    }
+    template<>
+    QVariant toQVariant(const QVariant &t)
+    {
+        return t;
+    }
+    template<typename T>
+    typename std::enable_if<McPrivate::IsQVariantHelper<T>::Value2, QVariant>::type toQVariant(
+        const T &t)
+    {
+        return QVariant(t);
     }
 
 private:

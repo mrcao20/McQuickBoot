@@ -17,6 +17,11 @@ MC_DECL_PRIVATE_DATA_END
 typedef QHash<QString, IMcBeanDefinitionPtr> McBeanDefinitionContainter; 
 MC_GLOBAL_STATIC(McBeanDefinitionContainter, mcAutowiredRegistry)
 
+MC_STATIC()
+MC_DESTROY()
+mcAutowiredRegistry->clear();
+MC_STATIC_END
+
 McAnnotationApplicationContext::McAnnotationApplicationContext(
     IMcConfigurableBeanFactoryConstPtrRef factory,
     IMcBeanDefinitionReaderConstPtrRef reader,

@@ -4,7 +4,6 @@ CONFIG += c++11
 
 SOURCES += main.cpp \
     InvokeTest.cpp \
-    QmlSocketTest.cpp \
     Object.cpp
 
 RESOURCES += qml.qrc
@@ -65,5 +64,4 @@ QMAKE_POST_LINK += copy /y $$SrcConfigPath $$DstConfigPath
 
 HEADERS += \
     InvokeTest.h \
-    QmlSocketTest.h \
     Object.h

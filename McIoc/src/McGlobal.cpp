@@ -201,7 +201,7 @@ static void customStreamDebug(QDebug dbg, const QVariant &variant) {
 //#endif
 //};
 
-MC_INIT(McGlobal, Mc::RoutinePriority::Max)
+MC_STATIC(Mc::RoutinePriority::Max)
 auto pId = qRegisterMetaType<QObject *>();
 auto sId = qRegisterMetaType<QObjectPtr>();
 McMetaTypeId::addQObjectPointerIds(pId, sId);
@@ -212,7 +212,7 @@ qRegisterMetaType<QObjectPtr>(MC_STRINGIFY(QObjectConstPtrRef));
 //auto kernelHandler = qcoreVariantHandler();
 //QVariantPrivate::registerHandler(QModulesPrivate::Core, kernelHandler);
 //QVariantPrivate::registerHandler(QModulesPrivate::Unknown, &mc_custom_variant_handler);
-MC_INIT_END
+MC_STATIC_END
 
 QString getBeanName(const QMetaObject *metaObj) noexcept
 {
@@ -356,6 +356,33 @@ bool isComponentType(const QMetaObject *metaObj, const QString &type) noexcept
     return false;
 }
 
+bool isContainedTag(const QString &tags, const QString &tag) noexcept
+{
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+    auto tagList = tags.split(' ', QString::SkipEmptyParts);
+#else
+    auto tagList = tags.split(' ', Qt::SkipEmptyParts);
+#endif
+    for (auto t : tagList) {
+        if (t == tag) {
+            return true;
+        }
+    }
+    return false;
+}
+
+QObject *getObject(IMcApplicationContext *appCtx, const QString &beanName) noexcept
+{
+    auto bean = appCtx->getBeanPointer(beanName);
+    if (bean == nullptr) {
+        bean = appCtx->getBean(beanName).data();
+    }
+    if (bean == nullptr) {
+        qWarning() << "not exists bean:" << beanName;
+    }
+    return bean;
+}
+
 void addPreRoutine(int priority, const StartUpFunction &func) noexcept
 {
     McPrivate::StartUpFuncs *funcs = McPrivate::preRFuncs;
@@ -401,59 +428,39 @@ void connect(const QMetaObject *metaObj,
     connect(beanName, sender, signal, receiver, slot, type);
 }
 
-QMetaObject::Connection connect(IMcApplicationContextConstPtrRef appCtx,
+QMetaObject::Connection connect(IMcApplicationContext *appCtx,
                                 const QString &sender,
                                 const QString &signal,
                                 const QString &receiver,
                                 const QString &slot,
                                 Qt::ConnectionType type) noexcept
 {
-    Q_ASSERT(!appCtx.isNull());
-    auto senderObj = appCtx->getBean<QObject>(sender);
-    auto receiverObj = appCtx->getBean<QObject>(receiver);
-    if (senderObj.isNull() || receiverObj.isNull()) {
-        qCritical("not exists bean '%s' or '%s'", qPrintable(sender), qPrintable(receiver));
+    Q_ASSERT(appCtx != nullptr);
+    auto *receiverObj = appCtx->getBeanPointer<QObject>(receiver);
+    if (receiverObj == nullptr) {
+        receiverObj = appCtx->getBean<QObject>(receiver).data();
+    }
+    if (receiverObj == nullptr) {
+        qCritical("not exists bean '%s'", qPrintable(receiver));
         return QMetaObject::Connection();
     }
-    auto signalMetaObj = senderObj->metaObject();
-    QString signalStr = signal;
-    if (signalStr.startsWith(QString::number(QSIGNAL_CODE))) {
-        signalStr.remove(0, 1);
-    }
-    int signalIndex = signalMetaObj->indexOfSignal(signalStr.toLocal8Bit());
-    if (signalIndex == -1) {
-        qCritical("not exists signal named '%s' for bean '%s'\n",
-                  qPrintable(signal),
-                  signalMetaObj->className());
-        return QMetaObject::Connection();
-    }
-    auto signalMethod = signalMetaObj->method(signalIndex);
-    auto slotMetaObj = receiverObj->metaObject();
-    auto slotStr = slot;
-    if (slotStr.startsWith(QString::number(QSLOT_CODE))) {
-        slotStr.remove(0, 1);
-    }
-    int slotIndex = slotMetaObj->indexOfMethod(slotStr.toLocal8Bit());
-    if (slotIndex == -1) {
-        qCritical("not exists slot named '%s' for bean '%s'\n",
-                  qPrintable(slot),
-                  slotMetaObj->className());
-        return QMetaObject::Connection();
-    }
-    auto slotMethod = slotMetaObj->method(slotIndex);
-    return QObject::connect(senderObj.data(), signalMethod, receiverObj.data(), slotMethod, type);
+    return connect(appCtx, sender, signal, receiverObj, slot, type);
 }
 
-QMetaObject::Connection connect(IMcApplicationContextConstPtrRef appCtx,
+QMetaObject::Connection connect(IMcApplicationContext *appCtx,
                                 const QString &sender,
                                 const QString &signal,
                                 QObject *receiver,
                                 const QString &slot,
                                 Qt::ConnectionType type) noexcept
 {
-    Q_ASSERT(!appCtx.isNull());
-    auto senderObj = appCtx->getBean<QObject>(sender);
-    if (senderObj.isNull()) {
+    Q_ASSERT(appCtx != nullptr);
+    Q_ASSERT(receiver != nullptr);
+    auto senderObj = appCtx->getBeanPointer<QObject>(sender);
+    if (senderObj == nullptr) {
+        senderObj = appCtx->getBean<QObject>(sender).data();
+    }
+    if (senderObj == nullptr) {
         qCritical("not exists bean '%s'", qPrintable(sender));
         return QMetaObject::Connection();
     }
@@ -465,11 +472,59 @@ QMetaObject::Connection connect(IMcApplicationContextConstPtrRef appCtx,
     if (!slotStr.startsWith(QString::number(QSLOT_CODE))) {
         slotStr = QString::number(QSLOT_CODE) + slotStr;
     }
-    return QObject::connect(senderObj.data(),
+    return QObject::connect(senderObj,
                             signalStr.toLocal8Bit(),
                             receiver,
                             slotStr.toLocal8Bit(),
                             type);
+}
+
+bool disconnect(IMcApplicationContext *appCtx,
+                const QString &sender,
+                const QString &signal,
+                const QString &receiver,
+                const QString &slot) noexcept
+{
+    Q_ASSERT(appCtx != nullptr);
+    auto *receiverObj = appCtx->getBeanPointer<QObject>(receiver);
+    if (receiverObj == nullptr) {
+        receiverObj = appCtx->getBean<QObject>(receiver).data();
+    }
+    return disconnect(appCtx, sender, signal, receiverObj, slot);
+}
+
+bool disconnect(IMcApplicationContext *appCtx,
+                const QString &sender,
+                const QString &signal,
+                QObject *receiver,
+                const QString &slot) noexcept
+{
+    Q_ASSERT(appCtx != nullptr);
+    auto senderObj = appCtx->getBeanPointer<QObject>(sender);
+    if (senderObj == nullptr) {
+        senderObj = appCtx->getBean<QObject>(sender).data();
+    }
+    if (senderObj == nullptr) {
+        qCritical("not exists bean '%s'", qPrintable(sender));
+        return false;
+    }
+    const char *sig = nullptr;
+    const char *slt = nullptr;
+    QString signalStr = signal;
+    if (!signalStr.isEmpty() && !signalStr.startsWith(QString::number(QSIGNAL_CODE))) {
+        signalStr = QString::number(QSIGNAL_CODE) + signalStr;
+    }
+    if (!signalStr.isEmpty()) {
+        sig = signalStr.toLocal8Bit();
+    }
+    auto slotStr = slot;
+    if (!slotStr.isEmpty() && !slotStr.startsWith(QString::number(QSLOT_CODE))) {
+        slotStr = QString::number(QSLOT_CODE) + slotStr;
+    }
+    if (!slotStr.isEmpty()) {
+        slt = slotStr.toLocal8Bit();
+    }
+    return QObject::disconnect(senderObj, sig, receiver, slt);
 }
 } // namespace Ioc
 } // namespace Mc

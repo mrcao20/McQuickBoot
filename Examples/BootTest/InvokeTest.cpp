@@ -27,6 +27,9 @@ InvokeTest::InvokeTest(QObject *parent)
 void InvokeTest::invoke1(const QString &aaa) noexcept
 {
     qDebug() << "invoke1" << aaa;
+    auto o = GadgetTestPtr::create();
+    o->text = "gggggggg";
+    emit signal_1(o);
 }
 
 McResultPtr InvokeTest::invoke2() noexcept
@@ -70,6 +73,11 @@ GadgetTest *InvokeTest::invoke6(GadgetTest *o) noexcept
 {
     qDebug() << "invoke6" << o << o->text << o->t << o->tt << o->t2;
     return o;
+}
+
+void InvokeTest::invoke7(IMcCallbackPtr o) noexcept
+{
+    o->call("ccc", 111);
 }
 
 void InvokeTest::start() noexcept {

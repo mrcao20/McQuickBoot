@@ -1,5 +1,6 @@
 #include "McBoot/Controller/impl/McControllerContainer.h"
 
+#include <QAbstractItemModel>
 #include <QDebug>
 #include <QJsonArray>
 #include <QJsonObject>
@@ -11,10 +12,12 @@
 
 #include "McBoot/Controller/impl/McResult.h"
 #include "McBoot/IMcQuickBoot.h"
+#include "McBoot/Utils/Callback/Impl/McQmlSyncCallback.h"
 #include "McBoot/Utils/McJsonUtils.h"
 
 MC_INIT(McControllerContainer)
 MC_REGISTER_BEAN_FACTORY(McControllerContainer)
+qRegisterMetaType<QAbstractItemModel *>();
 MC_INIT_END
 
 MC_DECL_PRIVATE_DATA(McControllerContainer)
@@ -62,27 +65,9 @@ QVariant McControllerContainer::invoke(const QString &uri, const QVariant &body)
     }
 }
 
-QVariant McControllerContainer::invoke(const QString &uri) noexcept 
+QVariant McControllerContainer::invoke(const QString &uri) noexcept
 {
-    auto list = uri.split('?', 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-                          Qt::SkipEmptyParts
-#else
-                          QString::SkipEmptyParts
-#endif
-                          );
-    if (list.isEmpty())
-        return fail("access path not exists");
-    QObjectPtr bean;
-    QString func;
-    QVariant errRet;
-    if(!splitBeanAndFunc(list.at(0), bean, func, errRet)) {
-        return errRet;
-    }
-    QString param = list.size() == 2 ? list.at(1) : "";
-    // <参数名，参数值>
-    QVariantMap args = splitParam(param);
-    return invokeForUri(bean, func, args);
+    return invoke(uri, QVariantMap());
 }
 
 QVariant McControllerContainer::invoke(const QString &uri, const QJsonObject &data) noexcept 
@@ -105,13 +90,28 @@ QVariant McControllerContainer::invoke(const QString &uri, const QVariantList &d
 
 QVariant McControllerContainer::invoke(const QString &uri, const QVariantMap &data) noexcept
 {
+    auto list = uri.split('?',
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+                          Qt::SkipEmptyParts
+#else
+                          QString::SkipEmptyParts
+#endif
+    );
+    if (list.isEmpty())
+        return fail("access path not exists");
     QObjectPtr bean;
     QString func;
     QVariant errRet;
-    if (!splitBeanAndFunc(uri, bean, func, errRet)) {
+    if (!splitBeanAndFunc(list.at(0), bean, func, errRet)) {
         return errRet;
     }
-    return invokeForUri(bean, func, data);
+    QString param = list.size() == 2 ? list.at(1) : "";
+    // <参数名，参数值>
+    QVariantMap args = splitParam(param);
+    for (auto key : data.keys()) {
+        args.insert(key, data.value(key));
+    }
+    return invokeForUri(bean, func, args);
 }
 
 bool McControllerContainer::splitBeanAndFunc(const QString &uri,
@@ -144,16 +144,58 @@ QVariant McControllerContainer::invokeForUri(QObjectConstPtrRef bean,
                                              const QVariantMap &args) noexcept
 {
     const QMetaObject *metaBean = bean->metaObject();
+    auto params = args;
     int count = metaBean->methodCount();
     for (int i = 0; i < count; ++i) {
         QMetaMethod method = metaBean->method(i);
         if(method.name() != func)
             continue;
-        if (!isMethodMatching(method, args.keys()))
+        if (!isMethodMatching(method, params.keys()))
             continue;
-        return invokeForArgs(bean, method, args);
+        if (!makeCallback(params, method)) {
+            return fail("cannot construct callback function");
+        }
+        return invokeForArgs(bean, method, params);
     }
     return fail("access arguments error");
+}
+
+bool McControllerContainer::makeCallback(QVariantMap &args, const QMetaMethod &m) noexcept
+{
+    if (!args.contains(Mc::QuickBoot::Constant::Argument::qmlCallback)) {
+        return true;
+    }
+    auto paramTypeNames = m.parameterTypes();
+    if (paramTypeNames.isEmpty()) {
+        return false;
+    }
+    auto qmlSyncCallbackVar = args.value(Mc::QuickBoot::Constant::Argument::qmlCallback);
+    auto qmlSyncCallback = qmlSyncCallbackVar.value<McQmlSyncCallback *>();
+    auto lastParamTypeName = paramTypeNames.last();
+    auto lastParamType = QMetaType::type(lastParamTypeName);
+    if (qMetaTypeId<McQmlSyncCallbackPtr>() == lastParamType
+        || qMetaTypeId<McAbstractSyncCallbackPtr>() == lastParamType
+        || qMetaTypeId<IMcCallbackPtr>() == lastParamType) {
+        auto temp = McQmlSyncCallbackPtr(new McQmlSyncCallback(*qmlSyncCallback),
+                                         IMcCallback::McCallbackDeleter());
+        temp->moveToThread(qmlSyncCallback->thread());
+        qmlSyncCallbackVar = QVariant::fromValue(temp);
+    } else if (qMetaTypeId<McQmlSyncCallback *>() == lastParamType
+               || qMetaTypeId<McAbstractSyncCallback *>() == lastParamType
+               || qMetaTypeId<IMcCallback *>() == lastParamType) {
+        auto temp = new McQmlSyncCallback(*qmlSyncCallback);
+        temp->moveToThread(qmlSyncCallback->thread());
+        qmlSyncCallbackVar = QVariant::fromValue(temp);
+    } else if (qMetaTypeId<McQmlSyncCallback>() == lastParamType) {
+        auto temp = *qmlSyncCallback;
+        temp.moveToThread(qmlSyncCallback->thread());
+        qmlSyncCallbackVar = QVariant::fromValue(temp);
+    } else {
+        return false;
+    }
+    args.remove(Mc::QuickBoot::Constant::Argument::qmlCallback);
+    args.insert(m.parameterNames().last(), qmlSyncCallbackVar);
+    return true;
 }
 
 QVariant McControllerContainer::invokeForUri(QObjectConstPtrRef bean,
@@ -211,8 +253,11 @@ bool McControllerContainer::isMethodMatching(const QMetaMethod &m,
     if (methodParamNames.size() != names.size())
         return false;
     QList<QString> argNames = names;
-    QList<QByteArray> list;
-    removeDuplication(argNames, methodParamNames, list);
+    if (argNames.contains(Mc::QuickBoot::Constant::Argument::qmlCallback)) {
+        argNames.removeOne(Mc::QuickBoot::Constant::Argument::qmlCallback);
+        methodParamNames.removeLast();
+    }
+    removeDuplication(argNames, methodParamNames);
     if (methodParamNames.isEmpty())
         return true;
     else
@@ -226,8 +271,9 @@ bool McControllerContainer::isMethodMatching(const QMetaMethod &m, const QVarian
     auto paramTypes = m.parameterTypes();
     for (int i = 0; i < paramTypes.length(); ++i) {
         auto paramType = paramTypes.at(i);
-        auto type = args.at(i).typeName();
-        if (paramType != type) {
+        auto arg = args.at(i);
+        auto type = arg.typeName();
+        if (paramType != type && !arg.canConvert(QMetaType::type(paramType))) {
             return false;
         }
     }
@@ -235,17 +281,13 @@ bool McControllerContainer::isMethodMatching(const QMetaMethod &m, const QVarian
 }
 
 void McControllerContainer::removeDuplication(QList<QString> &argNames,
-                                              QList<QByteArray> &paramNames,
-                                              QList<QByteArray> &paramTypes) noexcept
+                                              QList<QByteArray> &paramNames) noexcept
 {
     for (int i = 0; i < paramNames.size(); ++i) {
         if (!argNames.contains(paramNames.at(i)))
             continue;
         argNames.removeOne(paramNames.at(i));
         paramNames.removeAt(i);
-        if(!paramTypes.isEmpty()) {
-            paramTypes.removeAt(i);
-        }
         --i;
     }
 }
@@ -255,13 +297,10 @@ QVariant McControllerContainer::invokeForArgs(QObjectConstPtrRef bean,
                                               const QVariantMap &args) noexcept
 {
     auto returnType = method.returnType();
-    if (strcmp(method.typeName(), "QAbstractItemModel*") == 0) {
-        returnType = QMetaType::type("QObject*");
-    }
     if(returnType == QMetaType::Type::UnknownType) {
-        qCritical() << "if you want to return a model to QML. the return type "
-                       "must be QObject* or QAbstractItemModel*";
-        return fail("cannot found this return type from meta object system");
+        qCritical() << "cannot found return type from meta object system. type name:"
+                    << method.typeName();
+        return fail("cannot found return type from meta object system");
     }
     QVariant returnValue;
     QGenericReturnArgument returnArg;
@@ -313,13 +352,10 @@ QVariant McControllerContainer::invokeForArgs(QObjectConstPtrRef bean,
                                               const QVariantList &args) noexcept
 {
     auto returnType = method.returnType();
-    if (strcmp(method.typeName(), "QAbstractItemModel*") == 0) {
-        returnType = QMetaType::type("QObject*");
-    }
     if (returnType == QMetaType::Type::UnknownType) {
-        qCritical() << "if you want to return a model to QML. the return type "
-                       "must be QObject* or QAbstractItemModel*";
-        return fail("cannot found this return type from meta object system");
+        qCritical() << "cannot found return type from meta object system. type name:"
+                    << method.typeName();
+        return fail("cannot found return type from meta object system");
     }
     QVariant returnValue;
     QGenericReturnArgument returnArg;

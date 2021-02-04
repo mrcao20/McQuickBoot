@@ -2,6 +2,7 @@
 
 #include <McIoc/McGlobal.h>
 
+#include "McBootConstantGlobal.h"
 #include "McBootMacroGlobal.h"
 
 #include "McAbstractQuickBoot.h"

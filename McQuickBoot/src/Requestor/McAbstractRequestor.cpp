@@ -1,8 +1,12 @@
 #include "McBoot/Requestor/McAbstractRequestor.h"
 
 #include <QCoreApplication>
+#include <QDebug>
 #include <QEvent>
+#include <QQmlEngine>
 #include <QThreadPool>
+
+#include <McIoc/ApplicationContext/IMcApplicationContext.h>
 
 #include "McBoot/Configuration/McRequestorConfig.h"
 #include "McBoot/Controller/IMcControllerContainer.h"
@@ -27,38 +31,39 @@ private:
 
 McRunnerEvent::~McRunnerEvent() {}
 
+MC_GLOBAL_STATIC(QThreadPool, requestorThreadPool)
+
 MC_INIT(McAbstractRequestor)
+MC_DESTROY()
+if (!requestorThreadPool.exists()) {
+    return;
+}
+requestorThreadPool->waitForDone();
 MC_INIT_END
 
 MC_DECL_PRIVATE_DATA(McAbstractRequestor)
-QSharedPointer<QThreadPool> threadPool;
 IMcControllerContainerPtr controllerContainer;
 McRequestorConfigPtr requestorConfig;
+IMcApplicationContext *appCtx;
 MC_DECL_PRIVATE_DATA_END
 
 McAbstractRequestor::McAbstractRequestor(QObject *parent) : QObject(parent)
 {
     MC_NEW_PRIVATE_DATA(McAbstractRequestor);
-
-    d->threadPool = QSharedPointer<QThreadPool>::create();
 }
 
 McAbstractRequestor::~McAbstractRequestor()
 {
 }
 
-void McAbstractRequestor::destroy() noexcept
-{
-}
-
 qint64 McAbstractRequestor::maxThreadCount() const noexcept
 {
-    return d->threadPool->maxThreadCount();
+    return requestorThreadPool->maxThreadCount();
 }
 
 void McAbstractRequestor::setMaxThreadCount(int val) noexcept
 {
-    d->threadPool->setMaxThreadCount(val);
+    requestorThreadPool->setMaxThreadCount(val);
 }
 
 IMcControllerContainerPtr McAbstractRequestor::controllerContainer() const noexcept
@@ -71,11 +76,43 @@ void McAbstractRequestor::setControllerContainer(IMcControllerContainerConstPtrR
     d->controllerContainer = val;
 }
 
+IMcApplicationContext *McAbstractRequestor::appCtx() const noexcept
+{
+    return d->appCtx;
+}
+
+void McAbstractRequestor::setAppCtx(IMcApplicationContext *val) noexcept
+{
+    d->appCtx = val;
+}
+
+QObject *McAbstractRequestor::getBean(const QString &name) const noexcept
+{
+    auto var = getBeanToVariant(name);
+    QObject *obj = var.value<QObject *>();
+    if (obj == nullptr) {
+        obj = var.value<QObjectPtr>().data();
+    }
+    if (obj == nullptr) {
+        qWarning() << "cannot get bean for named:" << name;
+    } else {
+        QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+    }
+    return obj;
+}
+
 void McAbstractRequestor::customEvent(QEvent *event)
 {
     if (event->type() == QEvent::Type::User + 1) {
         McRunnerEvent *e = static_cast<McRunnerEvent *>(event);
-        d->threadPool->start(e->runner());
+        if (requestorThreadPool->tryStart(e->runner())) {
+            return;
+        }
+        requestorThreadPool->reserveThread();
+        connect(e->runner(), &McRequestRunner::signal_finished, this, []() {
+            requestorThreadPool->releaseThread();
+        });
+        requestorThreadPool->start(e->runner());
     }
 }
 
@@ -92,9 +129,14 @@ void McAbstractRequestor::run(McAbstractResponse *response,
     qApp->postEvent(this, new McRunnerEvent(runner));
 }
 
-void McAbstractRequestor::finished() noexcept
+void McAbstractRequestor::allFinished() noexcept
 {
     setMaxThreadCount(d->requestorConfig->maxThreadCount());
+}
+
+QVariant McAbstractRequestor::getBeanToVariant(const QString &name) const noexcept
+{
+    return d->appCtx->getBeanToVariant(name);
 }
 
 #include "moc_McAbstractRequestor.cpp"

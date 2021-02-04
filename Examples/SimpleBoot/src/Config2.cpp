@@ -32,4 +32,4 @@ QThread *threadT()
     QObject::connect(t, &QThread::finished, []() { qDebug() << "finished........"; });
     return t;
 }
-MC_CUSTOM_FUNC_DEFINE_QUICKBOOT_WORK_THREAD(Config2, threadT)
+//MC_CUSTOM_FUNC_DEFINE_QUICKBOOT_WORK_THREAD(Config2, threadT)

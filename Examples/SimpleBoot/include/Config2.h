@@ -29,7 +29,8 @@ public:
     MC_BEAN
     QThread *threadTest() const noexcept;
 
-    MC_DECL_QUICKBOOT_WORK_THREAD
+    //    MC_DECL_QUICKBOOT_WORK_THREAD
+    MC_INLINE_QUICKBOOT_WORK_THREAD
 
 private:
     MC_DECL_PRIVATE(Config2)

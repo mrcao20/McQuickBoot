@@ -18,13 +18,6 @@
 
 #ifndef Q_MOC_RUN            //!< 这行语句必须加，只有包围在这行语句之中的宏才能被识别为tag
 
-//! QML Socket
-# define MC_ON_OPEN
-# define MC_ON_CLOSE
-# define MC_ON_ERROR
-# define MC_ON_MESSAGE
-//!< end QML Socket
-
 //! 声明式bean
 #define MC_BEAN
 //!< end
@@ -39,7 +32,6 @@
 #define MC_CONFIGURATION_PRIORITY_TAG "ConfigurationPriority"
 #define MC_CONFIGURATION_PROPERTIES_TAG "ConfigurationProperties"
 #define MC_PROPERTY_SOURCE_TAG "PropertySource"
-#define MC_QML_SOCKET_TAG "QmlSocket"
 #define MC_SERIALIZATION_TAG "Serialization"
 #define MC_JSON_SERIALIZATION_TAG "JsonSerialization"
 
@@ -51,11 +43,15 @@
     Q_CLASSINFO(MC_CONFIGURATION_PRIORITY_TAG, MC_STRINGIFY("@" __VA_ARGS__))
 #define MC_CONFIGURATION_PROPERTIES(arg) Q_CLASSINFO(MC_CONFIGURATION_PROPERTIES_TAG, arg)
 #define MC_PROPERTY_SOURCE(arg) Q_CLASSINFO(MC_PROPERTY_SOURCE_TAG, arg)
-#define MC_QML_SOCKET Q_CLASSINFO(MC_COMPONENT_TAG, MC_QML_SOCKET_TAG)
 #define MC_JSON_SERIALIZATION Q_CLASSINFO(MC_SERIALIZATION_TAG, MC_JSON_SERIALIZATION_TAG)
 //!< Q_CLASSINFO
 
 #define MC_QUICKBOOT_WORK_THREAD_NAME __mc__quickBootWorkThread
+#define MC_INLINE_QUICKBOOT_WORK_THREAD \
+    Q_INVOKABLE \
+    MC_BEAN \
+    QThread *MC_QUICKBOOT_WORK_THREAD_NAME() const noexcept { return new QThread(); }
+
 #define MC_DECL_QUICKBOOT_WORK_THREAD \
     Q_INVOKABLE \
     MC_BEAN \

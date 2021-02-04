@@ -6,7 +6,6 @@
 
 #include <QJsonObject>
 
-#include <McIoc/Destroyer/IMcDestroyer.h>
 #include <McIoc/Utils/IMcNonCopyable.h>
 
 QT_BEGIN_NAMESPACE
@@ -21,27 +20,32 @@ MC_FORWARD_DECL_CLASS(IMcControllerContainer);
 MC_FORWARD_DECL_CLASS(McRequestorConfig);
 
 class McAbstractResponse;
+class IMcApplicationContext;
 
 class MCQUICKBOOT_EXPORT McAbstractRequestor : public QObject,
-                                               public IMcDestroyer,
                                                public IMcNonCopyable
 {
     Q_OBJECT
     MC_DECL_INIT(McAbstractRequestor)
-    MC_TYPELIST(IMcDestroyer)
     MC_AUTOWIRED("requestorConfig")
     Q_PRIVATE_PROPERTY(d, McRequestorConfigPtr requestorConfig MEMBER requestorConfig)
 public:
     Q_INVOKABLE explicit McAbstractRequestor(QObject *parent = nullptr);
     ~McAbstractRequestor() override;
 
-    //! 此函数什么都不做，因为此对象的所有权将转移至JavaScript，生命周期由JS管控
-    void destroy() noexcept override;
-
     qint64 maxThreadCount() const noexcept;
     void setMaxThreadCount(int val) noexcept;
     IMcControllerContainerPtr controllerContainer() const noexcept;
     void setControllerContainer(IMcControllerContainerConstPtrRef val) noexcept;
+    IMcApplicationContext *appCtx() const noexcept;
+    void setAppCtx(IMcApplicationContext *val) noexcept;
+
+    Q_INVOKABLE QObject *getBean(const QString &name) const noexcept;
+    template<typename T>
+    T getBean(const QString &name) const noexcept
+    {
+        return getBeanToVariant(name).value<T>();
+    }
 
 protected:
     void customEvent(QEvent *event) override;
@@ -50,8 +54,10 @@ protected:
 
 private:
     Q_INVOKABLE
-    MC_BEAN_FINISHED
-    void finished() noexcept;
+    MC_ALL_FINISHED
+    void allFinished() noexcept;
+
+    QVariant getBeanToVariant(const QString &name) const noexcept;
 
 private:
     MC_DECL_PRIVATE(McAbstractRequestor)

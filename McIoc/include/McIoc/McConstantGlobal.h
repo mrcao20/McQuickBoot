@@ -6,9 +6,8 @@ namespace Constant {
 namespace Property {
 
 //! Inner QObject Property
-constexpr const char *customDeleter = "__mc__customDeleter";
+//constexpr const char *customDeleter = "__mc__customDeleter";
 //!< Inner QObject Property
-
 }
 
 namespace Tag {

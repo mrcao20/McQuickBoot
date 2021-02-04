@@ -43,6 +43,7 @@ private:
     QVariant invokeForUri(QObjectConstPtrRef bean,
                           const QString &func,
                           const QVariantMap &args) noexcept;
+    bool makeCallback(QVariantMap &args, const QMetaMethod &m) noexcept;
     QVariant invokeForUri(QObjectConstPtrRef bean,
                           const QString &func,
                           const QVariantList &args) noexcept;
@@ -52,9 +53,7 @@ private:
     bool isMethodMatching(const QMetaMethod &m, const QList<QString> &argNames) noexcept;
     bool isMethodMatching(const QMetaMethod &m, const QVariantList &args) noexcept;
 
-    void removeDuplication(QList<QString> &argNames,
-                           QList<QByteArray> &paramNames,
-                           QList<QByteArray> &paramTypes) noexcept;
+    void removeDuplication(QList<QString> &argNames, QList<QByteArray> &paramNames) noexcept;
 
     QVariant invokeForArgs(QObjectConstPtrRef bean,
                            const QMetaMethod &method,

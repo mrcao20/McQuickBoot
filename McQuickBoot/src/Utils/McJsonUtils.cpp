@@ -17,6 +17,11 @@ struct JsonUtils
     QVariant makeObjectValue(const QByteArray &typeName, const QVariant &arg) noexcept;
     QVariant makeGadgetValue(int type, const QVariant &arg) noexcept;
     int convertToObjectTypeId(const QByteArray &typeName) noexcept;
+
+    QVariant serialize(const QVariant &origin) noexcept;
+    QVariant serialize(QObject *obj, const QVariant &origin) noexcept;
+    QVariant serialize(const void *obj, const QMetaObject *metaObj, const QVariant &origin) noexcept;
+    bool isSerialize(const QMetaObject *metaObj) noexcept;
 };
 
 QVariant JsonUtils::makeValue(const QByteArray &typeName, const QVariant &arg) noexcept
@@ -172,6 +177,60 @@ int JsonUtils::convertToObjectTypeId(const QByteArray &typeName) noexcept
     }
 }
 
+QVariant JsonUtils::serialize(const QVariant &origin) noexcept
+{
+    auto originId = origin.userType();
+    auto qobjectIds = McMetaTypeId::qobjectPointerIds();
+    auto sharedIds = McMetaTypeId::sharedPointerIds();
+    auto gadgetIds = McMetaTypeId::gadgetIds();
+    for (auto gadgetId : gadgetIds) {
+        if (gadgetId->pointerId == originId || gadgetId->sharedId == originId) {
+            return serialize(*reinterpret_cast<const void *const *>(origin.constData()),
+                             QMetaType::metaObjectForType(gadgetId->gadgetId),
+                             origin);
+        }
+    }
+    if (qobjectIds.contains(originId)) {
+        return serialize(origin.value<QObject *>(), origin);
+    } else if (sharedIds.contains(originId)) {
+        return serialize(origin.value<QObjectPtr>().data(), origin);
+    } else {
+        return origin;
+    }
+}
+
+QVariant JsonUtils::serialize(QObject *obj, const QVariant &origin) noexcept
+{
+    auto metaObj = obj->metaObject();
+    if (!isSerialize(metaObj)) {
+        return origin;
+    }
+    return McJsonUtils::toJson(obj);
+}
+
+QVariant JsonUtils::serialize(const void *obj,
+                              const QMetaObject *metaObj,
+                              const QVariant &origin) noexcept
+{
+    if (!isSerialize(metaObj)) {
+        return origin;
+    }
+    return McJsonUtils::toJson(obj, metaObj);
+}
+
+bool JsonUtils::isSerialize(const QMetaObject *metaObj) noexcept
+{
+    auto serializeIndex = metaObj->indexOfClassInfo(MC_SERIALIZATION_TAG);
+    if (serializeIndex == -1) {
+        return false;
+    }
+    auto classInfo = metaObj->classInfo(serializeIndex);
+    if (qstrcmp(classInfo.value(), MC_JSON_SERIALIZATION_TAG) != 0) {
+        return false;
+    }
+    return true;
+}
+
 } // namespace McPrivate
 
 MC_GLOBAL_STATIC(McPrivate::JsonUtils, mcJsonUtils)
@@ -296,4 +355,9 @@ QVariant McJsonUtils::fromJson(const QByteArray &typeName, const QVariant &value
 QVariant McJsonUtils::fromJson(int type, const QVariant &value) noexcept
 {
     return McJsonUtils::fromJson(QMetaType::typeName(type), value);
+}
+
+QVariant McJsonUtils::serialize(const QVariant &origin) noexcept
+{
+    return mcJsonUtils->serialize(origin);
 }

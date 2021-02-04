@@ -31,6 +31,7 @@ DESTDIR = $$PWD/../../bin/Examples
 MOC_DIR = $$PWD/../../moc/Examples/LogTest
 
 include($$PWD/../../common.pri)
+include($$PWD/../../McLogQt/McLogQtDepend.pri)
 
 win32 {
     msvc {

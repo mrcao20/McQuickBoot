@@ -30,10 +30,86 @@ inline bool qMapLessThanKey(const QVariant &key1, const QVariant &key2)
 
 namespace McPrivate {
 
-class McGlobal
+template<typename T>
+struct IsQVariantHelper
 {
-    MC_DECL_INIT(McGlobal)
+    enum { Value = true, Value2 = false };
 };
+template<>
+struct IsQVariantHelper<const char *>
+{
+    enum { Value = false, Value2 = true };
+};
+template<>
+struct IsQVariantHelper<char *>
+{
+    enum { Value = false, Value2 = true };
+};
+template<int N>
+struct IsQVariantHelper<char[N]>
+{
+    enum { Value = false, Value2 = true };
+};
+
+template<typename T>
+struct QVariantSelector
+{
+    enum { Value = false };
+};
+template<>
+struct QVariantSelector<QVariant>
+{
+    enum { Value = true };
+};
+template<>
+struct QVariantSelector<const QVariant>
+{
+    enum { Value = true };
+};
+template<>
+struct QVariantSelector<QVariant &>
+{
+    enum { Value = true };
+};
+template<>
+struct QVariantSelector<const QVariant &>
+{
+    enum { Value = true };
+};
+template<typename... Args>
+struct QVariantSelector<QtPrivate::List<Args...>>
+{
+    enum { Value = QVariantSelector<typename QtPrivate::List<Args...>::Car>::Value };
+};
+
+namespace LambdaDetail {
+
+template<typename R, typename C, typename M, typename... Args>
+struct Types
+{
+    using IsMutable = M;
+
+    enum { ArgumentCount = sizeof...(Args) };
+
+    using ReturnType = R;
+    using Arguments = QtPrivate::List<Args...>;
+};
+
+} // namespace LambdaDetail
+
+template<class T>
+struct LambdaType : LambdaType<decltype(&T::operator())>
+{};
+
+// 特化版本，函数为非const（对应的lambda表达式为mutable）
+template<class R, class C, class... Args>
+struct LambdaType<R (C::*)(Args...)> : LambdaDetail::Types<R, C, std::true_type, Args...>
+{};
+
+// 特化版本，函数为const
+template<class R, class C, class... Args>
+struct LambdaType<R (C::*)(Args...) const> : LambdaDetail::Types<R, C, std::false_type, Args...>
+{};
 
 template <typename Mutex, typename Lock =
 #if defined(__cpp_guaranteed_copy_elision) && __cpp_guaranteed_copy_elision >= 201606L
@@ -136,6 +212,8 @@ MCIOC_EXPORT QList<QString> getComponents(IMcApplicationContextConstPtrRef appCt
 MCIOC_EXPORT bool isComponent(const QMetaObject *metaObj) noexcept;
 //! 传入的元对象的组件类型是否为type
 MCIOC_EXPORT bool isComponentType(const QMetaObject *metaObj, const QString &type) noexcept;
+MCIOC_EXPORT bool isContainedTag(const QString &tags, const QString &tag) noexcept;
+MCIOC_EXPORT QObject *getObject(IMcApplicationContext *appCtx, const QString &beanName) noexcept;
 
 using StartUpFunction = std::function<void()>;
 using CleanUpFunction = std::function<void()>;
@@ -158,18 +236,30 @@ MCIOC_EXPORT void connect(const QMetaObject *metaObj,
                           const QString &slot,
                           Qt::ConnectionType type = Qt::AutoConnection) noexcept;
 
-MCIOC_EXPORT QMetaObject::Connection connect(IMcApplicationContextConstPtrRef appCtx,
+MCIOC_EXPORT QMetaObject::Connection connect(IMcApplicationContext *appCtx,
                                              const QString &sender,
                                              const QString &signal,
                                              const QString &receiver,
                                              const QString &slot,
                                              Qt::ConnectionType type = Qt::AutoConnection) noexcept;
 
-MCIOC_EXPORT QMetaObject::Connection connect(IMcApplicationContextConstPtrRef appCtx,
+MCIOC_EXPORT QMetaObject::Connection connect(IMcApplicationContext *appCtx,
                                              const QString &sender,
                                              const QString &signal,
                                              QObject *receiver,
                                              const QString &slot,
                                              Qt::ConnectionType type = Qt::AutoConnection) noexcept;
+
+MCIOC_EXPORT bool disconnect(IMcApplicationContext *appCtx,
+                             const QString &sender,
+                             const QString &signal,
+                             const QString &receiver,
+                             const QString &slot) noexcept;
+
+MCIOC_EXPORT bool disconnect(IMcApplicationContext *appCtx,
+                             const QString &sender,
+                             const QString &signal,
+                             QObject *receiver,
+                             const QString &slot) noexcept;
 } // namespace Ioc
 } // namespace Mc

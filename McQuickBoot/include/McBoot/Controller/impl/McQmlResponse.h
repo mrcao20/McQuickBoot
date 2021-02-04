@@ -25,12 +25,6 @@ protected:
     void callCallback() noexcept override;
 
 private:
-    QVariant serialize(const QVariant &origin) noexcept;
-    QVariant serialize(QObject *obj, const QVariant &origin) noexcept;
-    QVariant serialize(const void *obj, const QMetaObject *metaObj, const QVariant &origin) noexcept;
-    bool isSerialize(const QMetaObject *metaObj) noexcept;
-
-private:
     MC_DECL_PRIVATE(McQmlResponse)
 };
 

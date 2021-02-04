@@ -13,7 +13,6 @@
 #include "McBoot/Controller/impl/McControllerContainer.h"
 #include "McBoot/Model/McModelContainer.h"
 #include "McBoot/Requestor/McQmlRequestor.h"
-#include "McBoot/Socket/impl/McQmlSocketContainer.h"
 
 namespace {
 
@@ -34,6 +33,11 @@ QQmlEngine *engine{nullptr};
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McQuickBoot)
+MC_DESTROY()
+if (!mcQuickBootStaticData.exists()) {
+    return;
+}
+mcQuickBootStaticData->boot.reset();
 MC_INIT_END
 
 McQuickBoot::McQuickBoot(QObject *parent) : McAbstractQuickBoot(parent)
@@ -63,18 +67,13 @@ void McQuickBoot::init(QCoreApplication *app, QQmlApplicationEngine *engine) noe
 
     auto controllerContainer = appCtx->getBean<McControllerContainer>("controllerContainer");
     auto modelContainer = appCtx->getBean<McModelContainer>("modelContainer");
-    auto socketContainer = appCtx->getBean<McQmlSocketContainer>("socketContainer");
 
-    auto cppRequestor = appCtx->getBean<McCppRequestor>("cppRequestor");
-    cppRequestor->setControllerContainer(controllerContainer);
-    boot->setRequestor(cppRequestor);
-
-    auto requestor = appCtx->getBean<McQmlRequestor>("qmlRequestor");
+    auto requestor = appCtx->getBeanPointer<McQmlRequestor>("qmlRequestor");
     requestor->setControllerContainer(controllerContainer);
-    requestor->setSocketContainer(socketContainer);
+    requestor->setAppCtx(appCtx.data());
 
     //! engine的newQObject函数会将其参数所有权转移到其返回的QJSValue中
-    QJSValue jsObj = engine->newQObject(requestor.data());
+    QJSValue jsObj = engine->newQObject(requestor);
     engine->globalObject().setProperty("$", jsObj);
     engine->importModule(":/requestor.mjs");
 
@@ -145,7 +144,4 @@ void McQuickBoot::initContainer() const noexcept
 
     auto modelContainer = d->context->getBean<McModelContainer>("modelContainer");
     modelContainer->init(this);
-
-    auto socketContainer = d->context->getBean<McQmlSocketContainer>("socketContainer");
-    socketContainer->init(this);
 }

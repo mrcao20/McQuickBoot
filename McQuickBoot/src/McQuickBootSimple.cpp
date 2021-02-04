@@ -25,6 +25,11 @@ McAnnotationApplicationContextPtr context;
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McQuickBootSimple)
+MC_DESTROY()
+if (!mcQuickBootSimpleStaticData.exists()) {
+    return;
+}
+mcQuickBootSimpleStaticData->boot.reset();
 MC_INIT_END
 
 McQuickBootSimple::McQuickBootSimple(QObject *parent) : McAbstractQuickBoot(parent)
@@ -47,12 +52,6 @@ void McQuickBootSimple::init() noexcept
         boot->d->context = McAnnotationApplicationContextPtr::create();
         boot->doRefresh();
     }
-    auto appCtx = boot->d->context;
-
-    auto controllerContainer = appCtx->getBean<McControllerContainer>("controllerContainer");
-    auto requestor = appCtx->getBean<McCppRequestor>("cppRequestor");
-    requestor->setControllerContainer(controllerContainer);
-    boot->setRequestor(requestor);
 }
 
 QSharedPointer<McQuickBootSimple> McQuickBootSimple::instance() noexcept

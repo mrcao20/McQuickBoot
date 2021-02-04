@@ -25,21 +25,22 @@ struct McCustomDeleter
 {
     void operator()(QObject *ptr)
     {
-//        //! 这里用到了dynamic_cast，原则上来说不应该使用这种方法
-//        //! 暂时没有更好的解决方案，后续处理
-//        auto d = dynamic_cast<IMcDestroyer *>(ptr);
-//        if(d == nullptr) {
-//            delete ptr;
-//        } else {
-//            d->destroy();
-//        }
-        //! 取消dynamic_cast
-        auto d = ptr->property(Mc::Constant::Property::customDeleter).value<IMcDestroyer *>();
-        if(d != nullptr) {
-            d->destroy();
-        } else {
+        //! 这里用到了dynamic_cast，原则上来说不应该使用这种方法
+        //! 暂时没有更好的解决方案，后续处理
+        auto d = dynamic_cast<IMcDestroyer *>(ptr);
+        if (d == nullptr) {
             delete ptr;
+        } else {
+            d->destroy();
         }
+        //! 取消dynamic_cast
+        //! 2021/2/4 由于setProperty和property线程不安全，且setProperty内部使用了sendEvent，所以取消这种方法
+        //        auto d = ptr->property(Mc::Constant::Property::customDeleter).value<IMcDestroyer *>();
+        //        if(d != nullptr) {
+        //            d->destroy();
+        //        } else {
+        //            delete ptr;
+        //        }
     }
 };
 

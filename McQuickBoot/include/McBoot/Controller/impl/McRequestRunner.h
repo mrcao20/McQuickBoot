@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QObject>
 #include <QRunnable>
 
 #include "../../McBootGlobal.h"
@@ -10,8 +11,9 @@ MC_FORWARD_DECL_CLASS(IMcControllerContainer);
 
 class McAbstractResponse;
 
-class MCQUICKBOOT_EXPORT McRequestRunner : public QRunnable 
+class MCQUICKBOOT_EXPORT McRequestRunner : public QObject, public QRunnable
 {
+    Q_OBJECT
 public:
     McRequestRunner();
     ~McRequestRunner() override;
@@ -22,6 +24,9 @@ public:
     void setBody(const QVariant &body) noexcept;
 
     void run() override;
+
+signals:
+    void signal_finished();
 
 private:
     MC_DECL_PRIVATE(McRequestRunner)

@@ -20,6 +20,40 @@ McCppRequestor::~McCppRequestor()
 {
 }
 
+QMetaObject::Connection McCppRequestor::connect(const QString &sender,
+                                                const QString &signal,
+                                                const QString &receiver,
+                                                const QString &slot,
+                                                Qt::ConnectionType type) noexcept
+{
+    return Mc::Ioc::connect(appCtx(), sender, signal, receiver, slot, type);
+}
+
+QMetaObject::Connection McCppRequestor::connect(const QString &sender,
+                                                const QString &signal,
+                                                QObject *receiver,
+                                                const QString &slot,
+                                                Qt::ConnectionType type) noexcept
+{
+    return Mc::Ioc::connect(appCtx(), sender, signal, receiver, slot, type);
+}
+
+bool McCppRequestor::disconnect(const QString &sender,
+                                const QString &signal,
+                                const QString &receiver,
+                                const QString &slot) noexcept
+{
+    return Mc::Ioc::disconnect(appCtx(), sender, signal, receiver, slot);
+}
+
+bool McCppRequestor::disconnect(const QString &sender,
+                                const QString &signal,
+                                QObject *receiver,
+                                const QString &slot) noexcept
+{
+    return Mc::Ioc::disconnect(appCtx(), sender, signal, receiver, slot);
+}
+
 McCppResponse &McCppRequestor::invoke(const QString &uri) noexcept
 {
     auto response = new McCppResponse();

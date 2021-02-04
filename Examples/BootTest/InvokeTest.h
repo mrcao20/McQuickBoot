@@ -1,6 +1,7 @@
 #pragma once
 
 #include <McBoot/McBootGlobal.h>
+#include <McBoot/Utils/Callback/Impl/McQmlSyncCallback.h>
 
 #include "Object.h"
 
@@ -75,6 +76,7 @@ public:
     Q_INVOKABLE QJsonObject invoke4() noexcept;
     Q_INVOKABLE GadgetTestPtr invoke5(const GadgetTestPtr &o) noexcept;
     Q_INVOKABLE GadgetTest *invoke6(GadgetTest *o) noexcept;
+    Q_INVOKABLE void invoke7(IMcCallbackPtr o) noexcept;
 
     Q_INVOKABLE
     MC_BEAN_START
@@ -89,7 +91,8 @@ public:
     void threadEnd() noexcept;
     
 signals:
-    
+    void signal_1(GadgetTestPtr);
+
 public slots:
 };
 

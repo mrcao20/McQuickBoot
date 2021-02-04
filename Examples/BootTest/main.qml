@@ -23,23 +23,22 @@ ApplicationWindow {
     }
     
     Component.onCompleted: {
-        var data = {
-            onOpen: function(){
-                console.log("qml onOpen aaaaaaaaa");
-                ws.send("bbbbbbbb");
-            },
-            onMessage: function(msg){
-                console.log("qml message", msg);
-            },
-            onClose: function() {
-                console.log("ccccccccc");
-            }
+        var o = $.getBean("obj");
+        console.log(o, o.text);
+        var func = function(res){
+            console.log("connect>>>>:", JSON.stringify(res));
+//            $.disconnect(id);
+//            $.disconnect("con", "");
+//            $.disconnect("con", "signal_1");
+            $.disconnect("con", "signal_1", func);
         };
-//        ws = $.qs("socket", data);
-        
+        var id = $.connect("con", "signal_1", func);
+        $.connect("con", "signal_1", function(res){
+            console.log("connect222222222>>>>:", JSON.stringify(res));
+        });
         $.get("con.invoke1?aaa=b");
         $.get("con.invoke22").then(function(res){
-            console.log("invoke22", JSON.stringify(res));
+            console.log("invoke22", res);
         });
         $.get("con1.invoke1?aaa=b").then(function(result) {
             console.log("con1");
@@ -82,6 +81,11 @@ ApplicationWindow {
         });
         $.post("con.invoke6", data1).then(function(res){
             console.log("invoke6", JSON.stringify(res));
+        });
+        $.post("con.invoke7", function(a1, a2){
+            console.log("callback test", a1, a2);
+        }).then(function(res){
+            console.log("invoke7", JSON.stringify(res));
         });
         
 //        $.get("app.dirPath").then(function(result){

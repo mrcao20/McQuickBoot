@@ -3,8 +3,12 @@
 #include <QObject>
 #include <McBoot/McBootGlobal.h>
 
+#include <QDebug>
 #include <QJsonArray>
 #include <QJsonObject>
+
+#include <McBoot/Utils/Callback/IMcCallback.h>
+#include <McBoot/Utils/Callback/Impl/McCppSyncCallback.h>
 
 #include "Param.h"
 
@@ -34,11 +38,19 @@ public:
                                 const std::function<void(int)> &func);
 
     Q_INVOKABLE void aaa(const std::function<void(int)> &func);
+    Q_INVOKABLE QVariant vvv(const IMcCallbackPtr &callback);
     Q_INVOKABLE ParamPtr ccc();
 
     ParamPtr param;
     ParamMap paramMap;
     QThread *threadTest;
+
+    void callbackTest(const QVariant &var) noexcept
+    {
+        qDebug() << "------+++++++---------" << var;
+        qDebug() << var.value<ParamPtr>()->aaa;
+    }
+    void callbackTest2(const QString &str, int ii) { qDebug() << "callback test2:" << str << ii; }
 
 signals:
     void signal_sig();

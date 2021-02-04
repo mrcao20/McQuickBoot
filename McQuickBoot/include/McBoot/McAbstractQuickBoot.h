@@ -27,6 +27,15 @@ public:
                                            QObject *receiver,
                                            const QString &slot,
                                            Qt::ConnectionType type = Qt::AutoConnection) noexcept;
+    static bool disconnect(const QString &sender,
+                           const QString &signal,
+                           const QString &receiver,
+                           const QString &slot) noexcept;
+
+    static bool disconnect(const QString &sender,
+                           const QString &signal,
+                           QObject *receiver,
+                           const QString &slot) noexcept;
     static QSharedPointer<McAbstractQuickBoot> instance() noexcept;
 
     McCppRequestor &requestor() const noexcept;
@@ -36,7 +45,6 @@ protected:
 
     virtual void initContainer() const noexcept = 0;
 
-    void setRequestor(const McCppRequestorPtr &req) noexcept;
     void doRefresh() noexcept;
 
 private:

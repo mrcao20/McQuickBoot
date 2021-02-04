@@ -101,8 +101,7 @@ void McAbstractNormalBeanFactory::callTagFunction(QObject *bean,
     auto mo = bean->metaObject();
     for(int i = 0; i < mo->methodCount(); ++i) {
         auto method = mo->method(i);
-        QString tags = method.tag();
-        if(tags.contains(tag)) {
+        if (Mc::isContainedTag(method.tag(), tag)) {
             //! 遍历当前对象的所有方法，调用所有被标记过的方法，从超基类开始到子类
             method.invoke(bean, type);
         }
@@ -115,8 +114,7 @@ void McAbstractNormalBeanFactory::callTagFunction(void *bean,
 {
     for (int i = 0; i < metaObj->methodCount(); ++i) {
         auto method = metaObj->method(i);
-        QString tags = method.tag();
-        if (tags.contains(tag)) {
+        if (Mc::isContainedTag(method.tag(), tag)) {
             method.invokeOnGadget(bean);
         }
     }

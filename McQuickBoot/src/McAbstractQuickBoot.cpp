@@ -6,6 +6,7 @@
 
 #include "McBoot/BeanDefinitionReader/impl/McConfigurationFileBeanDefinitionReader.h"
 #include "McBoot/Configuration/McConfigurationContainer.h"
+#include "McBoot/Controller/impl/McControllerContainer.h"
 
 namespace {
 
@@ -35,9 +36,6 @@ if (mcAbstractQuickBootStaticData->boot->d->workThread != nullptr) {
     delete mcAbstractQuickBootStaticData->boot->d->workThread;
     mcAbstractQuickBootStaticData->boot->d->workThread = nullptr;
 }
-auto requestor = mcAbstractQuickBootStaticData -> boot -> d -> requestor.data();
-mcAbstractQuickBootStaticData->boot->d->requestor.clear();
-delete requestor;
 mcAbstractQuickBootStaticData->boot.reset();
 MC_INIT_END
 
@@ -54,7 +52,7 @@ QMetaObject::Connection McAbstractQuickBoot::connect(const QString &sender,
                                                      const QString &slot,
                                                      Qt::ConnectionType type) noexcept
 {
-    return Mc::Ioc::connect(McAbstractQuickBoot::instance()->getApplicationContext(),
+    return Mc::Ioc::connect(McAbstractQuickBoot::instance()->getApplicationContext().data(),
                             sender,
                             signal,
                             receiver,
@@ -68,12 +66,36 @@ QMetaObject::Connection McAbstractQuickBoot::connect(const QString &sender,
                                                      const QString &slot,
                                                      Qt::ConnectionType type) noexcept
 {
-    return Mc::Ioc::connect(McAbstractQuickBoot::instance()->getApplicationContext(),
+    return Mc::Ioc::connect(McAbstractQuickBoot::instance()->getApplicationContext().data(),
                             sender,
                             signal,
                             receiver,
                             slot,
                             type);
+}
+
+bool McAbstractQuickBoot::disconnect(const QString &sender,
+                                     const QString &signal,
+                                     const QString &receiver,
+                                     const QString &slot) noexcept
+{
+    return Mc::Ioc::disconnect(McAbstractQuickBoot::instance()->getApplicationContext().data(),
+                               sender,
+                               signal,
+                               receiver,
+                               slot);
+}
+
+bool McAbstractQuickBoot::disconnect(const QString &sender,
+                                     const QString &signal,
+                                     QObject *receiver,
+                                     const QString &slot) noexcept
+{
+    return Mc::Ioc::disconnect(McAbstractQuickBoot::instance()->getApplicationContext().data(),
+                               sender,
+                               signal,
+                               receiver,
+                               slot);
 }
 
 QSharedPointer<McAbstractQuickBoot> McAbstractQuickBoot::instance() noexcept
@@ -93,11 +115,6 @@ void McAbstractQuickBoot::setInstance(const QSharedPointer<McAbstractQuickBoot> 
     mcAbstractQuickBootStaticData->boot = ins;
 }
 
-void McAbstractQuickBoot::setRequestor(const McCppRequestorPtr &req) noexcept
-{
-    d->requestor = req;
-}
-
 void McAbstractQuickBoot::doRefresh() noexcept
 {
     auto context = getApplicationContext();
@@ -115,4 +132,10 @@ void McAbstractQuickBoot::doRefresh() noexcept
     }
     context->refresh(d->workThread); //!< 预加载bean
     initContainer();
+
+    auto controllerContainer = context->getBean<McControllerContainer>("controllerContainer");
+    auto cppRequestor = context->getBean<McCppRequestor>("cppRequestor");
+    cppRequestor->setControllerContainer(controllerContainer);
+    cppRequestor->setAppCtx(context.data());
+    d->requestor = cppRequestor;
 }

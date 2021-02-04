@@ -57,12 +57,12 @@ QVariant McSharedBeanFactory::convertToQVariant(QObject *obj) noexcept
     if (destoryer) {
         destoryer->deleteWhenQuit();
     }
-    auto customDeleter = var.value<IMcDestroyerPtr>();
-    if (!customDeleter.isNull()) {
-        //! 这里如果传递共享指针，那么该对象将永远不会析构
-        bean->setProperty(Mc::Constant::Property::customDeleter,
-                          QVariant::fromValue(customDeleter.data()));
-    }
+    //    auto customDeleter = var.value<IMcDestroyerPtr>();
+    //    if (!customDeleter.isNull()) {
+    //        //! 这里如果传递共享指针，那么该对象将永远不会析构
+    //        bean->setProperty(Mc::Constant::Property::customDeleter,
+    //                          QVariant::fromValue(customDeleter.data()));
+    //    }
     return var;
 }
 

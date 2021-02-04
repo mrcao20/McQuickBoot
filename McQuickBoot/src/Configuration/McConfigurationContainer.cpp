@@ -28,7 +28,7 @@ McConfigurationContainer::~McConfigurationContainer()
 
 void McConfigurationContainer::init(const IMcQuickBoot *boot) noexcept
 {
-    QMap<QString, QList<QVariant>> vars;
+    QMap<int, QList<QVariant>> vars;
     auto appCtx = boot->getApplicationContext();
     auto beanNames = Mc::getComponents(appCtx, MC_CONFIGURATION_TAG);
     for (const auto &beanName : beanNames) {
@@ -48,7 +48,14 @@ void McConfigurationContainer::init(const IMcQuickBoot *boot) noexcept
         auto classInfo = metaObj->classInfo(priorityIndex);
         QString priority = classInfo.value();
         Q_ASSERT(!priority.isEmpty());
-        vars[priority].append(var);
+        priority.remove(R"("@")");
+        if (priority.isEmpty()) {
+            priority = "0";
+        }
+        bool isOk = false;
+        int prio = priority.toInt(&isOk);
+        Q_ASSERT(isOk);
+        vars[prio].append(var);
     }
     auto keys = vars.keys();
     for (int i = keys.size() - 1; i >= 0; --i) {
@@ -62,20 +69,7 @@ void McConfigurationContainer::init(const IMcQuickBoot *boot) noexcept
             auto metaObj = obj->metaObject();
             for (int i = 0; i < metaObj->methodCount(); ++i) {
                 auto method = metaObj->method(i);
-                QString tag = method.tag();
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-                auto tags = tag.split(' ', QString::SkipEmptyParts);
-#else
-                auto tags = tag.split(' ', Qt::SkipEmptyParts);
-#endif
-                bool isContained = false;
-                for (auto t : tags) {
-                    if (t == MC_STRINGIFY(MC_BEAN)) {
-                        isContained = true;
-                        break;
-                    }
-                }
-                if (!isContained) {
+                if (!Mc::isContainedTag(method.tag(), MC_STRINGIFY(MC_BEAN))) {
                     continue;
                 }
                 auto newBeanName = method.name();
