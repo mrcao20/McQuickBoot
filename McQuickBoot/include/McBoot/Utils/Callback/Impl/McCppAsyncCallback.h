@@ -6,7 +6,6 @@ MC_FORWARD_DECL_PRIVATE_DATA(McCppAsyncCallback);
 
 class MCQUICKBOOT_EXPORT McCppAsyncCallback : public McAbstractAsyncCallback
 {
-    Q_OBJECT
     MC_TYPELIST(McAbstractAsyncCallback)
     MC_DECL_POINTER(McCppAsyncCallback)
 
@@ -29,8 +28,8 @@ public:
 
     McCppAsyncCallback(const McCppAsyncCallback &o) noexcept;
     McCppAsyncCallback(McCppAsyncCallback &&o) noexcept;
-    void operator=(const McCppAsyncCallback &o) noexcept;
-    void operator=(McCppAsyncCallback &&o) noexcept;
+    McCppAsyncCallback &operator=(const McCppAsyncCallback &o) noexcept;
+    McCppAsyncCallback &operator=(McCppAsyncCallback &&o) noexcept;
 
     void call(const QVariantList &varList) noexcept override;
 

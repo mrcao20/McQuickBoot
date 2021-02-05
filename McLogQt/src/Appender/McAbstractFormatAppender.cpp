@@ -61,20 +61,9 @@ void McAbstractFormatAppender::append(QtMsgType type, const QMessageLogContext &
         MC_PRINT_ERR("in release, need to manual define QT_MESSAGELOGCONTEXT\n");
     }
     auto message = l->format(type, context, str);
-    
-    if(d->immediateFlush) {
-        if(thread() == QThread::currentThread()) {
-            append_helper(message);
-        }else{
-            QMetaObject::invokeMethod(this
-                                      , MC_STRINGIFY(append_helper)
-                                      , Qt::BlockingQueuedConnection
-                                      , Q_ARG(QString, message));
-        }
-    }else{
-        auto e = new McCustomEvent(QEvent::User, message);
-        qApp->postEvent(this, e);
-    }
+
+    auto e = new McCustomEvent(QEvent::User, message);
+    qApp->postEvent(this, e);
 }
 
 void McAbstractFormatAppender::finished() noexcept
@@ -115,10 +104,22 @@ void McAbstractFormatAppender::append_helper(const QString &msg) noexcept
         return;
     }
     textStream() << msg;
+    if (d->immediateFlush) {
 #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-    textStream() << endl;
+        textStream() << endl;
 #else
-    textStream() << Qt::endl;
+        textStream() << Qt::endl;
 #endif
+    } else {
+#ifdef Q_OS_WIN
+        if (out->openMode().testFlag(QIODevice::Text)) {
+            textStream() << "\r\n";
+        } else {
+            textStream() << "\n";
+        }
+#else
+        textStream() << "\n";
+#endif
+    }
     writeAfter();
 }

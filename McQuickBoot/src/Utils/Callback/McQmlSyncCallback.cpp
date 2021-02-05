@@ -30,24 +30,26 @@ McQmlSyncCallback::~McQmlSyncCallback() {}
 
 McQmlSyncCallback::McQmlSyncCallback(const McQmlSyncCallback &o) noexcept : McQmlSyncCallback()
 {
-    operator=(o);
-}
-
-McQmlSyncCallback::McQmlSyncCallback(McQmlSyncCallback &&o) noexcept : McQmlSyncCallback()
-{
-    operator=(o);
-}
-
-void McQmlSyncCallback::operator=(const McQmlSyncCallback &o) noexcept
-{
     d->callback = o.d->callback;
     d->engine = o.d->engine;
 }
 
-void McQmlSyncCallback::operator=(McQmlSyncCallback &&o) noexcept
+McQmlSyncCallback::McQmlSyncCallback(McQmlSyncCallback &&o) noexcept
+{
+    d.swap(o.d);
+}
+
+McQmlSyncCallback &McQmlSyncCallback::operator=(const McQmlSyncCallback &o) noexcept
 {
     d->callback = o.d->callback;
     d->engine = o.d->engine;
+    return *this;
+}
+
+McQmlSyncCallback &McQmlSyncCallback::operator=(McQmlSyncCallback &&o) noexcept
+{
+    d.swap(o.d);
+    return *this;
 }
 
 void McQmlSyncCallback::syncCall(const QVariantList &varList) noexcept

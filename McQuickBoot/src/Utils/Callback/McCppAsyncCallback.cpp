@@ -9,6 +9,18 @@ MC_DECL_PRIVATE_DATA(McCppAsyncCallback)
 QList<bool> isQVariants;
 const QObject *recever{nullptr};
 QtPrivate::QSlotObjectBase *callback{nullptr};
+
+void deinit()
+{
+    if (callback == nullptr) {
+        return;
+    }
+    callback->destroyIfLastRef();
+    callback = nullptr;
+}
+MC_PRIVATE_DATA_DESTRUCTOR(McCppAsyncCallback)
+deinit();
+MC_PRIVATE_DATA_DESTRUCTOR_END
 MC_DECL_PRIVATE_DATA_END
 
 McCppAsyncCallback::McCppAsyncCallback() noexcept
@@ -16,38 +28,35 @@ McCppAsyncCallback::McCppAsyncCallback() noexcept
     MC_NEW_PRIVATE_DATA(McCppAsyncCallback);
 }
 
-McCppAsyncCallback::~McCppAsyncCallback()
-{
-    if (d->callback == nullptr) {
-        return;
-    }
-    d->callback->destroyIfLastRef();
-    d->callback = nullptr;
-}
+McCppAsyncCallback::~McCppAsyncCallback() {}
 
 McCppAsyncCallback::McCppAsyncCallback(const McCppAsyncCallback &o) noexcept : McCppAsyncCallback()
 {
-    operator=(o);
-}
-
-McCppAsyncCallback::McCppAsyncCallback(McCppAsyncCallback &&o) noexcept : McCppAsyncCallback()
-{
-    operator=(o);
-}
-
-void McCppAsyncCallback::operator=(const McCppAsyncCallback &o) noexcept
-{
+    d->isQVariants = o.d->isQVariants;
     d->recever = o.d->recever;
     d->callback = o.d->callback;
     d->callback->ref();
 }
 
-void McCppAsyncCallback::operator=(McCppAsyncCallback &&o) noexcept
+McCppAsyncCallback::McCppAsyncCallback(McCppAsyncCallback &&o) noexcept
 {
+    d.swap(o.d);
+}
+
+McCppAsyncCallback &McCppAsyncCallback::operator=(const McCppAsyncCallback &o) noexcept
+{
+    d->deinit();
+    d->isQVariants = o.d->isQVariants;
     d->recever = o.d->recever;
     d->callback = o.d->callback;
-    o.d->recever = nullptr;
-    o.d->callback = nullptr;
+    d->callback->ref();
+    return *this;
+}
+
+McCppAsyncCallback &McCppAsyncCallback::operator=(McCppAsyncCallback &&o) noexcept
+{
+    d.swap(o.d);
+    return *this;
 }
 
 void McCppAsyncCallback::call(const QVariantList &varList) noexcept

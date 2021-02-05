@@ -2,5 +2,5 @@
 
 void McAbstractAsyncCallback::destroy() noexcept
 {
-    deleteLater();
+    delete this;
 }

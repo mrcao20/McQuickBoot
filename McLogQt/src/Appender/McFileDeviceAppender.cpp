@@ -27,8 +27,6 @@ void McFileDeviceAppender::writeAfter() noexcept
         return;
     }
 
-    fileDevice->flush();
-
     tryNextFile();
 }
 

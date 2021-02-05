@@ -42,6 +42,11 @@
 
 #define MC_DECL_PRIVATE_DATA_END };
 
+#define MC_PRIVATE_DATA_DESTRUCTOR(Class) \
+    ~Class##Data() {
+
+#define MC_PRIVATE_DATA_DESTRUCTOR_END }
+
 #define MC_DECL_PRIVATE(Class) \
     QScopedPointer<Class##Data> d; \
     friend struct Class##Data;

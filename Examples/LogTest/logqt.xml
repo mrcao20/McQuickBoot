@@ -15,11 +15,13 @@
         <property name="layout" ref="ttccLayout"></property>
     </bean>
     <bean name="vsDebug" class="McVSDebugAppender">
+        <property name="immediateFlush" value="true"></property>
         <property name="layout" ref="normalLayout"></property>
     </bean>
     <bean name="dailyRollingFile" class="McDailyRollingFileAppender">
         <!-- 后面加debug-表示debug等级及以上 -->
         <property name="threshold" value="debug-"></property>
+        <property name="immediateFlush" value="true"></property>
         <property name="backupDirPath" value="./log/dailyRollingFile/backup/"></property>
         <property name="backupDirPattern" value="%{time yyyy-MM-dd}"></property>
         <property name="dirPath" value="./log/dailyRollingFile/"></property>
@@ -39,6 +41,7 @@
     </bean>
     <bean name="file" class="McFileAppender">
         <property name="threshold" value="fatal-"></property>
+        <property name="immediateFlush" value="true"></property>
         <property name="dirPath" value="./log/file/"></property>
         <property name="fileNamePattern" value="log.log"></property>
         <property name="append" value="false"></property>
@@ -47,6 +50,7 @@
     
     <bean name="lidar0RollingFile" class="McSizeRollingFileAppender">
         <property name="maxFileSize" value="30KB"></property>
+        <property name="immediateFlush" value="true"></property>
         <property name="backupDirPath" value="./Lidar[0]/backup/"></property>
         <property name="backupDirPattern" value="%{time yyyy-MM-dd}"></property>
         <property name="dirPath" value="./Lidar[0]/"></property>

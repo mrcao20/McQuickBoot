@@ -19,8 +19,8 @@ public:
 
     McQmlSyncCallback(const McQmlSyncCallback &o) noexcept;
     McQmlSyncCallback(McQmlSyncCallback &&o) noexcept;
-    void operator=(const McQmlSyncCallback &o) noexcept;
-    void operator=(McQmlSyncCallback &&o) noexcept;
+    McQmlSyncCallback &operator=(const McQmlSyncCallback &o) noexcept;
+    McQmlSyncCallback &operator=(McQmlSyncCallback &&o) noexcept;
 
 protected:
     void syncCall(const QVariantList &varList) noexcept override;

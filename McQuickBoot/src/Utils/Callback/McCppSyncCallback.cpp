@@ -9,6 +9,18 @@ MC_DECL_PRIVATE_DATA(McCppSyncCallback)
 QList<bool> isQVariants;
 const QObject *recever{nullptr};
 QtPrivate::QSlotObjectBase *callback{nullptr};
+
+void deinit()
+{
+    if (callback == nullptr) {
+        return;
+    }
+    callback->destroyIfLastRef();
+    callback = nullptr;
+}
+MC_PRIVATE_DATA_DESTRUCTOR(McCppSyncCallback)
+deinit();
+MC_PRIVATE_DATA_DESTRUCTOR_END
 MC_DECL_PRIVATE_DATA_END
 
 McCppSyncCallback::McCppSyncCallback() noexcept
@@ -16,38 +28,35 @@ McCppSyncCallback::McCppSyncCallback() noexcept
     MC_NEW_PRIVATE_DATA(McCppSyncCallback);
 }
 
-McCppSyncCallback::~McCppSyncCallback()
-{
-    if (d->callback == nullptr) {
-        return;
-    }
-    d->callback->destroyIfLastRef();
-    d->callback = nullptr;
-}
+McCppSyncCallback::~McCppSyncCallback() {}
 
 McCppSyncCallback::McCppSyncCallback(const McCppSyncCallback &o) noexcept : McCppSyncCallback()
 {
-    operator=(o);
-}
-
-McCppSyncCallback::McCppSyncCallback(McCppSyncCallback &&o) noexcept : McCppSyncCallback()
-{
-    operator=(o);
-}
-
-void McCppSyncCallback::operator=(const McCppSyncCallback &o) noexcept
-{
+    d->isQVariants = o.d->isQVariants;
     d->recever = o.d->recever;
     d->callback = o.d->callback;
     d->callback->ref();
 }
 
-void McCppSyncCallback::operator=(McCppSyncCallback &&o) noexcept
+McCppSyncCallback::McCppSyncCallback(McCppSyncCallback &&o) noexcept
 {
+    d.swap(o.d);
+}
+
+McCppSyncCallback &McCppSyncCallback::operator=(const McCppSyncCallback &o) noexcept
+{
+    d->deinit();
+    d->isQVariants = o.d->isQVariants;
     d->recever = o.d->recever;
     d->callback = o.d->callback;
-    o.d->recever = nullptr;
-    o.d->callback = nullptr;
+    d->callback->ref();
+    return *this;
+}
+
+McCppSyncCallback &McCppSyncCallback::operator=(McCppSyncCallback &&o) noexcept
+{
+    d.swap(o.d);
+    return *this;
 }
 
 void McCppSyncCallback::syncCall(const QVariantList &varList) noexcept

@@ -29,8 +29,8 @@ public:
 
     McCppSyncCallback(const McCppSyncCallback &o) noexcept;
     McCppSyncCallback(McCppSyncCallback &&o) noexcept;
-    void operator=(const McCppSyncCallback &o) noexcept;
-    void operator=(McCppSyncCallback &&o) noexcept;
+    McCppSyncCallback &operator=(const McCppSyncCallback &o) noexcept;
+    McCppSyncCallback &operator=(McCppSyncCallback &&o) noexcept;
 
     template<typename Func>
     McCppSyncCallback(const typename QtPrivate::FunctionPointer<Func>::Object *recever,

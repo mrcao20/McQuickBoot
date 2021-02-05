@@ -122,23 +122,15 @@ struct McRegisterBeanFactory
     static void registerBeanFactory()
     {
         using TPtr = QSharedPointer<T>;
-        using QObjectPtr = QSharedPointer<QObject>;
-        if (!QMetaType::hasRegisteredConverterFunction<TPtr, QObjectPtr>()) {
-            QMetaType::registerConverter<TPtr, QObjectPtr>();
-        }
-        if (!QMetaType::hasRegisteredConverterFunction<QObjectPtr, TPtr>()) {
-            QMetaType::registerConverter<QObjectPtr, TPtr>(
-                mcConverterQSharedPointerObject<QObjectPtr, TPtr>);
-        }
         if (!QMetaType::hasRegisteredConverterFunction<TPtr, T *>()) {
             QMetaType::registerConverter<TPtr, T *>(mcSharedToStar<TPtr, T *>);
         }
         auto pId = qRegisterMetaType<T *>();
-        auto sId = qRegisterMetaType<TPtr>();
-        McMetaTypeId::addQObjectPointerIds(pId, sId);
-        McMetaTypeId::addSharedPointerId(sId, pId);
+        qRegisterMetaType<TPtr>();
 
-        const char *const cName = T::staticMetaObject.className();
+        QByteArray cName = QMetaType::typeName(pId);
+        Q_ASSERT(!cName.isEmpty());
+        cName.remove(cName.length() - 1, 1);
         QByteArray typeName;
         typeName.append("QSharedPointer<").append(cName).append('>');
         qRegisterMetaType<TPtr>(typeName);
@@ -168,6 +160,42 @@ struct McRegisterBeanFactory<T,
         auto sId = qRegisterMetaType<TPtr>();
 
         McMetaTypeId::addGadget(gId, pId, sId);
+
+        const char *const cName = T::staticMetaObject.className();
+        QByteArray typeName;
+        typeName.append("QSharedPointer<").append(cName).append('>');
+        qRegisterMetaType<TPtr>(typeName);
+
+        typeName.clear();
+        typeName.reserve(int(strlen(cName)) + 11);
+        typeName.append(cName).append("ConstPtrRef");
+        qRegisterMetaType<TPtr>(typeName);
+    }
+};
+
+template<typename T>
+struct McRegisterBeanFactory<
+    T,
+    typename std::enable_if<QtPrivate::IsPointerToTypeDerivedFromQObject<T *>::Value>::type>
+{
+    static void registerBeanFactory()
+    {
+        using TPtr = QSharedPointer<T>;
+        using QObjectPtr = QSharedPointer<QObject>;
+        if (!QMetaType::hasRegisteredConverterFunction<TPtr, QObjectPtr>()) {
+            QMetaType::registerConverter<TPtr, QObjectPtr>();
+        }
+        if (!QMetaType::hasRegisteredConverterFunction<QObjectPtr, TPtr>()) {
+            QMetaType::registerConverter<QObjectPtr, TPtr>(
+                mcConverterQSharedPointerObject<QObjectPtr, TPtr>);
+        }
+        if (!QMetaType::hasRegisteredConverterFunction<TPtr, T *>()) {
+            QMetaType::registerConverter<TPtr, T *>(mcSharedToStar<TPtr, T *>);
+        }
+        auto pId = qRegisterMetaType<T *>();
+        auto sId = qRegisterMetaType<TPtr>();
+        McMetaTypeId::addQObjectPointerIds(pId, sId);
+        McMetaTypeId::addSharedPointerId(sId, pId);
 
         const char *const cName = T::staticMetaObject.className();
         QByteArray typeName;
