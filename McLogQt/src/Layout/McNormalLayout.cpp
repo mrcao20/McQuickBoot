@@ -7,7 +7,7 @@ MC_INIT_END
 void McNormalLayout::finished() noexcept 
 {
     McPatternLayout::finished();
-    
+
     QString pattern = "[%{time yyyy-MM-dd hh:mm:ss,zzz}][%{category}]"
                       "[%{if-debug}DEBUG]:   %{endif}"
 #if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)

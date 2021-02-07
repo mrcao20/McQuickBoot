@@ -3,15 +3,15 @@
 //#include <private/qvariant_p.h>
 //#include <private/qmetatype_p.h>
 
-#include <QEventLoop>
-#include <QTimer>
-#include <QElapsedTimer>
-#include <QDir>
 #include <QCoreApplication>
-#include <QUrl>
-#include <QMetaObject>
-#include <QMetaClassInfo>
 #include <QDebug>
+#include <QDir>
+#include <QElapsedTimer>
+#include <QEventLoop>
+#include <QMetaClassInfo>
+#include <QMetaObject>
+#include <QTimer>
+#include <QUrl>
 
 #include "McIoc/ApplicationContext/impl/McAnnotationApplicationContext.h"
 #include "McIoc/BeanDefinition/IMcBeanDefinition.h"
@@ -274,14 +274,14 @@ QString toAbsolutePath(const QString &path) noexcept
     QString sepDotDot = "..";
     sepDot += QDir::separator();
     sepDotDot += QDir::separator();
-    if(dstPath.startsWith(sepDot) || dstPath.startsWith(sepDotDot)) {
+    if (dstPath.startsWith(sepDot) || dstPath.startsWith(sepDotDot)) {
         dstPath = qApp->applicationDirPath() + QDir::separator() + dstPath;
     } else {
         QUrl url(path);
-        if(url.isLocalFile()) {
+        if (url.isLocalFile()) {
             dstPath = url.toLocalFile();
             dstPath = QDir::toNativeSeparators(dstPath);
-            if(!QDir::isAbsolutePath(dstPath)) {
+            if (!QDir::isAbsolutePath(dstPath)) {
                 dstPath = qApp->applicationDirPath() + QDir::separator() + dstPath;
             }
             url = QUrl::fromLocalFile(dstPath);

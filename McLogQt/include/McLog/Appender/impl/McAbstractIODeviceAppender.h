@@ -1,17 +1,19 @@
 #pragma once
 
-#include "McAbstractAppender.h"
+#include "../IMcCodecableAppender.h"
 #include "../IMcWritableAppender.h"
+#include "McAbstractAppender.h"
 
 MC_FORWARD_DECL_PRIVATE_DATA(McAbstractIODeviceAppender);
 
-class MCLOGQT_EXPORT McAbstractIODeviceAppender
-        : public McAbstractAppender
-        , public IMcWritableAppender
+class MCLOGQT_EXPORT McAbstractIODeviceAppender : public McAbstractAppender,
+                                                  public IMcWritableAppender,
+                                                  public IMcCodecableAppender
 {
     Q_OBJECT
     MC_DECL_INIT(McAbstractIODeviceAppender)
-    MC_TYPELIST(McAbstractAppender, IMcWritableAppender);
+    MC_TYPELIST(McAbstractAppender, IMcWritableAppender)
+    Q_PROPERTY(QByteArray codecName READ codecName WRITE setCodecName)
 
 public:
     McAbstractIODeviceAppender();
@@ -19,6 +21,10 @@ public:
     
     QIODevicePtr device() const noexcept;
     void setDevice(QIODeviceConstPtrRef device) noexcept override;
+    QByteArray codecName() const noexcept;
+    void setCodecName(const QByteArray &val) noexcept;
+    QTextCodec *codec() const noexcept override;
+    void setCodec(QTextCodec *val) noexcept override;
 
     void allFinished() noexcept override;
 

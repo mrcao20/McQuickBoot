@@ -21,8 +21,8 @@ McVSDebugAppender::~McVSDebugAppender()
 void McVSDebugAppender::finished() noexcept
 {
     McAbstractFormatAppender::finished();
-    
-    auto dev = McVSDebugDevicePtr::create();
+
+    auto dev = McVSDebugDevicePtr::create(this);
     if (!dev->open(QIODevice::WriteOnly)) {
         MC_PRINT_ERR("error open vs debuger for write!!!\n");
         return;

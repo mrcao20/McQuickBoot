@@ -42,11 +42,7 @@ private:
     {
         return QVariant::fromValue(t);
     }
-    template<>
-    QVariant toQVariant(const QVariant &t)
-    {
-        return t;
-    }
+    QVariant toQVariant(const QVariant &t) { return t; }
     template<typename T>
     typename std::enable_if<McPrivate::IsQVariantHelper<T>::Value2, QVariant>::type toQVariant(
         const T &t)

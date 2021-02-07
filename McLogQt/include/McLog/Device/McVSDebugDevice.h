@@ -3,6 +3,8 @@
 #include <QIODevice>
 #include "../McLogGlobal.h"
 
+class IMcCodecableAppender;
+
 MC_FORWARD_DECL_PRIVATE_DATA(McVSDebugDevice);
 
 class MCLOGQT_EXPORT McVSDebugDevice : public QIODevice
@@ -11,7 +13,8 @@ class MCLOGQT_EXPORT McVSDebugDevice : public QIODevice
     MC_DECL_INIT(McVSDebugDevice)
     MC_TYPELIST();
 public:
-    Q_INVOKABLE explicit McVSDebugDevice(QObject *parent = nullptr) noexcept;
+    Q_INVOKABLE explicit McVSDebugDevice(IMcCodecableAppender *codecableAppender,
+                                         QObject *parent = nullptr) noexcept;
     ~McVSDebugDevice() override;
     
 protected:

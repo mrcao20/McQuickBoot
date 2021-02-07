@@ -17,9 +17,9 @@ McDefaultPropertyParser::McDefaultPropertyParser(QObject *parent)
 
 QVariant McDefaultPropertyParser::parseValue(const QDomElement &ele) const noexcept 
 {
-    if(ele.hasAttribute("value")) {
+    if (ele.hasAttribute("value")) {
         return ele.attribute("value");
-    }else{
+    } else {
         return ele.text();
     }
 }
@@ -27,11 +27,11 @@ QVariant McDefaultPropertyParser::parseValue(const QDomElement &ele) const noexc
 QVariant McDefaultPropertyParser::parseRef(const QDomElement &ele) const noexcept 
 {
     McBeanReferencePtr ref = McBeanReferencePtr::create();
-    if(ele.hasAttribute("ref")) {
+    if (ele.hasAttribute("ref")) {
         ref->setName(ele.attribute("ref"));
-    }else if(ele.hasAttribute("bean")){
+    } else if (ele.hasAttribute("bean")) {
         ref->setName(ele.attribute("bean"));
-    }else{
+    } else {
         ref->setName(ele.text());
     }
     return QVariant::fromValue(ref);
@@ -40,13 +40,13 @@ QVariant McDefaultPropertyParser::parseRef(const QDomElement &ele) const noexcep
 QVariant McDefaultPropertyParser::parseList(const QDomElement &ele) const noexcept 
 {
     QVariantList list;
-    
-    if(ele.hasAttribute("plugins")) {
+
+    if (ele.hasAttribute("plugins")) {
         QString pluginsPath = ele.attribute("plugins").simplified();
         pluginsPath = Mc::toAbsolutePath(pluginsPath);
         list = getList(pluginsPath, ele.attribute("isPointer", "false") == "true");
     }
-    
+
     auto childNodes = ele.childNodes();
     for(int i = 0; i < childNodes.size(); ++i) {
         auto childEle = childNodes.at(i).toElement();
@@ -141,13 +141,13 @@ QVariant McDefaultPropertyParser::parseMap(const QDomElement &ele) const noexcep
 QVariant McDefaultPropertyParser::parseEnum(const QDomElement &ele) const noexcept
 {
     McBeanEnumPtr e = McBeanEnumPtr::create();
-    if(ele.hasAttribute("scope")) {
+    if (ele.hasAttribute("scope")) {
         e->setScope(ele.attribute("scope"));
     }
-    if(ele.hasAttribute("type")) {
+    if (ele.hasAttribute("type")) {
         e->setType(ele.attribute("type"));
     }
-    if(ele.hasAttribute("value")) {
+    if (ele.hasAttribute("value")) {
         e->setValue(ele.attribute("value"));
     }
     auto childNodes = ele.childNodes();
@@ -157,24 +157,24 @@ QVariant McDefaultPropertyParser::parseEnum(const QDomElement &ele) const noexce
         if(childEle.isNull()) {
             continue;
         }
-        if(childEle.tagName() == "scope") {
-            if(childEle.hasAttribute("name")) {
+        if (childEle.tagName() == "scope") {
+            if (childEle.hasAttribute("name")) {
                 e->setScope(childEle.attribute("name"));
             }
             auto text = childEle.text().simplified();
             if(!text.isEmpty()) {
                 e->setScope(text);
             }
-        } else if(childEle.tagName() == "type") {
-            if(childEle.hasAttribute("name")) {
+        } else if (childEle.tagName() == "type") {
+            if (childEle.hasAttribute("name")) {
                 e->setType(childEle.attribute("name"));
             }
             auto text = childEle.text().simplified();
             if(!text.isEmpty()) {
                 e->setType(text);
             }
-        } else if(childEle.tagName() == "value") {
-            if(childEle.hasAttribute("name")) {
+        } else if (childEle.tagName() == "value") {
+            if (childEle.hasAttribute("name")) {
                 e->setValue(childEle.attribute("name"));
             }
             auto text = childEle.text().simplified();

@@ -33,7 +33,7 @@ public:
         }
         auto type = QMetaType::type(m_className.toLocal8Bit());
         if(type == QMetaType::UnknownType) {
-            if(m_className.endsWith("*")) {
+            if (m_className.endsWith("*")) {
                 return;
             }
             type = QMetaType::type((m_className + "*").toLocal8Bit());

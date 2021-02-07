@@ -30,28 +30,28 @@ void McSizeRollingFileAppender::setMaxFileSize(const QString &val) noexcept
     d->maxFileSize = val.toUpper();
     
     auto temp = d->maxFileSize;
-    if(temp.endsWith("GB")) {
+    if (temp.endsWith("GB")) {
         temp.remove("GB");
         bool ok = false;
         auto size = temp.toLongLong(&ok);
         if(ok) {
             setMaxFileSizeBytes(size * 1024 * 1024 * 1024);
         }
-    }else if(temp.endsWith("MB")) {
+    } else if (temp.endsWith("MB")) {
         temp.remove("MB");
         bool ok = false;
         auto size = temp.toLongLong(&ok);
         if(ok) {
             setMaxFileSizeBytes(size * 1024 * 1024);
         }
-    }else if(temp.endsWith("KB")) {
+    } else if (temp.endsWith("KB")) {
         temp.remove("KB");
         bool ok = false;
         auto size = temp.toLongLong(&ok);
         if(ok) {
             setMaxFileSizeBytes(size * 1024);
         }
-    }else if(temp.endsWith("B")) {
+    } else if (temp.endsWith("B")) {
         temp.remove("B");
         bool ok = false;
         auto size = temp.toLongLong(&ok);

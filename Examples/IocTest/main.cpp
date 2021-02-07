@@ -33,7 +33,9 @@ int main(int argc, char *argv[])
     bc.addBean(b1);
     b1->setBeanName("r");
     b1->setClassName("R");
-    
+    b1->setSingleton(true);
+    b1->setPointer(false);
+
     McBeanPtr b = McBeanPtr::create();
     bc.addBean(b);
     b->setBeanName("c");

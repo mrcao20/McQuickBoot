@@ -54,14 +54,16 @@ QVariant McAbstractNormalBeanFactory::doCreate(IMcBeanDefinitionConstPtrRef bean
         }
         auto beanMetaObj = beanDefinition->getBeanMetaObject();
         if (!beanMetaObj) {
-            qCritical() << QString("the class '%1' is not in meta-object system").arg(beanDefinition->getClassName());
+            qCritical() << QString("the class '%1' is not in meta-object system")
+                               .arg(beanDefinition->getClassName());
             return QVariant();
         }
         obj = beanMetaObj->newInstance();
     }
     if (!obj) {
-        qCritical() << QString("bean '%1' cannot instantiation, please make sure that have a non-parameter constructor and declared by Q_INVOKABLE")
-            .arg(beanDefinition->getClassName());
+        qCritical() << QString("bean '%1' cannot instantiation, please make sure that have a "
+                               "non-parameter constructor and declared by Q_INVOKABLE")
+                           .arg(beanDefinition->getClassName());
         return QVariant();
     }
     callStartFunction(obj); //!< 调用构造开始函数
@@ -166,8 +168,9 @@ bool McAbstractNormalBeanFactory::addPropertyValue(QObject *bean,
         //! 根据给定属性名称获取 给定的bean中的属性对象
         auto index = bean->metaObject()->indexOfProperty(itr.key().toLocal8Bit());
         if(index == -1) {
-            qDebug() << QString("bean '%1' cannot found property named for '%2'. it will be a dynamic property")
-                           .arg(bean->metaObject()->className(), itr.key());
+            qDebug() << QString("bean '%1' cannot found property named for '%2'. it will be a "
+                                "dynamic property")
+                            .arg(bean->metaObject()->className(), itr.key());
             bean->setProperty(itr.key().toLocal8Bit(), value);
             
         }else{
@@ -293,9 +296,9 @@ QObject *McAbstractNormalBeanFactory::getPropertyObject(QObject *bean,
                                                         const QVariantMap &proValues) noexcept
 {
     QObject *obj;
-    if(proName == Mc::Constant::Tag::Xml::self) {
+    if (proName == Mc::Constant::Tag::Xml::self) {
         obj = bean;
-    }else{
+    } else {
         if(!proValues.contains(proName)) {
             qCritical("not found property named '%s' for bean '%s'\n"
                       , bean->metaObject()->className(), qPrintable(proName));

@@ -17,6 +17,8 @@ public:
     void setBeanName(const QString &name) noexcept;
     void setClassName(const QString &name) noexcept;
     void setPluginPath(const QString &path) noexcept;
+    void setSingleton(bool val) noexcept;
+    void setPointer(bool val) noexcept;
     void addContent(IMcBeanContentConstPtrRef content) noexcept;
     
     QDomElement toDomElement(QDomDocument &doc) const noexcept override;

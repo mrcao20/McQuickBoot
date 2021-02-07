@@ -3,6 +3,9 @@
 #include <mutex>
 
 #include <QMutex>
+#include <QTextCodec>
+
+#include "McLog/Appender/IMcCodecableAppender.h"
 
 #ifdef Q_OS_WIN
 #include <qt_windows.h>
@@ -13,6 +16,7 @@ MC_REGISTER_BEAN_FACTORY(McVSDebugDevice)
 MC_INIT_END
 
 MC_DECL_PRIVATE_DATA(McVSDebugDevice)
+IMcCodecableAppender *codecableAppender{nullptr};
 MC_DECL_PRIVATE_DATA_END
 
 namespace {
@@ -58,10 +62,12 @@ static void win_outputDebugString_helper(QStringView message)
 
 }
 
-McVSDebugDevice::McVSDebugDevice(QObject *parent) noexcept
+McVSDebugDevice::McVSDebugDevice(IMcCodecableAppender *codecableAppender, QObject *parent) noexcept
     : QIODevice(parent)
 {
     MC_NEW_PRIVATE_DATA(McVSDebugDevice);
+
+    d->codecableAppender = codecableAppender;
 }
 
 McVSDebugDevice::~McVSDebugDevice()
@@ -77,7 +83,7 @@ qint64 McVSDebugDevice::readData(char *data, qint64 maxSize)
 
 qint64 McVSDebugDevice::writeData(const char *data, qint64 maxSize)
 {
-    QString msg = QString::fromLocal8Bit(data, maxSize);
+    QString msg = d->codecableAppender->codec()->toUnicode(data, static_cast<int>(maxSize));
 #ifdef Q_OS_WIN
     win_outputDebugString_helper(msg);
 #endif

@@ -70,15 +70,15 @@ Qt::ConnectionType McAbstractBeanDefinitionReader::getConnectionType(const QStri
 Qt::ConnectionType McAbstractBeanDefinitionReader::connectionTypeStrToEnum(const QString &typeStr) noexcept 
 {
     auto type = typeStr.simplified();
-    if(type == "AutoConnection") {
+    if (type == "AutoConnection") {
         return Qt::ConnectionType::AutoConnection;
-    }else if(type == "DirectConnection") {
+    } else if (type == "DirectConnection") {
         return Qt::ConnectionType::DirectConnection;
-    }else if(type == "QueuedConnection") {
+    } else if (type == "QueuedConnection") {
         return Qt::ConnectionType::QueuedConnection;
-    }else if(type == "BlockingQueuedConnection") {
+    } else if (type == "BlockingQueuedConnection") {
         return Qt::ConnectionType::BlockingQueuedConnection;
-    }else {
+    } else {
         return Qt::ConnectionType::UniqueConnection;
     }
 }
