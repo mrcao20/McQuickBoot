@@ -43,6 +43,7 @@ void McLogPackager::finished() noexcept
     if (isOk) {
         d->ageNumeric = num;
     }
+    d->dstPath = Mc::toAbsolutePath(d->dstPath);
 }
 
 void McLogPackager::execute() noexcept
