@@ -7,6 +7,8 @@ SOURCES += \
     $$PWD/src/Application/McSingleCoreApplication.cpp \
     $$PWD/src/Configuration/McConfigurationContainer.cpp \
     $$PWD/src/Configuration/McRequestorConfig.cpp \
+    $$PWD/src/Connection/McAbstractConnection.cpp \
+    $$PWD/src/Connection/McCppConnection.cpp \
     $$PWD/src/Connection/McQmlConnection.cpp \
     $$PWD/src/Controller/InnerController/McApplicationController.cpp \
     $$PWD/src/Controller/McAbstractResponse.cpp \
@@ -36,6 +38,8 @@ HEADERS +=  \
     $$PWD/include/McBoot/Configuration/McConfigurationContainer.h \
     $$PWD/include/McBoot/Configuration/McRequestorConfig.h \
     $$PWD/include/McBoot/Configuration/McSimpleBeanDefinition.h \
+    $$PWD/include/McBoot/Connection/McAbstractConnection.h \
+    $$PWD/include/McBoot/Connection/McCppConnection.h \
     $$PWD/include/McBoot/Connection/McQmlConnection.h \
     $$PWD/include/McBoot/Controller/IMcControllerContainer.h \
     $$PWD/include/McBoot/Controller/InnerController/McApplicationController.h \

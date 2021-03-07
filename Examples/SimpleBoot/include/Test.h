@@ -55,6 +55,7 @@ public:
 signals:
     void signal_sig();
     void signal_sig2();
+    void signal_sig3(int);
 
 private:
     MC_DECL_PRIVATE(Test)

@@ -7,7 +7,7 @@ MC_STATIC_END
 
 MC_DECL_PRIVATE_DATA(McCppSyncCallback)
 QList<bool> isQVariants;
-const QObject *recever{nullptr};
+const QObject *receiver{nullptr};
 QtPrivate::QSlotObjectBase *callback{nullptr};
 
 void deinit()
@@ -33,7 +33,7 @@ McCppSyncCallback::~McCppSyncCallback() {}
 McCppSyncCallback::McCppSyncCallback(const McCppSyncCallback &o) noexcept : McCppSyncCallback()
 {
     d->isQVariants = o.d->isQVariants;
-    d->recever = o.d->recever;
+    d->receiver = o.d->receiver;
     d->callback = o.d->callback;
     d->callback->ref();
 }
@@ -47,7 +47,7 @@ McCppSyncCallback &McCppSyncCallback::operator=(const McCppSyncCallback &o) noex
 {
     d->deinit();
     d->isQVariants = o.d->isQVariants;
-    d->recever = o.d->recever;
+    d->receiver = o.d->receiver;
     d->callback = o.d->callback;
     d->callback->ref();
     return *this;
@@ -63,7 +63,7 @@ void McCppSyncCallback::syncCall(const QVariantList &varList) noexcept
 {
     Q_ASSERT_X(varList.length() >= d->isQVariants.length(),
                "McCppSyncCallback::syncCall",
-               "recever argument count must be equal to or less than sender");
+               "receiver argument count must be equal to or less than sender");
     void **args = new void *[varList.length() + 1];
     args[0] = nullptr;
     for (int i = 0; i < varList.length(); ++i) {
@@ -74,15 +74,15 @@ void McCppSyncCallback::syncCall(const QVariantList &varList) noexcept
             args[i + 1] = const_cast<void *>(var.data());
         }
     }
-    d->callback->call(const_cast<QObject *>(d->recever), args);
+    d->callback->call(const_cast<QObject *>(d->receiver), args);
     delete[] args;
 }
 
 void McCppSyncCallback::init(const QList<bool> &isQVariants,
-                             const QObject *recever,
+                             const QObject *receiver,
                              QtPrivate::QSlotObjectBase *callback) noexcept
 {
     d->isQVariants = isQVariants;
-    d->recever = recever;
+    d->receiver = receiver;
     d->callback = callback;
 }

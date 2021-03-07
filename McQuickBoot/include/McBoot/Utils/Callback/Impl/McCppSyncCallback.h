@@ -33,14 +33,14 @@ public:
     McCppSyncCallback &operator=(McCppSyncCallback &&o) noexcept;
 
     template<typename Func>
-    McCppSyncCallback(const typename QtPrivate::FunctionPointer<Func>::Object *recever,
+    McCppSyncCallback(const typename QtPrivate::FunctionPointer<Func>::Object *receiver,
                       Func callback) noexcept
         : McCppSyncCallback()
     {
         typedef QtPrivate::FunctionPointer<Func> FuncType;
 
         init(QVariantSelector<typename FuncType::Arguments>::isQVariants(),
-             recever,
+             receiver,
              new QtPrivate::QSlotObject<Func,
                                         typename FuncType::Arguments,
                                         typename FuncType::ReturnType>(callback));
@@ -53,9 +53,9 @@ public:
 
     template<typename Func>
     static McCppSyncCallbackPtr build(
-        const typename QtPrivate::FunctionPointer<Func>::Object *recever, Func callback) noexcept
+        const typename QtPrivate::FunctionPointer<Func>::Object *receiver, Func callback) noexcept
     {
-        return McCppSyncCallbackPtr(new McCppSyncCallback(recever, callback), McCallbackDeleter());
+        return McCppSyncCallbackPtr(new McCppSyncCallback(receiver, callback), McCallbackDeleter());
     }
     template<typename Func>
     static McCppSyncCallbackPtr build(Func callback) noexcept
@@ -68,7 +68,7 @@ protected:
 
 private:
     void init(const QList<bool> &isQVariants,
-              const QObject *recever,
+              const QObject *receiver,
               QtPrivate::QSlotObjectBase *callback) noexcept;
     template<typename Func>
     typename std::enable_if<int(QtPrivate::FunctionPointer<Func>::ArgumentCount) >= 0

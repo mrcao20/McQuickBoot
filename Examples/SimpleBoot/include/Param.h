@@ -1,7 +1,8 @@
 #pragma once
 
-#include <QObject>
 #include <McIoc/McGlobal.h>
+#include <QDebug>
+#include <QObject>
 
 MC_FORWARD_DECL_PRIVATE_DATA(Param);
 
@@ -15,8 +16,9 @@ public:
 
     MC_POCO_PROPERTY(int, aaa);
 
-private slots:
+public slots:
     void slot_slt();
+    void callbackTest3(int a) { qDebug() << "Param callback test3:" << a; }
 
 private:
     MC_DECL_PRIVATE(Param)

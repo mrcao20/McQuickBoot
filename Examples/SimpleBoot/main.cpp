@@ -27,6 +27,11 @@ void callbackTest2(const QVariant &str, QVariant ii)
     qDebug() << "callback test:" << str << ii;
 }
 
+void callbackTest3(int a)
+{
+    qDebug() << "callback test3:" << a;
+}
+
 int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
@@ -43,6 +48,11 @@ int main(int argc, char *argv[])
     McQuickBootSimple::init();
     $.connect("aaa", SIGNAL(signal_sig()), "param", SLOT(slot_slt()));
     ParamPtr p = ParamPtr::create();
+    $.connect("aaa", SIGNAL(signal_sig3(int)), p.data(), &Param::callbackTest3);
+    $.connect("aaa", SIGNAL(signal_sig3(int)), &app, callbackTest3);
+    $.connect("aaa", SIGNAL(signal_sig3(int)), &app, [](int a) {
+        qDebug() << "lambda callback test3:" << a;
+    });
     p->aaa = 1000;
     $.invoke("aaa.bbb",
              QVariantList() << "lllllllll" << QJsonObject({{"zzz", "mmmm"}})

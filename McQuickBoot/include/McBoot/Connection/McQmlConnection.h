@@ -1,16 +1,14 @@
 #pragma once
 
-#include <QObject>
+#include "McAbstractConnection.h"
 
 #include <QJSValue>
-
-#include <McIoc/McGlobal.h>
 
 MC_FORWARD_DECL_PRIVATE_DATA(McQmlConnection);
 
 class QJSEngine;
 
-class McQmlConnection : public QObject
+class McQmlConnection : public McAbstractConnection
 {
 public:
     McQmlConnection(QObject *parent = nullptr) noexcept;
@@ -23,7 +21,9 @@ public:
 
     bool check(QObject *obj, const QString &signal, const QJSValue &callback) noexcept;
 
-    int qt_metacall(QMetaObject::Call c, int id, void **arguments) override;
+protected:
+    using McAbstractConnection::init;
+    void call(void **arguments) noexcept override;
 
 private:
     MC_DECL_PRIVATE(McQmlConnection)

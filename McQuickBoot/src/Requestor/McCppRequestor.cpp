@@ -2,6 +2,9 @@
 
 #include <QVariant>
 
+#include <McIoc/ApplicationContext/IMcApplicationContext.h>
+
+#include "McBoot/Connection/McCppConnection.h"
 #include "McBoot/Controller/IMcControllerContainer.h"
 #include "McBoot/Controller/impl/McCppResponse.h"
 
@@ -98,4 +101,26 @@ QVariant McCppRequestor::syncInvoke(const QString &uri, const QVariant &data) no
 QVariant McCppRequestor::syncInvoke(const QString &uri, const QVariantList &data) noexcept
 {
     return controllerContainer()->invoke(uri, data);
+}
+
+QMetaObject::Connection McCppRequestor::connectImpl(const QString &sender,
+                                                    const QString &signal,
+                                                    const QObject *receiver,
+                                                    QtPrivate::QSlotObjectBase *slot,
+                                                    Qt::ConnectionType type) noexcept
+{
+    auto senderObj = appCtx()->getBeanPointer<QObject>(sender);
+    if (senderObj == nullptr) {
+        senderObj = appCtx()->getBean<QObject>(sender).data();
+    }
+    if (senderObj == nullptr) {
+        qCritical("not exists bean '%s'", qPrintable(sender));
+        return QMetaObject::Connection();
+    }
+    McCppConnection *con = new McCppConnection();
+    auto c = con->init(senderObj, signal, const_cast<QObject *>(receiver), slot, type);
+    if (!c) {
+        con->deleteLater();
+    }
+    return c;
 }
