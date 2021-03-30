@@ -13,6 +13,7 @@
 
 QT_BEGIN_NAMESPACE
 class QQuickView;
+class QQuickWidget;
 QT_END_NAMESPACE
 
 MC_FORWARD_DECL_CLASS(IMcApplicationContext);
@@ -32,6 +33,8 @@ public:
     static void init(QCoreApplication *app, QQmlApplicationEngine *engine) noexcept;
     static QQmlEngine *engine() noexcept;
     static QQuickView *createQuickView(const QString &source, QWindow *parent = nullptr) noexcept;
+    static QQuickWidget *createQuickWidget(const QString &source,
+                                           QWidget *parent = nullptr) noexcept;
 
     static QSharedPointer<McQuickBoot> instance() noexcept;
 

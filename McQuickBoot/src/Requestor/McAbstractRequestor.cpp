@@ -131,7 +131,13 @@ void McAbstractRequestor::run(McAbstractResponse *response,
 
 void McAbstractRequestor::allFinished() noexcept
 {
-    setMaxThreadCount(d->requestorConfig->maxThreadCount());
+    int maxThreadCount;
+    if (d->requestorConfig.isNull()) {
+        maxThreadCount = QThread::idealThreadCount();
+    } else {
+        maxThreadCount = d->requestorConfig->maxThreadCount();
+    }
+    setMaxThreadCount(maxThreadCount);
 }
 
 QVariant McAbstractRequestor::getBeanToVariant(const QString &name) const noexcept

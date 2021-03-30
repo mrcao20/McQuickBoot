@@ -52,9 +52,7 @@ void McXMLConfigurator::doConfigure(IMcApplicationContextConstPtrRef appCtx,
     QThread *thread = new QThread(); //!< 此线程将在LoggerRepository被析构时退出和销毁
     thread->start();
 
-    appCtx->refresh(thread);
-
-    auto rep = appCtx->getBean<IMcLoggerRepository>(beanName);
+    auto rep = appCtx->getBean<IMcLoggerRepository>(beanName, thread);
     McLogManager::instance()->setLoggerRepository(rep);
 
     McLogManager::installQtMessageHandler();

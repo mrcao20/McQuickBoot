@@ -1,4 +1,4 @@
-QT *= quick network
+QT *= quick quickwidgets
 
 INCLUDEPATH += $$PWD/include/
 

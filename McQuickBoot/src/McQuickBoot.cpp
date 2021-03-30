@@ -1,10 +1,11 @@
 #include "McBoot/McQuickBoot.h"
 
-#include <QQmlContext>
-#include <QJSValue>
-#include <QGlobalStatic>
-#include <QQuickView>
 #include <QDebug>
+#include <QGlobalStatic>
+#include <QJSValue>
+#include <QQmlContext>
+#include <QQuickView>
+#include <QQuickWidget>
 
 #include <McIoc/ApplicationContext/impl/McAnnotationApplicationContext.h>
 #include <McIoc/BeanDefinition/IMcBeanDefinition.h>
@@ -95,7 +96,18 @@ QQuickView *McQuickBoot::createQuickView(const QString &source, QWindow *parent)
     }
     QQuickView *view = new QQuickView(engine(), parent);
     view->setSource(QUrl(Mc::toAbsolutePath(source)));
-    return  view;
+    return view;
+}
+
+QQuickWidget *McQuickBoot::createQuickWidget(const QString &source, QWidget *parent) noexcept
+{
+    if (McQuickBoot::engine() == nullptr) {
+        qCritical("engine is null. you must be call function init or run before\n");
+        return nullptr;
+    }
+    QQuickWidget *widget = new QQuickWidget(engine(), parent);
+    widget->setSource(QUrl(Mc::toAbsolutePath(source)));
+    return widget;
 }
 
 QSharedPointer<McQuickBoot> McQuickBoot::instance() noexcept
