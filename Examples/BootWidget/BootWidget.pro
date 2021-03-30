@@ -1,4 +1,4 @@
-QT       += core gui quickboot
+QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -27,6 +27,28 @@ FORMS += \
     
 DESTDIR = $$PWD/../../bin/Examples
 MOC_DIR = $$PWD/../../moc/Examples/BootWidget
+
+include($$PWD/../../common.pri)
+include($$PWD/../../McQuickBoot/McQuickBootDepend.pri)
+
+win32 {
+    msvc {
+        CONFIG(release, debug|release): LIBS += -L$$PWD/../../bin/ -lMcQuickBoot
+        else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcQuickBootd
+    } else {
+        equals(QT_MAJOR_VERSION, 5):lessThan(QT_MINOR_VERSION, 13) {
+            CONFIG(release, debug|release): LIBS += -L$$PWD/../../bin/ -lMcQuickBoot
+            else:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../bin/ -lMcQuickBootd
+        } else {
+            LIBS += -L$$PWD/../../bin/ -lMcQuickBoot
+        }
+    }
+} else:unix:!macx {
+    LIBS += -L$$PWD/../../bin/ -lMcQuickBoot
+}
+
+INCLUDEPATH += $$PWD/../../McQuickBoot/include
+DEPENDPATH += $$PWD/../../McQuickBoot/include
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
