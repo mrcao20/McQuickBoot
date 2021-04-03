@@ -58,10 +58,10 @@ void McFileAppender::setAppend(bool val) noexcept
     d->isAppend = val;
 }
 
-void McFileAppender::finished() noexcept 
+void McFileAppender::doFinished() noexcept
 {
-    McFileDeviceAppender::finished();
-    
+    McFileDeviceAppender::doFinished();
+
     QSharedPointer<QFile> file = QSharedPointer<QFile>::create();
     setDevice(file);
     

@@ -55,9 +55,9 @@ void McAbstractIODeviceAppender::setCodec(QTextCodec *val) noexcept
     d->codec = val;
 }
 
-void McAbstractIODeviceAppender::allFinished() noexcept
+void McAbstractIODeviceAppender::doAllFinished() noexcept
 {
-    McAbstractAppender::allFinished();
+    McAbstractAppender::doAllFinished();
 
     d->textStream.setDevice(d->device.data());
     if (d->codec == nullptr) {

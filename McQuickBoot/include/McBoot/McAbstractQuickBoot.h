@@ -45,7 +45,7 @@ protected:
 
     virtual void initContainer() const noexcept = 0;
 
-    void doRefresh() noexcept;
+    void doRefresh(const QStringList &preloadBeans = QStringList()) noexcept;
 
 private:
     MC_DECL_PRIVATE(McAbstractQuickBoot)

@@ -22,6 +22,12 @@ ApplicationWindow {
         console.log(Qt.formatDateTime(new Date(), "dddd-yyyy-MM-dd-MMM-hh-mm-ss"));
     }
     
+    Text {
+        id: name
+        anchors.fill: parent
+        text: $.stateMachine.State_2 ? "11111111" : "222222222"
+    }
+    
     Component.onCompleted: {
         var o = $.getBean("obj");
         console.log(o, o.text);

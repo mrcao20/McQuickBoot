@@ -66,21 +66,21 @@ void McAbstractFormatAppender::append(QtMsgType type, const QMessageLogContext &
     qApp->postEvent(this, e);
 }
 
-void McAbstractFormatAppender::finished() noexcept
+void McAbstractFormatAppender::doFinished() noexcept
 {
-    McAbstractIODeviceAppender::finished();
-    
-    if(layout().isNull()) {
+    McAbstractIODeviceAppender::doFinished();
+
+    if (layout().isNull()) {
         auto l = McNormalLayoutPtr::create();
         l->finished();
         setLayout(l);
     }
 }
 
-void McAbstractFormatAppender::threadFinished() noexcept
+void McAbstractFormatAppender::doThreadFinished() noexcept
 {
-    McAbstractIODeviceAppender::threadFinished();
-    
+    McAbstractIODeviceAppender::doThreadFinished();
+
     auto l = layout();  //!< 一定存在
     auto pl = l.staticCast<McPatternLayout>();  //!< 一定成功
     if(pl->thread() != thread()) {

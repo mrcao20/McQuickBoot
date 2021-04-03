@@ -26,7 +26,8 @@ public:
     QTextCodec *codec() const noexcept override;
     void setCodec(QTextCodec *val) noexcept override;
 
-    void allFinished() noexcept override;
+protected:
+    void doAllFinished() noexcept override;
 
 protected:
     QTextStream &textStream() noexcept;

@@ -25,9 +25,9 @@ public:
     void requestNextFile() noexcept override;
     void forceRequestNextFile() noexcept override;
 
-    void finished() noexcept override;
-
 protected:
+    void doFinished() noexcept override;
+
     void tryNextFile() noexcept override;
     
     virtual bool isNewNextFile() noexcept = 0;

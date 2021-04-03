@@ -1,4 +1,4 @@
-QT *= quick quickwidgets
+QT *= quick quickwidgets scxml
 
 INCLUDEPATH += $$PWD/include/
 
@@ -7,6 +7,7 @@ SOURCES += \
     $$PWD/src/Application/McSingleCoreApplication.cpp \
     $$PWD/src/Configuration/McConfigurationContainer.cpp \
     $$PWD/src/Configuration/McRequestorConfig.cpp \
+    $$PWD/src/Configuration/McStateMachineConfig.cpp \
     $$PWD/src/Connection/McAbstractConnection.cpp \
     $$PWD/src/Connection/McCppConnection.cpp \
     $$PWD/src/Connection/McQmlConnection.cpp \
@@ -38,6 +39,7 @@ HEADERS +=  \
     $$PWD/include/McBoot/Configuration/McConfigurationContainer.h \
     $$PWD/include/McBoot/Configuration/McRequestorConfig.h \
     $$PWD/include/McBoot/Configuration/McSimpleBeanDefinition.h \
+    $$PWD/include/McBoot/Configuration/McStateMachineConfig.h \
     $$PWD/include/McBoot/Connection/McAbstractConnection.h \
     $$PWD/include/McBoot/Connection/McCppConnection.h \
     $$PWD/include/McBoot/Connection/McQmlConnection.h \

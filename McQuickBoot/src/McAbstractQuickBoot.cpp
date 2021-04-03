@@ -115,7 +115,7 @@ void McAbstractQuickBoot::setInstance(const QSharedPointer<McAbstractQuickBoot> 
     mcAbstractQuickBootStaticData->boot = ins;
 }
 
-void McAbstractQuickBoot::doRefresh() noexcept
+void McAbstractQuickBoot::doRefresh(const QStringList &preloadBeans) noexcept
 {
     auto context = getApplicationContext();
     auto reader = McConfigurationFileBeanDefinitionReaderPtr::create(context);
@@ -130,12 +130,14 @@ void McAbstractQuickBoot::doRefresh() noexcept
     if (d->workThread != nullptr && !d->workThread->isRunning()) {
         d->workThread->start();
     }
+    for (auto preloadBean : preloadBeans) {
+        context->getBean(preloadBean, d->workThread);
+    }
+    d->requestor = context->getBean<McCppRequestor>("cppRequestor", d->workThread);
     context->refresh(d->workThread); //!< 预加载bean
     initContainer();
 
     auto controllerContainer = context->getBean<McControllerContainer>("controllerContainer");
-    auto cppRequestor = context->getBean<McCppRequestor>("cppRequestor");
-    cppRequestor->setControllerContainer(controllerContainer);
-    cppRequestor->setAppCtx(context.data());
-    d->requestor = cppRequestor;
+    d->requestor->setControllerContainer(controllerContainer);
+    d->requestor->setAppCtx(context.data());
 }

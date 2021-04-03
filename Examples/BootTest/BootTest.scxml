@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" binding="early" name="BootTest" qt:editorversion="4.12.3" xmlns:qt="http://www.qt.io/2015/02/scxml-ext" initial="State_1">
+    <state id="State_1" initial="State_2">
+        <qt:editorinfo scenegeometry="468.56;370.19;298.49;300.20;624.41;376.27" geometry="468.56;370.19;-170.07;-69.99;624.41;376.27"/>
+        <state id="State_2">
+            <qt:editorinfo scenegeometry="464.49;446.09;404.49;396.09;120;100" geometry="-4.07;75.90;-60;-50;120;100"/>
+        </state>
+        <state id="State_3">
+            <qt:editorinfo scenegeometry="827.58;448.28;767.58;398.28;120;100" geometry="359.02;78.09;-60;-50;120;100"/>
+        </state>
+        <transition type="internal" event="entryState2" target="State_2"/>
+        <transition type="internal" target="State_3" event="entryState3"/>
+    </state>
+</scxml>

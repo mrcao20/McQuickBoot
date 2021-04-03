@@ -1,7 +1,7 @@
 @if "%{UseVirtualKeyboard}" == "true"
-QT += mcquickboot virtualkeyboard
+QT += quickboot virtualkeyboard
 @else
-QT += mcquickboot
+QT += quickboot
 @endif
 
 TARGET = %{ProjectName}

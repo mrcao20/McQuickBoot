@@ -10,8 +10,9 @@ class MCLOGQT_EXPORT McConsoleAppender : public McFileDeviceAppender
 public:
     Q_INVOKABLE McConsoleAppender();
     ~McConsoleAppender() override;
-    
-    void finished() noexcept override;
+
+protected:
+    void doFinished() noexcept override;
 };
 
 MC_DECL_METATYPE(McConsoleAppender)

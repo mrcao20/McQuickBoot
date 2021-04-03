@@ -135,7 +135,7 @@ void McQuickBoot::initBoot(QQmlEngine *engine) noexcept
     }
     d->engine = engine;
     d->context = McAnnotationApplicationContextPtr::create();
-    doRefresh();
+    doRefresh(QStringList() << "qmlRequestor");
 }
 
 void McQuickBoot::refresh() noexcept

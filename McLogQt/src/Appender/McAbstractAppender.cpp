@@ -40,15 +40,20 @@ QList<QtMsgType> McAbstractAppender::types() const noexcept
     return d->types;
 }
 
-void McAbstractAppender::finished() noexcept 
+void McAbstractAppender::finished() noexcept
 {
+    doFinished();
 }
 
-void McAbstractAppender::threadFinished() noexcept 
+void McAbstractAppender::threadFinished() noexcept
 {
+    doThreadFinished();
 }
 
-void McAbstractAppender::allFinished() noexcept {}
+void McAbstractAppender::allFinished() noexcept
+{
+    doAllFinished();
+}
 
 QList<QtMsgType> McAbstractAppender::initThreshold(const QString &val) const noexcept 
 {

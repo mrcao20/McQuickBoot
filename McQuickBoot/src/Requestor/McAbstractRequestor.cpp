@@ -9,6 +9,7 @@
 #include <McIoc/ApplicationContext/IMcApplicationContext.h>
 
 #include "McBoot/Configuration/McRequestorConfig.h"
+#include "McBoot/Configuration/McStateMachineConfig.h"
 #include "McBoot/Controller/IMcControllerContainer.h"
 #include "McBoot/Controller/impl/McAbstractResponse.h"
 #include "McBoot/Controller/impl/McRequestRunner.h"
@@ -44,6 +45,7 @@ MC_INIT_END
 MC_DECL_PRIVATE_DATA(McAbstractRequestor)
 IMcControllerContainerPtr controllerContainer;
 McRequestorConfigPtr requestorConfig;
+McStateMachineConfigPtr stateMachineConfig;
 IMcApplicationContext *appCtx;
 MC_DECL_PRIVATE_DATA_END
 
@@ -99,6 +101,30 @@ QObject *McAbstractRequestor::getBean(const QString &name) const noexcept
         QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
     }
     return obj;
+}
+
+QScxmlStateMachine *McAbstractRequestor::stateMachine() const noexcept
+{
+    if (d->stateMachineConfig.isNull()) {
+        qFatal("please make sure file 'application.yml' exists");
+    }
+    auto s = d->stateMachineConfig->stateMachine();
+    if (s.isNull()) {
+        qFatal("please that the statechart file path is configured correctly");
+    }
+    return s.data();
+}
+
+bool McAbstractRequestor::isLoadStateMachine() const noexcept
+{
+    if (d->stateMachineConfig.isNull()) {
+        return false;
+    }
+    auto s = d->stateMachineConfig->stateMachine();
+    if (s.isNull()) {
+        return false;
+    }
+    return true;
 }
 
 void McAbstractRequestor::customEvent(QEvent *event)

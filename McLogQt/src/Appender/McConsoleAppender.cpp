@@ -15,10 +15,10 @@ McConsoleAppender::~McConsoleAppender()
 {
 }
 
-void McConsoleAppender::finished() noexcept 
+void McConsoleAppender::doFinished() noexcept
 {
-    McFileDeviceAppender::finished();
-    
+    McFileDeviceAppender::doFinished();
+
     QSharedPointer<QFile> file = QSharedPointer<QFile>::create();
 
     if (!file->open(stderr, QIODevice::WriteOnly)) {

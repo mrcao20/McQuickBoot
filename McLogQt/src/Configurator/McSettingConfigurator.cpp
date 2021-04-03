@@ -92,11 +92,11 @@ QList<IMcConfigurableAppenderPtr> McSettingConfigurator::configAppenders(QSettin
             appender->setBackupDirPattern(settings.value("backupDirPattern", "").toString());
             appender->setDirPath(settings.value("dirPath", "").toString());
             appender->setFileNamePattern(settings.value("fileNamePattern").toString());
-            
+
             appender->finished();
             appender->moveToThread(thread());
             appender->threadFinished();
-            
+
             appenders.append(appender);
         }else if(appenderName == "console") {
             McConsoleAppenderPtr appender = McConsoleAppenderPtr::create();
@@ -110,11 +110,11 @@ QList<IMcConfigurableAppenderPtr> McSettingConfigurator::configAppenders(QSettin
             }
             appender->setThreshold(threshold);
             appender->setImmediateFlush(settings.value("immediateFlush", false).toBool());
-            
+
             appender->finished();
             appender->moveToThread(thread());
             appender->threadFinished();
-            
+
             appenders.append(appender);
         }
         

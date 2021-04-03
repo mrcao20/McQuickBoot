@@ -58,10 +58,10 @@ void McRollingFileAppender::forceRequestNextFile() noexcept
     }
 }
 
-void McRollingFileAppender::finished() noexcept 
+void McRollingFileAppender::doFinished() noexcept
 {
-    McFileAppender::finished();
-    
+    McFileAppender::doFinished();
+
     if(backupDirPath().isEmpty())
         setBackupDirPath("./backup/");
     if(backupDirPattern().isEmpty())

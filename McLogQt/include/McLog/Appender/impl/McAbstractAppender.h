@@ -22,11 +22,22 @@ public:
     
     QList<QtMsgType> types() const noexcept override;
 
-    virtual Q_INVOKABLE MC_BEAN_FINISHED void finished() noexcept;
+    Q_INVOKABLE
+    MC_BEAN_FINISHED
+    void finished() noexcept;
 
-    virtual Q_INVOKABLE MC_THREAD_FINISHED void threadFinished() noexcept;
+    Q_INVOKABLE
+    MC_THREAD_FINISHED
+    void threadFinished() noexcept;
 
-    virtual Q_INVOKABLE MC_ALL_FINISHED void allFinished() noexcept;
+    Q_INVOKABLE
+    MC_ALL_FINISHED
+    void allFinished() noexcept;
+
+protected:
+    virtual void doFinished() noexcept {}
+    virtual void doThreadFinished() noexcept {}
+    virtual void doAllFinished() noexcept {}
 
 private:
     QList<QtMsgType> initThreshold(const QString &val) const noexcept;

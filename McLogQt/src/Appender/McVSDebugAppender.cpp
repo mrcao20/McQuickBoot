@@ -18,9 +18,9 @@ McVSDebugAppender::~McVSDebugAppender()
 {
 }
 
-void McVSDebugAppender::finished() noexcept
+void McVSDebugAppender::doFinished() noexcept
 {
-    McAbstractFormatAppender::finished();
+    McAbstractFormatAppender::doFinished();
 
     auto dev = McVSDebugDevicePtr::create(this);
     if (!dev->open(QIODevice::WriteOnly)) {

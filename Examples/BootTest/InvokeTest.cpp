@@ -1,7 +1,8 @@
 #include "InvokeTest.h"
 
-#include <QThread>
 #include <QDebug>
+#include <QScxmlStateMachine>
+#include <QThread>
 
 #include <McIoc/McGlobal.h>
 #include <McBoot/Controller/impl/McResult.h>
@@ -87,7 +88,7 @@ void InvokeTest::start() noexcept {
 #include <QTimer>
 void InvokeTest::end() noexcept {
     qDebug() << "InvokeTest construct finished" << thread() << QThread::currentThread();
-    QTimer::singleShot(1000, []() {
+    QTimer::singleShot(5000, []() {
         $.invoke("con.invoke4").then([](const QVariant &var) {
             qDebug() << "---------------" << var;
         });
@@ -112,7 +113,12 @@ void InvokeTest::end() noexcept {
         jsonArr.append(jsonObj);
         auto ga = McJsonUtils::fromJson<QList<GadgetTestPtr>>(jsonArr);
         qDebug() << ga.front()->t2->text2;
+        $.stateMachine()->submitEvent("entryState3");
     });
+    $.stateMachine()->connectToState("State_2",
+                                     [](bool active) { qDebug() << "entry State_2" << active; });
+    $.stateMachine()->connectToState("State_3",
+                                     [](bool active) { qDebug() << "entry State_3" << active; });
 }
 
 void InvokeTest::threadEnd() noexcept {

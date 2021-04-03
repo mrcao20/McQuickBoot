@@ -13,10 +13,10 @@ class MCLOGQT_EXPORT McVSDebugAppender : public McAbstractFormatAppender
 public:
     Q_INVOKABLE McVSDebugAppender() noexcept;
     ~McVSDebugAppender() override;
-    
-    void finished() noexcept override;
-    
+
 protected:
+    void doFinished() noexcept override;
+
     void writeBefore() noexcept override;
     void writeAfter() noexcept override;
     

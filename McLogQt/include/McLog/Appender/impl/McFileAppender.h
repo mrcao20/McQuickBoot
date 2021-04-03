@@ -24,9 +24,10 @@ public:
     
     bool isAppend() const noexcept;
     void setAppend(bool val) noexcept;
-    
-    void finished() noexcept override;
-    
+
+protected:
+    void doFinished() noexcept override;
+
 protected:
     QString newFilePath() const noexcept;
     

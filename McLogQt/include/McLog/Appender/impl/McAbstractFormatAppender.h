@@ -25,11 +25,11 @@ public:
     void setImmediateFlush(bool val) noexcept;
     
     void append(QtMsgType type, const QMessageLogContext &context, const QString &str) noexcept override;
-    
-    void finished() noexcept override;
-    void threadFinished() noexcept override;
-    
+
 protected:
+    void doFinished() noexcept override;
+    void doThreadFinished() noexcept override;
+
     void customEvent(QEvent *event) override;
     
     virtual void writeBefore() noexcept = 0;
