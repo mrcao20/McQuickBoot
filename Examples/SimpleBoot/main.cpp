@@ -64,8 +64,9 @@ int main(int argc, char *argv[])
              QVariant::fromValue(p),
              QVariant::fromValue(a))
         .then(callbackTest);
-    $.invoke("aaa.bbb").then(
-        [](const QVariant &var) { qDebug() << ">>>>>>>>>>>>>>>>>>>>>>>>>>>" << var; });
+    $.invoke("aaa.bbb")
+        .then([](const QVariant &var) { qDebug() << ">>>>>>>>>>>>>>>>>>>>>>>>>>>" << var; })
+        .error([](const QVariant &var) { qDebug() << "error:" << var; });
     $.invoke("aaa.ccc").then(&t, &Test::callbackTest);
     auto res = $.syncInvoke("aaa.ccc");
     auto ccc = [](const QVariant &str, int ii) { qDebug() << "callback test0:" << str << ii; };

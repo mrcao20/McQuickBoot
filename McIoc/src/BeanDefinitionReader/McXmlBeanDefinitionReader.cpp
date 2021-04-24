@@ -15,26 +15,28 @@
 MC_DECL_PRIVATE_DATA(McXmlBeanDefinitionReader)
 IMcPropertyParserPtr parser;
 QList<QIODevicePtr> devices;
+QString flag;
 MC_DECL_PRIVATE_DATA_END
 
-McXmlBeanDefinitionReader::McXmlBeanDefinitionReader(
-        IMcPropertyParserConstPtrRef parser,
-        QIODeviceConstPtrRef device,
-        QObject *parent)
-    : McXmlBeanDefinitionReader(parser, QList<QIODevicePtr>() << device, parent)
+McXmlBeanDefinitionReader::McXmlBeanDefinitionReader(IMcPropertyParserConstPtrRef parser,
+                                                     QIODeviceConstPtrRef device,
+                                                     const QString &flag,
+                                                     QObject *parent)
+    : McXmlBeanDefinitionReader(parser, QList<QIODevicePtr>() << device, flag, parent)
 {
 }
 
-McXmlBeanDefinitionReader::McXmlBeanDefinitionReader(
-        IMcPropertyParserConstPtrRef parser,
-        const QList<QIODevicePtr> &devices,
-        QObject *parent)
+McXmlBeanDefinitionReader::McXmlBeanDefinitionReader(IMcPropertyParserConstPtrRef parser,
+                                                     const QList<QIODevicePtr> &devices,
+                                                     const QString &flag,
+                                                     QObject *parent)
     : McAbstractBeanDefinitionReader(parent)
 {
     MC_NEW_PRIVATE_DATA(McXmlBeanDefinitionReader);
     
     d->parser = parser;
     d->devices = devices;
+    d->flag = flag;
 }
 
 McXmlBeanDefinitionReader::~McXmlBeanDefinitionReader()
@@ -90,6 +92,10 @@ void McXmlBeanDefinitionReader::readBeanDefinition(const QDomNodeList &nodes) no
             qCritical() << "node name must be 'bean', and it's not only contains attribute 'name' and 'class/plugin' but also this attribute not is able null!!";
             continue;
         }
+        if (ele.hasAttribute(Mc::Constant::Tag::Xml::flag)
+            && ele.attribute(Mc::Constant::Tag::Xml::flag) != d->flag) {
+            continue;
+        }
         //! 获取给定元素的 name 属性
         QString name = ele.attribute("name");
         if (registry()->isContained(name)) {
@@ -139,6 +145,10 @@ void McXmlBeanDefinitionReader::readBeanDefinition(
         QDomElement propEle = propNodes.at(i).toElement();
         if (propEle.isNull())
             continue;
+        if (propEle.hasAttribute(Mc::Constant::Tag::Xml::flag)
+            && propEle.attribute(Mc::Constant::Tag::Xml::flag) != d->flag) {
+            continue;
+        }
         if (propEle.tagName() == Mc::Constant::Tag::Xml::connect) {
             readBeanDefinitionForConnect(propEle, beanDefinition);
         } else { //! 不判定标签是否为property，即除了connect以外均可以解析为property

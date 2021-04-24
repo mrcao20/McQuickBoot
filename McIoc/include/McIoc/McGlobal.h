@@ -218,6 +218,8 @@ MCIOC_EXPORT QObject *getObject(IMcApplicationContext *appCtx, const QString &be
 using StartUpFunction = std::function<void()>;
 using CleanUpFunction = std::function<void()>;
 MCIOC_EXPORT void addPreRoutine(int priority, const StartUpFunction &func) noexcept;
+MCIOC_EXPORT void callPreRoutine() noexcept;
+MCIOC_EXPORT void cleanPreRoutine() noexcept;
 MCIOC_EXPORT void addPostRoutine(int priority, const CleanUpFunction &func) noexcept;
 
 namespace Ioc {

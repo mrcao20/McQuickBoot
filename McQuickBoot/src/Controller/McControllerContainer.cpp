@@ -476,5 +476,6 @@ QVariant McControllerContainer::ok(const QVariant &val) const noexcept
 QVariant McControllerContainer::fail(const QString &val) const noexcept 
 {
     auto result = McResult::fail(val);
+    result->setInternalError(true);
     return QVariant::fromValue(result);
 }

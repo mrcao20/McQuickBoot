@@ -9,12 +9,14 @@ McLocalPathApplicationContext::McLocalPathApplicationContext(QObject *parent)
 }
 
 McLocalPathApplicationContext::McLocalPathApplicationContext(const QString &location,
+                                                             const QString &flag,
                                                              QObject *parent)
-    : McLocalPathApplicationContext(QStringList() << location, parent)
+    : McLocalPathApplicationContext(QStringList() << location, flag, parent)
 {
 }
 
 McLocalPathApplicationContext::McLocalPathApplicationContext(const QStringList &locations,
+                                                             const QString &flag,
                                                              QObject *parent)
     : McLocalPathApplicationContext(parent)
 {
@@ -33,5 +35,5 @@ McLocalPathApplicationContext::McLocalPathApplicationContext(const QStringList &
         }
         devices.append(QIODevicePtr(device));
     }
-    setDevices(devices);
+    setDevices(devices, flag);
 }

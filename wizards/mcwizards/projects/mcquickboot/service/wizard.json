@@ -28,7 +28,7 @@
         { "key": "QtModuleUpperCase", "value": "%{JS: value('QtModule').charAt(0).toUpperCase() + value('QtModule').slice(1)}" },
         { "key": "LibraryDefine", "value": "%{JS: Cpp.headerGuard(value('ProjectName')) + '_LIBRARY'}" },
         { "key": "LibraryExport", "value": "%{JS: Cpp.headerGuard(value('ProjectName')) + '_EXPORT'}" },
-        { "key": "GlobalHdrFileName", "value": "%{JS: Util.fileName(value('ProjectName') + 'MacroGlobal', Util.preferredSuffix('text/x-c++hdr'))}" },
+        { "key": "GlobalHdrFileName", "value": "%{JS: Util.fileName(value('ProjectName') + 'Global', Util.preferredSuffix('text/x-c++hdr'))}" },
         { "key": "TargetInstallPath", "value": "%{JS: value('IsShared') === 'true' ? '/usr/lib' : (value('IsQtPlugin') && value('PluginTargetPath') ? '$$[QT_INSTALL_PLUGINS]/' + value('PluginTargetPath') : '')}" },
         { "key": "HasTranslation", "value": "%{JS: value('TsFileName') !== ''}" },
         { "key": "GLOBAL_GUARD", "value": "%{JS: Cpp.headerGuard(value('GlobalHdrFileName'))}" }

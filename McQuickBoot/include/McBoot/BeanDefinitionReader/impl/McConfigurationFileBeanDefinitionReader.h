@@ -18,6 +18,8 @@ public:
             , QObject *parent = nullptr);
     ~McConfigurationFileBeanDefinitionReader() override;
 
+    static void addConfigPath(const QString &path) noexcept;
+
 protected:
     void doReadBeanDefinition() noexcept override;
     

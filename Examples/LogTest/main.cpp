@@ -34,7 +34,11 @@ int main(int argc, char *argv[])
     qDebug() << "u:" << u.isLocalFile();
     //! 必须开启IOC支持
     auto path = R"(..\..\Examples\LogTest\logqt.xml)";
-    auto appCtx = McXMLConfigurator::configure(path);
+#ifdef QT_DEBUG
+    auto appCtx = McXMLConfigurator::configure(path, "debug");
+#else
+    auto appCtx = McXMLConfigurator::configure(path, "release");
+#endif
     //    McDefaultConfigurator::configure();
     //    McINIConfigurator::configure(R"(E:\QtCreator\McLogQt\Test\logqt.ini)");
     auto appender = appCtx->getBean<IMcRequestableNextFile>("dailyRollingFile");
@@ -54,15 +58,15 @@ int main(int argc, char *argv[])
     qInfo(MC_LOGGER("Lidar[0]")) << "Lidar[0]info";
     qInfo(MC_LOGGER("TestLogger")) << "test logger";
     qInfo(MC_LOGGER("TestLogger2")) << "test logger";
-    QtConcurrent::run([]() {
-        for (int i = 0; i < 100; i++) {
-            //            QThread::msleep(100);
-            qDebug() << i;
-            if (i == 10) {
-                //                qFatal("aa");
-            }
-        }
-    });
+    //    QtConcurrent::run([]() {
+    //        for (int i = 0; i < 100; i++) {
+    //            //            QThread::msleep(100);
+    //            qDebug() << i;
+    //            if (i == 10) {
+    //                //                qFatal("aa");
+    //            }
+    //        }
+    //    });
 
     QQmlApplicationEngine engine;
     const QUrl url(QStringLiteral("qrc:/main.qml"));

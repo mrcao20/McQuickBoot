@@ -19,6 +19,7 @@ SOURCES += \
     $$PWD/src/Controller/McRequestRunner.cpp \
     $$PWD/src/Controller/McResult.cpp \
     $$PWD/src/McAbstractQuickBoot.cpp \
+    $$PWD/src/McBootGlobal.cpp \
     $$PWD/src/McQuickBoot.cpp \
     $$PWD/src/McQuickBootSimple.cpp \
     $$PWD/src/Model/McModelContainer.cpp \

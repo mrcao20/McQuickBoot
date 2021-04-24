@@ -58,7 +58,15 @@ QVariant McAbstractNormalBeanFactory::doCreate(IMcBeanDefinitionConstPtrRef bean
                                .arg(beanDefinition->getClassName());
             return QVariant();
         }
-        obj = beanMetaObj->newInstance();
+        QByteArray className = beanMetaObj->className();
+        className.append("*");
+        auto id = QMetaType::type(className);
+        auto builder = McPrivate::IQObjectBuilder::getQObjectBuilder(id);
+        if (builder.isNull()) {
+            obj = beanMetaObj->newInstance();
+        } else {
+            obj = builder->create();
+        }
     }
     if (!obj) {
         qCritical() << QString("bean '%1' cannot instantiation, please make sure that have a "
@@ -83,6 +91,9 @@ QVariant McAbstractNormalBeanFactory::doCreate(IMcBeanDefinitionConstPtrRef bean
         callThreadFinishedFunction(obj); //!< 调用线程移动结束函数
     }
     auto var = convertToQVariant(obj);
+    if (!var.isValid()) {
+        return var;
+    }
     Qt::ConnectionType conType = Qt::QueuedConnection;
     if (obj->thread() == QThread::currentThread()) {
         conType = Qt::DirectConnection;

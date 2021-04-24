@@ -10,15 +10,19 @@ McXmlApplicationContext::McXmlApplicationContext(QObject *parent)
 {
 }
 
-McXmlApplicationContext::McXmlApplicationContext(QIODeviceConstPtrRef device, QObject *parent)
-    : McXmlApplicationContext(QList<QIODevicePtr>() << device, parent)
+McXmlApplicationContext::McXmlApplicationContext(QIODeviceConstPtrRef device,
+                                                 const QString &flag,
+                                                 QObject *parent)
+    : McXmlApplicationContext(QList<QIODevicePtr>() << device, flag, parent)
 {
 }
 
-McXmlApplicationContext::McXmlApplicationContext(const QList<QIODevicePtr> &devices, QObject *parent)
+McXmlApplicationContext::McXmlApplicationContext(const QList<QIODevicePtr> &devices,
+                                                 const QString &flag,
+                                                 QObject *parent)
     : McXmlApplicationContext(parent)
 {
-    setDevices(devices);
+    setDevices(devices, flag);
 }
 
 McXmlApplicationContext::McXmlApplicationContext(IMcBeanDefinitionReaderConstPtrRef reader,
@@ -38,13 +42,14 @@ McXmlApplicationContext::~McXmlApplicationContext()
 {
 }
 
-void McXmlApplicationContext::setDevice(QIODeviceConstPtrRef device) noexcept 
+void McXmlApplicationContext::setDevice(QIODeviceConstPtrRef device, const QString &flag) noexcept
 {
-    setDevices(QList<QIODevicePtr>() << device);
+    setDevices(QList<QIODevicePtr>() << device, flag);
 }
 
-void McXmlApplicationContext::setDevices(const QList<QIODevicePtr> &devices) noexcept 
+void McXmlApplicationContext::setDevices(const QList<QIODevicePtr> &devices,
+                                         const QString &flag) noexcept
 {
-    setReader(McXmlBeanDefinitionReaderPtr::create(
-                  McDefaultPropertyParserPtr::create(), devices));
+    setReader(
+        McXmlBeanDefinitionReaderPtr::create(McDefaultPropertyParserPtr::create(), devices, flag));
 }

@@ -45,7 +45,14 @@ public:
     friend MCQUICKBOOT_EXPORT QDebug operator<<(QDebug dbg, const QSharedPointer<McResult> &r);
 
 private:
+    bool isInternalError() const noexcept;
+    void setInternalError(bool val) noexcept;
+
+private:
     MC_DECL_PRIVATE(McResult)
+
+    friend class McControllerContainer;
+    friend class McAbstractResponse;
 };
 
 MC_DECL_METATYPE(McResult)

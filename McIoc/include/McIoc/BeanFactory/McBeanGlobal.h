@@ -4,6 +4,7 @@
 #include <QMetaType>
 #include <QVariant>
 
+#include "../ObjectBuilder/ObjectBuilder.h"
 #include "impl/McMetaTypeId.h"
 
 #define MC_TYPELIST(...) \
@@ -13,7 +14,8 @@ public: \
 \
 private:
 
-#define MC_REGISTER_BEAN_FACTORY(Class) McPrivate::McConverterRegister<Class>::registerConverter();
+#define MC_REGISTER_BEAN_FACTORY(Class, ...) \
+    McPrivate::McConverterRegister<Class, ##__VA_ARGS__>::registerConverter();
 
 #define MC_REGISTER_CONTAINER_CONVERTER(Type) \
     McPrivate::McContainerConverterRegisterHelper<Type>::registerConverter(#Type);
@@ -116,7 +118,7 @@ struct McRegisterConverterHelper<From, McPrivate::McTypeList<>, void>
     {}
 };
 
-template<typename T, typename Enable = void>
+template<typename T, bool flag, typename Enable = void>
 struct McRegisterBeanFactory
 {
     static void registerBeanFactory()
@@ -142,8 +144,9 @@ struct McRegisterBeanFactory
     }
 };
 
-template<typename T>
+template<typename T, bool flag>
 struct McRegisterBeanFactory<T,
+                             flag,
                              typename std::enable_if<QtPrivate::IsGadgetHelper<T>::IsRealGadget>::type>
 {
     static void registerBeanFactory()
@@ -173,9 +176,25 @@ struct McRegisterBeanFactory<T,
     }
 };
 
+template<typename T, bool flag>
+struct AddQObjectBuilderHelper
+{
+    static void addQObjectBuilder(int) {}
+};
 template<typename T>
+struct AddQObjectBuilderHelper<T, true>
+{
+    static void addQObjectBuilder(int id)
+    {
+        auto builder = QSharedPointer<QObjectBuilder<T>>::create();
+        IQObjectBuilder::addQObjectBuilder(id, builder);
+    }
+};
+
+template<typename T, bool flag>
 struct McRegisterBeanFactory<
     T,
+    flag,
     typename std::enable_if<QtPrivate::IsPointerToTypeDerivedFromQObject<T *>::Value>::type>
 {
     static void registerBeanFactory()
@@ -206,35 +225,40 @@ struct McRegisterBeanFactory<
         typeName.reserve(int(strlen(cName)) + 11);
         typeName.append(cName).append("ConstPtrRef");
         qRegisterMetaType<TPtr>(typeName);
+
+        AddQObjectBuilderHelper<T, flag>::addQObjectBuilder(pId);
     }
 };
 
-template<typename T>
+template<typename T, bool flag>
 void mcRegisterBeanFactory()
 {
     Q_STATIC_ASSERT_X(!std::is_pointer<T>::value,
                       "mcRegisterBeanFactory's template type must not be a pointer type");
-    McRegisterBeanFactory<T>::registerBeanFactory();
+    McRegisterBeanFactory<T, flag>::registerBeanFactory();
 }
 
-template<typename From, typename To>
-void mcRegisterBeanFactory()
+template<typename T, bool flag, typename Enable = void>
+struct McConverterRegister2
 {
-    mcRegisterBeanFactory<From>();
-    Q_STATIC_ASSERT_X(!std::is_pointer<To>::value, "mcRegisterBeanFactory's template type must not be a pointer type");
-    McPrivate::McRegisterConverterHelper<From, To>::registerConverter();
-}
-
-template<typename T, typename Enable = void>
-struct McConverterRegister
-{
-    static void registerConverter() { mcRegisterBeanFactory<T>(); }
+    static void registerConverter() { mcRegisterBeanFactory<T, flag>(); }
 };
 
-template<typename T>
-struct McConverterRegister<T, typename T::McPrivateTypeListHelper>
+template<typename T, bool flag>
+struct McConverterRegister2<T, flag, typename T::McPrivateTypeListHelper>
 {
-    static void registerConverter() { mcRegisterBeanFactory<T, typename T::McPrivateTypeList>(); }
+    static void registerConverter()
+    {
+        mcRegisterBeanFactory<T, flag>();
+        using To = typename T::McPrivateTypeList;
+        McPrivate::McRegisterConverterHelper<T, To>::registerConverter();
+    }
+};
+
+template<typename T, bool flag = false>
+struct McConverterRegister
+{
+    static void registerConverter() { McConverterRegister2<T, flag>::registerConverter(); }
 };
 
 template<typename T>

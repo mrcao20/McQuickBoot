@@ -105,6 +105,11 @@ QSharedPointer<McAbstractQuickBoot> McAbstractQuickBoot::instance() noexcept
     return boot;
 }
 
+void McAbstractQuickBoot::addConfigPath(const QString &path) noexcept
+{
+    McConfigurationFileBeanDefinitionReader::addConfigPath(path);
+}
+
 McCppRequestor &McAbstractQuickBoot::requestor() const noexcept
 {
     return *d->requestor.data();

@@ -106,7 +106,15 @@
             </list>
         </property>
     </bean>
-    <bean name="lidar0Logger" class="McLogger">
+    <bean name="lidar0Logger" class="McLogger" flag="debug">
+        <property name="threshold" value="debug-"></property>
+        <property name="appenders">
+            <list>
+                <ref bean="lidar0RollingFile" />
+            </list>
+        </property>
+    </bean>
+    <bean name="lidar0Logger" class="McLogger" flag="release">
         <property name="threshold" value="warn-"></property>
         <property name="appenders">
             <list>
@@ -150,7 +158,7 @@
     
     <!-- 必须有一个名为defaultLoggerRepository的bean -->
     <bean name="defaultLoggerRepository" class="McLoggerRepository">
-        <property name="notCapturedLogger" ref="notCapturedLogger" />
+        <property name="notCapturedLogger" ref="notCapturedLogger" flag="release" />
         <!-- 任务执行的间隔时间，单位：ms -->
         <!-- <property name="taskTimeout" value="5000" /> -->
         <!-- 顺序任务执行器，执行顺序为list的顺序 -->

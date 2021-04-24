@@ -23,8 +23,6 @@ class R : public QObject, public IMcCustomPlaceholder
     Q_CLASSINFO(MC_BEANNAME_TAG, "r")
     Q_PROPERTY(QString text READ text WRITE setText);
 public:
-    Q_INVOKABLE R(){}
-    
     QString text() const noexcept;
     void setText(const QString &val) noexcept;
 
@@ -104,10 +102,10 @@ class C : public QObject, public IB
     Q_PROPERTY(GadgetTestPtr gadget MEMBER m_gadget)
     Q_PROPERTY(GadgetTest *gadget2 MEMBER m_gadget2)
 public:
-    Q_INVOKABLE C(){}
-    
+    Q_INVOKABLE C() {}
+
     void a() noexcept override;
-    
+
     QString text() const noexcept;
     void setText(const QString &val) noexcept;
     

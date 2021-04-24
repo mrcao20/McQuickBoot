@@ -6,8 +6,7 @@ namespace Constant {
 
 namespace Argument {
 
-constexpr const char *qmlCallback = "__mc__qmlCallback";
-
+[[maybe_unused]] constexpr const char *qmlCallback = "__mc__qmlCallback";
 }
 
 } // namespace Constant

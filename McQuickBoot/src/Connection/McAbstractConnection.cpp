@@ -2,9 +2,10 @@
 
 #include <QDebug>
 #include <QMetaMethod>
+#include <QPointer>
 
 MC_DECL_PRIVATE_DATA(McAbstractConnection)
-QObject *bean{nullptr};
+QPointer<QObject> bean;
 QMetaMethod sig;
 MC_DECL_PRIVATE_DATA_END
 
@@ -15,10 +16,10 @@ McAbstractConnection::McAbstractConnection(QObject *parent) noexcept : QObject(p
 
 McAbstractConnection::~McAbstractConnection()
 {
-    if (d->bean == nullptr) {
+    if (d->bean.isNull()) {
         return;
     }
-    QMetaObject::disconnect(d->bean, d->sig.methodIndex(), this, metaObject()->methodCount());
+    QMetaObject::disconnect(d->bean.data(), d->sig.methodIndex(), this, metaObject()->methodCount());
 }
 
 int McAbstractConnection::qt_metacall(QMetaObject::Call c, int id, void **arguments)
@@ -61,7 +62,8 @@ QMetaObject::Connection McAbstractConnection::init(QObject *obj,
                    << "from class:" << senderMetaObj->className();
         return QMetaObject::Connection();
     }
-    d->bean = obj;
+    QPointer<QObject> p(obj);
+    d->bean.swap(p);
 
     sig = d->sig;
     return QMetaObject::connect(obj, d->sig.methodIndex(), this, metaObject()->methodCount(), type);

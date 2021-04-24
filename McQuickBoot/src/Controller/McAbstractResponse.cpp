@@ -4,6 +4,8 @@
 #include <QEvent>
 #include <QVariant>
 
+#include "McBoot/Controller/impl/McResult.h"
+
 MC_DECL_PRIVATE_DATA(McAbstractResponse)
 bool isAsyncCall{false}; // 是否在次线程调用callback，默认不需要
 QVariant body;
@@ -29,7 +31,7 @@ void McAbstractResponse::setBody(const QVariant &var) noexcept
     d->body = var;
 
     if (isAsyncCall()) {
-        callCallback();
+        call();
         return;
     }
 
@@ -50,6 +52,20 @@ void McAbstractResponse::setAsyncCall(bool val) noexcept
 void McAbstractResponse::customEvent(QEvent *event)
 {
     if (event->type() == QEvent::Type::User + 1) {
+        call();
+    }
+}
+
+void McAbstractResponse::call() noexcept
+{
+    if (!d->body.canConvert<McResultPtr>()) {
+        callCallback();
+        return;
+    }
+    auto result = d->body.value<McResultPtr>();
+    if (result->isInternalError()) {
+        callError();
+    } else {
         callCallback();
     }
 }

@@ -14,17 +14,21 @@ class MCIOC_EXPORT McXmlApplicationContext : public McReadableApplicationContext
     Q_OBJECT
 public:
     explicit McXmlApplicationContext(QObject *parent = nullptr);
-    McXmlApplicationContext(QIODeviceConstPtrRef device, QObject *parent = nullptr);
-    McXmlApplicationContext(const QList<QIODevicePtr> &devices, QObject *parent = nullptr);
+    McXmlApplicationContext(QIODeviceConstPtrRef device,
+                            const QString &flag = QString(),
+                            QObject *parent = nullptr);
+    McXmlApplicationContext(const QList<QIODevicePtr> &devices,
+                            const QString &flag = QString(),
+                            QObject *parent = nullptr);
     McXmlApplicationContext(IMcBeanDefinitionReaderConstPtrRef reader,
                             QObject *parent = nullptr);
     McXmlApplicationContext(IMcConfigurableBeanFactoryConstPtrRef factory,
                             IMcBeanDefinitionReaderConstPtrRef reader,
                             QObject *parent = nullptr);
     ~McXmlApplicationContext() override;
-    
-    void setDevice(QIODeviceConstPtrRef device) noexcept;
-    void setDevices(const QList<QIODevicePtr> &devices) noexcept;
+
+    void setDevice(QIODeviceConstPtrRef device, const QString &flag = QString()) noexcept;
+    void setDevices(const QList<QIODevicePtr> &devices, const QString &flag = QString()) noexcept;
 };
 
 MC_DECL_POINTER(McXmlApplicationContext)

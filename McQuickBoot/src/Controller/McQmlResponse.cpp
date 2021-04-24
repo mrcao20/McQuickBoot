@@ -13,6 +13,7 @@
 
 MC_DECL_PRIVATE_DATA(McQmlResponse)
 QJSValue callback;
+QJSValue error;
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McQmlResponse)
@@ -49,14 +50,29 @@ McQmlResponse *McQmlResponse::asyncThen(const QJSValue &callback) noexcept
     return this;
 }
 
+McQmlResponse *McQmlResponse::error(const QJSValue &func) noexcept
+{
+    d->error = func;
+    setAsyncCall(false);
+    return this;
+}
+
 void McQmlResponse::callCallback() noexcept 
 {
-    McScopedFunction func([this](){
-        this->deleteLater();
-    });
-    Q_UNUSED(func)
-    
-    if(!d->callback.isCallable()) {
+    call(d->callback);
+}
+
+void McQmlResponse::callError() noexcept
+{
+    call(d->error);
+}
+
+void McQmlResponse::call(QJSValue &func) noexcept
+{
+    McScopedFunction cleanup([this]() { this->deleteLater(); });
+    Q_UNUSED(cleanup)
+
+    if (!func.isCallable()) {
         return;
     }
 #if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
@@ -64,10 +80,10 @@ void McQmlResponse::callCallback() noexcept
 #else
     auto engine = qjsEngine(this);
 #endif
-    if(!engine) {
+    if (!engine) {
         return;
     }
     auto body = McJsonUtils::serialize(this->body());
     auto arg = engine->toScriptValue(body);
-    d->callback.call(QJSValueList() << arg);
+    func.call(QJSValueList() << arg);
 }

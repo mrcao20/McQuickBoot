@@ -24,6 +24,10 @@ protected:
     void customEvent(QEvent *event) override;
 
     virtual void callCallback() noexcept = 0;
+    virtual void callError() noexcept = 0;
+
+private:
+    void call() noexcept;
 
 private:
     MC_DECL_PRIVATE(McAbstractResponse)

@@ -5,6 +5,7 @@
 #include <QJsonObject>
 
 MC_DECL_PRIVATE_DATA(McResult)
+bool isInternalError{false};
 bool isSuccess{false};
 QString errMsg;
 QVariant result;
@@ -76,4 +77,14 @@ QDebug operator<<(QDebug dbg, const QSharedPointer<McResult> &r)
     jsonObj.insert("errMsg", r->errMsg());
     dbg.noquote() << QJsonDocument(jsonObj).toJson();
     return dbg;
+}
+
+bool McResult::isInternalError() const noexcept
+{
+    return d->isInternalError;
+}
+
+void McResult::setInternalError(bool val) noexcept
+{
+    d->isInternalError = val;
 }

@@ -37,6 +37,7 @@ public:
                            QObject *receiver,
                            const QString &slot) noexcept;
     static QSharedPointer<McAbstractQuickBoot> instance() noexcept;
+    static void addConfigPath(const QString &path) noexcept;
 
     McCppRequestor &requestor() const noexcept;
 

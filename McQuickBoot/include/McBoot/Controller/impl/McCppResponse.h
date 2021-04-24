@@ -168,8 +168,60 @@ public:
                                  std::move(callback)));
     }
 
+    template<typename Func>
+    McCppResponse &error(const typename QtPrivate::FunctionPointer<Func>::Object *recever,
+                         Func func) noexcept
+    {
+        typedef QtPrivate::FunctionPointer<Func> FuncType;
+
+        Q_STATIC_ASSERT_X(int(FuncType::ArgumentCount) == 1,
+                          "The callback can only be one parameter.");
+
+        return errorImpl(McPrivate::QVariantSelector<typename FuncType::Arguments>::Value,
+                         recever,
+                         new QtPrivate::QSlotObject<Func,
+                                                    typename FuncType::Arguments,
+                                                    typename FuncType::ReturnType>(func));
+    }
+    template<typename Func>
+    typename std::enable_if<int(QtPrivate::FunctionPointer<Func>::ArgumentCount) >= 0
+                                && !QtPrivate::FunctionPointer<Func>::IsPointerToMemberFunction,
+                            McCppResponse &>::type
+    error(Func func) noexcept
+    {
+        typedef QtPrivate::FunctionPointer<Func> FuncType;
+
+        Q_STATIC_ASSERT_X(int(FuncType::ArgumentCount) == 1,
+                          "The callback can only be one parameter.");
+
+        return errorImpl(McPrivate::QVariantSelector<typename FuncType::Arguments>::Value,
+                         nullptr,
+                         new QtPrivate::QStaticSlotObject<Func,
+                                                          typename FuncType::Arguments,
+                                                          typename FuncType::ReturnType>(func));
+    }
+    template<typename Func>
+    typename std::enable_if<QtPrivate::FunctionPointer<Func>::ArgumentCount == -1,
+                            McCppResponse &>::type
+    error(Func func) noexcept
+    {
+        typedef McPrivate::LambdaType<Func> FuncType;
+
+        Q_STATIC_ASSERT_X(int(FuncType::ArgumentCount) == 1,
+                          "The callback can only be one parameter.");
+
+        return errorImpl(McPrivate::QVariantSelector<typename FuncType::Arguments>::Value,
+                         nullptr,
+                         new QtPrivate::QFunctorSlotObject<Func,
+                                                           int(FuncType::ArgumentCount),
+                                                           typename FuncType::Arguments,
+                                                           typename FuncType::ReturnType>(
+                             std::move(func)));
+    }
+
 protected:
     void callCallback() noexcept override;
+    void callError() noexcept override;
 
 private:
     McCppResponse &thenImpl(bool isQVariant,
@@ -181,6 +233,10 @@ private:
     McCppResponse &asyncThenImpl(bool isQVariant,
                                  const QObject *recever,
                                  QtPrivate::QSlotObjectBase *callback) noexcept;
+    McCppResponse &errorImpl(bool isQVariant,
+                             const QObject *recever,
+                             QtPrivate::QSlotObjectBase *func) noexcept;
+    void call(QtPrivate::QSlotObjectBase *func) noexcept;
 
 private:
     MC_DECL_PRIVATE(McCppResponse)

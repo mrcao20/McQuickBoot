@@ -11,16 +11,18 @@
 #include "McLog/Repository/IMcLoggerRepository.h"
 
 IMcApplicationContextPtr McXMLConfigurator::configure(const QString &path,
+                                                      const QString &flag,
                                                       const QString &beanName) noexcept
 {
-    return McXMLConfigurator::configure(QStringList() << path, beanName);
+    return McXMLConfigurator::configure(QStringList() << path, flag, beanName);
 }
 
 IMcApplicationContextPtr McXMLConfigurator::configure(const QStringList &paths,
+                                                      const QString &flag,
                                                       const QString &beanName) noexcept
 {
     McXMLConfigurator configurator;
-    return configurator.doConfigure(paths, beanName);
+    return configurator.doConfigure(paths, flag, beanName);
 }
 
 void McXMLConfigurator::configure(IMcApplicationContextConstPtrRef appCtx,
@@ -31,6 +33,7 @@ void McXMLConfigurator::configure(IMcApplicationContextConstPtrRef appCtx,
 }
 
 IMcApplicationContextPtr McXMLConfigurator::doConfigure(const QStringList &paths,
+                                                        const QString &flag,
                                                         const QString &beanName) noexcept
 {
     QStringList xmlPaths;
@@ -39,7 +42,8 @@ IMcApplicationContextPtr McXMLConfigurator::doConfigure(const QStringList &paths
         xmlPaths << xmlPath;
     }
 
-    McLocalPathApplicationContextPtr appContext = McLocalPathApplicationContextPtr::create(xmlPaths);
+    McLocalPathApplicationContextPtr appContext = McLocalPathApplicationContextPtr::create(xmlPaths,
+                                                                                           flag);
 
     doConfigure(appContext, beanName);
 

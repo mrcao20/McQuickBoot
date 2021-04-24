@@ -25,23 +25,10 @@ MC_GLOBAL_STATIC(VFuncs, postRFuncs)
 
 int iocStaticInit()
 {
-    qAddPreRoutine([](){
-        StartUpFuncs funcs = *preRFuncs;
-        auto keys = funcs.keys();
-        for(int i = keys.length() - 1; i >= 0; --i) {
-            auto list = funcs.value(keys.value(i));
-            for(int j = 0; j < list.length(); ++j) {
-                list.at(j)();
-            }
-        }
-#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
-        Q_QGS_preRFuncs::guard.store(QtGlobalStatic::Initialized);
-#else
-        Q_QGS_preRFuncs::guard.storeRelaxed(QtGlobalStatic::Initialized);
-#endif
-    });
-    qAddPostRoutine([](){
-        VFuncs funcs = *postRFuncs;
+    qAddPreRoutine([]() { Mc::callPreRoutine(); });
+    qAddPostRoutine([]() {
+        VFuncs funcs;
+        funcs.swap(*postRFuncs);
         auto keys = funcs.keys();
         for(int i = keys.length() - 1; i >= 0; --i) {
             auto list = funcs.value(keys.value(i));
@@ -201,7 +188,7 @@ static void customStreamDebug(QDebug dbg, const QVariant &variant) {
 //#endif
 //};
 
-MC_STATIC(Mc::RoutinePriority::Max)
+MC_STATIC(Mc::RoutinePriority::Max + 10)
 auto pId = qRegisterMetaType<QObject *>();
 auto sId = qRegisterMetaType<QObjectPtr>();
 McMetaTypeId::addQObjectPointerIds(pId, sId);
@@ -269,6 +256,9 @@ bool waitForExecFunc(const std::function<bool()> &func, qint64 timeout) noexcept
 
 QString toAbsolutePath(const QString &path) noexcept
 {
+    if (QDir::isAbsolutePath(path)) {
+        return path;
+    }
     QString dstPath = QDir::toNativeSeparators(path);
     QString sepDot = ".";
     QString sepDotDot = "..";
@@ -389,10 +379,31 @@ void addPreRoutine(int priority, const StartUpFunction &func) noexcept
     if(!funcs) {
         return;
     }
-    if (QCoreApplication::instance()) {
-        func();
-    }
     (*funcs)[priority].prepend(func);
+}
+
+void callPreRoutine() noexcept
+{
+    using namespace McPrivate;
+    StartUpFuncs funcs;
+    funcs.swap(*preRFuncs);
+    auto keys = funcs.keys();
+    for (int i = keys.length() - 1; i >= 0; --i) {
+        auto list = funcs.value(keys.value(i));
+        for (int j = 0; j < list.length(); ++j) {
+            list.at(j)();
+        }
+    }
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+    Q_QGS_preRFuncs::guard.store(QtGlobalStatic::Initialized);
+#else
+    Q_QGS_preRFuncs::guard.storeRelaxed(QtGlobalStatic::Initialized);
+#endif
+}
+
+void cleanPreRoutine() noexcept
+{
+    McPrivate::preRFuncs->clear();
 }
 
 void addPostRoutine(int priority, const CleanUpFunction &func) noexcept

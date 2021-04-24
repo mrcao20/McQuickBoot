@@ -41,6 +41,7 @@ HEADERS += \
     $$PWD/include/McIoc/Destroyer/impl/McNormalDestroyer.h \
     $$PWD/include/McIoc/McConstantGlobal.h \
     $$PWD/include/McIoc/McVersion.h \
+    $$PWD/include/McIoc/ObjectBuilder/ObjectBuilder.h \
     $$PWD/include/McIoc/PropertyParser/IMcPropertyConverter.h \
     $$PWD/include/McIoc/PropertyParser/IMcPropertyParser.h \
     $$PWD/include/McIoc/PropertyParser/impl/McAbstarctPropertyConverter.h \
@@ -95,6 +96,7 @@ SOURCES += \
     $$PWD/src/BeanFactory/McPointerBeanFactory.cpp \
     $$PWD/src/BeanFactory/McSharedBeanFactory.cpp \
     $$PWD/src/McInitGlobal.cpp \
+    $$PWD/src/ObjectBuilder/ObjectBuilder.cpp \
     $$PWD/src/PropertyParser/McAbstarctPropertyConverter.cpp \
     $$PWD/src/PropertyParser/McAbstractPropertyParser.cpp \
     $$PWD/src/PropertyParser/McDefaultPropertyConverter.cpp \
