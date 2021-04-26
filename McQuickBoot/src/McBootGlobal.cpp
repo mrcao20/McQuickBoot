@@ -1,5 +1,6 @@
 #include "McBoot/McBootGlobal.h"
 
+#include <QDebug>
 #include <QDir>
 #include <QLibrary>
 #include <QScopeGuard>
@@ -8,6 +9,7 @@ namespace {
 
 struct McBootGlobalStaticData
 {
+    bool isDefaultSearch{true};
     QLatin1String libraryCheckSymbol;
     QStringList serviceSearchPaths;
     QStringList serviceLibraryPaths;
@@ -18,7 +20,9 @@ struct McBootGlobalStaticData
 MC_GLOBAL_STATIC(McBootGlobalStaticData, mcBootGlobalStaticData)
 
 MC_STATIC(Mc::RoutinePriority::Max + 9)
-Mc::addServiceSearchPath("./mcservices");
+if (mcBootGlobalStaticData->isDefaultSearch) {
+    Mc::addServiceSearchPath("./mcservices");
+}
 for (auto searchPath : mcBootGlobalStaticData->serviceSearchPaths) {
     QDir dir(searchPath);
     auto fileInfos = dir.entryInfoList(QDir::Files);
@@ -53,6 +57,11 @@ MC_STATIC_END
 
 namespace Mc {
 
+void setDefaultSearch(bool val)
+{
+    mcBootGlobalStaticData->isDefaultSearch = val;
+}
+
 void setLibraryCheckSymbol(const QLatin1String &symbol)
 {
     mcBootGlobalStaticData->libraryCheckSymbol = symbol;
@@ -83,3 +92,5 @@ void addServiceLibraryPath(const QStringList &paths)
 }
 
 } // namespace Mc
+
+Q_LOGGING_CATEGORY(mcQuickBoot, "mc.quickboot")

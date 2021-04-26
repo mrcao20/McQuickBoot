@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QLoggingCategory>
+
 #include <McIoc/McGlobal.h>
 
 #include "McBootConstantGlobal.h"
@@ -15,6 +17,8 @@
 
 namespace Mc {
 
+// 是否添加默认查找路径，默认会到mcservices目录下查找，如果不需要则需要手动调用此函数置为false
+MCQUICKBOOT_EXPORT void setDefaultSearch(bool val);
 MCQUICKBOOT_EXPORT void setLibraryCheckSymbol(const QLatin1String &symbol);
 //! 必须传入全路径，可以是相对与可执行程序的相对路径
 MCQUICKBOOT_EXPORT void addServiceSearchPath(const QString &path);
@@ -24,3 +28,5 @@ MCQUICKBOOT_EXPORT void addServiceLibraryPath(const QString &path);
 MCQUICKBOOT_EXPORT void addServiceLibraryPath(const QStringList &paths);
 
 } // namespace Mc
+
+Q_DECLARE_LOGGING_CATEGORY(mcQuickBoot)

@@ -61,7 +61,9 @@ QVariant McControllerContainer::invoke(const QString &uri, const QVariant &body)
     case QMetaType::Type::QVariantMap:
         return invoke(uri, body.toMap());
     default:
-        return fail("this body is not support type");
+        return fail(
+            QString("Uri:'%1' access failure. this body is not support type. type:%2. typeName:%3")
+                .arg(uri, QString::number(body.type()), body.typeName()));
     }
 }
 
@@ -81,11 +83,15 @@ QVariant McControllerContainer::invoke(const QString &uri, const QVariantList &d
 {
     QObjectPtr bean;
     QString func;
-    QVariant errRet;
-    if (!splitBeanAndFunc(uri, bean, func, errRet)) {
-        return errRet;
+    QVariant ret;
+    if (splitBeanAndFunc(uri, bean, func, ret)) {
+        ret = invokeForUri(bean, func, data);
     }
-    return invokeForUri(bean, func, data);
+    if (ret.canConvert<McResultPtr>()) {
+        auto result = ret.value<McResultPtr>();
+        result->setErrMsg(QString("Uri:'%1' access failure. ").arg(uri) + result->errMsg());
+    }
+    return ret;
 }
 
 QVariant McControllerContainer::invoke(const QString &uri, const QVariantMap &data) noexcept
@@ -97,21 +103,27 @@ QVariant McControllerContainer::invoke(const QString &uri, const QVariantMap &da
                           QString::SkipEmptyParts
 #endif
     );
-    if (list.isEmpty())
-        return fail("access path not exists");
-    QObjectPtr bean;
-    QString func;
-    QVariant errRet;
-    if (!splitBeanAndFunc(list.at(0), bean, func, errRet)) {
-        return errRet;
+    QVariant ret;
+    if (list.isEmpty()) {
+        ret = fail("access path not exists");
+    } else {
+        QObjectPtr bean;
+        QString func;
+        if (splitBeanAndFunc(list.at(0), bean, func, ret)) {
+            QString param = list.size() == 2 ? list.at(1) : "";
+            // <参数名，参数值>
+            QVariantMap args = splitParam(param);
+            for (auto key : data.keys()) {
+                args.insert(key, data.value(key));
+            }
+            ret = invokeForUri(bean, func, args);
+        }
     }
-    QString param = list.size() == 2 ? list.at(1) : "";
-    // <参数名，参数值>
-    QVariantMap args = splitParam(param);
-    for (auto key : data.keys()) {
-        args.insert(key, data.value(key));
+    if (ret.canConvert<McResultPtr>()) {
+        auto result = ret.value<McResultPtr>();
+        result->setErrMsg(QString("Uri:'%1' access failure. ").arg(uri) + result->errMsg());
     }
-    return invokeForUri(bean, func, args);
+    return ret;
 }
 
 bool McControllerContainer::splitBeanAndFunc(const QString &uri,
@@ -294,9 +306,9 @@ QVariant McControllerContainer::invokeForArgs(QObjectConstPtrRef bean,
 {
     auto returnType = method.returnType();
     if(returnType == QMetaType::Type::UnknownType) {
-        qCritical() << "cannot found return type from meta object system. type name:"
-                    << method.typeName();
-        return fail("cannot found return type from meta object system");
+        auto result = fail(QString("cannot found return type from meta object system. type name:%1")
+                               .arg(method.typeName()));
+        return result;
     }
     QVariant returnValue;
     QGenericReturnArgument returnArg;
@@ -349,9 +361,9 @@ QVariant McControllerContainer::invokeForArgs(QObjectConstPtrRef bean,
 {
     auto returnType = method.returnType();
     if (returnType == QMetaType::Type::UnknownType) {
-        qCritical() << "cannot found return type from meta object system. type name:"
-                    << method.typeName();
-        return fail("cannot found return type from meta object system");
+        auto result = fail(QString("cannot found return type from meta object system. type name:%1")
+                               .arg(method.typeName()));
+        return result;
     }
     QVariant returnValue;
     QGenericReturnArgument returnArg;
@@ -455,9 +467,10 @@ QVariantList McControllerContainer::makeValues(const QMetaMethod &method,
         QByteArray type = paramTypes.at(i).simplified();
         QVariant value = args.at(i); //!< 由于调用此函数时参数个数一定一致，所以这里一定有值
         if (!value.convert(QMetaType::type(type))) {
-            qCritical() << "property convert failure. origin type name:" << value.typeName()
-                        << "typeid:" << value.type() << "target typeName:" << type;
-            *errMsg = fail("cannot convert property");
+            *errMsg = fail(
+                QString(
+                    "property convert failure. origin type name:%1. typeid:%2. target typeName:%3")
+                    .arg(value.typeName(), QString::number(value.type()), type));
             *ok = false;
             return QVariantList();
         }

@@ -5,6 +5,7 @@
 #include <QVariant>
 
 #include "McBoot/Controller/impl/McResult.h"
+#include "McBoot/McBootGlobal.h"
 
 MC_DECL_PRIVATE_DATA(McAbstractResponse)
 bool isAsyncCall{false}; // 是否在次线程调用callback，默认不需要
@@ -64,6 +65,7 @@ void McAbstractResponse::call() noexcept
     }
     auto result = d->body.value<McResultPtr>();
     if (result->isInternalError()) {
+        qCWarning(mcQuickBoot()) << result;
         callError();
     } else {
         callCallback();
