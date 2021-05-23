@@ -54,6 +54,7 @@ public:
 
     QScxmlStateMachine *stateMachine() const noexcept;
     bool isLoadStateMachine() const noexcept;
+    static void setStaticStateMachine(QScxmlStateMachine *val);
 
 protected:
     void customEvent(QEvent *event) override;

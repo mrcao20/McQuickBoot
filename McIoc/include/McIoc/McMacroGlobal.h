@@ -25,9 +25,18 @@
     using Class##Ptr = QSharedPointer<Class>; \
     using Class##ConstPtrRef = const QSharedPointer<Class> &;
 
+#define MC_DECL_POINTER_NS(Class, NS) \
+    using Class##Ptr = QSharedPointer<NS::Class>; \
+    using Class##ConstPtrRef = const QSharedPointer<NS::Class> &;
+
 #define MC_FORWARD_DECL_CLASS(Class) \
     class Class; \
     MC_DECL_POINTER(Class)
+
+#define MC_FORWARD_DECL_CLASS_NS(Class, NS) \
+    namespace NS { \
+    MC_FORWARD_DECL_CLASS(Class) \
+    }
 
 #define MC_FORWARD_DECL_STRUCT(Class) \
     struct Class; \
@@ -105,6 +114,10 @@
 
 #define MC_DECL_METATYPE(Class) \
     MC_DECL_POINTER(Class) \
+    Q_DECLARE_METATYPE(Class##Ptr) \
+    Q_DECLARE_METATYPE(Class *)
+
+#define MC_DECL_METATYPE_NS(Class) \
     Q_DECLARE_METATYPE(Class##Ptr) \
     Q_DECLARE_METATYPE(Class *)
 

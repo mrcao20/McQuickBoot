@@ -22,15 +22,17 @@ McLocalPathApplicationContext::McLocalPathApplicationContext(const QStringList &
 {
     QList<QIODevicePtr> devices;
     for(auto location : locations) {
-        if(!QFile::exists(location)) {
-            qCritical() << "file '" << location << "' not exists";
+        auto filePath = Mc::toAbsolutePath(location);
+        if (!QFile::exists(filePath)) {
+            qCritical() << "file '" << filePath << "' not exists";
             continue;
         }
-        auto device = new QFile(location);
+        auto device = new QFile(filePath);
         if (!device->open(QIODevice::ReadOnly | QIODevice::Text)) {
-            qCritical() << "open file '" << location << "' failure."
+            qCritical() << "open file '" << filePath << "' failure."
                         << "error code:" << device->error()
                         << "error msg:" << device->errorString();
+            device->deleteLater();
             continue;
         }
         devices.append(QIODevicePtr(device));

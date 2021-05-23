@@ -11,7 +11,7 @@ public:
     McPointerBeanFactory(QObject *parent = nullptr) noexcept;
     ~McPointerBeanFactory() override;
 
-    bool canRegister(IMcBeanDefinitionConstPtrRef beanDefinition) noexcept override;
+    bool canRegister(IMcBeanDefinitionConstPtrRef beanDefinition) const noexcept override;
     bool canResolve(McBeanReferenceConstPtrRef beanRef) noexcept override;
 
 protected:

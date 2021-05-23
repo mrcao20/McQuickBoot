@@ -256,10 +256,10 @@ bool waitForExecFunc(const std::function<bool()> &func, qint64 timeout) noexcept
 
 QString toAbsolutePath(const QString &path) noexcept
 {
-    if (QDir::isAbsolutePath(path)) {
-        return path;
-    }
     QString dstPath = QDir::toNativeSeparators(path);
+    if (QDir::isAbsolutePath(dstPath)) {
+        return dstPath;
+    }
     QString sepDot = ".";
     QString sepDotDot = "..";
     sepDot += QDir::separator();

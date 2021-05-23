@@ -21,6 +21,8 @@ struct JsonUtils
     QVariant serialize(const QVariant &origin) noexcept;
     QVariant serialize(QObject *obj, const QVariant &origin) noexcept;
     QVariant serialize(const void *obj, const QMetaObject *metaObj, const QVariant &origin) noexcept;
+    QVariant deserialize(const QVariant &origin, int toId) noexcept;
+    QVariant deserialize(const QMetaObject *metaObj, const QVariant &origin, int toId) noexcept;
     bool isSerialize(const QMetaObject *metaObj) noexcept;
 };
 
@@ -218,6 +220,38 @@ QVariant JsonUtils::serialize(const void *obj,
     return McJsonUtils::toJson(obj, metaObj);
 }
 
+QVariant JsonUtils::deserialize(const QVariant &origin, int toId) noexcept
+{
+    auto qobjectIds = McMetaTypeId::qobjectPointerIds();
+    auto sharedIds = McMetaTypeId::sharedPointerIds();
+    auto gadgetIds = McMetaTypeId::gadgetIds();
+    for (auto gadgetId : gadgetIds) {
+        if (gadgetId->pointerId == toId || gadgetId->sharedId == toId) {
+            auto metaObj = QMetaType::metaObjectForType(gadgetId->gadgetId);
+            return deserialize(metaObj, origin, toId);
+        }
+    }
+    if (qobjectIds.contains(toId)) {
+        auto metaObj = QMetaType::metaObjectForType(toId);
+        return deserialize(metaObj, origin, toId);
+    } else if (sharedIds.contains(toId)) {
+        auto metaObj = QMetaType::metaObjectForType(sharedIds.value(toId)->qobjectPointerId);
+        return deserialize(metaObj, origin, toId);
+    } else {
+        return origin;
+    }
+}
+
+QVariant JsonUtils::deserialize(const QMetaObject *metaObj,
+                                const QVariant &origin,
+                                int toId) noexcept
+{
+    if (!isSerialize(metaObj)) {
+        return origin;
+    }
+    return McJsonUtils::fromJson(toId, origin);
+}
+
 bool JsonUtils::isSerialize(const QMetaObject *metaObj) noexcept
 {
     auto serializeIndex = metaObj->indexOfClassInfo(MC_SERIALIZATION_TAG);
@@ -360,4 +394,9 @@ QVariant McJsonUtils::fromJson(int type, const QVariant &value) noexcept
 QVariant McJsonUtils::serialize(const QVariant &origin) noexcept
 {
     return mcJsonUtils->serialize(origin);
+}
+
+QVariant McJsonUtils::deserialize(const QVariant &origin, int toId) noexcept
+{
+    return mcJsonUtils->deserialize(origin, toId);
 }

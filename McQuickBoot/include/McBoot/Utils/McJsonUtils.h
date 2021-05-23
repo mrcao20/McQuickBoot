@@ -52,6 +52,7 @@ public:
     static T fromJson(const QJsonArray &value) noexcept;
 
     static QVariant serialize(const QVariant &origin) noexcept;
+    static QVariant deserialize(const QVariant &origin, int toId) noexcept;
 };
 
 template<typename T>

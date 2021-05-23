@@ -33,14 +33,14 @@ int main(int argc, char *argv[])
     QUrl u("file:///./a");
     qDebug() << "u:" << u.isLocalFile();
     //! 必须开启IOC支持
-    auto path = R"(..\..\Examples\LogTest\logqt.xml)";
+    auto path = R"(../../Examples/LogTest/logqt.xml)";
 #ifdef QT_DEBUG
     auto appCtx = McXMLConfigurator::configure(path, "debug");
 #else
     auto appCtx = McXMLConfigurator::configure(path, "release");
 #endif
     //    McDefaultConfigurator::configure();
-    //    McINIConfigurator::configure(R"(E:\QtCreator\McLogQt\Test\logqt.ini)");
+    //    McINIConfigurator::configure(R"(E:/QtCreator/McLogQt/Test/logqt.ini)");
     auto appender = appCtx->getBean<IMcRequestableNextFile>("dailyRollingFile");
     qInfo() << appender;
     appender->forceRequestNextFile();

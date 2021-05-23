@@ -22,9 +22,9 @@ void callbackTest(const QJsonObject &var)
     qDebug() << "-----+++++++" << var;
 }
 
-void callbackTest2(const QVariant &str, QVariant ii)
+void callbackTest2(const ParamPtr &str, int ii)
 {
-    qDebug() << "callback test:" << str << ii;
+    qDebug() << "callback test:" << str << str->aaa << ii;
 }
 
 void callbackTest3(int a)
@@ -46,6 +46,7 @@ int main(int argc, char *argv[])
     std::function<void(int)> a = [](int b) { qDebug() << "++++++++++++++" << b; };
     QMetaObject::invokeMethod(&t, "aaa", Q_ARG(std::function<void(int)>, a));
     McQuickBootSimple::init();
+    qDebug() << "cccccccccccc" << $.stateMachine();
     $.connect("aaa", SIGNAL(signal_sig()), "param", SLOT(slot_slt()));
     ParamPtr p = ParamPtr::create();
     $.connect("aaa", SIGNAL(signal_sig3(int)), p.data(), &Param::callbackTest3);
@@ -70,7 +71,7 @@ int main(int argc, char *argv[])
     $.invoke("aaa.ccc").then(&t, &Test::callbackTest);
     auto res = $.syncInvoke("aaa.ccc");
     auto ccc = [](const QVariant &str, int ii) { qDebug() << "callback test0:" << str << ii; };
-    $.invoke("aaa.vvv", McCppAsyncCallback::build(callbackTest2)).then([](const QVariant &var) {
+    $.invoke("aaa.vvv", McCppSyncCallback::build(callbackTest2)).then([](const QVariant &var) {
         qDebug() << "vvvvvvvvvvvvvv" << var;
     });
     qDebug() << res;

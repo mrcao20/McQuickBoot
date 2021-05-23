@@ -4,7 +4,7 @@
 
 MC_FORWARD_DECL_PRIVATE_DATA(McAbstarctPropertyConverter);
 
-class McAbstarctPropertyConverter : public QObject, public IMcPropertyConverter
+class MCIOC_EXPORT McAbstarctPropertyConverter : public QObject, public IMcPropertyConverter
 {
     Q_OBJECT
 public:

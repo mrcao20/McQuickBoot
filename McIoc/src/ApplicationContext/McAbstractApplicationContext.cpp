@@ -64,7 +64,7 @@ QVariant McAbstractApplicationContext::getBeanToVariant(const QString &name,
     return var;
 }
 
-bool McAbstractApplicationContext::containsBean(const QString &name) noexcept
+bool McAbstractApplicationContext::containsBean(const QString &name) const noexcept
 {
     bool isContained = false;
     if(d->configurableBeanFactory->containsBean(name)) {
@@ -126,7 +126,8 @@ IMcBeanDefinitionPtr McAbstractApplicationContext::unregisterBeanDefinition(cons
     return IMcBeanDefinitionPtr();
 }
 
-bool McAbstractApplicationContext::canRegister(IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
+bool McAbstractApplicationContext::canRegister(IMcBeanDefinitionConstPtrRef beanDefinition) const
+    noexcept
 {
     if (d->configurableBeanFactory->canRegister(beanDefinition)) {
         return true;
@@ -139,12 +140,13 @@ bool McAbstractApplicationContext::canRegister(IMcBeanDefinitionConstPtrRef bean
     return false;
 }
 
-bool McAbstractApplicationContext::isContained(const QString &name) noexcept 
+bool McAbstractApplicationContext::isContained(const QString &name) const noexcept
 {
     return containsBean(name);
 }
 
-QHash<QString, IMcBeanDefinitionPtr> McAbstractApplicationContext::getBeanDefinitions() noexcept 
+QHash<QString, IMcBeanDefinitionPtr> McAbstractApplicationContext::getBeanDefinitions() const
+    noexcept
 {
     auto beanDefinitions = d->configurableBeanFactory->getBeanDefinitions();
     for (auto beanFactory : d->relatedBeanFactory) {

@@ -2,7 +2,7 @@
 
 #include "../IMcBeanDefinition.h"
 
-class McRootBeanDefinition : public QObject, public IMcBeanDefinition
+class MCIOC_EXPORT McRootBeanDefinition : public QObject, public IMcBeanDefinition
 {
     Q_OBJECT
 public:

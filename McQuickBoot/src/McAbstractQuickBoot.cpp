@@ -1,5 +1,6 @@
 #include "McBoot/McAbstractQuickBoot.h"
 
+#include <QScxmlStateMachine>
 #include <QThread>
 
 #include <McIoc/ApplicationContext/IMcApplicationContext.h>
@@ -137,6 +138,11 @@ void McAbstractQuickBoot::doRefresh(const QStringList &preloadBeans) noexcept
     }
     for (auto preloadBean : preloadBeans) {
         context->getBean(preloadBean, d->workThread);
+    }
+    auto stateMachineName = QT_STRINGIFY(MC_QUICKBOOT_STATE_MACHINE_NAME);
+    if (context->containsBean(stateMachineName)) {
+        auto val = context->getBeanPointer<QScxmlStateMachine *>(stateMachineName);
+        McAbstractRequestor::setStaticStateMachine(val);
     }
     d->requestor = context->getBean<McCppRequestor>("cppRequestor", d->workThread);
     context->refresh(d->workThread); //!< 预加载bean

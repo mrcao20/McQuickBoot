@@ -186,7 +186,7 @@ struct AddQObjectBuilderHelper<T, true>
 {
     static void addQObjectBuilder(int id)
     {
-        auto builder = QSharedPointer<QObjectBuilder<T>>::create();
+        auto builder = QObjectBuilderPtr<std::remove_pointer_t<T>>::create();
         IQObjectBuilder::addQObjectBuilder(id, builder);
     }
 };
@@ -255,7 +255,7 @@ struct McConverterRegister2<T, flag, typename T::McPrivateTypeListHelper>
     }
 };
 
-template<typename T, bool flag = false>
+template<typename T, bool flag = std::is_default_constructible<T>::value>
 struct McConverterRegister
 {
     static void registerConverter() { McConverterRegister2<T, flag>::registerConverter(); }

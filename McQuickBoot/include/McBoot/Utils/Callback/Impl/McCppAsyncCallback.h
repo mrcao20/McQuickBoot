@@ -22,6 +22,19 @@ class MCQUICKBOOT_EXPORT McCppAsyncCallback : public McAbstractAsyncCallback
         }
     };
 
+    template<typename T>
+    struct QMetaTypeIdSelector;
+    template<typename... Args>
+    struct QMetaTypeIdSelector<QtPrivate::List<Args...>>
+    {
+        static QList<int> metaTypeIds()
+        {
+            QList<int> l;
+            (l << ... << qMetaTypeId<Args>());
+            return l;
+        }
+    };
+
 public:
     McCppAsyncCallback() noexcept;
     ~McCppAsyncCallback() override;
@@ -41,6 +54,7 @@ public:
         typedef QtPrivate::FunctionPointer<Func> FuncType;
 
         init(QVariantSelector<typename FuncType::Arguments>::isQVariants(),
+             QMetaTypeIdSelector<typename FuncType::Arguments>::metaTypeIds(),
              recever,
              new QtPrivate::QSlotObject<Func,
                                         typename FuncType::Arguments,
@@ -66,6 +80,7 @@ public:
 
 private:
     void init(const QList<bool> &isQVariants,
+              const QList<int> &argumentIds,
               const QObject *recever,
               QtPrivate::QSlotObjectBase *callback) noexcept;
     template<typename Func>
@@ -77,6 +92,7 @@ private:
         typedef QtPrivate::FunctionPointer<Func> FuncType;
 
         init(QVariantSelector<typename FuncType::Arguments>::isQVariants(),
+             QMetaTypeIdSelector<typename FuncType::Arguments>::metaTypeIds(),
              nullptr,
              new QtPrivate::QStaticSlotObject<Func,
                                               typename FuncType::Arguments,
@@ -89,6 +105,7 @@ private:
         typedef McPrivate::LambdaType<Func> FuncType;
 
         init(QVariantSelector<typename FuncType::Arguments>::isQVariants(),
+             QMetaTypeIdSelector<typename FuncType::Arguments>::metaTypeIds(),
              nullptr,
              new QtPrivate::QFunctorSlotObject<Func,
                                                int(FuncType::ArgumentCount),

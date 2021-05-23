@@ -8,7 +8,7 @@ QT_BEGIN_NAMESPACE
 class QThread;
 QT_END_NAMESPACE
 
-class IMcBeanFactory 
+class IMcBeanFactory
 {
 public:
     virtual ~IMcBeanFactory() = default;
@@ -86,7 +86,7 @@ public:
      * \retval true 存在
      * \retval false 不存在
      */
-    virtual bool containsBean(const QString &name) noexcept = 0;
+    virtual bool containsBean(const QString &name) const noexcept = 0;
     /*!
      * \brief isSingleton
      * 

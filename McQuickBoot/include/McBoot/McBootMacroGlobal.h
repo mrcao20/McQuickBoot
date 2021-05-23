@@ -46,6 +46,7 @@
 #define MC_JSON_SERIALIZATION Q_CLASSINFO(MC_SERIALIZATION_TAG, MC_JSON_SERIALIZATION_TAG)
 //!< Q_CLASSINFO
 
+// Work Thread
 #define MC_QUICKBOOT_WORK_THREAD_NAME __mc__quickBootWorkThread
 #define MC_INLINE_QUICKBOOT_WORK_THREAD \
     Q_INVOKABLE \
@@ -58,13 +59,34 @@
     QThread *MC_QUICKBOOT_WORK_THREAD_NAME() const noexcept;
 
 #define MC_SIMPLE_DEFINE_QUICKBOOT_WORK_THREAD(Class) \
-    QThread *Class::MC_QUICKBOOT_WORK_THREAD_NAME() const noexcept \
-    { \
-        return new QThread(); \
-    }
+    QThread *Class::MC_QUICKBOOT_WORK_THREAD_NAME() const noexcept { return new QThread(); }
 
 #define MC_CUSTOM_DEFINE_QUICKBOOT_WORK_THREAD(Class, par) \
     QThread *Class::MC_QUICKBOOT_WORK_THREAD_NAME() const noexcept par
 
 #define MC_CUSTOM_FUNC_DEFINE_QUICKBOOT_WORK_THREAD(Class, func) \
     QThread *Class::MC_QUICKBOOT_WORK_THREAD_NAME() const noexcept { return func(); }
+
+// State Machine
+#define MC_QUICKBOOT_STATE_MACHINE_NAME __mc__quickBootStateMachine
+#define MC_INLINE_QUICKBOOT_STATE_MACHINE(Class) \
+    Q_INVOKABLE \
+    MC_BEAN \
+    QScxmlStateMachine *MC_QUICKBOOT_STATE_MACHINE_NAME() const noexcept { return new Class(); }
+
+#define MC_DECL_QUICKBOOT_STATE_MACHINE \
+    Q_INVOKABLE \
+    MC_BEAN \
+    QScxmlStateMachine *MC_QUICKBOOT_STATE_MACHINE_NAME() const noexcept;
+
+#define MC_SIMPLE_DEFINE_QUICKBOOT_STATE_MACHINE(Class, Class2) \
+    QScxmlStateMachine *Class::MC_QUICKBOOT_STATE_MACHINE_NAME() const noexcept \
+    { \
+        return new Class2(); \
+    }
+
+#define MC_CUSTOM_DEFINE_QUICKBOOT_STATE_MACHINE(Class, par) \
+    QScxmlStateMachine *Class::MC_QUICKBOOT_STATE_MACHINE_NAME() const noexcept par
+
+#define MC_CUSTOM_FUNC_DEFINE_QUICKBOOT_STATE_MACHINE(Class, func) \
+    QScxmlStateMachine *Class::MC_QUICKBOOT_STATE_MACHINE_NAME() const noexcept { return func(); }

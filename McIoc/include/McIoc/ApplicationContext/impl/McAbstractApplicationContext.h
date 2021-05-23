@@ -22,14 +22,14 @@ public:
     QObjectPtr getBean(const QString &name, QThread *thread = nullptr) noexcept override;
     QObject *getBeanPointer(const QString &name, QThread *thread = nullptr) noexcept override;
     QVariant getBeanToVariant(const QString &name, QThread *thread = nullptr)  noexcept override;
-    bool containsBean(const QString &name) noexcept override;
+    bool containsBean(const QString &name) const noexcept override;
     bool isSingleton(const QString &name) noexcept override;
     bool registerBeanDefinition(const QString &name,
                                 IMcBeanDefinitionConstPtrRef beanDefinition) noexcept override;
     IMcBeanDefinitionPtr unregisterBeanDefinition(const QString &name) noexcept override;
-    bool canRegister(IMcBeanDefinitionConstPtrRef beanDefinition) noexcept override;
-    bool isContained(const QString &name) noexcept override;
-    QHash<QString, IMcBeanDefinitionPtr> getBeanDefinitions() noexcept override;
+    bool canRegister(IMcBeanDefinitionConstPtrRef beanDefinition) const noexcept override;
+    bool isContained(const QString &name) const noexcept override;
+    QHash<QString, IMcBeanDefinitionPtr> getBeanDefinitions() const noexcept override;
     void refresh(QThread *thread = nullptr) noexcept override;
     
     void addRelatedBeanFactory(IMcConfigurableBeanFactoryConstPtrRef beanFac) noexcept override;

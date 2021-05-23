@@ -6,9 +6,11 @@
 #include <McIoc/Utils/McScopedFunction.h>
 
 #include "McBoot/Controller/impl/McResult.h"
+#include "McBoot/Utils/McJsonUtils.h"
 
 MC_DECL_PRIVATE_DATA(McCppResponse)
 bool isQVariant{false};
+int argumentId{-1};
 const QObject *recever{nullptr};
 QtPrivate::QSlotObjectBase *callback{nullptr};
 QtPrivate::QSlotObjectBase *error{nullptr};
@@ -42,10 +44,12 @@ void McCppResponse::callError() noexcept
 }
 
 McCppResponse &McCppResponse::thenImpl(bool isQVariant,
+                                       int argumentId,
                                        const QObject *recever,
                                        QtPrivate::QSlotObjectBase *callback) noexcept
 {
     d->isQVariant = isQVariant;
+    d->argumentId = argumentId;
     d->recever = recever;
     d->callback = callback;
     setAsyncCall(false);
@@ -53,17 +57,20 @@ McCppResponse &McCppResponse::thenImpl(bool isQVariant,
 }
 
 McCppResponse &McCppResponse::syncThenImpl(bool isQVariant,
+                                           int argumentId,
                                            const QObject *recever,
                                            QtPrivate::QSlotObjectBase *callback) noexcept
 {
-    return thenImpl(isQVariant, recever, callback);
+    return thenImpl(isQVariant, argumentId, recever, callback);
 }
 
 McCppResponse &McCppResponse::asyncThenImpl(bool isQVariant,
+                                            int argumentId,
                                             const QObject *recever,
                                             QtPrivate::QSlotObjectBase *callback) noexcept
 {
     d->isQVariant = isQVariant;
+    d->argumentId = argumentId;
     d->recever = recever;
     d->callback = callback;
     setAsyncCall(true);
@@ -71,10 +78,12 @@ McCppResponse &McCppResponse::asyncThenImpl(bool isQVariant,
 }
 
 McCppResponse &McCppResponse::errorImpl(bool isQVariant,
+                                        int argumentId,
                                         const QObject *recever,
                                         QtPrivate::QSlotObjectBase *func) noexcept
 {
     d->isQVariant = isQVariant;
+    d->argumentId = argumentId;
     d->recever = recever;
     d->error = func;
     setAsyncCall(false);
@@ -92,8 +101,22 @@ void McCppResponse::call(QtPrivate::QSlotObjectBase *func) noexcept
     auto body = this->body();
     void *bodyStar = nullptr;
     if (d->isQVariant) {
+        body = McJsonUtils::serialize(body);
         bodyStar = &body;
     } else {
+        if (body.userType() != d->argumentId) {
+            body = McJsonUtils::serialize(body);
+            if (body.userType() == qMetaTypeId<QJsonObject>()) {
+                body = McJsonUtils::deserialize(body, d->argumentId);
+            }
+            if (body.userType() != d->argumentId) {
+                qCCritical(mcQuickBoot(),
+                           "cannot construct object for typeId: %d. className: %s",
+                           d->argumentId,
+                           QMetaType::typeName(d->argumentId));
+                return;
+            }
+        }
         bodyStar = body.data();
     }
     void *args[] = {nullptr, bodyStar};

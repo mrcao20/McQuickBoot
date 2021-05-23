@@ -3,9 +3,9 @@
 #include <QThread>
 #include <QDebug>
 
-#include <McIoc/McGlobal.h>
 #include <McBoot/Controller/impl/McResult.h>
-#include <McBoot./Utils/McJsonUtils.h>
+#include <McBoot/Utils/McJsonUtils.h>
+#include <McIoc/McGlobal.h>
 
 MC_INIT(InvokeTest)
 MC_REGISTER_BEAN_FACTORY(InvokeTest)

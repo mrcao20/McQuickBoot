@@ -6,6 +6,8 @@
 #include <QObject>
 #include <QThread>
 
+#include "BootTest.h"
+
 MC_FORWARD_DECL_PRIVATE_DATA(Config2);
 
 class CThread : public QThread
@@ -31,6 +33,7 @@ public:
 
     //    MC_DECL_QUICKBOOT_WORK_THREAD
     MC_INLINE_QUICKBOOT_WORK_THREAD
+    MC_INLINE_QUICKBOOT_STATE_MACHINE(BootTest)
 
 private:
     MC_DECL_PRIVATE(Config2)

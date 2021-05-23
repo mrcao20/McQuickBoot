@@ -17,7 +17,7 @@ McPointerBeanFactory::McPointerBeanFactory(QObject *parent) noexcept
 
 McPointerBeanFactory::~McPointerBeanFactory() {}
 
-bool McPointerBeanFactory::canRegister(IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
+bool McPointerBeanFactory::canRegister(IMcBeanDefinitionConstPtrRef beanDefinition) const noexcept
 {
     return beanDefinition->isPointer();
 }

@@ -33,6 +33,7 @@ private:
 McRunnerEvent::~McRunnerEvent() {}
 
 MC_GLOBAL_STATIC(QThreadPool, requestorThreadPool)
+MC_GLOBAL_STATIC(QScxmlStateMachine *, staticStateMachine)
 
 MC_INIT(McAbstractRequestor)
 MC_DESTROY()
@@ -105,6 +106,9 @@ QObject *McAbstractRequestor::getBean(const QString &name) const noexcept
 
 QScxmlStateMachine *McAbstractRequestor::stateMachine() const noexcept
 {
+    if (staticStateMachine.exists() && (*staticStateMachine) != nullptr) {
+        return *staticStateMachine;
+    }
     if (d->stateMachineConfig.isNull()) {
         qFatal("please make sure file 'application.yml' exists");
     }
@@ -117,6 +121,9 @@ QScxmlStateMachine *McAbstractRequestor::stateMachine() const noexcept
 
 bool McAbstractRequestor::isLoadStateMachine() const noexcept
 {
+    if (staticStateMachine.exists() && (*staticStateMachine) != nullptr) {
+        return true;
+    }
     if (d->stateMachineConfig.isNull()) {
         return false;
     }
@@ -125,6 +132,11 @@ bool McAbstractRequestor::isLoadStateMachine() const noexcept
         return false;
     }
     return true;
+}
+
+void McAbstractRequestor::setStaticStateMachine(QScxmlStateMachine *val)
+{
+    *staticStateMachine = val;
 }
 
 void McAbstractRequestor::customEvent(QEvent *event)

@@ -6,6 +6,11 @@
 
 MC_FORWARD_DECL_PRIVATE_DATA(McAbstractResponse);
 
+/*!
+ * \brief The McAbstractResponse class
+ * 此抽象类的子类在每次请求时都会构造一个新的对象，
+ * 可以设计成使用对象池来优化
+ */
 class MCQUICKBOOT_EXPORT McAbstractResponse : public QObject
 {
     Q_OBJECT

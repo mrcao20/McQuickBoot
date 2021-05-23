@@ -4,6 +4,7 @@
 #include <QDir>
 #include <QLibrary>
 #include <QScopeGuard>
+#include <QScxmlStateMachine>
 
 namespace {
 
@@ -20,6 +21,7 @@ struct McBootGlobalStaticData
 MC_GLOBAL_STATIC(McBootGlobalStaticData, mcBootGlobalStaticData)
 
 MC_STATIC(Mc::RoutinePriority::Max + 9)
+qRegisterMetaType<QScxmlStateMachine *>();
 if (mcBootGlobalStaticData->isDefaultSearch) {
     Mc::addServiceSearchPath("./mcservices");
 }

@@ -43,7 +43,9 @@ void Test::aaa(const std::function<void(int)> &func)
 
 QVariant Test::vvv(const IMcCallbackPtr &callback)
 {
-    callback->call("aaa", 111);
+    auto p = ParamPtr::create();
+    p->aaa = 1111111;
+    callback->call(p, 111);
     return QVariant(1);
 }
 

@@ -31,7 +31,7 @@ public:
      */
     virtual IMcBeanDefinitionPtr unregisterBeanDefinition(const QString &name) noexcept = 0;
 
-    virtual bool canRegister(IMcBeanDefinitionConstPtrRef beanDefinition) noexcept = 0;
+    virtual bool canRegister(IMcBeanDefinitionConstPtrRef beanDefinition) const noexcept = 0;
 
     /*!
      * \brief isContained
@@ -42,15 +42,15 @@ public:
      * \retval true 存在
      * \retval false 不存在
      */
-    virtual bool isContained(const QString &name) noexcept = 0;
-    
+    virtual bool isContained(const QString &name) const noexcept = 0;
+
     /*!
      * \brief getBeanDefinitions
      * 
      * 获取所有bean定义
      * \return 返回bean的定义的集合。key为beanName，value为bean定义
      */
-    virtual QHash<QString, IMcBeanDefinitionPtr> getBeanDefinitions() noexcept = 0;
+    virtual QHash<QString, IMcBeanDefinitionPtr> getBeanDefinitions() const noexcept = 0;
 };
 
 MC_DECL_POINTER(IMcBeanDefinitionRegistry)

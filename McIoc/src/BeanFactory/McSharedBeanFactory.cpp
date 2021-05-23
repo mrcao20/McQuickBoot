@@ -20,7 +20,7 @@ McSharedBeanFactory::~McSharedBeanFactory()
 {
 }
 
-bool McSharedBeanFactory::canRegister(IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
+bool McSharedBeanFactory::canRegister(IMcBeanDefinitionConstPtrRef beanDefinition) const noexcept
 {
     return !beanDefinition->isPointer();
 }

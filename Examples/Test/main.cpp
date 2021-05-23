@@ -7,8 +7,6 @@
 
 #include <QDebug>
 
-#include <corecrt_startup.h>
-
 #include "McIoc/ApplicationContext/impl/McLocalPathApplicationContext.h"
 #include "McIoc/ApplicationContext/impl/McAnnotationApplicationContext.h"
 #include "McIoc/ApplicationContext/impl/McYamlSettingApplicationContext.h"
@@ -47,6 +45,7 @@ static void  __attribute__((destructor)) after(void)
     qDebug() << "after";
 }
 #elif Q_CC_MSVC
+#include <corecrt_startup.h>
 #define SECNAME ".CRT$XCY"
 #pragma section(SECNAME, long, read)
 int foo()

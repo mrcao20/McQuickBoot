@@ -26,7 +26,7 @@ public:
      * \param thread 将要生存的目标线程
      * \return 返回获取到的对象
      */
-    QObjectPtr getBean(const QString &name, QThread *thread) noexcept override;
+    QObjectPtr getBean(const QString &name, QThread *thread = nullptr) noexcept override;
     QObject *getBeanPointer(const QString &name, QThread *thread = nullptr) noexcept override;
     /*!
      * \brief getBeanToVariant
@@ -37,7 +37,7 @@ public:
      * \param thread 将要生存的目标线程
      * \return 
      */
-    QVariant getBeanToVariant(const QString &name, QThread *thread)  noexcept override;
+    QVariant getBeanToVariant(const QString &name, QThread *thread = nullptr) noexcept override;
     /*!
      * \brief containsBean
      * 
@@ -47,7 +47,7 @@ public:
      * \retval true 存在
      * \retval false 不存在
      */
-    bool containsBean(const QString &name) noexcept override;
+    bool containsBean(const QString &name) const noexcept override;
     /*!
      * \brief isSingleton
      * 
@@ -77,9 +77,9 @@ public:
      * \retval true 已经注册过
      * \retval false 没有被注册
      */
-    bool isContained(const QString &name) noexcept override;
+    bool isContained(const QString &name) const noexcept override;
 
-    bool canRegister(IMcBeanDefinitionConstPtrRef beanDefinition) noexcept override;
+    bool canRegister(IMcBeanDefinitionConstPtrRef beanDefinition) const noexcept override;
     /*!
      * \brief getBeanDefinitions
      * 
@@ -87,7 +87,7 @@ public:
      * \return bean定义的集合。
      * \see IMcBeanDefinitionRegistry
      */
-    QHash<QString, IMcBeanDefinitionPtr> getBeanDefinitions() noexcept override;
+    QHash<QString, IMcBeanDefinitionPtr> getBeanDefinitions() const noexcept override;
     /*!
      * \brief resolveBeanReference
      * 

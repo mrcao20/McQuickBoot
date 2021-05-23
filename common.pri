@@ -1,4 +1,4 @@
-CONFIG += c++17
+CONFIG += c++17 strict_c++ utf8_source warn_on
 
 CONFIG(release, debug|release) {
     DEFINES += QT_MESSAGELOGCONTEXT

@@ -59,7 +59,7 @@ QVariant McAbstractBeanFactory::getBeanToVariant(const QString &name, QThread *t
     return beanVar;
 }
 
-bool McAbstractBeanFactory::containsBean(const QString &name) noexcept 
+bool McAbstractBeanFactory::containsBean(const QString &name) const noexcept
 {
     QMutexLocker locker(&d->mtx);
     return d->hash.contains(name);
@@ -96,18 +96,18 @@ IMcBeanDefinitionPtr McAbstractBeanFactory::unregisterBeanDefinition(const QStri
     return d->hash.take(name);
 }
 
-bool McAbstractBeanFactory::isContained(const QString &name) noexcept 
+bool McAbstractBeanFactory::isContained(const QString &name) const noexcept
 {
     return containsBean(name);
 }
 
-bool McAbstractBeanFactory::canRegister(IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
+bool McAbstractBeanFactory::canRegister(IMcBeanDefinitionConstPtrRef beanDefinition) const noexcept
 {
     Q_UNUSED(beanDefinition)
     return true;
 }
 
-QHash<QString, IMcBeanDefinitionPtr> McAbstractBeanFactory::getBeanDefinitions() noexcept 
+QHash<QString, IMcBeanDefinitionPtr> McAbstractBeanFactory::getBeanDefinitions() const noexcept
 {
     QMutexLocker locker(&d->mtx);
     return d->hash;

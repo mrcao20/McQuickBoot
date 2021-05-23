@@ -23,6 +23,7 @@ public:
                           "The callback can only be one parameter.");
 
         return thenImpl(McPrivate::QVariantSelector<typename FuncType::Arguments>::Value,
+                        qMetaTypeId<typename FuncType::Arguments::Car>(),
                         recever,
                         new QtPrivate::QSlotObject<Func,
                                                    typename FuncType::Arguments,
@@ -40,6 +41,7 @@ public:
                           "The callback can only be one parameter.");
 
         return thenImpl(McPrivate::QVariantSelector<typename FuncType::Arguments>::Value,
+                        qMetaTypeId<typename FuncType::Arguments::Car>(),
                         nullptr,
                         new QtPrivate::QStaticSlotObject<Func,
                                                          typename FuncType::Arguments,
@@ -56,6 +58,7 @@ public:
                           "The callback can only be one parameter.");
 
         return thenImpl(McPrivate::QVariantSelector<typename FuncType::Arguments>::Value,
+                        qMetaTypeId<typename FuncType::Arguments::Car>(),
                         nullptr,
                         new QtPrivate::QFunctorSlotObject<Func,
                                                           int(FuncType::ArgumentCount),
@@ -74,6 +77,7 @@ public:
                           "The callback can only be one parameter.");
 
         return syncThenImpl(McPrivate::QVariantSelector<typename FuncType::Arguments>::Value,
+                            qMetaTypeId<typename FuncType::Arguments::Car>(),
                             recever,
                             new QtPrivate::QSlotObject<Func,
                                                        typename FuncType::Arguments,
@@ -91,6 +95,7 @@ public:
                           "The callback can only be one parameter.");
 
         return syncThenImpl(McPrivate::QVariantSelector<typename FuncType::Arguments>::Value,
+                            qMetaTypeId<typename FuncType::Arguments::Car>(),
                             nullptr,
                             new QtPrivate::QStaticSlotObject<Func,
                                                              typename FuncType::Arguments,
@@ -108,6 +113,7 @@ public:
                           "The callback can only be one parameter.");
 
         return syncThenImpl(McPrivate::QVariantSelector<typename FuncType::Arguments>::Value,
+                            qMetaTypeId<typename FuncType::Arguments::Car>(),
                             nullptr,
                             new QtPrivate::QFunctorSlotObject<Func,
                                                               int(FuncType::ArgumentCount),
@@ -126,6 +132,7 @@ public:
                           "The callback can only be one parameter.");
 
         return asyncThenImpl(McPrivate::QVariantSelector<typename FuncType::Arguments>::Value,
+                             qMetaTypeId<typename FuncType::Arguments::Car>(),
                              recever,
                              new QtPrivate::QSlotObject<Func,
                                                         typename FuncType::Arguments,
@@ -143,6 +150,7 @@ public:
                           "The callback can only be one parameter.");
 
         return asyncThenImpl(McPrivate::QVariantSelector<typename FuncType::Arguments>::Value,
+                             qMetaTypeId<typename FuncType::Arguments::Car>(),
                              nullptr,
                              new QtPrivate::QStaticSlotObject<Func,
                                                               typename FuncType::Arguments,
@@ -160,6 +168,7 @@ public:
                           "The callback can only be one parameter.");
 
         return asyncThenImpl(McPrivate::QVariantSelector<typename FuncType::Arguments>::Value,
+                             qMetaTypeId<typename FuncType::Arguments::Car>(),
                              nullptr,
                              new QtPrivate::QFunctorSlotObject<Func,
                                                                int(FuncType::ArgumentCount),
@@ -178,6 +187,7 @@ public:
                           "The callback can only be one parameter.");
 
         return errorImpl(McPrivate::QVariantSelector<typename FuncType::Arguments>::Value,
+                         qMetaTypeId<typename FuncType::Arguments::Car>(),
                          recever,
                          new QtPrivate::QSlotObject<Func,
                                                     typename FuncType::Arguments,
@@ -195,6 +205,7 @@ public:
                           "The callback can only be one parameter.");
 
         return errorImpl(McPrivate::QVariantSelector<typename FuncType::Arguments>::Value,
+                         qMetaTypeId<typename FuncType::Arguments::Car>(),
                          nullptr,
                          new QtPrivate::QStaticSlotObject<Func,
                                                           typename FuncType::Arguments,
@@ -211,6 +222,7 @@ public:
                           "The callback can only be one parameter.");
 
         return errorImpl(McPrivate::QVariantSelector<typename FuncType::Arguments>::Value,
+                         qMetaTypeId<typename FuncType::Arguments::Car>(),
                          nullptr,
                          new QtPrivate::QFunctorSlotObject<Func,
                                                            int(FuncType::ArgumentCount),
@@ -225,15 +237,19 @@ protected:
 
 private:
     McCppResponse &thenImpl(bool isQVariant,
+                            int argumentId,
                             const QObject *recever,
                             QtPrivate::QSlotObjectBase *callback) noexcept;
     McCppResponse &syncThenImpl(bool isQVariant,
+                                int argumentId,
                                 const QObject *recever,
                                 QtPrivate::QSlotObjectBase *callback) noexcept;
     McCppResponse &asyncThenImpl(bool isQVariant,
+                                 int argumentId,
                                  const QObject *recever,
                                  QtPrivate::QSlotObjectBase *callback) noexcept;
     McCppResponse &errorImpl(bool isQVariant,
+                             int argumentId,
                              const QObject *recever,
                              QtPrivate::QSlotObjectBase *func) noexcept;
     void call(QtPrivate::QSlotObjectBase *func) noexcept;

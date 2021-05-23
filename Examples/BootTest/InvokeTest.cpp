@@ -4,11 +4,11 @@
 #include <QScxmlStateMachine>
 #include <QThread>
 
-#include <McIoc/McGlobal.h>
-#include <McBoot/Controller/impl/McResult.h>
-#include <McBoot./Utils/McJsonUtils.h>
-#include <McBoot/McQuickBoot.h>
 #include <McBoot/Controller/impl/McQmlResponse.h>
+#include <McBoot/Controller/impl/McResult.h>
+#include <McBoot/McQuickBoot.h>
+#include <McBoot/Utils/McJsonUtils.h>
+#include <McIoc/McGlobal.h>
 
 MC_STATIC()
 MC_REGISTER_BEAN_FACTORY(GadgetTest)

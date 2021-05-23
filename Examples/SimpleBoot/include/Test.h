@@ -45,10 +45,9 @@ public:
     ParamMap paramMap;
     QThread *threadTest;
 
-    void callbackTest(const QVariant &var) noexcept
+    void callbackTest(const ParamPtr &var) noexcept
     {
-        qDebug() << "------+++++++---------" << var;
-        qDebug() << var.value<ParamPtr>()->aaa;
+        qDebug() << "------+++++++---------" << var << var->aaa;
     }
     void callbackTest2(const QString &str, int ii) { qDebug() << "callback test2:" << str << ii; }
 
