@@ -10,6 +10,7 @@
 #include <QEventLoop>
 #include <QMetaClassInfo>
 #include <QMetaObject>
+#include <QStandardPaths>
 #include <QTimer>
 #include <QUrl>
 
@@ -225,6 +226,19 @@ McCustomEvent::~McCustomEvent() noexcept
 {
 }
 
+namespace {
+
+QString getStandardPath(QStandardPaths::StandardLocation type)
+{
+    auto paths = QStandardPaths::standardLocations(type);
+    if (paths.isEmpty()) {
+        return QString();
+    }
+    return paths.first();
+}
+
+} // namespace
+
 namespace Mc {
 
 bool waitForExecFunc(const std::function<bool()> &func, qint64 timeout) noexcept 
@@ -254,8 +268,26 @@ bool waitForExecFunc(const std::function<bool()> &func, qint64 timeout) noexcept
     return ret;
 }
 
-QString toAbsolutePath(const QString &path) noexcept
+QString toAbsolutePath(const QString &inPath) noexcept
 {
+    static QHash<QString, QStandardPaths::StandardLocation>
+        pathPlhs{{"{desktop}", QStandardPaths::DesktopLocation},
+                 {"{documents}", QStandardPaths::DocumentsLocation},
+                 {"{temp}", QStandardPaths::TempLocation},
+                 {"{home}", QStandardPaths::HomeLocation},
+                 {"{data}", QStandardPaths::DataLocation},
+                 {"{cache}", QStandardPaths::CacheLocation},
+                 {"{config}", QStandardPaths::GenericConfigLocation},
+                 {"{appData}", QStandardPaths::AppDataLocation}};
+    static QStringList pathPlhKeys = pathPlhs.keys();
+    auto path = inPath;
+    for (const auto &key : pathPlhKeys) {
+        const auto &value = pathPlhs.value(key);
+        QString plhPath;
+        if (path.contains(key) && !(plhPath = getStandardPath(value)).isEmpty()) {
+            path.replace(key, plhPath);
+        }
+    }
     QString dstPath = QDir::toNativeSeparators(path);
     if (QDir::isAbsolutePath(dstPath)) {
         return dstPath;

@@ -4,11 +4,14 @@
 #include <QEvent>
 #include <QVariant>
 
+#include <McIoc/Utils/McScopedFunction.h>
+
 #include "McBoot/Controller/impl/McResult.h"
 #include "McBoot/McBootGlobal.h"
 
 MC_DECL_PRIVATE_DATA(McAbstractResponse)
 bool isAsyncCall{false}; // 是否在次线程调用callback，默认不需要
+bool isCancel{false};
 QVariant body;
 MC_DECL_PRIVATE_DATA_END
 
@@ -21,6 +24,16 @@ McAbstractResponse::McAbstractResponse(QObject *parent) : QObject(parent)
 }
 
 McAbstractResponse::~McAbstractResponse() {}
+
+void McAbstractResponse::cancel() noexcept
+{
+    d->isCancel = true;
+}
+
+bool McAbstractResponse::isCancel() const noexcept
+{
+    return d->isCancel;
+}
 
 QVariant McAbstractResponse::body() const noexcept
 {
@@ -59,6 +72,13 @@ void McAbstractResponse::customEvent(QEvent *event)
 
 void McAbstractResponse::call() noexcept
 {
+    McScopedFunction cleanup([this]() { this->deleteLater(); });
+    Q_UNUSED(cleanup)
+
+    if (d->isCancel) {
+        return;
+    }
+
     if (!d->body.canConvert<McResultPtr>()) {
         callCallback();
         return;

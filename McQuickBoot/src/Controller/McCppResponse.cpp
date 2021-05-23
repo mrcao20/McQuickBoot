@@ -92,9 +92,6 @@ McCppResponse &McCppResponse::errorImpl(bool isQVariant,
 
 void McCppResponse::call(QtPrivate::QSlotObjectBase *func) noexcept
 {
-    McScopedFunction cleanup([this]() { this->deleteLater(); });
-    Q_UNUSED(cleanup)
-
     if (func == nullptr) {
         return;
     }
@@ -103,7 +100,7 @@ void McCppResponse::call(QtPrivate::QSlotObjectBase *func) noexcept
     if (d->isQVariant) {
         body = McJsonUtils::serialize(body);
         bodyStar = &body;
-    } else {
+    } else if (d->argumentId != -1) {
         if (body.userType() != d->argumentId) {
             body = McJsonUtils::serialize(body);
             if (body.userType() == qMetaTypeId<QJsonObject>()) {

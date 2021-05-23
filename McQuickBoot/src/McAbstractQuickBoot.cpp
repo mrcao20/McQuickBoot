@@ -9,16 +9,9 @@
 #include "McBoot/Configuration/McConfigurationContainer.h"
 #include "McBoot/Controller/impl/McControllerContainer.h"
 
-namespace {
-
-struct McAbstractQuickBootStaticData
-{
-    McAbstractQuickBootPtr boot;
-};
-
-} // namespace
-
-MC_GLOBAL_STATIC(McAbstractQuickBootStaticData, mcAbstractQuickBootStaticData)
+MC_GLOBAL_STATIC_BEGIN(mcAbstractQuickBootStaticData)
+McAbstractQuickBootPtr boot;
+MC_GLOBAL_STATIC_END(mcAbstractQuickBootStaticData)
 
 MC_DECL_PRIVATE_DATA(McAbstractQuickBoot)
 McCppRequestorPtr requestor;

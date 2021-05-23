@@ -313,7 +313,7 @@ QVariant McControllerContainer::invokeForArgs(QObjectConstPtrRef bean,
     QVariant returnValue;
     QGenericReturnArgument returnArg;
     if (method.returnType() == QMetaType::Void)
-        returnValue = "调用成功";
+        returnValue = "call successful";
     else {
         returnValue = QVariant(static_cast<QVariant::Type>(returnType));
         // 由于调用函数时需要对比类型名，所以这里类型名需要具体指定，不能再用QVariant
@@ -368,7 +368,7 @@ QVariant McControllerContainer::invokeForArgs(QObjectConstPtrRef bean,
     QVariant returnValue;
     QGenericReturnArgument returnArg;
     if (method.returnType() == QMetaType::Void)
-        returnValue = "调用成功";
+        returnValue = "call successful";
     else {
         returnValue = QVariant(static_cast<QVariant::Type>(returnType));
         // 由于调用函数时需要对比类型名，所以这里类型名需要具体指定，不能再用QVariant

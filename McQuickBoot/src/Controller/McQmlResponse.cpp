@@ -7,7 +7,6 @@
 #include <QVariant>
 
 #include <McIoc/BeanFactory/impl/McMetaTypeId.h>
-#include <McIoc/Utils/McScopedFunction.h>
 
 #include "McBoot/Utils/McJsonUtils.h"
 
@@ -69,9 +68,6 @@ void McQmlResponse::callError() noexcept
 
 void McQmlResponse::call(QJSValue &func) noexcept
 {
-    McScopedFunction cleanup([this]() { this->deleteLater(); });
-    Q_UNUSED(cleanup)
-
     if (!func.isCallable()) {
         return;
     }

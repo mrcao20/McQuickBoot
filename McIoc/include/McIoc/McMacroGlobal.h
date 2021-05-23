@@ -112,6 +112,16 @@
     }(); \
     }
 
+#define MC_GLOBAL_STATIC_BEGIN(NAME) \
+    namespace { \
+    struct Mc_##NAME##_StaticData \
+    {
+#define MC_GLOBAL_STATIC_END(NAME) \
+    } \
+    ; \
+    MC_GLOBAL_STATIC(Mc_##NAME##_StaticData, NAME) \
+    }
+
 #define MC_DECL_METATYPE(Class) \
     MC_DECL_POINTER(Class) \
     Q_DECLARE_METATYPE(Class##Ptr) \

@@ -55,10 +55,11 @@ int main(int argc, char *argv[])
         qDebug() << "lambda callback test3:" << a;
     });
     p->aaa = 1000;
+    $.invoke("aaa.aaa", a).then([]() { qDebug() << "aaa.aaa call finished"; });
     $.invoke("aaa.bbb",
              QVariantList() << "lllllllll" << QJsonObject({{"zzz", "mmmm"}})
                             << QVariant::fromValue(p) << QVariant::fromValue(a))
-        .then([](const QJsonObject &var) { qDebug() << "-----" << var; });
+        .then([]() { qDebug() << "aaa.bbb -----"; });
     $.invoke("aaa.bbb",
              "lllllllll",
              QJsonObject({{"zzz", "mmmm"}}),

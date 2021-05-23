@@ -76,6 +76,11 @@ struct QVariantSelector<const QVariant &>
 {
     enum { Value = true };
 };
+template<>
+struct QVariantSelector<QtPrivate::List<>>
+{
+    enum { Value = false };
+};
 template<typename... Args>
 struct QVariantSelector<QtPrivate::List<Args...>>
 {

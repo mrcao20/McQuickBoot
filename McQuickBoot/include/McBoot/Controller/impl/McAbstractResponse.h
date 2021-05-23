@@ -19,6 +19,9 @@ public:
     explicit McAbstractResponse(QObject *parent = nullptr);
     ~McAbstractResponse() override;
 
+    void cancel() noexcept;
+    bool isCancel() const noexcept;
+
     QVariant body() const noexcept;
     void setBody(const QVariant &var) noexcept;
 

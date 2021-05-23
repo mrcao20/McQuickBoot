@@ -6,6 +6,7 @@ SOURCES += \
     $$PWD/src/Application/McSingleApplication.cpp \
     $$PWD/src/Application/McSingleCoreApplication.cpp \
     $$PWD/src/Configuration/McConfigurationContainer.cpp \
+    $$PWD/src/Configuration/McLogConfig.cpp \
     $$PWD/src/Configuration/McRequestorConfig.cpp \
     $$PWD/src/Configuration/McStateMachineConfig.cpp \
     $$PWD/src/Connection/McAbstractConnection.cpp \
@@ -38,6 +39,7 @@ HEADERS +=  \
     $$PWD/include/McBoot/Application/McSingleApplication.h \
     $$PWD/include/McBoot/Application/McSingleCoreApplication.h \
     $$PWD/include/McBoot/Configuration/McConfigurationContainer.h \
+    $$PWD/include/McBoot/Configuration/McLogConfig.h \
     $$PWD/include/McBoot/Configuration/McRequestorConfig.h \
     $$PWD/include/McBoot/Configuration/McSimpleBeanDefinition.h \
     $$PWD/include/McBoot/Configuration/McStateMachineConfig.h \

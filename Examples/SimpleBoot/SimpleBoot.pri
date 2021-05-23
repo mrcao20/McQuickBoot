@@ -28,5 +28,5 @@ OutputDir = $$replace(OutputDir, /, \\)
 }
 OutputFilePath = $${DESTDIR}/config/application.yml
 OutputFilePath = $$replace(OutputFilePath, /, \\)
-#QMAKE_POST_LINK += \
-#    $${QMAKE_COPY_FILE} $$InputFilePath $$OutputFilePath
+QMAKE_POST_LINK += \
+    $${QMAKE_COPY_FILE} $$InputFilePath $$OutputFilePath
