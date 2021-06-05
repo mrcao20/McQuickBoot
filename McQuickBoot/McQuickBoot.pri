@@ -9,6 +9,7 @@ SOURCES += \
     $$PWD/src/Configuration/McLogConfig.cpp \
     $$PWD/src/Configuration/McRequestorConfig.cpp \
     $$PWD/src/Configuration/McStateMachineConfig.cpp \
+    $$PWD/src/Configuration/McWidgetConfig.cpp \
     $$PWD/src/Connection/McAbstractConnection.cpp \
     $$PWD/src/Connection/McCppConnection.cpp \
     $$PWD/src/Connection/McQmlConnection.cpp \
@@ -43,6 +44,7 @@ HEADERS +=  \
     $$PWD/include/McBoot/Configuration/McRequestorConfig.h \
     $$PWD/include/McBoot/Configuration/McSimpleBeanDefinition.h \
     $$PWD/include/McBoot/Configuration/McStateMachineConfig.h \
+    $$PWD/include/McBoot/Configuration/McWidgetConfig.h \
     $$PWD/include/McBoot/Connection/McAbstractConnection.h \
     $$PWD/include/McBoot/Connection/McCppConnection.h \
     $$PWD/include/McBoot/Connection/McQmlConnection.h \

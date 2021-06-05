@@ -7,7 +7,7 @@ MC_REGISTER_BEAN_FACTORY(McLogConfig)
 MC_STATIC_END
 
 MC_DECL_PRIVATE_DATA(McLogConfig)
-QString xmlPath;
+QStringList xmlPaths;
 QString flag;
 MC_DECL_PRIVATE_DATA_END
 
@@ -20,10 +20,10 @@ McLogConfig::~McLogConfig() {}
 
 void McLogConfig::allFinished() noexcept
 {
-    if (d->xmlPath.isEmpty()) {
+    if (d->xmlPaths.isEmpty()) {
         return;
     }
-    McXMLConfigurator::configure(d->xmlPath, d->flag);
+    McXMLConfigurator::configure(d->xmlPaths, d->flag);
 }
 
 #include "moc_McLogConfig.cpp"

@@ -16,23 +16,16 @@
 
 #include "McBoot/McBootGlobal.h"
 
-namespace {
-
-struct McConfigurationFileBeanDefinitionReaderStaticData
-{
-    QStringList configPaths;
-};
-
-} // namespace
-
-MC_GLOBAL_STATIC(McConfigurationFileBeanDefinitionReaderStaticData,
-                 mcConfigurationFileBeanDefinitionReaderStaticData)
+MC_GLOBAL_STATIC_BEGIN(staticData)
+QStringList configPaths;
+MC_GLOBAL_STATIC_END(staticData)
 
 MC_STATIC()
-mcConfigurationFileBeanDefinitionReaderStaticData->configPaths.append(
-    Mc::toAbsolutePath("./config/application.yml"));
-mcConfigurationFileBeanDefinitionReaderStaticData->configPaths.append(
-    Mc::toAbsolutePath("./application.yml"));
+for (auto &path : staticData->configPaths) {
+    path = Mc::toAbsolutePath(path);
+}
+staticData->configPaths.append(Mc::toAbsolutePath("./config/application.yml"));
+staticData->configPaths.append(Mc::toAbsolutePath("./application.yml"));
 MC_STATIC_END
 
 MC_DECL_PRIVATE_DATA(McConfigurationFileBeanDefinitionReader)
@@ -55,7 +48,7 @@ McConfigurationFileBeanDefinitionReader::~McConfigurationFileBeanDefinitionReade
 
 void McConfigurationFileBeanDefinitionReader::addConfigPath(const QString &path) noexcept
 {
-    mcConfigurationFileBeanDefinitionReaderStaticData->configPaths.prepend(Mc::toAbsolutePath(path));
+    staticData->configPaths.prepend(path);
 }
 
 void McConfigurationFileBeanDefinitionReader::doReadBeanDefinition() noexcept 
@@ -126,15 +119,15 @@ void McConfigurationFileBeanDefinitionReader::doReadBeanDefinition() noexcept
 
 QString McConfigurationFileBeanDefinitionReader::getDefaultConfigPath() const noexcept
 {
-    if (mcConfigurationFileBeanDefinitionReaderStaticData->configPaths.isEmpty()) {
+    if (staticData->configPaths.isEmpty()) {
         return "";
     }
-    for (auto p : mcConfigurationFileBeanDefinitionReaderStaticData->configPaths) {
+    for (auto p : staticData->configPaths) {
         if (QFile::exists(p)) {
             return p;
         }
     }
-    return mcConfigurationFileBeanDefinitionReaderStaticData->configPaths.last();
+    return staticData->configPaths.last();
 }
 
 void McConfigurationFileBeanDefinitionReader::copyBeanDefinition(

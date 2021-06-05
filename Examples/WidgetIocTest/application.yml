@@ -1,0 +1,7 @@
+boot: 
+    application: 
+        widget: 
+            xmlPaths: ["../../Examples/WidgetIocTest/widgetioc.xml"]
+            mainWindowName: "mainWindow"
+            # flag: "debug"
+        

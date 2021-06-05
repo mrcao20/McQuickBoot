@@ -23,6 +23,8 @@ public:
     explicit McCppResponse(QObject *parent = nullptr);
     ~McCppResponse() override;
 
+    QPointer<McCppResponse> capture();
+
     template<typename Func>
     McCppResponse &then(const typename QtPrivate::FunctionPointer<Func>::Object *recever,
                         Func callback) noexcept

@@ -10,7 +10,7 @@ class McLogConfig : public QObject
     MC_COMPONENT
     MC_BEANNAME("logConfig")
     MC_CONFIGURATION_PROPERTIES("boot.application.log")
-    Q_PRIVATE_PROPERTY(d, QString xmlPath MEMBER xmlPath)
+    Q_PRIVATE_PROPERTY(d, QStringList xmlPaths MEMBER xmlPaths)
     Q_PRIVATE_PROPERTY(d, QString flag MEMBER flag)
 public:
     explicit McLogConfig(QObject *parent = nullptr) noexcept;

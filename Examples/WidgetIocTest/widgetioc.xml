@@ -10,6 +10,6 @@
             <!-- </list> -->
         <!-- </property> -->
     <!-- </bean> -->
-    <bean name="w" class="McWidget">
+    <bean name="mainWindow" class="McWidget">
     </bean>
 </beans>

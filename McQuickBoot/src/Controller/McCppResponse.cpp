@@ -33,6 +33,12 @@ McCppResponse::~McCppResponse()
     d->callback = nullptr;
 }
 
+QPointer<McCppResponse> McCppResponse::capture()
+{
+    QPointer<McCppResponse> p(this);
+    return p;
+}
+
 void McCppResponse::callCallback() noexcept
 {
     call(d->callback);

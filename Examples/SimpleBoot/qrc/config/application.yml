@@ -5,6 +5,6 @@ boot:
         stateMachine: 
             paths: ["./BootTest.scxml"]
         log: 
-            xmlPath: "../../Examples/LogTest/logqt.xml"
+            xmlPaths: ["../../Examples/LogTest/logqt.xml"]
             flag: "debug"
         
