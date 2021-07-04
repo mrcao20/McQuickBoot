@@ -5,9 +5,6 @@
 #include <McIoc/ApplicationContext/impl/McAnnotationApplicationContext.h>
 #include <McIoc/BeanDefinition/IMcBeanDefinition.h>
 
-#include "McBoot/Controller/impl/McControllerContainer.h"
-#include "McBoot/Model/McModelContainer.h"
-
 namespace {
 
 struct McQuickBootSimpleStaticData
@@ -21,7 +18,6 @@ MC_GLOBAL_STATIC(McQuickBootSimpleStaticData, mcQuickBootSimpleStaticData)
 
 MC_DECL_PRIVATE_DATA(McQuickBootSimple)
 McAnnotationApplicationContextPtr context;
-
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McQuickBootSimple)
@@ -74,9 +70,4 @@ IMcApplicationContextPtr McQuickBootSimple::getApplicationContext() const noexce
 
 void McQuickBootSimple::initContainer() const noexcept
 {
-    auto controllerContainer = d->context->getBean<McControllerContainer>("controllerContainer");
-    controllerContainer->init(this);
-
-    auto modelContainer = d->context->getBean<McModelContainer>("modelContainer");
-    modelContainer->init(this);
 }

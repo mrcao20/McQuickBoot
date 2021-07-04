@@ -14,6 +14,8 @@ public: \
 \
 private:
 
+#define MC_INTERFACES(...) MC_TYPELIST(__VA_ARGS__)
+
 #define MC_REGISTER_BEAN_FACTORY(Class, ...) \
     McPrivate::McConverterRegister<Class, ##__VA_ARGS__>::registerConverter();
 

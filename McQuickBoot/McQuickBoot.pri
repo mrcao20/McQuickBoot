@@ -28,6 +28,7 @@ SOURCES += \
     $$PWD/src/Requestor/McAbstractRequestor.cpp \
     $$PWD/src/Requestor/McCppRequestor.cpp \
     $$PWD/src/Requestor/McQmlRequestor.cpp \
+    $$PWD/src/Service/McServiceContainer.cpp \
     $$PWD/src/Utils/Callback/McAbstractAsyncCallback.cpp \
     $$PWD/src/Utils/Callback/McAbstractSyncCallback.cpp \
     $$PWD/src/Utils/Callback/McCppAsyncCallback.cpp \
@@ -63,10 +64,14 @@ HEADERS +=  \
     $$PWD/include/McBoot/McBootMacroGlobal.h \
     $$PWD/include/McBoot/McQuickBoot.h \
     $$PWD/include/McBoot/McQuickBootSimple.h \
-    $$PWD/include/McBoot/Model/McModelContainer.h \
+    $$PWD/include/McBoot/Model/IMcModelContainer.h \
+    $$PWD/include/McBoot/Model/impl/McModelContainer.h \
     $$PWD/include/McBoot/Requestor/McAbstractRequestor.h \
     $$PWD/include/McBoot/Requestor/McCppRequestor.h \
     $$PWD/include/McBoot/Requestor/McQmlRequestor.h \
+    $$PWD/include/McBoot/Service/IMcServiceLongLiveThread.h \
+    $$PWD/include/McBoot/Service/IMcServiceTimer.h \
+    $$PWD/include/McBoot/Service/impl/McServiceContainer.h \
     $$PWD/include/McBoot/Utils/Callback/IMcCallback.h \
     $$PWD/include/McBoot/Utils/Callback/Impl/McAbstractAsyncCallback.h \
     $$PWD/include/McBoot/Utils/Callback/Impl/McAbstractSyncCallback.h \

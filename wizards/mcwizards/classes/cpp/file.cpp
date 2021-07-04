@@ -5,9 +5,8 @@
 #include "%{JS: value('HdrPath').substr(value('IncludeBasePath').length)}"
 @endif
 %{JS: Cpp.openNamespaces('%{Class}')}
-MC_STATIC()
-MC_REGISTER_BEAN_FACTORY(%{CN})
-MC_STATIC_END
+MC_AUTO_INIT(%{CN})
+MC_INIT_END
 
 MC_DECL_PRIVATE_DATA(%{CN})
 MC_DECL_PRIVATE_DATA_END

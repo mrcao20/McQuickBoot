@@ -20,14 +20,15 @@ class %{CN} : public %{Base}
 class %{CN}
 @endif
 {
-     Q_OBJECT
-     MC_TYPELIST()
+    Q_OBJECT
+	MC_DECL_INIT(%{CN})
+    MC_INTERFACES()
 public:
 @if '%{Base}' === 'QObject'
-    Q_INVOKABLE explicit %{CN}(QObject *parent = nullptr) noexcept;
+    explicit %{CN}(QObject *parent = nullptr) noexcept;
     ~%{CN}() override;
 @else
-    Q_INVOKABLE %{CN}() noexcept;
+    %{CN}() noexcept;
     ~%{CN}();
 @endif
 

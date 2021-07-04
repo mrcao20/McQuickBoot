@@ -16,4 +16,4 @@ public:
     virtual QVariant invoke(const QString &uri, const QVariantMap &data) noexcept = 0;
 };
 
-MC_DECL_POINTER(IMcControllerContainer)
+MC_DECL_METATYPE(IMcControllerContainer)

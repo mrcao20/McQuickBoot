@@ -20,10 +20,11 @@ class MCQUICKBOOT_EXPORT McControllerContainer
 {
     Q_OBJECT
     MC_DECL_INIT(McControllerContainer)
+    MC_INTERFACES(IMcControllerContainer)
     MC_COMPONENT
     MC_BEANNAME("controllerContainer")
 public:
-    Q_INVOKABLE explicit McControllerContainer(QObject *parent = nullptr);
+    explicit McControllerContainer(QObject *parent = nullptr);
     ~McControllerContainer() override;
 
     void init(const IMcQuickBoot *boot) noexcept;

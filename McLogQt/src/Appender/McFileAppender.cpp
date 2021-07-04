@@ -75,7 +75,7 @@ void McFileAppender::doFinished() noexcept
     }
     auto fileInfos = dir.entryInfoList(QDir::Files, QDir::Time);    //!< 获取最新被修改的文件
     QString localFilePath;
-    for(auto fileInfo : fileInfos) {
+    for (auto &fileInfo : qAsConst(fileInfos)) {
         auto fileName = fileInfo.fileName();
         if(match.hasMatch()) {  //!< 如果匹配成功，则list的长度一定为4
             auto list = match.capturedTexts();
@@ -99,7 +99,7 @@ void McFileAppender::doFinished() noexcept
             break;
         }
     }
-    
+
     if(localFilePath.isEmpty()) {
         localFilePath = newFilePath();
     }

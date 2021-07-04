@@ -10,9 +10,6 @@
 #include <McIoc/ApplicationContext/impl/McAnnotationApplicationContext.h>
 #include <McIoc/BeanDefinition/IMcBeanDefinition.h>
 
-#include "McBoot/Configuration/McConfigurationContainer.h"
-#include "McBoot/Controller/impl/McControllerContainer.h"
-#include "McBoot/Model/McModelContainer.h"
 #include "McBoot/Requestor/McQmlRequestor.h"
 
 namespace {
@@ -66,11 +63,7 @@ void McQuickBoot::init(QCoreApplication *app, QQmlApplicationEngine *engine) noe
     boot->initBoot(engine);
     auto appCtx = boot->d->context;
 
-    auto controllerContainer = appCtx->getBean<McControllerContainer>("controllerContainer");
-    auto modelContainer = appCtx->getBean<McModelContainer>("modelContainer");
-
     auto requestor = appCtx->getBeanPointer<McQmlRequestor>("qmlRequestor");
-    requestor->setControllerContainer(controllerContainer);
     requestor->setAppCtx(appCtx.data());
 
     //! engine的newQObject函数会将其参数所有权转移到其返回的QJSValue中
@@ -151,9 +144,4 @@ IMcApplicationContextPtr McQuickBoot::getApplicationContext() const noexcept
 
 void McQuickBoot::initContainer() const noexcept
 {
-    auto controllerContainer = d->context->getBean<McControllerContainer>("controllerContainer");
-    controllerContainer->init(this);
-
-    auto modelContainer = d->context->getBean<McModelContainer>("modelContainer");
-    modelContainer->init(this);
 }

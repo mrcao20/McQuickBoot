@@ -14,6 +14,8 @@ class MCQUICKBOOT_EXPORT McCppRequestor : public McAbstractRequestor
     MC_COMPONENT
     MC_BEANNAME("cppRequestor")
 public:
+    using McAbstractRequestor::getBean;
+    using McAbstractRequestor::getModel;
     using QObject::connect;
     using QObject::disconnect;
 
@@ -120,6 +122,18 @@ public:
         QVariantList vars;
         (vars << ... << toQVariant(args));
         return syncInvoke(uri, vars);
+    }
+
+    template<typename T>
+    T getBean(const QString &name) const noexcept
+    {
+        return getBeanToVariant(name).value<T>();
+    }
+    template<typename T>
+    T getModel(const QString &name) const noexcept
+    {
+        QObject *obj = getModel(name);
+        return qobject_cast<T>(obj);
     }
 
 private:

@@ -12,7 +12,7 @@ class MCLOGQT_EXPORT McSizeRollingFileAppender : public McRollingFileAppender
     Q_PROPERTY(QString maxFileSize READ maxFileSize WRITE setMaxFileSize)
     Q_PROPERTY(qint64 maxFileSizeBytes READ maxFileSizeBytes WRITE setMaxFileSizeBytes)
 public:
-    Q_INVOKABLE McSizeRollingFileAppender();
+    McSizeRollingFileAppender();
     ~McSizeRollingFileAppender() override;
     
     QString maxFileSize() const noexcept;

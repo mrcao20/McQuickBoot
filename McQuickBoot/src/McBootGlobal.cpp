@@ -25,15 +25,16 @@ qRegisterMetaType<QScxmlStateMachine *>();
 if (mcBootGlobalStaticData->isDefaultSearch) {
     Mc::addServiceSearchPath("./mcservices");
 }
-for (auto searchPath : mcBootGlobalStaticData->serviceSearchPaths) {
-    QDir dir(searchPath);
+for (auto &searchPath : qAsConst(mcBootGlobalStaticData->serviceSearchPaths)) {
+    QDir dir(Mc::toAbsolutePath(searchPath));
     auto fileInfos = dir.entryInfoList(QDir::Files);
-    for (auto fileInfo : fileInfos) {
+    for (auto &fileInfo : qAsConst(fileInfos)) {
         auto path = fileInfo.absoluteFilePath();
         Mc::addServiceLibraryPath(path);
     }
 }
-for (auto libPath : mcBootGlobalStaticData->serviceLibraryPaths) {
+for (auto &tmpPath : qAsConst(mcBootGlobalStaticData->serviceLibraryPaths)) {
+    auto libPath = Mc::toAbsolutePath(tmpPath);
     if (!QLibrary::isLibrary(libPath)) {
         continue;
     }
@@ -76,8 +77,8 @@ void addServiceSearchPath(const QString &path)
 
 void addServiceSearchPath(const QStringList &paths)
 {
-    for (auto path : paths) {
-        mcBootGlobalStaticData->serviceSearchPaths.append(Mc::toAbsolutePath(path));
+    for (auto &path : qAsConst(paths)) {
+        mcBootGlobalStaticData->serviceSearchPaths.append(path);
     }
 }
 
@@ -88,8 +89,8 @@ void addServiceLibraryPath(const QString &path)
 
 void addServiceLibraryPath(const QStringList &paths)
 {
-    for (auto path : paths) {
-        mcBootGlobalStaticData->serviceLibraryPaths.append(Mc::toAbsolutePath(path));
+    for (auto &path : qAsConst(paths)) {
+        mcBootGlobalStaticData->serviceLibraryPaths.append(path);
     }
 }
 

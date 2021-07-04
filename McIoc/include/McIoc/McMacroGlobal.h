@@ -43,28 +43,27 @@
     using Class##Ptr = QSharedPointer<Class>; \
     using Class##ConstPtrRef = const QSharedPointer<Class> &;
 
-#define MC_PRIVATE_DATA_NAME(Class) \
-    Class##Data
+#define MC_PRIVATE_DATA_NAME(Class) __Mc_##Class##Data__
 
 #define MC_DECL_PRIVATE_DATA(Class) \
-    struct Class##Data {
+    struct MC_PRIVATE_DATA_NAME(Class) {
 
 #define MC_DECL_PRIVATE_DATA_END };
 
 #define MC_PRIVATE_DATA_DESTRUCTOR(Class) \
-    ~Class##Data() {
+    ~MC_PRIVATE_DATA_NAME(Class)() {
 
 #define MC_PRIVATE_DATA_DESTRUCTOR_END }
 
 #define MC_DECL_PRIVATE(Class) \
-    QScopedPointer<Class##Data> d; \
-    friend struct Class##Data;
+    QScopedPointer<MC_PRIVATE_DATA_NAME(Class)> d; \
+    friend struct MC_PRIVATE_DATA_NAME(Class);
 
 #define MC_NEW_PRIVATE_DATA(Class) \
-    d.reset(new Class##Data());
+    d.reset(new MC_PRIVATE_DATA_NAME(Class)());
 
 #define MC_FORWARD_DECL_PRIVATE_DATA(Class) \
-    struct Class##Data;
+    struct MC_PRIVATE_DATA_NAME(Class);
 
 #define MC_PADDING_CLANG(size)  \
     char ___clang_padding___[size];
@@ -133,6 +132,8 @@
 
 #define MC_CONNECT(sender, signal, receiver, slot, ...) \
     Mc::Ioc::connect(&ClassType::staticMetaObject, sender, signal, receiver, slot, ##__VA_ARGS__)
+
+#define MC_BASE_DESTRUCTOR(Class) virtual ~Class() = default;
 
 #ifndef Q_MOC_RUN //!< 这行语句必须加，只有包围在这行语句之中的宏才能被识别为tag
 

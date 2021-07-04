@@ -1,17 +1,17 @@
 #pragma once
 
-#include "McRollingFileAppender.h"
+#include "McByDayRollingFileAppender.h"
 
-class MCLOGQT_EXPORT McDailyRollingFileAppender : public McRollingFileAppender 
+class MCLOGQT_EXPORT McDailyRollingFileAppender : public McByDayRollingFileAppender
 {
     Q_OBJECT
     MC_DECL_INIT(McDailyRollingFileAppender)
-    MC_TYPELIST(McRollingFileAppender)
+    MC_TYPELIST(McByDayRollingFileAppender)
 public:
-    Q_INVOKABLE McDailyRollingFileAppender();
-    
+    McDailyRollingFileAppender();
+
 protected:
-    bool isNewNextFile() noexcept override;
+    void doFinished() noexcept override;
 };
 
 MC_DECL_METATYPE(McDailyRollingFileAppender)

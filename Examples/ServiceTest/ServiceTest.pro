@@ -41,10 +41,14 @@ win32 {
 INCLUDEPATH += $$PWD/../../McQuickBoot/include
 DEPENDPATH += $$PWD/../../McQuickBoot/include
 
-SOURCES += \
-    Global.cpp
+INCLUDEPATH += $$PWD/include
 
-HEADERS +=
+SOURCES += \
+    Global.cpp \
+    src/TestService.cpp
+
+HEADERS += \
+    include/TestService.h
 
 # Default rules for deployment.
 unix {

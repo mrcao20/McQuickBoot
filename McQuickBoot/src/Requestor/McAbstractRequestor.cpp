@@ -13,6 +13,7 @@
 #include "McBoot/Controller/IMcControllerContainer.h"
 #include "McBoot/Controller/impl/McAbstractResponse.h"
 #include "McBoot/Controller/impl/McRequestRunner.h"
+#include "McBoot/Model/IMcModelContainer.h"
 
 class McRunnerEvent : public QEvent
 {
@@ -45,6 +46,7 @@ MC_INIT_END
 
 MC_DECL_PRIVATE_DATA(McAbstractRequestor)
 IMcControllerContainerPtr controllerContainer;
+IMcModelContainerPtr modelContainer;
 McRequestorConfigPtr requestorConfig;
 McStateMachineConfigPtr stateMachineConfig;
 IMcApplicationContext *appCtx;
@@ -102,6 +104,11 @@ QObject *McAbstractRequestor::getBean(const QString &name) const noexcept
         QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
     }
     return obj;
+}
+
+QObject *McAbstractRequestor::getModel(const QString &name) const noexcept
+{
+    return d->modelContainer->getModel(name);
 }
 
 QScxmlStateMachine *McAbstractRequestor::stateMachine() const noexcept
@@ -167,6 +174,11 @@ void McAbstractRequestor::run(McAbstractResponse *response,
     qApp->postEvent(this, new McRunnerEvent(runner));
 }
 
+QVariant McAbstractRequestor::getBeanToVariant(const QString &name) const noexcept
+{
+    return d->appCtx->getBeanToVariant(name);
+}
+
 void McAbstractRequestor::allFinished() noexcept
 {
     int maxThreadCount;
@@ -176,11 +188,6 @@ void McAbstractRequestor::allFinished() noexcept
         maxThreadCount = d->requestorConfig->maxThreadCount();
     }
     setMaxThreadCount(maxThreadCount);
-}
-
-QVariant McAbstractRequestor::getBeanToVariant(const QString &name) const noexcept
-{
-    return d->appCtx->getBeanToVariant(name);
 }
 
 #include "moc_McAbstractRequestor.cpp"

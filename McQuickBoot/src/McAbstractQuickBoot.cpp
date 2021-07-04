@@ -8,6 +8,8 @@
 #include "McBoot/BeanDefinitionReader/impl/McConfigurationFileBeanDefinitionReader.h"
 #include "McBoot/Configuration/McConfigurationContainer.h"
 #include "McBoot/Controller/impl/McControllerContainer.h"
+#include "McBoot/Model/impl/McModelContainer.h"
+#include "McBoot/Service/impl/McServiceContainer.h"
 
 MC_GLOBAL_STATIC_BEGIN(mcAbstractQuickBootStaticData)
 McAbstractQuickBootPtr boot;
@@ -129,7 +131,7 @@ void McAbstractQuickBoot::doRefresh(const QStringList &preloadBeans) noexcept
     if (d->workThread != nullptr && !d->workThread->isRunning()) {
         d->workThread->start();
     }
-    for (auto preloadBean : preloadBeans) {
+    for (auto &preloadBean : qAsConst(preloadBeans)) {
         context->getBean(preloadBean, d->workThread);
     }
     auto stateMachineName = QT_STRINGIFY(MC_QUICKBOOT_STATE_MACHINE_NAME);
@@ -139,9 +141,13 @@ void McAbstractQuickBoot::doRefresh(const QStringList &preloadBeans) noexcept
     }
     d->requestor = context->getBean<McCppRequestor>("cppRequestor", d->workThread);
     context->refresh(d->workThread); //!< 预加载bean
+    auto controllerContainer = context->getBean<McControllerContainer>("controllerContainer");
+    controllerContainer->init(this);
+    auto modelContainer = context->getBean<McModelContainer>("modelContainer");
+    modelContainer->init(this);
+    auto serviceContainer = context->getBean<McServiceContainer>("serviceContainer");
+    serviceContainer->init(this);
     initContainer();
 
-    auto controllerContainer = context->getBean<McControllerContainer>("controllerContainer");
-    d->requestor->setControllerContainer(controllerContainer);
     d->requestor->setAppCtx(context.data());
 }
