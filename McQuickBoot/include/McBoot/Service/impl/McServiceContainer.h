@@ -10,8 +10,7 @@ class MCQUICKBOOT_EXPORT McServiceContainer : public QObject
 {
     Q_OBJECT
     MC_DECL_INIT(McServiceContainer)
-    MC_COMPONENT
-    MC_BEANNAME("serviceContainer")
+    MC_COMPONENT("serviceContainer")
 public:
     McServiceContainer() noexcept;
     ~McServiceContainer() override;

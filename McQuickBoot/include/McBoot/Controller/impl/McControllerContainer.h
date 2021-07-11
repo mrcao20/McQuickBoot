@@ -21,8 +21,7 @@ class MCQUICKBOOT_EXPORT McControllerContainer
     Q_OBJECT
     MC_DECL_INIT(McControllerContainer)
     MC_INTERFACES(IMcControllerContainer)
-    MC_COMPONENT
-    MC_BEANNAME("controllerContainer")
+    MC_COMPONENT("controllerContainer")
 public:
     explicit McControllerContainer(QObject *parent = nullptr);
     ~McControllerContainer() override;

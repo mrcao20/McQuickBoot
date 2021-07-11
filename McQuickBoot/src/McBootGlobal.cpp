@@ -40,7 +40,7 @@ for (auto &tmpPath : qAsConst(mcBootGlobalStaticData->serviceLibraryPaths)) {
     }
     QLibrary library(libPath);
     if (!library.load()) {
-        qWarning() << libPath << "cannot load!!";
+        qWarning() << libPath << "cannot load!! error string:" << library.errorString();
         continue;
     }
     auto cleanup = qScopeGuard([]() { Mc::callPreRoutine(); });

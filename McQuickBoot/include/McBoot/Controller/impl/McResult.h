@@ -8,7 +8,7 @@ class MCQUICKBOOT_EXPORT McResult : public QObject
 {
     Q_OBJECT
     MC_DECL_INIT(McResult)
-    MC_JSON_SERIALIZATION
+    MC_JSON_SERIALIZATION()
     Q_PROPERTY(bool success READ isSuccess)
     Q_PROPERTY(QString errMsg READ errMsg)
     Q_PROPERTY(QVariant result READ result)

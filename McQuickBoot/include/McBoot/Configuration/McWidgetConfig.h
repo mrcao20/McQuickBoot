@@ -7,8 +7,7 @@ MC_FORWARD_DECL_PRIVATE_DATA(McWidgetConfig);
 class McWidgetConfig : public QObject
 {
     Q_OBJECT
-    MC_COMPONENT
-    MC_BEANNAME("widgetConfig")
+    MC_COMPONENT("widgetConfig")
     MC_CONFIGURATION_PROPERTIES("boot.application.widget")
     Q_PRIVATE_PROPERTY(d, QStringList xmlPaths MEMBER xmlPaths)
     Q_PRIVATE_PROPERTY(d, QString mainWindowName MEMBER mainWindowName)

@@ -206,16 +206,22 @@ QString getBeanName(const QMetaObject *metaObj) noexcept
 {
     QString beanName;
     auto beanNameIndex = metaObj->indexOfClassInfo(MC_BEANNAME_TAG);
-    if(beanNameIndex == -1) {
+    auto func = [&beanName, metaObj]() {
         beanName = metaObj->className();
         Q_ASSERT(!beanName.isEmpty());
         auto firstChar = beanName.at(0);
         firstChar = firstChar.toLower();
         beanName.remove(0, 1);
         beanName = firstChar + beanName;
+    };
+    if(beanNameIndex == -1) {
+        func();
     } else {
         auto beanNameClassInfo = metaObj->classInfo(beanNameIndex);
         beanName = beanNameClassInfo.value();
+        if (beanName.isEmpty()) {
+            func();
+        }
     }
     return beanName;
 }

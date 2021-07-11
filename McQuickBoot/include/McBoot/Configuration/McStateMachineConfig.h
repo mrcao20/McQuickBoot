@@ -9,8 +9,7 @@ MC_FORWARD_DECL_PRIVATE_DATA(McStateMachineConfig);
 class McStateMachineConfig : public QObject
 {
     Q_OBJECT
-    MC_COMPONENT
-    MC_BEANNAME("stateMachineConfig")
+    MC_COMPONENT("stateMachineConfig")
     MC_CONFIGURATION_PROPERTIES("boot.application.stateMachine")
     Q_PRIVATE_PROPERTY(d, QStringList paths MEMBER paths)
 public:

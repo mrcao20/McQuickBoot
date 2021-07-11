@@ -11,8 +11,7 @@ class MCORM_EXPORT McDaoLoader : public QObject, public IMcDaoLoader
     Q_OBJECT
     MC_TYPELIST(IMcDaoLoader)
     MC_DECL_INIT(McDaoLoader)
-    MC_COMPONENT
-    MC_BEANNAME("daoLoader")
+    MC_COMPONENT("daoLoader")
     MC_SINGLETON(true)
 public:
     Q_INVOKABLE McDaoLoader() noexcept;

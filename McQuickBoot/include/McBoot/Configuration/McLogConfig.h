@@ -7,8 +7,7 @@ MC_FORWARD_DECL_PRIVATE_DATA(McLogConfig);
 class McLogConfig : public QObject
 {
     Q_OBJECT
-    MC_COMPONENT
-    MC_BEANNAME("logConfig")
+    MC_COMPONENT("logConfig")
     MC_CONFIGURATION_PROPERTIES("boot.application.log")
     Q_PRIVATE_PROPERTY(d, QStringList xmlPaths MEMBER xmlPaths)
     Q_PRIVATE_PROPERTY(d, QString flag MEMBER flag)

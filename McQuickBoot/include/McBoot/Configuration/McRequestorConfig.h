@@ -8,8 +8,7 @@ class McRequestorConfig : public QObject
 {
     Q_OBJECT
     MC_DECL_INIT(McRequestorConfig)
-    MC_COMPONENT
-    MC_BEANNAME("requestorConfig")
+    MC_COMPONENT("requestorConfig")
     MC_CONFIGURATION_PROPERTIES("boot.application.requestor")
     Q_PROPERTY(int maxThreadCount READ maxThreadCount WRITE setMaxThreadCount)
 public:

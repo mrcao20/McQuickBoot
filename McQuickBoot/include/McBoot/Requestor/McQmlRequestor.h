@@ -13,8 +13,7 @@ class MCQUICKBOOT_EXPORT McQmlRequestor : public McAbstractRequestor
     Q_OBJECT
     MC_DECL_INIT(McQmlRequestor)
     MC_TYPELIST(McAbstractRequestor)
-    MC_COMPONENT
-    MC_BEANNAME("qmlRequestor")
+    MC_COMPONENT("qmlRequestor")
     MC_POINTER(true)
 public:
     using McAbstractRequestor::connect;

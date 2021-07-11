@@ -11,8 +11,7 @@ class MCQUICKBOOT_EXPORT McCppRequestor : public McAbstractRequestor
     Q_OBJECT
     MC_DECL_INIT(McCppRequestor)
     MC_TYPELIST(McAbstractRequestor)
-    MC_COMPONENT
-    MC_BEANNAME("cppRequestor")
+    MC_COMPONENT("cppRequestor")
 public:
     using McAbstractRequestor::getBean;
     using McAbstractRequestor::getModel;

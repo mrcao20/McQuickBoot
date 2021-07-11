@@ -11,8 +11,7 @@ MC_FORWARD_DECL_PRIVATE_DATA(McConfigurationContainer);
 class McConfigurationContainer : public QObject
 {
     Q_OBJECT
-    MC_COMPONENT
-    MC_BEANNAME("configurationContainer")
+    MC_COMPONENT("configurationContainer")
 public:
     Q_INVOKABLE explicit McConfigurationContainer(QObject *parent = nullptr) noexcept;
     ~McConfigurationContainer() override;

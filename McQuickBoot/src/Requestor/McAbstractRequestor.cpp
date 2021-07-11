@@ -37,7 +37,7 @@ MC_GLOBAL_STATIC(QThreadPool, requestorThreadPool)
 MC_GLOBAL_STATIC(QScxmlStateMachine *, staticStateMachine)
 
 MC_INIT(McAbstractRequestor)
-MC_DESTROY()
+MC_DESTROY(Mc::QuickBoot::ThreadPool)
 if (!requestorThreadPool.exists()) {
     return;
 }

@@ -16,6 +16,13 @@
     extern "C" Q_DECL_EXPORT void FUNC() {}
 
 namespace Mc {
+namespace QuickBoot {
+
+enum RoutinePriority : int {
+    ThreadPool = Mc::Normal - 1, // requestor中线程池优先级
+};
+
+}
 
 // 是否添加默认查找路径，默认会到mcservices目录下查找，如果不需要则需要手动调用此函数置为false
 MCQUICKBOOT_EXPORT void setDefaultSearch(bool val);

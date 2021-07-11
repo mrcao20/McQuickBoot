@@ -12,7 +12,7 @@ class TestService : public QObject, public IMcServiceTimer, public IMcServiceLon
 {
     Q_OBJECT
     MC_TYPELIST(IMcServiceTimer, IMcServiceLongLiveThread)
-    MC_SERVICE
+    MC_SERVICE()
 public:
     Q_INVOKABLE explicit TestService(QObject *parent = nullptr) noexcept;
     ~TestService() override;

@@ -43,9 +43,9 @@ void McAnnotationBeanDefinitionReader::inject(const QString &beanName,
         return; //!< 如果存在则不处理
     }
     const QMetaObject *metaObj = beanDefinition->getBeanMetaObject();
-    Q_ASSERT_X(metaObj != nullptr
-            , "McAnnotationBeanDefinitionReader"
-               , "if you want to use declarative inject. make sure mark used MC_COMPONENT");
+    Q_ASSERT_X(metaObj != nullptr,
+               "McAnnotationBeanDefinitionReader",
+               "if you want to use declarative inject. make sure mark used MC_COMPONENT()");
     injectProperty(metaObj, beanDefinition);
     registry()->registerBeanDefinition(beanName, beanDefinition);
 }

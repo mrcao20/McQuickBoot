@@ -98,6 +98,9 @@ void McConfigurationFileBeanDefinitionReader::doReadBeanDefinition() noexcept
         auto beanNameIndex = metaObj->indexOfClassInfo(MC_BEANNAME_TAG);
         if(beanNameIndex != -1) {
             beanName = metaObj->classInfo(beanNameIndex).value();
+            if (beanName.isEmpty()) {
+                beanName = prefix;
+            }
         } else {
             beanName = prefix;
         }

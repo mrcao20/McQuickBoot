@@ -20,8 +20,7 @@ class Test : public QObject
 {
     Q_OBJECT
     MC_TYPELIST();
-    MC_CONTROLLER
-    MC_BEANNAME("aaa")
+    MC_CONTROLLER("aaa")
     MC_AUTOWIRED("param")
     Q_PROPERTY(ParamPtr param MEMBER param)
     MC_AUTOWIRED("paramMap")

@@ -40,8 +40,12 @@
 
 #define MC_FORWARD_DECL_STRUCT(Class) \
     struct Class; \
-    using Class##Ptr = QSharedPointer<Class>; \
-    using Class##ConstPtrRef = const QSharedPointer<Class> &;
+    MC_DECL_POINTER(Class)
+
+#define MC_FORWARD_DECL_STRUCT_NS(Class, NS) \
+    namespace NS { \
+    MC_FORWARD_DECL_STRUCT(Class) \
+    }
 
 #define MC_PRIVATE_DATA_NAME(Class) __Mc_##Class##Data__
 
@@ -70,6 +74,8 @@
 
 #define MC_DECL_INIT(Class) \
     static const int Class##_Static_Init;
+
+#define MC_DECL_SUPER(SUPER) typedef SUPER super;
 
 #define MC_FILLING_ROUTINE_PRIORITY_FUNC_0() Mc::RoutinePriority::Normal
 #define MC_FILLING_ROUTINE_PRIORITY_FUNC_1(args) args
@@ -137,11 +143,15 @@
 
 #ifndef Q_MOC_RUN //!< 这行语句必须加，只有包围在这行语句之中的宏才能被识别为tag
 
-# define MC_BEAN_START      //!< 当bean被构造，但还未注入属性时调用
-# define MC_BEAN_FINISHED   //!< 当bean完全被构造完成之后调用
-# define MC_THREAD_FINISHED   //!< 当bean的线程被移动之后调用
+#define MC_BEAN_START      //!< 丢弃，同MC_STARTED
+#define MC_STARTED         //!< 当bean被构造，但还未注入属性时调用
+#define MC_BEAN_FINISHED   //!< 丢弃，同MC_FINISHED
+#define MC_FINISHED        //!< 当bean完全被构造完成之后调用
+#define MC_THREAD_FINISHED //!< 丢弃，同MC_THREAD_MOVED
+#define MC_THREAD_MOVED    //!< 当bean的线程被移动之后调用
 //!< 注意：以上三个tag标记的函数调用线程为getBean时的线程
-#define MC_ALL_FINISHED //!< 当bean完全被构造之后，且线程移动之后调用，使用队列方式，调用线程回归到对象的生存线程
+#define MC_ALL_FINISHED //!< 丢弃，同MC_COMPLETE
+#define MC_COMPLETE //!< 当bean完全被构造之后，且线程移动之后调用，使用队列方式，调用线程回归到对象的生存线程
 
 #endif //! !Q_MOC_RUN
 
@@ -153,12 +163,16 @@
 #define MC_BEANNAME_TAG "beanName"
 #define MC_AUTOWIRED_TAG "autowired"
 #define MC_AUTOWIRED_SPLIT_SYMBOL "="
+#define MC_RESOURCE_TAG "resource"
 
-#define MC_COMPONENT Q_CLASSINFO(MC_COMPONENT_TAG, MC_COMPONENT_TAG)
 #define MC_SINGLETON(arg) Q_CLASSINFO(MC_SINGLETON_TAG, MC_STRINGIFY(arg))
 #define MC_POINTER(arg) Q_CLASSINFO(MC_POINTER_TAG, MC_STRINGIFY(arg))
 #define MC_BEANNAME(name) Q_CLASSINFO(MC_BEANNAME_TAG, name)
 #define MC_AUTOWIRED(v, ...) Q_CLASSINFO(MC_AUTOWIRED_TAG, v MC_AUTOWIRED_SPLIT_SYMBOL __VA_ARGS__)
+#define MC_RESOURCE(name) Q_CLASSINFO(MC_RESOURCE_TAG, name)
+#define MC_COMPONENT(...) \
+    MC_BEANNAME("" __VA_ARGS__) \
+    Q_CLASSINFO(MC_COMPONENT_TAG, MC_COMPONENT_TAG)
 //!< Q_CLASSINFO
 
 //! PROPERTY

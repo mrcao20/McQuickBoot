@@ -12,7 +12,7 @@ MC_DECL_PRIVATE_DATA(McWidgetConfig)
 QStringList xmlPaths;
 QString mainWindowName{"mainWindow"};
 QString flag;
-int destroyPriority{0};
+int destroyPriority{Mc::Normal};
 MC_DECL_PRIVATE_DATA_END
 
 McWidgetConfig::McWidgetConfig(QObject *parent) noexcept : QObject(parent)
@@ -32,7 +32,10 @@ void McWidgetConfig::allFinished() noexcept
     if (w == nullptr) {
         return;
     }
-    Mc::addPostRoutine(d->destroyPriority, [w]() { delete w; });
+    Mc::addPostRoutine(d->destroyPriority, [w]() {
+        w->hide();
+        delete w;
+    });
     w->show();
 }
 

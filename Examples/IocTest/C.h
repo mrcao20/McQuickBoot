@@ -6,8 +6,7 @@
 class GadgetTest
 {
     Q_GADGET
-    MC_COMPONENT
-    MC_BEANNAME("gadgetTest")
+    MC_COMPONENT("gadgetTest")
 public:
     MC_POCO_PROPERTY(int, aaa);
     MC_POCO_PROPERTY(QString, bbb);
@@ -19,8 +18,7 @@ class R : public QObject, public IMcCustomPlaceholder
     Q_OBJECT
     MC_DECL_INIT(R)
     MC_TYPELIST(IMcCustomPlaceholder)
-    MC_COMPONENT
-    Q_CLASSINFO(MC_BEANNAME_TAG, "r")
+    MC_COMPONENT("r")
     Q_PROPERTY(QString text READ text WRITE setText);
 public:
     QString text() const noexcept;
@@ -53,8 +51,7 @@ class PointerTest : public QObject, public IA
 {
     Q_OBJECT
     MC_TYPELIST(IA)
-    MC_COMPONENT
-    MC_BEANNAME("pointerTest")
+    MC_COMPONENT("pointerTest")
     MC_POINTER(true)
 public:
     Q_INVOKABLE PointerTest() = default;
@@ -82,8 +79,7 @@ class C : public QObject, public IB
     //! 这里不需要额外指定QOBject，容器会自动指定。但如果C继承至其他类，比如QWidget，那么需要先使用MC_DECL_POINTER声明QWidget，再使用MC_TYPELIST(QWidget, IB)，
     //! 当然，如果不需要从C转换到QWidget，也就不需要额外声明QWidget
     MC_TYPELIST(IB)
-    MC_COMPONENT
-    MC_BEANNAME("c")
+    MC_COMPONENT("c")
     Q_PROPERTY(QString text READ text WRITE setText)    //!< 使用getter和setter形式
     MC_AUTOWIRED("r")
     //!< 如果外界并不需要使用对象r，则可以直接使用MEMBER形式。具体请查阅QT官方文档

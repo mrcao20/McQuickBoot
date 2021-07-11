@@ -11,8 +11,7 @@ class MCQUICKBOOT_EXPORT McModelContainer : public QObject, public IMcModelConta
     Q_OBJECT
     MC_DECL_INIT(McModelContainer)
     MC_INTERFACES(IMcModelContainer)
-    MC_COMPONENT
-    MC_BEANNAME("modelContainer")
+    MC_COMPONENT("modelContainer")
 public:
     Q_INVOKABLE explicit McModelContainer(QObject *parent = nullptr);
     ~McModelContainer() override;

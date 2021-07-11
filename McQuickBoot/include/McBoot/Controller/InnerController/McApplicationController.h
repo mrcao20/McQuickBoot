@@ -177,8 +177,7 @@ class MCQUICKBOOT_EXPORT McApplicationController : public QObject {
     Q_OBJECT
     MC_DECL_INIT(McApplicationController)
     MC_TYPELIST(QObject)
-    MC_CONTROLLER
-    MC_BEANNAME("app")
+    MC_CONTROLLER("app")
 public:
     Q_INVOKABLE McApplicationController() noexcept;
     ~McApplicationController() noexcept;
