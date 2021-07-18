@@ -7,6 +7,7 @@ MC_FORWARD_DECL_PRIVATE_DATA(McAnnotationApplicationContext);
 class MCIOC_EXPORT McAnnotationApplicationContext : public McReadableApplicationContext
 {
     Q_OBJECT
+    MC_DECL_INIT(McAnnotationApplicationContext)
 public:
     McAnnotationApplicationContext(IMcConfigurableBeanFactoryConstPtrRef factory,
                                    IMcBeanDefinitionReaderConstPtrRef reader,
@@ -18,10 +19,6 @@ public:
     ~McAnnotationApplicationContext() override;
 
     void generateReader() noexcept;
-
-    static void init() noexcept;
-
-    static void initBeanDefinition(int type) noexcept;
 
     static void addConnect(const QString &beanName,
                            const QString &sender,

@@ -28,12 +28,14 @@ SOURCES += \
     $$PWD/src/Requestor/McAbstractRequestor.cpp \
     $$PWD/src/Requestor/McCppRequestor.cpp \
     $$PWD/src/Requestor/McQmlRequestor.cpp \
+    $$PWD/src/Requestor/McRequest.cpp \
     $$PWD/src/Service/McServiceContainer.cpp \
     $$PWD/src/Utils/Callback/McAbstractAsyncCallback.cpp \
     $$PWD/src/Utils/Callback/McAbstractSyncCallback.cpp \
     $$PWD/src/Utils/Callback/McCppAsyncCallback.cpp \
     $$PWD/src/Utils/Callback/McCppSyncCallback.cpp \
     $$PWD/src/Utils/Callback/McQmlSyncCallback.cpp \
+    $$PWD/src/Utils/McCancel.cpp \
     $$PWD/src/Utils/McJsonUtils.cpp \
     $$PWD/src/BeanDefinitionReader/McConfigurationFileBeanDefinitionReader.cpp
 
@@ -69,6 +71,7 @@ HEADERS +=  \
     $$PWD/include/McBoot/Requestor/McAbstractRequestor.h \
     $$PWD/include/McBoot/Requestor/McCppRequestor.h \
     $$PWD/include/McBoot/Requestor/McQmlRequestor.h \
+    $$PWD/include/McBoot/Requestor/McRequest.h \
     $$PWD/include/McBoot/Service/IMcServiceLongLiveThread.h \
     $$PWD/include/McBoot/Service/IMcServiceTimer.h \
     $$PWD/include/McBoot/Service/impl/McServiceContainer.h \
@@ -78,6 +81,7 @@ HEADERS +=  \
     $$PWD/include/McBoot/Utils/Callback/Impl/McCppAsyncCallback.h \
     $$PWD/include/McBoot/Utils/Callback/Impl/McCppSyncCallback.h \
     $$PWD/include/McBoot/Utils/Callback/Impl/McQmlSyncCallback.h \
+    $$PWD/include/McBoot/Utils/McCancel.h \
     $$PWD/include/McBoot/Utils/McJsonUtils.h \
     $$PWD/include/McBoot/BeanDefinitionReader/impl/McConfigurationFileBeanDefinitionReader.h
 

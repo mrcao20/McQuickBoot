@@ -1,8 +1,8 @@
+#include <McBoot/McQuickBoot.h>
+#include <QDebug>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-#include <McBoot/McQuickBoot.h>
 #include <QTemporaryFile>
-#include <QDebug>
 
 int main(int argc, char *argv[])
 {

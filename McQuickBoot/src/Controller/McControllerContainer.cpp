@@ -117,7 +117,8 @@ QVariant McControllerContainer::invoke(const QString &uri, const QVariantMap &da
             QString param = list.size() == 2 ? list.at(1) : "";
             // <参数名，参数值>
             QVariantMap args = splitParam(param);
-            for (auto key : data.keys()) {
+            auto keys = data.keys();
+            for (const auto &key : keys) {
                 args.insert(key, data.value(key));
             }
             ret = invokeForUri(bean, func, args);

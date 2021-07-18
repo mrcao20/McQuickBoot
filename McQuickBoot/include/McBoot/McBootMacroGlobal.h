@@ -25,15 +25,15 @@
 #endif //! !Q_MOC_RUN
 
 //! Q_CLASSINFO
-#define MC_CONTROLLER_TAG "Controller"
-#define MC_MODEL_TAG "Model"
-#define MC_SERVICE_TAG "Service"
-#define MC_CONFIGURATION_TAG "Configuration"
-#define MC_CONFIGURATION_PRIORITY_TAG "ConfigurationPriority"
-#define MC_CONFIGURATION_PROPERTIES_TAG "ConfigurationProperties"
-#define MC_PROPERTY_SOURCE_TAG "PropertySource"
-#define MC_SERIALIZATION_TAG "Serialization"
-#define MC_JSON_SERIALIZATION_TAG "JsonSerialization"
+#define MC_CONTROLLER_TAG "McController"
+#define MC_MODEL_TAG "McModel"
+#define MC_SERVICE_TAG "McService"
+#define MC_CONFIGURATION_TAG "McConfiguration"
+#define MC_CONFIGURATION_PRIORITY_TAG "McConfigurationPriority"
+#define MC_CONFIGURATION_PROPERTIES_TAG "McConfigurationProperties"
+#define MC_PROPERTY_SOURCE_TAG "McPropertySource"
+#define MC_SERIALIZATION_TAG "McSerialization"
+#define MC_JSON_SERIALIZATION_TAG "McJsonSerialization"
 
 #define MC_CONTROLLER(...) \
     MC_BEANNAME("" __VA_ARGS__) \

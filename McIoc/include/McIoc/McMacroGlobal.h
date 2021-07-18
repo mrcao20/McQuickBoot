@@ -156,19 +156,21 @@
 #endif //! !Q_MOC_RUN
 
 //! Q_CLASSINFO
-#define MC_COMPONENT_TAG "Component"
+#define MC_COMPONENT_TAG "McComponent"
 
-#define MC_SINGLETON_TAG "isSingleton"
-#define MC_POINTER_TAG "isPointer"
-#define MC_BEANNAME_TAG "beanName"
-#define MC_AUTOWIRED_TAG "autowired"
+#define MC_SINGLETON_TAG "McIsSingleton"
+#define MC_POINTER_TAG "McIsPointer"
+#define MC_BEANNAME_TAG "McBeanName"
+#define MC_AUTOWIRED_TAG "McAutowired"
 #define MC_AUTOWIRED_SPLIT_SYMBOL "="
-#define MC_RESOURCE_TAG "resource"
+#define MC_RESOURCE_TAG "McResource"
 
 #define MC_SINGLETON(arg) Q_CLASSINFO(MC_SINGLETON_TAG, MC_STRINGIFY(arg))
 #define MC_POINTER(arg) Q_CLASSINFO(MC_POINTER_TAG, MC_STRINGIFY(arg))
 #define MC_BEANNAME(name) Q_CLASSINFO(MC_BEANNAME_TAG, name)
 #define MC_AUTOWIRED(v, ...) Q_CLASSINFO(MC_AUTOWIRED_TAG, v MC_AUTOWIRED_SPLIT_SYMBOL __VA_ARGS__)
+//! 使用此宏注入容器类型时，Value只能是QSharedPointer类型。注入普通类型时既可以是原始指针，也可以是动态指针。
+//! 且注入映射容器时，Key只能是QString，表示beanName
 #define MC_RESOURCE(name) Q_CLASSINFO(MC_RESOURCE_TAG, name)
 #define MC_COMPONENT(...) \
     MC_BEANNAME("" __VA_ARGS__) \

@@ -104,6 +104,7 @@ QVariant McAbstractNormalBeanFactory::doCreate(IMcBeanDefinitionConstPtrRef bean
                        "before call getBean/refresh.";
     }
     callTagFunction(obj, MC_STRINGIFY(MC_ALL_FINISHED), conType);
+    callTagFunction(obj, MC_STRINGIFY(MC_COMPLETE), conType);
     return var;
 }
 
@@ -136,11 +137,13 @@ void McAbstractNormalBeanFactory::callTagFunction(void *bean,
 void McAbstractNormalBeanFactory::callStartFunction(QObject *bean) noexcept
 {
     callTagFunction(bean, MC_STRINGIFY(MC_BEAN_START));
+    callTagFunction(bean, MC_STRINGIFY(MC_STARTED));
 }
 
 void McAbstractNormalBeanFactory::callStartFunction(void *bean, const QMetaObject *metaObj) noexcept
 {
     callTagFunction(bean, metaObj, MC_STRINGIFY(MC_BEAN_START));
+    callTagFunction(bean, metaObj, MC_STRINGIFY(MC_STARTED));
 }
 
 QVariant McAbstractNormalBeanFactory::parseOnGadget(
@@ -324,15 +327,18 @@ QObject *McAbstractNormalBeanFactory::getPropertyObject(QObject *bean,
 void McAbstractNormalBeanFactory::callFinishedFunction(QObject *bean) noexcept
 {
     callTagFunction(bean, MC_STRINGIFY(MC_BEAN_FINISHED));
+    callTagFunction(bean, MC_STRINGIFY(MC_FINISHED));
 }
 
 void McAbstractNormalBeanFactory::callFinishedFunction(void *bean,
                                                        const QMetaObject *metaObj) noexcept
 {
     callTagFunction(bean, metaObj, MC_STRINGIFY(MC_BEAN_FINISHED));
+    callTagFunction(bean, metaObj, MC_STRINGIFY(MC_FINISHED));
 }
 
 void McAbstractNormalBeanFactory::callThreadFinishedFunction(QObject *bean) noexcept
 {
     callTagFunction(bean, MC_STRINGIFY(MC_THREAD_FINISHED));
+    callTagFunction(bean, MC_STRINGIFY(MC_THREAD_MOVED));
 }

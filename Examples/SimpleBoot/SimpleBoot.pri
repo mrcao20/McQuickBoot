@@ -4,6 +4,7 @@ HEADERS += \
     $$PWD/include/Config.h \
     $$PWD/include/Config2.h \
     $$PWD/include/Param.h \
+    $$PWD/include/ResourceTest.h \
     $$PWD/include/Test.h
 
 SOURCES += \
@@ -11,6 +12,7 @@ SOURCES += \
     $$PWD/src/Config.cpp \
     $$PWD/src/Config2.cpp \
     $$PWD/src/Param.cpp \
+    $$PWD/src/ResourceTest.cpp \
     $$PWD/src/Test.cpp
 
 RESOURCES += \

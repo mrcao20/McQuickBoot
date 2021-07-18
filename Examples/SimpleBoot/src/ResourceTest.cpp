@@ -1,0 +1,6 @@
+#include "ResourceTest.h"
+
+MC_STATIC()
+MC_REGISTER_BEAN_FACTORY(ResourceTest)
+MC_REGISTER_BEAN_FACTORY(ResourceTest2)
+MC_STATIC_END

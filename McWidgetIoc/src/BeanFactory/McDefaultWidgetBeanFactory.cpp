@@ -97,6 +97,7 @@ QWidget *McDefaultWidgetBeanFactory::doCreate(IMcBeanDefinitionConstPtrRef beanD
     }
     callFinishedFunction(obj); //!< 调用构造完成函数
     callTagFunction(obj, MC_STRINGIFY(MC_ALL_FINISHED));
+    callTagFunction(obj, MC_STRINGIFY(MC_COMPLETE));
     return widget;
 }
 
@@ -117,6 +118,7 @@ void McDefaultWidgetBeanFactory::callTagFunction(QObject *bean,
 void McDefaultWidgetBeanFactory::callStartFunction(QObject *bean) const noexcept
 {
     callTagFunction(bean, MC_STRINGIFY(MC_BEAN_START));
+    callTagFunction(bean, MC_STRINGIFY(MC_STARTED));
 }
 
 bool McDefaultWidgetBeanFactory::addPropertyValue(QWidget *bean,
@@ -272,11 +274,13 @@ QObject *McDefaultWidgetBeanFactory::getPropertyObject(QObject *bean,
 void McDefaultWidgetBeanFactory::callFinishedFunction(QObject *bean) const noexcept
 {
     callTagFunction(bean, MC_STRINGIFY(MC_BEAN_FINISHED));
+    callTagFunction(bean, MC_STRINGIFY(MC_FINISHED));
 }
 
 void McDefaultWidgetBeanFactory::callThreadFinishedFunction(QObject *bean) noexcept
 {
     callTagFunction(bean, MC_STRINGIFY(MC_THREAD_FINISHED));
+    callTagFunction(bean, MC_STRINGIFY(MC_THREAD_MOVED));
 }
 
 QVariant McDefaultWidgetBeanFactory::convert(const QVariant &value, QWidget *parent) const noexcept

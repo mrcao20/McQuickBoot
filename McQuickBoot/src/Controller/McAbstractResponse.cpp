@@ -2,6 +2,7 @@
 
 #include <QCoreApplication>
 #include <QEvent>
+#include <QPointer>
 #include <QVariant>
 
 #include <McIoc/Utils/McScopedFunction.h>
@@ -13,6 +14,8 @@ MC_DECL_PRIVATE_DATA(McAbstractResponse)
 bool isAsyncCall{false}; // 是否在次线程调用callback，默认不需要
 bool isCancel{false};
 QVariant body;
+QPointer<QObject> attachedObject;
+bool isAttached{false};
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McAbstractResponse)
@@ -63,6 +66,12 @@ void McAbstractResponse::setAsyncCall(bool val) noexcept
     d->isAsyncCall = val;
 }
 
+void McAbstractResponse::attach(QObject *obj) noexcept
+{
+    d->isAttached = true;
+    d->attachedObject = obj;
+}
+
 void McAbstractResponse::customEvent(QEvent *event)
 {
     if (event->type() == QEvent::Type::User + 1) {
@@ -74,6 +83,10 @@ void McAbstractResponse::call() noexcept
 {
     McScopedFunction cleanup([this]() { this->deleteLater(); });
     Q_UNUSED(cleanup)
+
+    if (d->isAttached && d->attachedObject.isNull()) {
+        return;
+    }
 
     if (d->isCancel) {
         return;

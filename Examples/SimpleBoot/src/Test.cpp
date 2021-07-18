@@ -5,6 +5,8 @@
 
 MC_STATIC()
 MC_REGISTER_BEAN_FACTORY(Test)
+MC_REGISTER_MAP_CONVERTER(IIIMap)
+MC_REGISTER_LIST_CONVERTER(QList<IIIPtr>)
 MC_DESTROY()
 qDebug() << "destroy..............";
 MC_STATIC_END
@@ -31,7 +33,7 @@ QJsonObject Test::bbb(const QString &a,
     emit signal_sig2();
     emit signal_sig3(100);
     func(300);
-    qDebug() << "bbb" << a << obj << p->aaa << param << paramMap << threadTest;
+    qDebug() << "bbb" << a << obj << p->aaa << param << paramMap << threadTest << res;
     qDebug() << "cur thread:" << QThread::currentThread() << "obj thread:" << thread();
     return QJsonObject({{"ccc", "bbb"}});
 }

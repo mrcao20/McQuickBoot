@@ -2,6 +2,8 @@
 
 #include "McAbstractBeanDefinitionReader.h"
 
+class QMetaProperty;
+
 MC_FORWARD_DECL_CLASS(IMcBeanDefinition);
 
 MC_FORWARD_DECL_PRIVATE_DATA(McAnnotationBeanDefinitionReader);
@@ -23,7 +25,7 @@ private:
                 IMcBeanDefinitionConstPtrRef beanDefinition) noexcept;
     void injectProperty(const QMetaObject *metaObj,
                         IMcBeanDefinitionConstPtrRef beanDefinition) noexcept;
-    
+
 private:
     MC_DECL_PRIVATE(McAnnotationBeanDefinitionReader)
 };

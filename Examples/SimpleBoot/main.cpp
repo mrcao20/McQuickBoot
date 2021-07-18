@@ -75,6 +75,10 @@ int main(int argc, char *argv[])
     $.invoke("aaa.vvv", McCppSyncCallback::build(callbackTest2)).then([](const QVariant &var) {
         qDebug() << "vvvvvvvvvvvvvv" << var;
     });
+    {
+        Test t2;
+        $.invoke("aaa.aaa", a).then([]() { qDebug() << "aaa.aaa call finished2"; }).attach(&t2);
+    }
     qDebug() << res;
     qDebug() << res.value<ParamPtr>()->aaa;
     QHash<int, QString> hhh;

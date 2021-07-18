@@ -11,10 +11,12 @@
 #include <McBoot/Utils/Callback/Impl/McCppSyncCallback.h>
 
 #include "Param.h"
+#include "ResourceTest.h"
 
 MC_FORWARD_DECL_PRIVATE_DATA(Test);
 
 using ParamMap = QMap<QString, Param *>;
+using IIIMap = QMap<QString, IIIPtr>;
 
 class Test : public QObject
 {
@@ -27,6 +29,8 @@ class Test : public QObject
     Q_PROPERTY(ParamMap paramMap MEMBER paramMap)
     MC_AUTOWIRED("t", "threadTest")
     Q_PROPERTY(QThread *t MEMBER threadTest)
+    MC_RESOURCE("res")
+    Q_PROPERTY(QList<IIIPtr> res MEMBER res)
 public:
     Q_INVOKABLE explicit Test(QObject *parent = nullptr);
     ~Test();
@@ -43,6 +47,7 @@ public:
     ParamPtr param;
     ParamMap paramMap;
     QThread *threadTest;
+    QList<IIIPtr> res;
 
     void callbackTest(const ParamPtr &var) noexcept
     {
