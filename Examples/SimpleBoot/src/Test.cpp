@@ -57,3 +57,13 @@ ParamPtr Test::ccc()
     p->aaa = 1111111;
     return p;
 }
+
+void Test::ddd(const McRequest &req)
+{
+    QThread::sleep(1);
+    auto cancel = req.cancel();
+    auto progress = req.progress();
+    qDebug() << "dddddddddd>>>>>>" << req.check<int>() << req.at<int>(0) << req.count()
+             << cancel.isCanceled();
+    progress.setCurrent(10);
+}

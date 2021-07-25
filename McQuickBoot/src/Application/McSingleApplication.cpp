@@ -14,13 +14,13 @@ bool isRunning{false};                  //!< 是否已经有实例正在运行
 MC_PADDING_CLANG(7)
 MC_DECL_PRIVATE_DATA_END
 
-McSingleApplication::McSingleApplication(int& argc, char** argv) noexcept
+McSingleApplication::McSingleApplication(int &argc, char **argv) noexcept
     : QGuiApplication(argc, argv)
 {
     MC_NEW_PRIVATE_DATA(McSingleApplication);
 #ifndef QT_DEBUG
     //! 取应用程序名作为LocalServer的名字
-    d->serverName = QFileInfo(qApp->applicationFilePath()).fileName();
+    d->serverName = QFileInfo(Mc::applicationFilePath()).fileName();
     initLocalConnection();
 #endif // !_DEBUG
 }

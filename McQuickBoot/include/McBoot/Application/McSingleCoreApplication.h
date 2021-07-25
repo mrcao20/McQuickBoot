@@ -2,7 +2,7 @@
 
 #include "../McBootGlobal.h"
 
-#include <QGuiApplication>
+#include <QCoreApplication>
 
 #include <McIoc/BeanFactory/McBeanGlobal.h>
 
@@ -15,14 +15,14 @@ MC_FORWARD_DECL_PRIVATE_DATA(McSingleCoreApplication);
 /*!
  * \brief The McSingleCoreApplication class
  * 
- * 单例gui应用程序，使用QLocalServer实现，程序运行之初需要设置一个关联
+ * 单例无gui应用程序，使用QLocalServer实现，程序运行之初需要设置一个关联
  * 整个应用程序的单例object，如果程序正在运行则会调用该对象中的activeApp函数
  */
-class MCQUICKBOOT_EXPORT McSingleCoreApplication : public QGuiApplication 
+class MCQUICKBOOT_EXPORT McSingleCoreApplication : public QCoreApplication
 {
     Q_OBJECT
 public:
-    McSingleCoreApplication(int& argc, char** argv) noexcept;
+    McSingleCoreApplication(int &argc, char **argv) noexcept;
     ~McSingleCoreApplication() noexcept;
     
     /*!

@@ -79,6 +79,10 @@ int main(int argc, char *argv[])
         Test t2;
         $.invoke("aaa.aaa", a).then([]() { qDebug() << "aaa.aaa call finished2"; }).attach(&t2);
     }
+    $.invoke("aaa.ddd")
+        .then([]() { qDebug() << "ddd finished"; })
+        .progress([](int cur, int tol) { qDebug() << "ddd return:" << cur << tol; })
+        .cancel();
     qDebug() << res;
     qDebug() << res.value<ParamPtr>()->aaa;
     QHash<int, QString> hhh;

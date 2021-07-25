@@ -37,7 +37,8 @@ SOURCES += \
     $$PWD/src/Utils/Callback/McQmlSyncCallback.cpp \
     $$PWD/src/Utils/McCancel.cpp \
     $$PWD/src/Utils/McJsonUtils.cpp \
-    $$PWD/src/BeanDefinitionReader/McConfigurationFileBeanDefinitionReader.cpp
+    $$PWD/src/BeanDefinitionReader/McConfigurationFileBeanDefinitionReader.cpp \
+    $$PWD/src/Utils/McProgress.cpp
 
 HEADERS +=  \
     $$PWD/include/McBoot/Application/McSingleApplication.h \
@@ -83,7 +84,8 @@ HEADERS +=  \
     $$PWD/include/McBoot/Utils/Callback/Impl/McQmlSyncCallback.h \
     $$PWD/include/McBoot/Utils/McCancel.h \
     $$PWD/include/McBoot/Utils/McJsonUtils.h \
-    $$PWD/include/McBoot/BeanDefinitionReader/impl/McConfigurationFileBeanDefinitionReader.h
+    $$PWD/include/McBoot/BeanDefinitionReader/impl/McConfigurationFileBeanDefinitionReader.h \
+    $$PWD/include/McBoot/Utils/McProgress.h
 
 RESOURCES += \
     $$PWD/qrc/resource.qrc

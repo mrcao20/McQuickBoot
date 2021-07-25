@@ -255,6 +255,20 @@ public:
                              std::move(func)));
     }
 
+    template<typename Func>
+    McCppResponse &progress(const typename QtPrivate::FunctionPointer<Func>::Object *recever,
+                            Func callback) noexcept
+    {
+        getProgress().callback(recever, callback);
+        return *this;
+    }
+    template<typename Func>
+    McCppResponse &progress(Func callback) noexcept
+    {
+        getProgress().callback(callback);
+        return *this;
+    }
+
 protected:
     void callCallback() noexcept override;
     void callError() noexcept override;

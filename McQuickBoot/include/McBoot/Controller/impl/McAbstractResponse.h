@@ -1,8 +1,7 @@
 #pragma once
 
-#include <McIoc/McGlobal.h>
-
-#include "../../McBootMacroGlobal.h"
+#include "../../Utils/McCancel.h"
+#include "../../Utils/McProgress.h"
 
 MC_FORWARD_DECL_PRIVATE_DATA(McAbstractResponse);
 
@@ -19,8 +18,8 @@ public:
     explicit McAbstractResponse(QObject *parent = nullptr);
     ~McAbstractResponse() override;
 
-    void cancel() noexcept;
-    bool isCancel() const noexcept;
+    Q_INVOKABLE void cancel() noexcept;
+    Q_INVOKABLE bool isCanceled() const noexcept;
 
     QVariant body() const noexcept;
     void setBody(const QVariant &var) noexcept;
@@ -36,11 +35,16 @@ protected:
     virtual void callCallback() noexcept = 0;
     virtual void callError() noexcept = 0;
 
+    McProgress &getProgress() const noexcept;
+    McCancel &getCancel() const noexcept;
+
 private:
     void call() noexcept;
 
 private:
     MC_DECL_PRIVATE(McAbstractResponse)
+
+    friend class McRequestRunner;
 };
 
 Q_DECLARE_METATYPE(McAbstractResponse *)

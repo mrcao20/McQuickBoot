@@ -22,7 +22,7 @@ public:
     {
         QVariantList vars;
         (vars << ... << toQVariant(args));
-        return call(vars);
+        call(vars);
     }
 
     void operator()(const QVariantList &varList) noexcept { call(varList); }

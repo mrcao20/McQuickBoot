@@ -3,9 +3,10 @@
 #include <functional>
 #include <mutex>
 
-#include <QSharedPointer>
-#include <QObject>
+#include <QDir>
 #include <QEvent>
+#include <QObject>
+#include <QSharedPointer>
 #include <QtCore/qmutex.h>
 
 #include "BeanFactory/McBeanGlobal.h"
@@ -202,6 +203,11 @@ MCIOC_EXPORT bool waitForExecFunc(
  * \return 
  */
 MCIOC_EXPORT QString toAbsolutePath(const QString &path) noexcept;
+MCIOC_EXPORT QString applicationDirPath() noexcept;
+MCIOC_EXPORT QDir applicationDir() noexcept;
+MCIOC_EXPORT void setApplicationDirPath(const QString &val) noexcept;
+MCIOC_EXPORT QString applicationFilePath() noexcept;
+MCIOC_EXPORT void setApplicationFilePath(const QString &val) noexcept;
 
 //! 获取所有被Component标记的bean
 MCIOC_EXPORT QList<QString> getAllComponent(IMcApplicationContextConstPtrRef appCtx) noexcept;

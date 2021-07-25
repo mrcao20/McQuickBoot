@@ -8,11 +8,11 @@
 #include <McIoc/Utils/McScopedFunction.h>
 
 #include "McBoot/Controller/impl/McResult.h"
-#include "McBoot/McBootGlobal.h"
 
 MC_DECL_PRIVATE_DATA(McAbstractResponse)
-bool isAsyncCall{false}; // 是否在次线程调用callback，默认不需要
-bool isCancel{false};
+bool isAsyncCall{false}; //! 是否在次线程调用callback，默认不需要
+McCancel cancel;
+McProgress progress;
 QVariant body;
 QPointer<QObject> attachedObject;
 bool isAttached{false};
@@ -30,12 +30,12 @@ McAbstractResponse::~McAbstractResponse() {}
 
 void McAbstractResponse::cancel() noexcept
 {
-    d->isCancel = true;
+    d->cancel.cancel();
 }
 
-bool McAbstractResponse::isCancel() const noexcept
+bool McAbstractResponse::isCanceled() const noexcept
 {
-    return d->isCancel;
+    return d->cancel.isCanceled();
 }
 
 QVariant McAbstractResponse::body() const noexcept
@@ -79,6 +79,16 @@ void McAbstractResponse::customEvent(QEvent *event)
     }
 }
 
+McProgress &McAbstractResponse::getProgress() const noexcept
+{
+    return d->progress;
+}
+
+McCancel &McAbstractResponse::getCancel() const noexcept
+{
+    return d->cancel;
+}
+
 void McAbstractResponse::call() noexcept
 {
     McScopedFunction cleanup([this]() { this->deleteLater(); });
@@ -88,7 +98,7 @@ void McAbstractResponse::call() noexcept
         return;
     }
 
-    if (d->isCancel) {
+    if (isCanceled()) {
         return;
     }
 

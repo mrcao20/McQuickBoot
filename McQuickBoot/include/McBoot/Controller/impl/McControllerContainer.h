@@ -28,11 +28,19 @@ public:
 
     void init(const IMcQuickBoot *boot) noexcept;
 
-    QVariant invoke(const QString &uri, const QVariant &body) noexcept override;
-    QVariant invoke(const QString &uri) noexcept override;
-    QVariant invoke(const QString &uri, const QJsonObject &data) noexcept override;
-    QVariant invoke(const QString &uri, const QVariantList &data) noexcept override;
-    QVariant invoke(const QString &uri, const QVariantMap &data) noexcept override;
+    QVariant invoke(const QString &uri,
+                    const QVariant &body,
+                    const McRequest &request) noexcept override;
+    QVariant invoke(const QString &uri, const McRequest &request) noexcept override;
+    QVariant invoke(const QString &uri,
+                    const QJsonObject &data,
+                    const McRequest &request) noexcept override;
+    QVariant invoke(const QString &uri,
+                    const QVariantList &data,
+                    const McRequest &request) noexcept override;
+    QVariant invoke(const QString &uri,
+                    const QVariantMap &data,
+                    const McRequest &request) noexcept override;
 
 private:
     bool splitBeanAndFunc(const QString &uri,
@@ -42,11 +50,13 @@ private:
 
     QVariant invokeForUri(QObjectConstPtrRef bean,
                           const QString &func,
-                          const QVariantMap &args) noexcept;
+                          const QVariantMap &args,
+                          const McRequest &request) noexcept;
     bool makeCallback(QVariantMap &args, const QMetaMethod &m) noexcept;
     QVariant invokeForUri(QObjectConstPtrRef bean,
                           const QString &func,
-                          const QVariantList &args) noexcept;
+                          const QVariantList &args,
+                          const McRequest &request) noexcept;
 
     QVariantMap splitParam(const QString &param) noexcept;
 
@@ -57,18 +67,22 @@ private:
 
     QVariant invokeForArgs(QObjectConstPtrRef bean,
                            const QMetaMethod &method,
-                           const QVariantMap &args) noexcept;
+                           const QVariantMap &args,
+                           const McRequest &request) noexcept;
     QVariant invokeForArgs(QObjectConstPtrRef bean,
                            const QMetaMethod &method,
-                           const QVariantList &args) noexcept;
+                           const QVariantList &args,
+                           const McRequest &request) noexcept;
     QVariantList makeValues(const QMetaMethod &method,
                             const QVariantMap &args,
                             int maxParamSize,
+                            const McRequest &request,
                             QVariant *errMsg = nullptr,
                             bool *ok = nullptr) noexcept;
     QVariantList makeValues(const QMetaMethod &method,
                             const QVariantList &args,
                             int maxParamSize,
+                            const McRequest &request,
                             QVariant *errMsg = nullptr,
                             bool *ok = nullptr) noexcept;
 

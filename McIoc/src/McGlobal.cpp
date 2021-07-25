@@ -232,6 +232,11 @@ McCustomEvent::~McCustomEvent() noexcept
 {
 }
 
+MC_GLOBAL_STATIC_BEGIN(iocGlobalStaticData)
+QString applicationDirPath;
+QString applicationName;
+MC_GLOBAL_STATIC_END(iocGlobalStaticData)
+
 namespace {
 
 QString getStandardPath(QStandardPaths::StandardLocation type)
@@ -303,14 +308,14 @@ QString toAbsolutePath(const QString &inPath) noexcept
     sepDot += QDir::separator();
     sepDotDot += QDir::separator();
     if (dstPath.startsWith(sepDot) || dstPath.startsWith(sepDotDot)) {
-        dstPath = qApp->applicationDirPath() + QDir::separator() + dstPath;
+        dstPath = Mc::applicationDirPath() + QDir::separator() + dstPath;
     } else {
         QUrl url(path);
         if (url.isLocalFile()) {
             dstPath = url.toLocalFile();
             dstPath = QDir::toNativeSeparators(dstPath);
             if (!QDir::isAbsolutePath(dstPath)) {
-                dstPath = qApp->applicationDirPath() + QDir::separator() + dstPath;
+                dstPath = Mc::applicationDirPath() + QDir::separator() + dstPath;
             }
             url = QUrl::fromLocalFile(dstPath);
         }
@@ -318,6 +323,36 @@ QString toAbsolutePath(const QString &inPath) noexcept
     }
     dstPath = QDir::cleanPath(dstPath);
     return dstPath;
+}
+
+QString applicationDirPath() noexcept
+{
+    if (iocGlobalStaticData->applicationDirPath.isEmpty()) {
+        return QCoreApplication::applicationDirPath();
+    }
+    return iocGlobalStaticData->applicationDirPath;
+}
+
+QDir applicationDir() noexcept
+{
+    return QDir(applicationDirPath());
+}
+
+void setApplicationDirPath(const QString &val) noexcept
+{
+    iocGlobalStaticData->applicationDirPath = val;
+}
+
+QString applicationFilePath() noexcept
+{
+    return applicationDir().absoluteFilePath(iocGlobalStaticData->applicationName);
+}
+
+void setApplicationFilePath(const QString &val) noexcept
+{
+    QFileInfo fileInfo(val);
+    iocGlobalStaticData->applicationDirPath = fileInfo.absolutePath();
+    iocGlobalStaticData->applicationName = fileInfo.fileName();
 }
 
 QList<QString> getAllComponent(IMcApplicationContextConstPtrRef appCtx) noexcept

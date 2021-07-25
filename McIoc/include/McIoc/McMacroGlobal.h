@@ -2,9 +2,6 @@
 
 #include <QtCore/qglobal.h>
 
-#include "Utils/Macro/MacroSize.h"
-#include "Utils/Macro/MacroFillingFunc.h"
-
 #if defined (MC_BUILD_STATIC) && !defined (MC_EXPORT_DISABLE)
 #define MC_EXPORT_DISABLE
 #endif

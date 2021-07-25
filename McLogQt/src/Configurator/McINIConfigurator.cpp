@@ -4,19 +4,15 @@
 #include <QSettings>
 #include <QDir>
 
+#include <McIoc/McGlobal.h>
+
 McINIConfigurator::McINIConfigurator() {
 }
 
 
 void McINIConfigurator::configure(const QString &path) noexcept 
 {
-    auto iniPath = QDir::toNativeSeparators(path);
-    QString sep = ".";
-    sep += QDir::separator();
-    if(iniPath.startsWith(sep)) {
-        iniPath.remove(0, 1);
-        iniPath = qApp->applicationDirPath() + iniPath;
-    }
+    auto iniPath = Mc::toAbsolutePath(path);
     QSettings settings(iniPath, QSettings::Format::IniFormat);
     McSettingConfigurator::configure(settings);
 }

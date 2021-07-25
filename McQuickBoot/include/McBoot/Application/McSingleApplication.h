@@ -22,7 +22,7 @@ class MCQUICKBOOT_EXPORT McSingleApplication : public QGuiApplication
 {
     Q_OBJECT
 public:
-    McSingleApplication(int& argc, char** argv) noexcept;
+    McSingleApplication(int &argc, char **argv) noexcept;
     ~McSingleApplication() noexcept;
     
     /*!

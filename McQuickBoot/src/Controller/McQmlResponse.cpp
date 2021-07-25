@@ -56,6 +56,15 @@ McQmlResponse *McQmlResponse::error(const QJSValue &func) noexcept
     return this;
 }
 
+McQmlResponse *McQmlResponse::progress(const QJSValue &callback) noexcept
+{
+    auto tmp = callback;
+    getProgress().callback([tmp](int current, int total) mutable {
+        tmp.call(QJSValueList() << QJSValue(current) << QJSValue(total));
+    });
+    return this;
+}
+
 void McQmlResponse::callCallback() noexcept 
 {
     call(d->callback);

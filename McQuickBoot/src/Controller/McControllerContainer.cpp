@@ -12,6 +12,7 @@
 
 #include "McBoot/Controller/impl/McResult.h"
 #include "McBoot/IMcQuickBoot.h"
+#include "McBoot/Requestor/McRequest.h"
 #include "McBoot/Utils/Callback/Impl/McQmlSyncCallback.h"
 #include "McBoot/Utils/McJsonUtils.h"
 
@@ -53,17 +54,19 @@ void McControllerContainer::init(const IMcQuickBoot *boot) noexcept
     }
 }
 
-QVariant McControllerContainer::invoke(const QString &uri, const QVariant &body) noexcept 
+QVariant McControllerContainer::invoke(const QString &uri,
+                                       const QVariant &body,
+                                       const McRequest &request) noexcept
 {
     switch (static_cast<QMetaType::Type>(body.type())) {
     case QMetaType::Type::UnknownType:
-        return invoke(uri);
+        return invoke(uri, request);
     case QMetaType::Type::QJsonObject:
-        return invoke(uri, body.toJsonObject());
+        return invoke(uri, body.toJsonObject(), request);
     case QMetaType::Type::QVariantList:
-        return invoke(uri, body.toList());
+        return invoke(uri, body.toList(), request);
     case QMetaType::Type::QVariantMap:
-        return invoke(uri, body.toMap());
+        return invoke(uri, body.toMap(), request);
     default:
         return fail(
             QString("Uri:'%1' access failure. this body is not support type. type:%2. typeName:%3")
@@ -71,25 +74,29 @@ QVariant McControllerContainer::invoke(const QString &uri, const QVariant &body)
     }
 }
 
-QVariant McControllerContainer::invoke(const QString &uri) noexcept
+QVariant McControllerContainer::invoke(const QString &uri, const McRequest &request) noexcept
 {
-    return invoke(uri, QVariantMap());
+    return invoke(uri, QVariantMap(), request);
 }
 
-QVariant McControllerContainer::invoke(const QString &uri, const QJsonObject &data) noexcept 
+QVariant McControllerContainer::invoke(const QString &uri,
+                                       const QJsonObject &data,
+                                       const McRequest &request) noexcept
 {
     // <参数名，参数值>
     QVariantMap args = data.toVariantMap();
-    return invoke(uri, args);
+    return invoke(uri, args, request);
 }
 
-QVariant McControllerContainer::invoke(const QString &uri, const QVariantList &data) noexcept
+QVariant McControllerContainer::invoke(const QString &uri,
+                                       const QVariantList &data,
+                                       const McRequest &request) noexcept
 {
     QObjectPtr bean;
     QString func;
     QVariant ret;
     if (splitBeanAndFunc(uri, bean, func, ret)) {
-        ret = invokeForUri(bean, func, data);
+        ret = invokeForUri(bean, func, data, request);
     }
     if (ret.canConvert<McResultPtr>()) {
         auto result = ret.value<McResultPtr>();
@@ -98,7 +105,9 @@ QVariant McControllerContainer::invoke(const QString &uri, const QVariantList &d
     return ret;
 }
 
-QVariant McControllerContainer::invoke(const QString &uri, const QVariantMap &data) noexcept
+QVariant McControllerContainer::invoke(const QString &uri,
+                                       const QVariantMap &data,
+                                       const McRequest &request) noexcept
 {
     auto list = uri.split('?',
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
@@ -121,7 +130,7 @@ QVariant McControllerContainer::invoke(const QString &uri, const QVariantMap &da
             for (const auto &key : keys) {
                 args.insert(key, data.value(key));
             }
-            ret = invokeForUri(bean, func, args);
+            ret = invokeForUri(bean, func, args, request);
         }
     }
     if (ret.canConvert<McResultPtr>()) {
@@ -158,7 +167,8 @@ bool McControllerContainer::splitBeanAndFunc(const QString &uri,
 
 QVariant McControllerContainer::invokeForUri(QObjectConstPtrRef bean,
                                              const QString &func,
-                                             const QVariantMap &args) noexcept
+                                             const QVariantMap &args,
+                                             const McRequest &request) noexcept
 {
     const QMetaObject *metaBean = bean->metaObject();
     auto params = args;
@@ -172,9 +182,9 @@ QVariant McControllerContainer::invokeForUri(QObjectConstPtrRef bean,
         if (!makeCallback(params, method)) {
             return fail("cannot construct callback function");
         }
-        return invokeForArgs(bean, method, params);
+        return invokeForArgs(bean, method, params, request);
     }
-    return fail("access arguments error");
+    return fail("no matching method");
 }
 
 bool McControllerContainer::makeCallback(QVariantMap &args, const QMetaMethod &m) noexcept
@@ -207,13 +217,14 @@ bool McControllerContainer::makeCallback(QVariantMap &args, const QMetaMethod &m
         return false;
     }
     args.remove(Mc::QuickBoot::Constant::Argument::qmlCallback);
-    args.insert(m.parameterNames().last(), qmlSyncCallbackVar);
+    args.insert(m.parameterNames().constLast(), qmlSyncCallbackVar);
     return true;
 }
 
 QVariant McControllerContainer::invokeForUri(QObjectConstPtrRef bean,
                                              const QString &func,
-                                             const QVariantList &args) noexcept
+                                             const QVariantList &args,
+                                             const McRequest &request) noexcept
 {
     const QMetaObject *metaBean = bean->metaObject();
     int count = metaBean->methodCount();
@@ -223,9 +234,9 @@ QVariant McControllerContainer::invokeForUri(QObjectConstPtrRef bean,
             continue;
         if (!isMethodMatching(method, args))
             continue;
-        return invokeForArgs(bean, method, args);
+        return invokeForArgs(bean, method, args, request);
     }
-    return fail("access arguments error");
+    return fail("no matching method");
 }
 
 QVariantMap McControllerContainer::splitParam(const QString &param) noexcept
@@ -262,6 +273,9 @@ QVariantMap McControllerContainer::splitParam(const QString &param) noexcept
 bool McControllerContainer::isMethodMatching(const QMetaMethod &m,
                                              const QList<QString> &names) noexcept
 {
+    if (m.parameterCount() == 1 && m.parameterType(0) == qMetaTypeId<McRequest>()) {
+        return true;
+    }
     QList<QByteArray> methodParamNames = m.parameterNames();
     if (methodParamNames.size() != names.size())
         return false;
@@ -279,6 +293,9 @@ bool McControllerContainer::isMethodMatching(const QMetaMethod &m,
 
 bool McControllerContainer::isMethodMatching(const QMetaMethod &m, const QVariantList &args) noexcept
 {
+    if (m.parameterCount() == 1 && m.parameterType(0) == qMetaTypeId<McRequest>()) {
+        return true;
+    }
     if (m.parameterCount() != args.length())
         return false;
     auto paramTypes = m.parameterTypes();
@@ -307,7 +324,8 @@ void McControllerContainer::removeDuplication(QList<QString> &argNames,
 
 QVariant McControllerContainer::invokeForArgs(QObjectConstPtrRef bean,
                                               const QMetaMethod &method,
-                                              const QVariantMap &args) noexcept
+                                              const QVariantMap &args,
+                                              const McRequest &request) noexcept
 {
     auto returnType = method.returnType();
     if(returnType == QMetaType::Type::UnknownType) {
@@ -330,7 +348,7 @@ QVariant McControllerContainer::invokeForArgs(QObjectConstPtrRef bean,
     
     bool ok = false;
     QVariant errMsg;
-    auto values = makeValues(method, args, arguments.size(), &errMsg, &ok);
+    auto values = makeValues(method, args, arguments.size(), request, &errMsg, &ok);
     if(!ok) {
         return errMsg;
     }
@@ -362,12 +380,14 @@ QVariant McControllerContainer::invokeForArgs(QObjectConstPtrRef bean,
 
 QVariant McControllerContainer::invokeForArgs(QObjectConstPtrRef bean,
                                               const QMetaMethod &method,
-                                              const QVariantList &args) noexcept
+                                              const QVariantList &args,
+                                              const McRequest &request) noexcept
 {
     auto returnType = method.returnType();
     if (returnType == QMetaType::Type::UnknownType) {
-        auto result = fail(QString("cannot found return type from meta object system. type name:%1")
-                               .arg(method.typeName()));
+        auto result = fail(
+            QString("cannot found return type from meta object system. type name: %1")
+                .arg(method.typeName()));
         return result;
     }
     QVariant returnValue;
@@ -385,7 +405,7 @@ QVariant McControllerContainer::invokeForArgs(QObjectConstPtrRef bean,
 
     bool ok = false;
     QVariant errMsg;
-    auto values = makeValues(method, args, arguments.size(), &errMsg, &ok);
+    auto values = makeValues(method, args, arguments.size(), request, &errMsg, &ok);
     if (!ok) {
         return errMsg;
     }
@@ -418,6 +438,7 @@ QVariant McControllerContainer::invokeForArgs(QObjectConstPtrRef bean,
 QVariantList McControllerContainer::makeValues(const QMetaMethod &method,
                                                const QVariantMap &args,
                                                int maxParamSize,
+                                               const McRequest &request,
                                                QVariant *errMsg,
                                                bool *ok) noexcept
 {
@@ -437,11 +458,17 @@ QVariantList McControllerContainer::makeValues(const QMetaMethod &method,
         return QVariantList();
     }
     QVariantList list;
-    for (int i = 0; i < paramTypes.size(); ++i) {
-        QByteArray type = paramTypes.at(i).simplified();
-        QByteArray name = paramNames.at(i).simplified();
-        QVariant value = args[name];     //!< 由于调用此函数时参数名一定存在，所以这里一定有值
-        list.append(McJsonUtils::fromJson(type, value));
+    if (paramTypes.size() == 1 && method.parameterType(0) == qMetaTypeId<McRequest>()) {
+        McRequest req = request;
+        req.setParams(args.values());
+        list.append(QVariant::fromValue(req));
+    } else {
+        for (int i = 0; i < paramTypes.size(); ++i) {
+            QByteArray type = paramTypes.at(i).simplified();
+            QByteArray name = paramNames.at(i).simplified();
+            QVariant value = args[name]; //!< 由于调用此函数时参数名一定存在，所以这里一定有值
+            list.append(McJsonUtils::fromJson(type, value));
+        }
     }
     *ok = true;
     return list;
@@ -450,6 +477,7 @@ QVariantList McControllerContainer::makeValues(const QMetaMethod &method,
 QVariantList McControllerContainer::makeValues(const QMetaMethod &method,
                                                const QVariantList &args,
                                                int maxParamSize,
+                                               const McRequest &request,
                                                QVariant *errMsg,
                                                bool *ok) noexcept
 {
@@ -468,18 +496,23 @@ QVariantList McControllerContainer::makeValues(const QMetaMethod &method,
         return QVariantList();
     }
     QVariantList list;
-    for (int i = 0; i < paramTypes.size(); ++i) {
-        QByteArray type = paramTypes.at(i).simplified();
-        QVariant value = args.at(i); //!< 由于调用此函数时参数个数一定一致，所以这里一定有值
-        if (!value.convert(QMetaType::type(type))) {
-            *errMsg = fail(
-                QString(
-                    "property convert failure. origin type name:%1. typeid:%2. target typeName:%3")
-                    .arg(value.typeName(), QString::number(value.type()), type));
-            *ok = false;
-            return QVariantList();
+    if (paramTypes.size() == 1 && method.parameterType(0) == qMetaTypeId<McRequest>()) {
+        McRequest req = request;
+        req.setParams(args);
+        list.append(QVariant::fromValue(req));
+    } else {
+        for (int i = 0; i < paramTypes.size(); ++i) {
+            QByteArray type = paramTypes.at(i).simplified();
+            QVariant value = args.at(i); //!< 由于调用此函数时参数个数一定一致，所以这里一定有值
+            if (!value.convert(QMetaType::type(type))) {
+                *errMsg = fail(QString("property convert failure. origin type name:%1. typeid:%2. "
+                                       "target typeName:%3")
+                                   .arg(value.typeName(), QString::number(value.type()), type));
+                *ok = false;
+                return QVariantList();
+            }
+            list.append(value);
         }
-        list.append(value);
     }
     *ok = true;
     return list;

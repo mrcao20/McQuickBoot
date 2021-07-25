@@ -7,6 +7,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 
+#include <McBoot/Requestor/McRequest.h>
 #include <McBoot/Utils/Callback/IMcCallback.h>
 #include <McBoot/Utils/Callback/Impl/McCppSyncCallback.h>
 
@@ -43,6 +44,7 @@ public:
     Q_INVOKABLE void aaa(const std::function<void(int)> &func);
     Q_INVOKABLE QVariant vvv(const IMcCallbackPtr &callback);
     Q_INVOKABLE ParamPtr ccc();
+    Q_INVOKABLE void ddd(const McRequest &req);
 
     ParamPtr param;
     ParamMap paramMap;

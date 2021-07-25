@@ -20,10 +20,10 @@ McApplicationController::~McApplicationController() noexcept {
 
 QString McApplicationController::dirPath() const noexcept
 {
-    return qApp->applicationDirPath();
+    return Mc::applicationDirPath();
 }
 
 QString McApplicationController::filePath() const noexcept
 {
-    return qApp->applicationFilePath();
+    return Mc::applicationFilePath();
 }

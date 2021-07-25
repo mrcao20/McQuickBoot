@@ -7,6 +7,7 @@
 #include "McBoot/Connection/McCppConnection.h"
 #include "McBoot/Controller/IMcControllerContainer.h"
 #include "McBoot/Controller/impl/McCppResponse.h"
+#include "McBoot/Requestor/McRequest.h"
 
 MC_AUTO_INIT(McCppRequestor)
 MC_INIT_END
@@ -85,12 +86,12 @@ McCppResponse &McCppRequestor::invoke(const QString &uri, const QVariantList &da
 
 QVariant McCppRequestor::syncInvoke(const QString &uri) noexcept
 {
-    return controllerContainer()->invoke(uri, QVariant());
+    return controllerContainer()->invoke(uri, QVariant(), McRequest());
 }
 
 QVariant McCppRequestor::syncInvoke(const QString &uri, const QJsonObject &data) noexcept
 {
-    return controllerContainer()->invoke(uri, data);
+    return controllerContainer()->invoke(uri, data, McRequest());
 }
 
 QVariant McCppRequestor::syncInvoke(const QString &uri, const QVariant &data) noexcept
@@ -100,7 +101,7 @@ QVariant McCppRequestor::syncInvoke(const QString &uri, const QVariant &data) no
 
 QVariant McCppRequestor::syncInvoke(const QString &uri, const QVariantList &data) noexcept
 {
-    return controllerContainer()->invoke(uri, data);
+    return controllerContainer()->invoke(uri, data, McRequest());
 }
 
 QMetaObject::Connection McCppRequestor::connectImpl(const QString &sender,

@@ -10,6 +10,7 @@
 #include "McBoot/Connection/McQmlConnection.h"
 #include "McBoot/Controller/IMcControllerContainer.h"
 #include "McBoot/Controller/impl/McQmlResponse.h"
+#include "McBoot/Requestor/McRequest.h"
 #include "McBoot/Utils/Callback/Impl/McQmlSyncCallback.h"
 
 MC_AUTO_INIT(McQmlRequestor)
@@ -75,7 +76,7 @@ McQmlResponse *McQmlRequestor::invoke(const QString &uri,
 
 QJSValue McQmlRequestor::syncInvoke(const QString &uri) noexcept
 {
-    auto body = controllerContainer()->invoke(uri, QVariant());
+    auto body = controllerContainer()->invoke(uri, QVariant(), McRequest());
 #if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
     auto engine = QQmlEngine::contextForObject(this)->engine();
 #else
@@ -90,7 +91,7 @@ QJSValue McQmlRequestor::syncInvoke(const QString &uri) noexcept
 
 QJSValue McQmlRequestor::syncInvoke(const QString &uri, const QJSValue &data) noexcept
 {
-    auto body = controllerContainer()->invoke(uri, data.toVariant());
+    auto body = controllerContainer()->invoke(uri, data.toVariant(), McRequest());
 #if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
     auto engine = QQmlEngine::contextForObject(this)->engine();
 #else

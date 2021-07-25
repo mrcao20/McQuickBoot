@@ -21,6 +21,7 @@ public:
     Q_INVOKABLE McQmlResponse *syncThen(const QJSValue &callback) noexcept;
     Q_INVOKABLE McQmlResponse *asyncThen(const QJSValue &callback) noexcept;
     Q_INVOKABLE McQmlResponse *error(const QJSValue &func) noexcept;
+    Q_INVOKABLE McQmlResponse *progress(const QJSValue &callback) noexcept;
 
 protected:
     void callCallback() noexcept override;
