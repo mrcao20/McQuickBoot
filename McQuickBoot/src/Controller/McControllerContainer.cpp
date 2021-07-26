@@ -273,8 +273,20 @@ QVariantMap McControllerContainer::splitParam(const QString &param) noexcept
 bool McControllerContainer::isMethodMatching(const QMetaMethod &m,
                                              const QList<QString> &names) noexcept
 {
-    if (m.parameterCount() == 1 && m.parameterType(0) == qMetaTypeId<McRequest>()) {
-        return true;
+    using namespace Mc::QuickBoot::Private;
+    if (m.parameterCount() == 1) {
+        auto id = m.parameterType(0);
+        if (id == qMetaTypeId<McRequest>()) {
+            return true;
+        }
+        if (isContainedCustomRequest(id)) {
+            auto childrenId = getCustomRequestId(id);
+            if (childrenId.size() == names.size()) {
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
     QList<QByteArray> methodParamNames = m.parameterNames();
     if (methodParamNames.size() != names.size())
@@ -293,12 +305,23 @@ bool McControllerContainer::isMethodMatching(const QMetaMethod &m,
 
 bool McControllerContainer::isMethodMatching(const QMetaMethod &m, const QVariantList &args) noexcept
 {
-    if (m.parameterCount() == 1 && m.parameterType(0) == qMetaTypeId<McRequest>()) {
-        return true;
-    }
-    if (m.parameterCount() != args.length())
-        return false;
+    using namespace Mc::QuickBoot::Private;
     auto paramTypes = m.parameterTypes();
+    if (m.parameterCount() == 1) {
+        auto id = m.parameterType(0);
+        if (id == qMetaTypeId<McRequest>()) {
+            return true;
+        }
+        if (isContainedCustomRequest(id)) {
+            auto childrenId = getCustomRequestId(id);
+            paramTypes.clear();
+            for (auto childId : childrenId) {
+                paramTypes.append(QMetaType::typeName(childId));
+            }
+        }
+    }
+    if (paramTypes.size() != args.size())
+        return false;
     for (int i = 0; i < paramTypes.length(); ++i) {
         auto paramType = paramTypes.at(i);
         auto arg = args.at(i);
@@ -442,6 +465,7 @@ QVariantList McControllerContainer::makeValues(const QMetaMethod &method,
                                                QVariant *errMsg,
                                                bool *ok) noexcept
 {
+    using namespace Mc::QuickBoot::Private;
     bool isOk = false;
     QVariant msg;
     if(ok == nullptr) {
@@ -462,6 +486,17 @@ QVariantList McControllerContainer::makeValues(const QMetaMethod &method,
         McRequest req = request;
         req.setParams(args.values());
         list.append(QVariant::fromValue(req));
+    } else if (paramTypes.size() == 1 && isContainedCustomRequest(method.parameterType(0))) {
+        auto mainId = method.parameterType(0);
+        auto childrenId = getCustomRequestId(mainId);
+        QVariantList reqArgs;
+        for (int i = 0; i < childrenId.size(); ++i) {
+            auto type = childrenId.at(i);
+            QByteArray name = paramNames.at(i).simplified();
+            QVariant value = args[name]; //!< 由于调用此函数时参数名一定存在，所以这里一定有值
+            reqArgs.append(McJsonUtils::fromJson(type, value));
+        }
+        list.append(buildCustomRequest(mainId, reqArgs, request));
     } else {
         for (int i = 0; i < paramTypes.size(); ++i) {
             QByteArray type = paramTypes.at(i).simplified();
@@ -481,6 +516,7 @@ QVariantList McControllerContainer::makeValues(const QMetaMethod &method,
                                                QVariant *errMsg,
                                                bool *ok) noexcept
 {
+    using namespace Mc::QuickBoot::Private;
     bool isOk = false;
     QVariant msg;
     if (ok == nullptr) {
@@ -500,6 +536,25 @@ QVariantList McControllerContainer::makeValues(const QMetaMethod &method,
         McRequest req = request;
         req.setParams(args);
         list.append(QVariant::fromValue(req));
+    } else if (paramTypes.size() == 1 && isContainedCustomRequest(method.parameterType(0))) {
+        auto mainId = method.parameterType(0);
+        auto childrenId = getCustomRequestId(mainId);
+        QVariantList reqArgs;
+        for (int i = 0; i < childrenId.size(); ++i) {
+            auto type = childrenId.at(i);
+            QVariant value = args.at(i); //!< 由于调用此函数时参数个数一定一致，所以这里一定有值
+            if (!value.convert(type)) {
+                *errMsg = fail(QString("property convert failure. origin type name:%1. typeid:%2. "
+                                       "target typeName:%3")
+                                   .arg(value.typeName(),
+                                        QString::number(value.type()),
+                                        QMetaType::typeName(type)));
+                *ok = false;
+                return QVariantList();
+            }
+            reqArgs.append(value);
+        }
+        list.append(buildCustomRequest(mainId, reqArgs, request));
     } else {
         for (int i = 0; i < paramTypes.size(); ++i) {
             QByteArray type = paramTypes.at(i).simplified();

@@ -18,6 +18,8 @@ MC_FORWARD_DECL_PRIVATE_DATA(Test);
 
 using ParamMap = QMap<QString, Param *>;
 using IIIMap = QMap<QString, IIIPtr>;
+using CustomRequestType = McCustomRequest<ParamPtr, int>;
+Q_DECLARE_METATYPE(CustomRequestType)
 
 class Test : public QObject
 {
@@ -45,6 +47,8 @@ public:
     Q_INVOKABLE QVariant vvv(const IMcCallbackPtr &callback);
     Q_INVOKABLE ParamPtr ccc();
     Q_INVOKABLE void ddd(const McRequest &req);
+    Q_INVOKABLE void ddd2(McCancel c, McProgress p);
+    Q_INVOKABLE void ddd3(const CustomRequestType &req);
 
     ParamPtr param;
     ParamMap paramMap;

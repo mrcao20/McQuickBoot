@@ -48,3 +48,51 @@ void McRequest::setParams(const QVariantList &val) noexcept
 {
     d->params = val;
 }
+
+MC_GLOBAL_STATIC_BEGIN(requestStaticData)
+QHash<int, QList<int>> customRequestIds;
+QHash<int, Mc::QuickBoot::Private::ICustomRequestBuilderPtr> customRequestBuilders;
+MC_GLOBAL_STATIC_END(requestStaticData)
+
+namespace Mc::QuickBoot::Private {
+
+void registerCustomRequest(int mainId, const QList<int> &childrenId) noexcept
+{
+    if (requestStaticData->customRequestIds.contains(mainId)) {
+        return;
+    }
+    requestStaticData->customRequestIds.insert(mainId, childrenId);
+}
+
+void registerCustomRequestBuilder(int mainId, const ICustomRequestBuilderPtr &builder) noexcept
+{
+    if (requestStaticData->customRequestBuilders.contains(mainId)) {
+        return;
+    }
+    requestStaticData->customRequestBuilders.insert(mainId, builder);
+}
+
+QVariant buildCustomRequest(int mainId, const QVariantList &vals, const McRequest &request) noexcept
+{
+    if (!requestStaticData->customRequestBuilders.contains(mainId)) {
+        return QVariant();
+    }
+    return requestStaticData->customRequestBuilders.value(mainId)->build(vals, request);
+}
+
+QHash<int, QList<int>> getAllCustomRequestIds() noexcept
+{
+    return requestStaticData->customRequestIds;
+}
+
+QList<int> getCustomRequestId(int mainId) noexcept
+{
+    return requestStaticData->customRequestIds.value(mainId);
+}
+
+bool isContainedCustomRequest(int mainId) noexcept
+{
+    return requestStaticData->customRequestIds.contains(mainId);
+}
+
+} // namespace Mc::QuickBoot::Private

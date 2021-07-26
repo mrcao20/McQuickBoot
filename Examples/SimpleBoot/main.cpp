@@ -83,6 +83,20 @@ int main(int argc, char *argv[])
         .then([]() { qDebug() << "ddd finished"; })
         .progress([](int cur, int tol) { qDebug() << "ddd return:" << cur << tol; })
         .cancel();
+    {
+        McCancel c;
+        McProgress p;
+        $.invoke("aaa.ddd2", c, p).then([]() { qDebug() << "ddd2 finished"; });
+        c.cancel();
+        p.callback([](int cur, int tot) { qDebug() << "ddd2>>>>>>>" << cur << tot; });
+    }
+    {
+        ParamPtr p = ParamPtr::create();
+        $.invoke("aaa.ddd3", p, 3)
+            .then([]() { qDebug() << "ddd3 finished"; })
+            .progress([](int cur, int tol) { qDebug() << "ddd3 return:" << cur << tol; })
+            .cancel();
+    }
     qDebug() << res;
     qDebug() << res.value<ParamPtr>()->aaa;
     QHash<int, QString> hhh;

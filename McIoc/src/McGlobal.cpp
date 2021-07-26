@@ -345,6 +345,9 @@ void setApplicationDirPath(const QString &val) noexcept
 
 QString applicationFilePath() noexcept
 {
+    if (iocGlobalStaticData->applicationName.isEmpty()) {
+        return QCoreApplication::applicationFilePath();
+    }
     return applicationDir().absoluteFilePath(iocGlobalStaticData->applicationName);
 }
 

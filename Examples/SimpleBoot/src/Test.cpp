@@ -7,6 +7,7 @@ MC_STATIC()
 MC_REGISTER_BEAN_FACTORY(Test)
 MC_REGISTER_MAP_CONVERTER(IIIMap)
 MC_REGISTER_LIST_CONVERTER(QList<IIIPtr>)
+MC_BOOT_REGISTER_REQUEST(CustomRequestType)
 MC_DESTROY()
 qDebug() << "destroy..............";
 MC_STATIC_END
@@ -66,4 +67,20 @@ void Test::ddd(const McRequest &req)
     qDebug() << "dddddddddd>>>>>>" << req.check<int>() << req.at<int>(0) << req.count()
              << cancel.isCanceled();
     progress.setCurrent(10);
+}
+
+void Test::ddd2(McCancel c, McProgress p)
+{
+    qDebug() << "dddddddddd222>>>>>>" << c.isCanceled();
+    p.setCurrent(20);
+}
+
+void Test::ddd3(const CustomRequestType &req)
+{
+    QThread::sleep(1);
+    auto cancel = req.cancel();
+    auto progress = req.progress();
+    qDebug() << "dddddddddd33333>>>>>>" << req.check<ParamPtr, ParamPtr>() << req.at<ParamPtr>(0)
+             << req.at<int>(1) << req.count() << cancel.isCanceled();
+    progress.setCurrent(30);
 }

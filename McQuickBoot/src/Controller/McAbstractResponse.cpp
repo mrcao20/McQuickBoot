@@ -72,6 +72,12 @@ void McAbstractResponse::attach(QObject *obj) noexcept
     d->attachedObject = obj;
 }
 
+void McAbstractResponse::detach() noexcept
+{
+    d->isAttached = false;
+    d->attachedObject = nullptr;
+}
+
 void McAbstractResponse::customEvent(QEvent *event)
 {
     if (event->type() == QEvent::Type::User + 1) {
@@ -95,10 +101,6 @@ void McAbstractResponse::call() noexcept
     Q_UNUSED(cleanup)
 
     if (d->isAttached && d->attachedObject.isNull()) {
-        return;
-    }
-
-    if (isCanceled()) {
         return;
     }
 

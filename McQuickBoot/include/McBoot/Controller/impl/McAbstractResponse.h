@@ -28,6 +28,7 @@ public:
     void setAsyncCall(bool val) noexcept;
 
     Q_INVOKABLE void attach(QObject *obj) noexcept;
+    Q_INVOKABLE void detach() noexcept;
 
 protected:
     void customEvent(QEvent *event) override;

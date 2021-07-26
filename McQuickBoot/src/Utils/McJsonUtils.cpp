@@ -346,7 +346,8 @@ QJsonObject McJsonUtils::toJson(const QMap<QString, QObject *> &objs) noexcept
 QJsonObject McJsonUtils::toJson(const QMap<QString, QObjectPtr> &objs) noexcept 
 {
     QJsonObject result;
-    for(auto key : objs.keys()) {
+    const auto &keys = objs.keys();
+    for (const auto &key : keys) {
         result.insert(key, McJsonUtils::toJson(objs.value(key)));
     }
     return result;
