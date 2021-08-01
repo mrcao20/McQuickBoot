@@ -14,6 +14,8 @@
 #include "McBoot/Controller/impl/McAbstractResponse.h"
 #include "McBoot/Controller/impl/McRequestRunner.h"
 #include "McBoot/Model/IMcModelContainer.h"
+#include "McBoot/Utils/Response/IMcResponseHandler.h"
+#include "McBoot/Utils/Response/McResponseHandlerFactory.h"
 
 class McRunnerEvent : public QEvent
 {
@@ -37,6 +39,7 @@ MC_GLOBAL_STATIC(QThreadPool, requestorThreadPool)
 MC_GLOBAL_STATIC(QScxmlStateMachine *, staticStateMachine)
 
 MC_INIT(McAbstractRequestor)
+MC_REGISTER_CONTAINER_CONVERTER(QList<IMcResponseHandlerPtr>)
 MC_DESTROY(Mc::QuickBoot::ThreadPool)
 if (!requestorThreadPool.exists()) {
     return;
@@ -50,6 +53,7 @@ IMcModelContainerPtr modelContainer;
 McRequestorConfigPtr requestorConfig;
 McStateMachineConfigPtr stateMachineConfig;
 IMcApplicationContext *appCtx;
+QList<IMcResponseHandlerPtr> responseHanlders;
 MC_DECL_PRIVATE_DATA_END
 
 McAbstractRequestor::McAbstractRequestor(QObject *parent) : QObject(parent)
@@ -165,6 +169,7 @@ void McAbstractRequestor::run(McAbstractResponse *response,
                               const QString &uri,
                               const QVariant &body) noexcept
 {
+    response->setHandlers(d->responseHanlders);
     McRequestRunner *runner = new McRequestRunner();
     runner->setAutoDelete(true);
     runner->setResponse(response);
@@ -188,6 +193,7 @@ void McAbstractRequestor::allFinished() noexcept
         maxThreadCount = d->requestorConfig->maxThreadCount();
     }
     setMaxThreadCount(maxThreadCount);
+    d->responseHanlders.append(McResponseHandlerFactory::getHandlers());
 }
 
 #include "moc_McAbstractRequestor.cpp"

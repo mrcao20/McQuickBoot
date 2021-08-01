@@ -26,14 +26,11 @@ class Test : public QObject
     Q_OBJECT
     MC_TYPELIST();
     MC_CONTROLLER("aaa")
-    MC_AUTOWIRED("param")
-    Q_PROPERTY(ParamPtr param MEMBER param)
-    MC_AUTOWIRED("paramMap")
-    Q_PROPERTY(ParamMap paramMap MEMBER paramMap)
+    MC_PROPERTY(ParamPtr, param, MEMBER param)
+    MC_PROPERTY(ParamMap, paramMap, MEMBER paramMap)
     MC_AUTOWIRED("t", "threadTest")
     Q_PROPERTY(QThread *t MEMBER threadTest)
-    MC_RESOURCE("res")
-    Q_PROPERTY(QList<IIIPtr> res MEMBER res)
+    MC_PROPERTY2(QList<IIIPtr>, res, MEMBER res)
 public:
     Q_INVOKABLE explicit Test(QObject *parent = nullptr);
     ~Test();

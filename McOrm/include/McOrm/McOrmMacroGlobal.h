@@ -2,9 +2,11 @@
 
 #include <McIoc/McGlobal.h>
 
-#define MC_DAO_TAG "Dao"
+#define MC_DAO_TAG "__McDao__"
 
-#define MC_DAO Q_CLASSINFO(MC_COMPONENT_TAG, MC_DAO_TAG)
+#define MC_DAO(...) \
+    MC_BEANNAME("" __VA_ARGS__) \
+    Q_CLASSINFO(MC_COMPONENT_TAG, MC_DAO_TAG)
 
 #define MC_DB_TABLE_TAG "dbTable"
 #define MC_TABLE_COL_TAG "tableColumn"

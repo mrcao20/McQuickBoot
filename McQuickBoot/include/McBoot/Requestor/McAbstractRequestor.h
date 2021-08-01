@@ -21,6 +21,7 @@ MC_FORWARD_DECL_CLASS(IMcControllerContainer);
 MC_FORWARD_DECL_CLASS(IMcModelContainer);
 MC_FORWARD_DECL_CLASS(McRequestorConfig);
 MC_FORWARD_DECL_CLASS(McStateMachineConfig);
+MC_FORWARD_DECL_CLASS(IMcResponseHandler);
 
 class McAbstractResponse;
 class IMcApplicationContext;
@@ -31,14 +32,11 @@ class MCQUICKBOOT_EXPORT McAbstractRequestor : public QObject,
     Q_OBJECT
     MC_DECL_INIT(McAbstractRequestor)
     Q_PROPERTY(QScxmlStateMachine *stateMachine READ stateMachine NOTIFY stateMachineChanged)
-    MC_AUTOWIRED("controllerContainer")
-    Q_PRIVATE_PROPERTY(d, IMcControllerContainerPtr controllerContainer MEMBER controllerContainer)
-    MC_AUTOWIRED("modelContainer")
-    Q_PRIVATE_PROPERTY(d, IMcModelContainerPtr modelContainer MEMBER modelContainer)
-    MC_AUTOWIRED("requestorConfig")
-    Q_PRIVATE_PROPERTY(d, McRequestorConfigPtr requestorConfig MEMBER requestorConfig)
-    MC_AUTOWIRED("stateMachineConfig")
-    Q_PRIVATE_PROPERTY(d, McStateMachineConfigPtr stateMachineConfig MEMBER stateMachineConfig)
+    MC_PRIVATE_PROPERTY(IMcControllerContainerPtr, controllerContainer, MEMBER controllerContainer)
+    MC_PRIVATE_PROPERTY(IMcModelContainerPtr, modelContainer, MEMBER modelContainer)
+    MC_PRIVATE_PROPERTY(McRequestorConfigPtr, requestorConfig, MEMBER requestorConfig)
+    MC_PRIVATE_PROPERTY(McStateMachineConfigPtr, stateMachineConfig, MEMBER stateMachineConfig)
+    MC_PRIVATE_PROPERTY2(QList<IMcResponseHandlerPtr>, responseHanlders, MEMBER responseHanlders)
 public:
     Q_INVOKABLE explicit McAbstractRequestor(QObject *parent = nullptr);
     ~McAbstractRequestor() override;

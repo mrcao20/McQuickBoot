@@ -3,41 +3,13 @@
 #include <QObject>
 #include <QSharedData>
 
-#include <McIoc/McGlobal.h>
-
-#include "../McBootMacroGlobal.h"
+#include "Callback/Impl/McCppSyncCallback.h"
 
 struct MCQUICKBOOT_EXPORT McProgressSharedData : public QSharedData
 {
-    McProgressSharedData() {}
-    McProgressSharedData(const McProgressSharedData &o)
-        : QSharedData(o), current(o.current), total(o.total), recever(o.recever),
-          attached(o.attached)
-    {
-        auto c = callback.loadAcquire();
-        if (c != nullptr) {
-            c->destroyIfLastRef();
-            callback.storeRelease(nullptr);
-        }
-        auto oc = o.callback.loadAcquire();
-        if (oc != nullptr) {
-            oc->ref();
-            callback.storeRelease(oc);
-        }
-    }
-    ~McProgressSharedData()
-    {
-        auto c = callback.loadAcquire();
-        if (c != nullptr) {
-            c->destroyIfLastRef();
-            callback.storeRelease(nullptr);
-        }
-    }
     QAtomicInt current{0};
     QAtomicInt total{100};
-    QAtomicPointer<QObject> recever{nullptr};
-    QAtomicPointer<QtPrivate::QSlotObjectBase> callback{nullptr};
-    QSharedPointer<QObject> attached;
+    IMcCallbackPtr callback;
 };
 
 class MCQUICKBOOT_EXPORT McProgress : public QObject
@@ -64,12 +36,10 @@ public:
         typedef QtPrivate::FunctionPointer<Func> FuncType;
 
         Q_STATIC_ASSERT_X(int(FuncType::ArgumentCount) == 2,
-                          "The number of parameters of callback function can only be equal to 2");
+                          "The number of parameters of callback function can only be equal to "
+                          "2(int current, int total)");
 
-        setCallback(recever,
-                    new QtPrivate::QSlotObject<Func,
-                                               typename FuncType::Arguments,
-                                               typename FuncType::ReturnType>(func));
+        setCallback(McCppSyncCallback::build(recever, func));
     }
     template<typename Func>
     typename std::enable_if<int(QtPrivate::FunctionPointer<Func>::ArgumentCount) >= 0
@@ -80,12 +50,10 @@ public:
         typedef QtPrivate::FunctionPointer<Func> FuncType;
 
         Q_STATIC_ASSERT_X(int(FuncType::ArgumentCount) == 2,
-                          "The number of parameters of callback function can only be equal to 2");
+                          "The number of parameters of callback function can only be equal to "
+                          "2(int current, int total)");
 
-        setCallback(nullptr,
-                    new QtPrivate::QStaticSlotObject<Func,
-                                                     typename FuncType::Arguments,
-                                                     typename FuncType::ReturnType>(func));
+        setCallback(McCppSyncCallback::build(func));
     }
     template<typename Func>
     typename std::enable_if<QtPrivate::FunctionPointer<Func>::ArgumentCount == -1, void>::type
@@ -94,18 +62,14 @@ public:
         typedef McPrivate::LambdaType<Func> FuncType;
 
         Q_STATIC_ASSERT_X(int(FuncType::ArgumentCount) == 2,
-                          "The number of parameters of callback function can only be equal to 2");
+                          "The number of parameters of callback function can only be equal to "
+                          "2(int current, int total)");
 
-        setCallback(nullptr,
-                    new QtPrivate::QFunctorSlotObject<Func,
-                                                      int(FuncType::ArgumentCount),
-                                                      typename FuncType::Arguments,
-                                                      typename FuncType::ReturnType>(
-                        std::move(func)));
+        setCallback(McCppSyncCallback::build(func));
     }
 
 private:
-    void setCallback(const QObject *recever, QtPrivate::QSlotObjectBase *callback) noexcept;
+    void setCallback(const IMcCallbackPtr &val) noexcept;
     void callCallback() noexcept;
 
 private:

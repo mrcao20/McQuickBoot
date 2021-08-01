@@ -175,6 +175,22 @@
 //!< Q_CLASSINFO
 
 //! PROPERTY
+#define MC_PROPERTY(Type, name, ...) \
+    MC_AUTOWIRED(#name) \
+    Q_PROPERTY(Type name __VA_ARGS__)
+
+#define MC_PROPERTY2(Type, name, ...) \
+    MC_RESOURCE(#name) \
+    Q_PROPERTY(Type name __VA_ARGS__)
+
+#define MC_PRIVATE_PROPERTY(Type, name, ...) \
+    MC_AUTOWIRED(#name) \
+    Q_PRIVATE_PROPERTY(d, Type name __VA_ARGS__)
+
+#define MC_PRIVATE_PROPERTY2(Type, name, ...) \
+    MC_RESOURCE(#name) \
+    Q_PRIVATE_PROPERTY(d, Type name __VA_ARGS__)
+
 #define MC_POCO_PROPERTY(Type, name, ...) \
     Q_PROPERTY(Type name MEMBER name) \
     Type name __VA_ARGS__;

@@ -4,6 +4,8 @@
 #include <McIoc/McGlobal.h>
 #include <QObject>
 
+#include <McBoot/Configuration/IMcQuickBootConfigurer.h>
+
 MC_FORWARD_DECL_CLASS(Param);
 MC_FORWARD_DECL_CLASS(Test);
 
@@ -11,14 +13,16 @@ MC_FORWARD_DECL_PRIVATE_DATA(Config);
 
 using ParamMap = QMap<QString, Param *>;
 
-class Config : public QObject
+class Config : public QObject, public IMcQuickBootConfigurer
 {
     Q_OBJECT
-    MC_TYPELIST()
+    MC_INTERFACES(IMcQuickBootConfigurer)
     MC_CONFIGURATION()
 public:
     Q_INVOKABLE explicit Config(QObject *parent = nullptr) noexcept;
     ~Config() override;
+
+    void addResponseHandler(McResponseHandlerRegistry &registry) noexcept override;
 
     Q_INVOKABLE
     MC_BEAN

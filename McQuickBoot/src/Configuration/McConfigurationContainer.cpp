@@ -7,6 +7,7 @@
 #include <McIoc/BeanFactory/impl/McMetaTypeId.h>
 
 #include "McBoot/Configuration/McSimpleBeanDefinition.h"
+#include "McBoot/Configuration/Parser/McConfigurationParserFactory.h"
 #include "McBoot/IMcQuickBoot.h"
 
 MC_STATIC()
@@ -57,10 +58,14 @@ void McConfigurationContainer::init(const IMcQuickBoot *boot) noexcept
         Q_ASSERT(isOk);
         vars[prio].append(var);
     }
+    const auto &parsers = McConfigurationParserFactory::getParsers();
     auto keys = vars.keys();
     for (int i = keys.size() - 1; i >= 0; --i) {
         auto value = vars.value(keys.at(i));
-        for (auto v : value) {
+        for (const auto &v : value) {
+            for (const auto &parser : parsers) {
+                parser->parse(v);
+            }
             QObject *obj = v.value<QObject *>();
             if (obj == nullptr) {
                 obj = v.value<QObjectPtr>().data();

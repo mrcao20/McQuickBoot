@@ -7,7 +7,6 @@ MC_INIT_END
 McProgress::McProgress() noexcept
 {
     d = new McProgressSharedData();
-    d->attached.reset(new QObject());
 }
 
 McProgress::~McProgress() {}
@@ -53,25 +52,12 @@ void McProgress::setTotal(int val) noexcept
     callCallback();
 }
 
-void McProgress::setCallback(const QObject *recever, QtPrivate::QSlotObjectBase *callback) noexcept
+void McProgress::setCallback(const IMcCallbackPtr &val) noexcept
 {
-    d->recever.storeRelease(const_cast<QObject *>(recever));
-    d->callback.storeRelease(callback);
+    d->callback = val;
 }
 
 void McProgress::callCallback() noexcept
 {
-    auto dd = d;
-    QMetaObject::invokeMethod(
-        d->attached.data(),
-        [dd]() {
-            auto callback = dd->callback.loadAcquire();
-            if (callback != nullptr) {
-                auto curr = dd->current.loadAcquire();
-                auto tot = dd->total.loadAcquire();
-                void *args[] = {nullptr, &curr, &tot};
-                callback->call(dd->recever.loadAcquire(), args);
-            }
-        },
-        Qt::QueuedConnection);
+    d->callback->call(d->current.loadAcquire(), d->total.loadAcquire());
 }

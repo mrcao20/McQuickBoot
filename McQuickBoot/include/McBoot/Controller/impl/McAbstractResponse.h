@@ -3,6 +3,8 @@
 #include "../../Utils/McCancel.h"
 #include "../../Utils/McProgress.h"
 
+MC_FORWARD_DECL_CLASS(IMcResponseHandler);
+
 MC_FORWARD_DECL_PRIVATE_DATA(McAbstractResponse);
 
 /*!
@@ -17,6 +19,8 @@ class MCQUICKBOOT_EXPORT McAbstractResponse : public QObject
 public:
     explicit McAbstractResponse(QObject *parent = nullptr);
     ~McAbstractResponse() override;
+
+    void setHandlers(const QList<IMcResponseHandlerPtr> &val) noexcept;
 
     Q_INVOKABLE void cancel() noexcept;
     Q_INVOKABLE bool isCanceled() const noexcept;

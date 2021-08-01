@@ -10,6 +10,8 @@ SOURCES += \
     $$PWD/src/Configuration/McRequestorConfig.cpp \
     $$PWD/src/Configuration/McStateMachineConfig.cpp \
     $$PWD/src/Configuration/McWidgetConfig.cpp \
+    $$PWD/src/Configuration/Parser/McConfigurationParserFactory.cpp \
+    $$PWD/src/Configuration/Parser/McQuickBootConfigurerParser.cpp \
     $$PWD/src/Connection/McAbstractConnection.cpp \
     $$PWD/src/Connection/McCppConnection.cpp \
     $$PWD/src/Connection/McQmlConnection.cpp \
@@ -38,17 +40,22 @@ SOURCES += \
     $$PWD/src/Utils/McCancel.cpp \
     $$PWD/src/Utils/McJsonUtils.cpp \
     $$PWD/src/BeanDefinitionReader/McConfigurationFileBeanDefinitionReader.cpp \
-    $$PWD/src/Utils/McProgress.cpp
+    $$PWD/src/Utils/McProgress.cpp \
+    $$PWD/src/Utils/Response/McResponseHandlerFactory.cpp
 
 HEADERS +=  \
     $$PWD/include/McBoot/Application/McSingleApplication.h \
     $$PWD/include/McBoot/Application/McSingleCoreApplication.h \
+    $$PWD/include/McBoot/Configuration/IMcQuickBootConfigurer.h \
+    $$PWD/include/McBoot/Configuration/Parser/IMcConfigurationParser.h \
     $$PWD/include/McBoot/Configuration/McConfigurationContainer.h \
     $$PWD/include/McBoot/Configuration/McLogConfig.h \
     $$PWD/include/McBoot/Configuration/McRequestorConfig.h \
     $$PWD/include/McBoot/Configuration/McSimpleBeanDefinition.h \
     $$PWD/include/McBoot/Configuration/McStateMachineConfig.h \
     $$PWD/include/McBoot/Configuration/McWidgetConfig.h \
+    $$PWD/include/McBoot/Configuration/Parser/Impl/McQuickBootConfigurerParser.h \
+    $$PWD/include/McBoot/Configuration/Parser/McConfigurationParserFactory.h \
     $$PWD/include/McBoot/Connection/McAbstractConnection.h \
     $$PWD/include/McBoot/Connection/McCppConnection.h \
     $$PWD/include/McBoot/Connection/McQmlConnection.h \
@@ -85,7 +92,9 @@ HEADERS +=  \
     $$PWD/include/McBoot/Utils/McCancel.h \
     $$PWD/include/McBoot/Utils/McJsonUtils.h \
     $$PWD/include/McBoot/BeanDefinitionReader/impl/McConfigurationFileBeanDefinitionReader.h \
-    $$PWD/include/McBoot/Utils/McProgress.h
+    $$PWD/include/McBoot/Utils/McProgress.h \
+    $$PWD/include/McBoot/Utils/Response/IMcResponseHandler.h \
+    $$PWD/include/McBoot/Utils/Response/McResponseHandlerFactory.h
 
 RESOURCES += \
     $$PWD/qrc/resource.qrc

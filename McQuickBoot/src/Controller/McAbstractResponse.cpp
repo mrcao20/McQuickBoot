@@ -8,6 +8,7 @@
 #include <McIoc/Utils/McScopedFunction.h>
 
 #include "McBoot/Controller/impl/McResult.h"
+#include "McBoot/Utils/Response/IMcResponseHandler.h"
 
 MC_DECL_PRIVATE_DATA(McAbstractResponse)
 bool isAsyncCall{false}; //! 是否在次线程调用callback，默认不需要
@@ -16,6 +17,7 @@ McProgress progress;
 QVariant body;
 QPointer<QObject> attachedObject;
 bool isAttached{false};
+QList<IMcResponseHandlerPtr> responseHanlders;
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McAbstractResponse)
@@ -27,6 +29,11 @@ McAbstractResponse::McAbstractResponse(QObject *parent) : QObject(parent)
 }
 
 McAbstractResponse::~McAbstractResponse() {}
+
+void McAbstractResponse::setHandlers(const QList<IMcResponseHandlerPtr> &val) noexcept
+{
+    d->responseHanlders = val;
+}
 
 void McAbstractResponse::cancel() noexcept
 {
@@ -99,6 +106,12 @@ void McAbstractResponse::call() noexcept
 {
     McScopedFunction cleanup([this]() { this->deleteLater(); });
     Q_UNUSED(cleanup)
+
+    for (const auto &handler : qAsConst(d->responseHanlders)) {
+        if (!handler->handler(d->body)) {
+            return;
+        }
+    }
 
     if (d->isAttached && d->attachedObject.isNull()) {
         return;
