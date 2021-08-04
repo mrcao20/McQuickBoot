@@ -23,8 +23,9 @@
     using Class##ConstPtrRef = const QSharedPointer<Class> &;
 
 #define MC_DECL_POINTER_NS(Class, NS) \
-    using Class##Ptr = QSharedPointer<NS::Class>; \
-    using Class##ConstPtrRef = const QSharedPointer<NS::Class> &;
+    namespace NS { \
+    MC_DECL_POINTER(Class) \
+    }
 
 #define MC_FORWARD_DECL_CLASS(Class) \
     class Class; \
@@ -124,14 +125,17 @@
     MC_GLOBAL_STATIC(Mc_##NAME##_StaticData, NAME) \
     }
 
-#define MC_DECL_METATYPE(Class) \
-    MC_DECL_POINTER(Class) \
+#define MC_DECL_METATYPE_NONE(Class) \
     Q_DECLARE_METATYPE(Class##Ptr) \
     Q_DECLARE_METATYPE(Class *)
 
-#define MC_DECL_METATYPE_NS(Class) \
-    Q_DECLARE_METATYPE(Class##Ptr) \
-    Q_DECLARE_METATYPE(Class *)
+#define MC_DECL_METATYPE(Class) \
+    MC_DECL_POINTER(Class) \
+    MC_DECL_METATYPE_NONE(Class)
+
+#define MC_DECL_METATYPE_NS(Class, NS) \
+    MC_DECL_POINTER_NS(Class, NS) \
+    MC_DECL_METATYPE_NONE(NS::Class)
 
 #define MC_CONNECT(sender, signal, receiver, slot, ...) \
     Mc::Ioc::connect(&ClassType::staticMetaObject, sender, signal, receiver, slot, ##__VA_ARGS__)
