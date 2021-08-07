@@ -1,3 +1,26 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021 mrcao20
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 #include "McIoc/McGlobal.h"
 
 //#include <private/qvariant_p.h>
@@ -10,6 +33,7 @@
 #include <QEventLoop>
 #include <QMetaClassInfo>
 #include <QMetaObject>
+#include <QStandardPaths>
 #include <QTimer>
 #include <QUrl>
 
@@ -205,16 +229,22 @@ QString getBeanName(const QMetaObject *metaObj) noexcept
 {
     QString beanName;
     auto beanNameIndex = metaObj->indexOfClassInfo(MC_BEANNAME_TAG);
-    if(beanNameIndex == -1) {
+    auto func = [&beanName, metaObj]() {
         beanName = metaObj->className();
         Q_ASSERT(!beanName.isEmpty());
         auto firstChar = beanName.at(0);
         firstChar = firstChar.toLower();
         beanName.remove(0, 1);
         beanName = firstChar + beanName;
+    };
+    if(beanNameIndex == -1) {
+        func();
     } else {
         auto beanNameClassInfo = metaObj->classInfo(beanNameIndex);
         beanName = beanNameClassInfo.value();
+        if (beanName.isEmpty()) {
+            func();
+        }
     }
     return beanName;
 }
@@ -224,6 +254,24 @@ QString getBeanName(const QMetaObject *metaObj) noexcept
 McCustomEvent::~McCustomEvent() noexcept
 {
 }
+
+MC_GLOBAL_STATIC_BEGIN(iocGlobalStaticData)
+QString applicationDirPath;
+QString applicationName;
+MC_GLOBAL_STATIC_END(iocGlobalStaticData)
+
+namespace {
+
+QString getStandardPath(QStandardPaths::StandardLocation type)
+{
+    auto paths = QStandardPaths::standardLocations(type);
+    if (paths.isEmpty()) {
+        return QString();
+    }
+    return paths.first();
+}
+
+} // namespace
 
 namespace Mc {
 
@@ -254,8 +302,26 @@ bool waitForExecFunc(const std::function<bool()> &func, qint64 timeout) noexcept
     return ret;
 }
 
-QString toAbsolutePath(const QString &path) noexcept
+QString toAbsolutePath(const QString &inPath) noexcept
 {
+    static QHash<QString, QStandardPaths::StandardLocation>
+        pathPlhs{{"{desktop}", QStandardPaths::DesktopLocation},
+                 {"{documents}", QStandardPaths::DocumentsLocation},
+                 {"{temp}", QStandardPaths::TempLocation},
+                 {"{home}", QStandardPaths::HomeLocation},
+                 {"{data}", QStandardPaths::DataLocation},
+                 {"{cache}", QStandardPaths::CacheLocation},
+                 {"{config}", QStandardPaths::GenericConfigLocation},
+                 {"{appData}", QStandardPaths::AppDataLocation}};
+    static QStringList pathPlhKeys = pathPlhs.keys();
+    auto path = inPath;
+    for (const auto &key : pathPlhKeys) {
+        const auto &value = pathPlhs.value(key);
+        QString plhPath;
+        if (path.contains(key) && !(plhPath = getStandardPath(value)).isEmpty()) {
+            path.replace(key, plhPath);
+        }
+    }
     QString dstPath = QDir::toNativeSeparators(path);
     if (QDir::isAbsolutePath(dstPath)) {
         return dstPath;
@@ -265,14 +331,14 @@ QString toAbsolutePath(const QString &path) noexcept
     sepDot += QDir::separator();
     sepDotDot += QDir::separator();
     if (dstPath.startsWith(sepDot) || dstPath.startsWith(sepDotDot)) {
-        dstPath = qApp->applicationDirPath() + QDir::separator() + dstPath;
+        dstPath = Mc::applicationDirPath() + QDir::separator() + dstPath;
     } else {
         QUrl url(path);
         if (url.isLocalFile()) {
             dstPath = url.toLocalFile();
             dstPath = QDir::toNativeSeparators(dstPath);
             if (!QDir::isAbsolutePath(dstPath)) {
-                dstPath = qApp->applicationDirPath() + QDir::separator() + dstPath;
+                dstPath = Mc::applicationDirPath() + QDir::separator() + dstPath;
             }
             url = QUrl::fromLocalFile(dstPath);
         }
@@ -280,6 +346,39 @@ QString toAbsolutePath(const QString &path) noexcept
     }
     dstPath = QDir::cleanPath(dstPath);
     return dstPath;
+}
+
+QString applicationDirPath() noexcept
+{
+    if (iocGlobalStaticData->applicationDirPath.isEmpty()) {
+        return QCoreApplication::applicationDirPath();
+    }
+    return iocGlobalStaticData->applicationDirPath;
+}
+
+QDir applicationDir() noexcept
+{
+    return QDir(applicationDirPath());
+}
+
+void setApplicationDirPath(const QString &val) noexcept
+{
+    iocGlobalStaticData->applicationDirPath = val;
+}
+
+QString applicationFilePath() noexcept
+{
+    if (iocGlobalStaticData->applicationName.isEmpty()) {
+        return QCoreApplication::applicationFilePath();
+    }
+    return applicationDir().absoluteFilePath(iocGlobalStaticData->applicationName);
+}
+
+void setApplicationFilePath(const QString &val) noexcept
+{
+    QFileInfo fileInfo(val);
+    iocGlobalStaticData->applicationDirPath = fileInfo.absolutePath();
+    iocGlobalStaticData->applicationName = fileInfo.fileName();
 }
 
 QList<QString> getAllComponent(IMcApplicationContextConstPtrRef appCtx) noexcept

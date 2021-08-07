@@ -13,8 +13,7 @@ class IocTest : public QObject, public McDefaultDeleteThreadWhenQuit
     Q_OBJECT
     MC_DECL_INIT(IocTest)
     MC_TYPELIST(QObject, McDefaultDeleteThreadWhenQuit)
-    MC_COMPONENT
-    MC_BEANNAME("test")
+    MC_COMPONENT("test")
     MC_SINGLETON(false)
     MC_AUTOWIRED("interface = obj")
     Q_PROPERTY(InterfacePtr interface MEMBER m_interface)

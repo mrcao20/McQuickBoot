@@ -3,14 +3,18 @@ INCLUDEPATH += $$PWD/include/
 HEADERS += \
     $$PWD/include/Config.h \
     $$PWD/include/Config2.h \
+    $$PWD/include/HandlerTest.h \
     $$PWD/include/Param.h \
+    $$PWD/include/ResourceTest.h \
     $$PWD/include/Test.h
 
 SOURCES += \
     $$PWD/main.cpp \
     $$PWD/src/Config.cpp \
     $$PWD/src/Config2.cpp \
+    $$PWD/src/HandlerTest.cpp \
     $$PWD/src/Param.cpp \
+    $$PWD/src/ResourceTest.cpp \
     $$PWD/src/Test.cpp
 
 RESOURCES += \

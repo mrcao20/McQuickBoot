@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
     
     auto doc = bc.toDomDocument();
     qDebug() << doc.toString(4);
-    QFile file(qApp->applicationDirPath() + "/test.xml");
+    QFile file(Mc::applicationDirPath() + "/test.xml");
     file.open(QIODevice::WriteOnly);
     QTextStream stream(&file);
     doc.save(stream, 4);

@@ -53,7 +53,15 @@
         <property name="immediateFlush" value="true"></property>
         <property name="backupDirPath" value="./Lidar[0]/backup/"></property>
         <property name="backupDirPattern" value="%{time yyyy-MM-dd}"></property>
-        <property name="dirPath" value="./Lidar[0]/"></property>
+        <!-- 可用配置：{desktop} = QStandardPaths::DesktopLocation -->
+        <!-- 可用配置：{documents} = QStandardPaths::DocumentsLocation -->
+        <!-- 可用配置：{temp} = QStandardPaths::TempLocation -->
+        <!-- 可用配置：{home} = QStandardPaths::HomeLocation -->
+        <!-- 可用配置：{data} = QStandardPaths::DataLocation第一个路径 -->
+        <!-- 可用配置：{cache} = QStandardPaths::CacheLocation -->
+        <!-- 可用配置：{config} = QStandardPaths::GenericConfigLocation第一个路径 -->
+        <!-- 可用配置：{appData} = QStandardPaths::AppDataLocation第一个路径 -->
+        <property name="dirPath" value="{cache}/Lidar[0]/"></property>
         <property name="fileNamePattern" value="Lidar[0]_%{time yyyy-MM-dd_hh-mm-ss}.log"></property>
         <property name="layout" ref="patternLayout"></property>
     </bean>

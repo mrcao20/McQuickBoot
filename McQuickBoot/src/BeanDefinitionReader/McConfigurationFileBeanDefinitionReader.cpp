@@ -1,3 +1,26 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021 mrcao20
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 #include "McBoot/BeanDefinitionReader/impl/McConfigurationFileBeanDefinitionReader.h"
 
 #include <QCoreApplication>
@@ -16,23 +39,16 @@
 
 #include "McBoot/McBootGlobal.h"
 
-namespace {
-
-struct McConfigurationFileBeanDefinitionReaderStaticData
-{
-    QStringList configPaths;
-};
-
-} // namespace
-
-MC_GLOBAL_STATIC(McConfigurationFileBeanDefinitionReaderStaticData,
-                 mcConfigurationFileBeanDefinitionReaderStaticData)
+MC_GLOBAL_STATIC_BEGIN(staticData)
+QStringList configPaths;
+MC_GLOBAL_STATIC_END(staticData)
 
 MC_STATIC()
-mcConfigurationFileBeanDefinitionReaderStaticData->configPaths.append(
-    Mc::toAbsolutePath("./config/application.yml"));
-mcConfigurationFileBeanDefinitionReaderStaticData->configPaths.append(
-    Mc::toAbsolutePath("./application.yml"));
+staticData->configPaths.append(QLatin1String("./config/application.yml"));
+staticData->configPaths.append(QLatin1String("./application.yml"));
+for (auto &path : staticData->configPaths) {
+    path = Mc::toAbsolutePath(path);
+}
 MC_STATIC_END
 
 MC_DECL_PRIVATE_DATA(McConfigurationFileBeanDefinitionReader)
@@ -55,7 +71,7 @@ McConfigurationFileBeanDefinitionReader::~McConfigurationFileBeanDefinitionReade
 
 void McConfigurationFileBeanDefinitionReader::addConfigPath(const QString &path) noexcept
 {
-    mcConfigurationFileBeanDefinitionReaderStaticData->configPaths.prepend(Mc::toAbsolutePath(path));
+    staticData->configPaths.append(path);
 }
 
 void McConfigurationFileBeanDefinitionReader::doReadBeanDefinition() noexcept 
@@ -73,7 +89,8 @@ void McConfigurationFileBeanDefinitionReader::doReadBeanDefinition() noexcept
     QSettingsPtr setting = QSettingsPtr::create(tempPath, McYaml::format());
     QString defaultConfigPath = getDefaultConfigPath();
     auto beanDefinitions = d->appCtx->getBeanDefinitions();
-    for(auto key : beanDefinitions.keys()) {
+    auto keys = beanDefinitions.keys();
+    for (auto &key : qAsConst(keys)) {
         auto value = beanDefinitions.value(key);
         auto metaObj = value->getBeanMetaObject();
         Q_ASSERT(metaObj != nullptr);
@@ -104,6 +121,9 @@ void McConfigurationFileBeanDefinitionReader::doReadBeanDefinition() noexcept
         auto beanNameIndex = metaObj->indexOfClassInfo(MC_BEANNAME_TAG);
         if(beanNameIndex != -1) {
             beanName = metaObj->classInfo(beanNameIndex).value();
+            if (beanName.isEmpty()) {
+                beanName = prefix;
+            }
         } else {
             beanName = prefix;
         }
@@ -111,14 +131,15 @@ void McConfigurationFileBeanDefinitionReader::doReadBeanDefinition() noexcept
         copyBeanDefinition(setting, configPath, prefix, metaObj);
         setting->endGroup();
     }
-    
+
     auto appCtx = McSettingApplicationContextPtr::create(setting);
     auto otherBeanDefinitions = appCtx->getBeanDefinitions();
-    for(auto key : otherBeanDefinitions.keys()) {
+    keys = otherBeanDefinitions.keys();
+    for (auto &key : qAsConst(keys)) {
         auto value = otherBeanDefinitions.value(key);
         d->appCtx->registerBeanDefinition(key, value);
     }
-    
+
     appCtx.reset();
     setting.reset();
     QFile::remove(tempPath);
@@ -126,15 +147,15 @@ void McConfigurationFileBeanDefinitionReader::doReadBeanDefinition() noexcept
 
 QString McConfigurationFileBeanDefinitionReader::getDefaultConfigPath() const noexcept
 {
-    if (mcConfigurationFileBeanDefinitionReaderStaticData->configPaths.isEmpty()) {
+    if (staticData->configPaths.isEmpty()) {
         return "";
     }
-    for (auto p : mcConfigurationFileBeanDefinitionReaderStaticData->configPaths) {
+    for (auto &p : qAsConst(staticData->configPaths)) {
         if (QFile::exists(p)) {
             return p;
         }
     }
-    return mcConfigurationFileBeanDefinitionReaderStaticData->configPaths.last();
+    return staticData->configPaths.last();
 }
 
 void McConfigurationFileBeanDefinitionReader::copyBeanDefinition(
@@ -152,14 +173,14 @@ void McConfigurationFileBeanDefinitionReader::copyBeanDefinition(
 #else
     QStringList groups = prefix.split(".", Qt::SkipEmptyParts);
 #endif
-    for(auto group : groups) {
+    for (auto &group : qAsConst(groups)) {
         originSet.beginGroup(group);
     }
-    
+
     copyBeanDefinition(setting, originSet, metaObj);
     setting->setValue(Mc::Constant::Tag::QSetting::clazz, metaObj->className());
-    
-    for(auto group : groups) {
+
+    for (auto &group : qAsConst(groups)) {
         Q_UNUSED(group)
         originSet.endGroup();
     }
@@ -169,7 +190,7 @@ void McConfigurationFileBeanDefinitionReader::copyBeanDefinition(
         QSettingsConstPtrRef setting, QSettings &originSet, const QMetaObject *metaObj) noexcept
 {
     auto childKeys = originSet.childKeys();
-    for(auto childKey : childKeys) {
+    for (auto &childKey : qAsConst(childKeys)) {
         auto value = originSet.value(childKey);
         if(metaObj == nullptr) {
             setting->setValue(childKey, value);
@@ -178,9 +199,9 @@ void McConfigurationFileBeanDefinitionReader::copyBeanDefinition(
         value = buildChildProperty(childKey, value, metaObj);
         setting->setValue(childKey, value);
     }
-    
+
     auto childGroups = originSet.childGroups();
-    for(auto childGroup : childGroups) {
+    for (auto &childGroup : qAsConst(childGroups)) {
         setting->beginGroup(childGroup);
         originSet.beginGroup(childGroup);
         auto proIndex = metaObj->indexOfProperty(qPrintable(childGroup));
@@ -241,7 +262,8 @@ QVariant McConfigurationFileBeanDefinitionReader::buildChildProperty(
         for(auto &v : varList) {
             auto p = v.value<QPair<QString, QVariant>>();
             auto childProVar = p.second.value<QVariantMap>();
-            for(auto childKey : childProVar.keys()) {
+            auto keys = childProVar.keys();
+            for (auto &childKey : qAsConst(keys)) {
                 childProVar[childKey] = buildChildProperty(childKey, childProVar.value(childKey), childMetaObj);
             }
             childProVar.insert(Mc::Constant::Tag::QSetting::clazz, childMetaObj->className());
@@ -267,7 +289,8 @@ QVariant McConfigurationFileBeanDefinitionReader::buildChildProperty(
         }
         for(auto &v : varList) {
             auto map = v.value<QVariantMap>();
-            for(auto childKey : map.keys()) {
+            auto keys = map.keys();
+            for (auto &childKey : qAsConst(keys)) {
                 map[childKey] = buildChildProperty(childKey, map.value(childKey), childMetaObj);
             }
             map.insert(Mc::Constant::Tag::QSetting::clazz, childMetaObj->className());

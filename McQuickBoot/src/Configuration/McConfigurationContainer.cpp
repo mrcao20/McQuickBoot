@@ -1,3 +1,26 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021 mrcao20
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 #include "McBoot/Configuration/McConfigurationContainer.h"
 
 #include <QDebug>
@@ -7,6 +30,7 @@
 #include <McIoc/BeanFactory/impl/McMetaTypeId.h>
 
 #include "McBoot/Configuration/McSimpleBeanDefinition.h"
+#include "McBoot/Configuration/Parser/McConfigurationParserFactory.h"
 #include "McBoot/IMcQuickBoot.h"
 
 MC_STATIC()
@@ -57,10 +81,14 @@ void McConfigurationContainer::init(const IMcQuickBoot *boot) noexcept
         Q_ASSERT(isOk);
         vars[prio].append(var);
     }
+    const auto &parsers = McConfigurationParserFactory::getParsers();
     auto keys = vars.keys();
     for (int i = keys.size() - 1; i >= 0; --i) {
         auto value = vars.value(keys.at(i));
-        for (auto v : value) {
+        for (const auto &v : value) {
+            for (const auto &parser : parsers) {
+                parser->parse(v);
+            }
             QObject *obj = v.value<QObject *>();
             if (obj == nullptr) {
                 obj = v.value<QObjectPtr>().data();

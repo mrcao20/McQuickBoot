@@ -55,10 +55,11 @@ int main(int argc, char *argv[])
         qDebug() << "lambda callback test3:" << a;
     });
     p->aaa = 1000;
+    $.invoke("aaa.aaa", a).then([]() { qDebug() << "aaa.aaa call finished"; });
     $.invoke("aaa.bbb",
              QVariantList() << "lllllllll" << QJsonObject({{"zzz", "mmmm"}})
                             << QVariant::fromValue(p) << QVariant::fromValue(a))
-        .then([](const QJsonObject &var) { qDebug() << "-----" << var; });
+        .then([]() { qDebug() << "aaa.bbb -----"; });
     $.invoke("aaa.bbb",
              "lllllllll",
              QJsonObject({{"zzz", "mmmm"}}),
@@ -74,6 +75,28 @@ int main(int argc, char *argv[])
     $.invoke("aaa.vvv", McCppSyncCallback::build(callbackTest2)).then([](const QVariant &var) {
         qDebug() << "vvvvvvvvvvvvvv" << var;
     });
+    {
+        Test t2;
+        $.invoke("aaa.aaa", a).then([]() { qDebug() << "aaa.aaa call finished2"; }).attach(&t2);
+    }
+    $.invoke("aaa.ddd")
+        .then([]() { qDebug() << "ddd finished"; })
+        .progress([](int cur, int tol) { qDebug() << "ddd return:" << cur << tol; })
+        .cancel();
+    {
+        McCancel c;
+        McProgress p;
+        $.invoke("aaa.ddd2", c, p).then([]() { qDebug() << "ddd2 finished"; });
+        c.cancel();
+        p.callback([](int cur, int tot) { qDebug() << "ddd2>>>>>>>" << cur << tot; });
+    }
+    {
+        ParamPtr p = ParamPtr::create();
+        $.invoke("aaa.ddd3", p, 3)
+            .then([]() { qDebug() << "ddd3 finished"; })
+            .progress([](int cur, int tol) { qDebug() << "ddd3 return:" << cur << tol; })
+            .cancel();
+    }
     qDebug() << res;
     qDebug() << res.value<ParamPtr>()->aaa;
     QHash<int, QString> hhh;

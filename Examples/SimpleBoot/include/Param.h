@@ -11,8 +11,7 @@ MC_FORWARD_DECL_PRIVATE_DATA(Param);
 class Param : public QObject
 {
     Q_OBJECT
-    MC_TYPELIST();
-    MC_JSON_SERIALIZATION
+    MC_JSON_SERIALIZATION()
 public:
     Q_INVOKABLE explicit Param(QObject *parent = nullptr) noexcept;
     ~Param() override;

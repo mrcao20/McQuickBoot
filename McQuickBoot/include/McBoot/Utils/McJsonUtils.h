@@ -1,3 +1,26 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021 mrcao20
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 #pragma once
 
 #include <QList>
@@ -22,6 +45,10 @@ public:
     static QJsonValue toJson(const QVariant &var) noexcept;
     static QJsonObject toJson(QObject *obj) noexcept;
     static QJsonObject toJson(QObjectConstPtrRef obj) noexcept;
+    template<typename T>
+    static QJsonObject toJson(T *obj) noexcept;
+    template<typename T>
+    static QJsonObject toJson(const QSharedPointer<T> &obj) noexcept;
     template<typename T>
     static QJsonArray toJson(const QList<QSharedPointer<T>> &objs) noexcept;
     template<typename T>
@@ -54,6 +81,26 @@ public:
     static QVariant serialize(const QVariant &origin) noexcept;
     static QVariant deserialize(const QVariant &origin, int toId) noexcept;
 };
+
+template<typename T>
+QJsonObject McJsonUtils::toJson(T *obj) noexcept
+{
+    if constexpr (QtPrivate::IsPointerToTypeDerivedFromQObject<T *>::Value) {
+        return McJsonUtils::toJson(qobject_cast<QObject *>(obj));
+    } else {
+        return McJsonUtils::toJson(obj, &T::staticMetaObject);
+    }
+}
+
+template<typename T>
+QJsonObject McJsonUtils::toJson(const QSharedPointer<T> &obj) noexcept
+{
+    if constexpr (QtPrivate::IsSharedPointerToTypeDerivedFromQObject<QSharedPointer<T>>::Value) {
+        return McJsonUtils::toJson(obj.template objectCast<QObject>());
+    } else {
+        return McJsonUtils::toJson(obj.data(), &T::staticMetaObject);
+    }
+}
 
 template<typename T>
 QJsonArray McJsonUtils::toJson(const QList<QSharedPointer<T>> &objs) noexcept 

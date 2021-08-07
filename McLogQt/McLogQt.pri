@@ -7,6 +7,9 @@ SOURCES += \
     $$PWD/src/Appender/Decorator/McAppenderFrontDecorator.cpp \
     $$PWD/src/Appender/Decorator/McAppenderPostDecorator.cpp \
     $$PWD/src/Appender/McAbstractAppender.cpp \
+    $$PWD/src/Appender/McByDayRollingFileAppender.cpp \
+    $$PWD/src/Appender/McBySizeDailyRollingFileAppender.cpp \
+    $$PWD/src/Appender/McBySizeDayRollingFileAppender.cpp \
     $$PWD/src/Appender/McConsoleAppender.cpp \
     $$PWD/src/Appender/McDailyRollingFileAppender.cpp \
     $$PWD/src/Appender/McFileAppender.cpp \
@@ -29,6 +32,7 @@ SOURCES += \
     $$PWD/src/Repository/McLoggerRepository.cpp \
     $$PWD/src/Appender/McAbstractFormatAppender.cpp \
     $$PWD/src/Utils/Deleter/McLogDeleter.cpp \
+    $$PWD/src/Utils/McFileUtils.cpp \
     $$PWD/src/Utils/Packager/McLogPackager.cpp \
     $$PWD/src/Utils/McMessagePattern.cpp
 
@@ -44,6 +48,9 @@ HEADERS += \
     $$PWD/include/McLog/Appender/IMcWritableAppender.h \
     $$PWD/include/McLog/Appender/impl/McAbstractAppender.h \
     $$PWD/include/McLog/Appender/impl/McAbstractIODeviceAppender.h \
+    $$PWD/include/McLog/Appender/impl/McByDayRollingFileAppender.h \
+    $$PWD/include/McLog/Appender/impl/McBySizeDailyRollingFileAppender.h \
+    $$PWD/include/McLog/Appender/impl/McBySizeDayRollingFileAppender.h \
     $$PWD/include/McLog/Appender/impl/McConsoleAppender.h \
     $$PWD/include/McLog/Appender/impl/McDailyRollingFileAppender.h \
     $$PWD/include/McLog/Appender/impl/McFileAppender.h \
@@ -71,6 +78,7 @@ HEADERS += \
     $$PWD/include/McLog/Repository/impl/McLoggerRepository.h \
     $$PWD/include/McLog/Appender/impl/McAbstractFormatAppender.h \
     $$PWD/include/McLog/Utils/Deleter/McLogDeleter.h \
+    $$PWD/include/McLog/Utils/McFileUtils.h \
     $$PWD/include/McLog/Utils/McMessagePattern.h \
     $$PWD/include/McLog/Utils/Packager/McLogPackager.h
 

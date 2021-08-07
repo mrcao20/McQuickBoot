@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QThread>
 
+#include "HandlerTest.h"
 #include "Param.h"
 #include "Test.h"
 
@@ -22,6 +23,11 @@ Config::Config(QObject *parent) noexcept
 
 Config::~Config()
 {
+}
+
+void Config::addResponseHandler(McResponseHandlerRegistry &registry) noexcept
+{
+    registry.addHanlder(HandlerTest2Ptr::create());
 }
 
 ParamPtr Config::param(QThread *threadTest) const noexcept

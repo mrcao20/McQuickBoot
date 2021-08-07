@@ -1,3 +1,26 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021 mrcao20
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 #pragma once
 
 #include <QCoreApplication>
@@ -13,6 +36,8 @@ public: \
     using McPrivateTypeListHelper = void; \
 \
 private:
+
+#define MC_INTERFACES(...) MC_TYPELIST(__VA_ARGS__)
 
 #define MC_REGISTER_BEAN_FACTORY(Class, ...) \
     McPrivate::McConverterRegister<Class, ##__VA_ARGS__>::registerConverter();
@@ -54,12 +79,12 @@ To mcSharedToStar(const From &from)
     return from.operator->();
 }
 
-template<typename From, typename To, typename Enable = void>
-struct McRegisterConverterHelper
+template<typename From, typename To>
+struct McRegisterConverterHelper2
 {
     using FromPtr = QSharedPointer<From>;
     using ToPtr = QSharedPointer<To>;
-    static void registerConverter()
+    static void registerConverter(int metaId)
     {
         if (!QMetaType::hasRegisteredConverterFunction<FromPtr, ToPtr>()) {
             QMetaType::registerConverter<FromPtr, ToPtr>();
@@ -70,52 +95,51 @@ struct McRegisterConverterHelper
         if (!QMetaType::hasRegisteredConverterFunction<FromPtr, To *>()) {
             QMetaType::registerConverter<FromPtr, To *>(mcSharedToStar<FromPtr, To *>);
         }
+        auto dstMetaId = qMetaTypeId<ToPtr>();
+        McMetaTypeId::addMetaIdMap(metaId, dstMetaId);
+    }
+};
+
+template<typename From, typename To, typename Enable = void>
+struct McRegisterConverterHelper
+{
+    static void registerConverter(int metaId)
+    {
+        McRegisterConverterHelper2<From, To>::registerConverter(metaId);
     }
 };
 
 template<typename From, typename To>
 struct McRegisterConverterHelper<From, To, typename To::McPrivateTypeListHelper>
 {
-    using FromPtr = QSharedPointer<From>;
-    using ToPtr = QSharedPointer<To>;
-    static void registerConverter()
+    static void registerConverter(int metaId)
     {
-        if (!QMetaType::hasRegisteredConverterFunction<FromPtr, ToPtr>()) {
-            QMetaType::registerConverter<FromPtr, ToPtr>();
-        }
-        if (!QMetaType::hasRegisteredConverterFunction<From *, To *>()) {
-            QMetaType::registerConverter<From *, To *>();
-        }
-        if (!QMetaType::hasRegisteredConverterFunction<FromPtr, To *>()) {
-            QMetaType::registerConverter<FromPtr, To *>(mcSharedToStar<FromPtr, To *>);
-        }
-        McRegisterConverterHelper<From, typename To::McPrivateTypeList>::registerConverter();
+        McRegisterConverterHelper2<From, To>::registerConverter(metaId);
+        McRegisterConverterHelper<From, typename To::McPrivateTypeList>::registerConverter(metaId);
     }
 };
 
 template<typename From, typename... Tos>
 struct McRegisterConverterHelper<From, McPrivate::McTypeList<Tos...>, void>
 {
-    static void registerConverter()
+    static void registerConverter(int metaId)
     {
         using TypeList = McPrivate::McTypeList<Tos...>;
-        McRegisterConverterHelper<From, typename TypeList::Head>::registerConverter();
-        McRegisterConverterHelper<From, typename TypeList::Tails>::registerConverter();
+        McRegisterConverterHelper<From, typename TypeList::Head>::registerConverter(metaId);
+        McRegisterConverterHelper<From, typename TypeList::Tails>::registerConverter(metaId);
     }
 };
 
 template<typename From>
 struct McRegisterConverterHelper<From, QObject, void>
 {
-    static void registerConverter()
-    {}
+    static void registerConverter(int) {}
 };
 
 template<typename From>
 struct McRegisterConverterHelper<From, McPrivate::McTypeList<>, void>
 {
-    static void registerConverter()
-    {}
+    static void registerConverter(int) {}
 };
 
 template<typename T, bool flag, typename Enable = void>
@@ -251,7 +275,8 @@ struct McConverterRegister2<T, flag, typename T::McPrivateTypeListHelper>
     {
         mcRegisterBeanFactory<T, flag>();
         using To = typename T::McPrivateTypeList;
-        McPrivate::McRegisterConverterHelper<T, To>::registerConverter();
+        auto metaId = qMetaTypeId<QSharedPointer<T>>();
+        McPrivate::McRegisterConverterHelper<T, To>::registerConverter(metaId);
     }
 };
 

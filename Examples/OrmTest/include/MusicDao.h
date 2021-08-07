@@ -10,7 +10,7 @@ class MusicDao : public QObject
 {
     Q_OBJECT
     MC_TYPELIST()
-    MC_DAO
+    MC_DAO()
 public:
     Q_INVOKABLE explicit MusicDao(QObject *parent = nullptr) noexcept;
     ~MusicDao() override;

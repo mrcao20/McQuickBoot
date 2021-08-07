@@ -1,3 +1,26 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021 mrcao20
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 #include "McBoot/Requestor/McAbstractRequestor.h"
 
 #include <QCoreApplication>
@@ -13,6 +36,9 @@
 #include "McBoot/Controller/IMcControllerContainer.h"
 #include "McBoot/Controller/impl/McAbstractResponse.h"
 #include "McBoot/Controller/impl/McRequestRunner.h"
+#include "McBoot/Model/IMcModelContainer.h"
+#include "McBoot/Utils/Response/IMcResponseHandler.h"
+#include "McBoot/Utils/Response/McResponseHandlerFactory.h"
 
 class McRunnerEvent : public QEvent
 {
@@ -36,7 +62,8 @@ MC_GLOBAL_STATIC(QThreadPool, requestorThreadPool)
 MC_GLOBAL_STATIC(QScxmlStateMachine *, staticStateMachine)
 
 MC_INIT(McAbstractRequestor)
-MC_DESTROY()
+MC_REGISTER_CONTAINER_CONVERTER(QList<IMcResponseHandlerPtr>)
+MC_DESTROY(Mc::QuickBoot::ThreadPool)
 if (!requestorThreadPool.exists()) {
     return;
 }
@@ -45,9 +72,11 @@ MC_INIT_END
 
 MC_DECL_PRIVATE_DATA(McAbstractRequestor)
 IMcControllerContainerPtr controllerContainer;
+IMcModelContainerPtr modelContainer;
 McRequestorConfigPtr requestorConfig;
 McStateMachineConfigPtr stateMachineConfig;
 IMcApplicationContext *appCtx;
+QList<IMcResponseHandlerPtr> responseHanlders;
 MC_DECL_PRIVATE_DATA_END
 
 McAbstractRequestor::McAbstractRequestor(QObject *parent) : QObject(parent)
@@ -104,6 +133,11 @@ QObject *McAbstractRequestor::getBean(const QString &name) const noexcept
     return obj;
 }
 
+QObject *McAbstractRequestor::getModel(const QString &name) const noexcept
+{
+    return d->modelContainer->getModel(name);
+}
+
 QScxmlStateMachine *McAbstractRequestor::stateMachine() const noexcept
 {
     if (staticStateMachine.exists() && (*staticStateMachine) != nullptr) {
@@ -158,6 +192,7 @@ void McAbstractRequestor::run(McAbstractResponse *response,
                               const QString &uri,
                               const QVariant &body) noexcept
 {
+    response->setHandlers(d->responseHanlders);
     McRequestRunner *runner = new McRequestRunner();
     runner->setAutoDelete(true);
     runner->setResponse(response);
@@ -165,6 +200,11 @@ void McAbstractRequestor::run(McAbstractResponse *response,
     runner->setUri(uri);
     runner->setBody(body);
     qApp->postEvent(this, new McRunnerEvent(runner));
+}
+
+QVariant McAbstractRequestor::getBeanToVariant(const QString &name) const noexcept
+{
+    return d->appCtx->getBeanToVariant(name);
 }
 
 void McAbstractRequestor::allFinished() noexcept
@@ -176,11 +216,7 @@ void McAbstractRequestor::allFinished() noexcept
         maxThreadCount = d->requestorConfig->maxThreadCount();
     }
     setMaxThreadCount(maxThreadCount);
-}
-
-QVariant McAbstractRequestor::getBeanToVariant(const QString &name) const noexcept
-{
-    return d->appCtx->getBeanToVariant(name);
+    d->responseHanlders.append(McResponseHandlerFactory::getHandlers());
 }
 
 #include "moc_McAbstractRequestor.cpp"

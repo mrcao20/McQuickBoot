@@ -38,7 +38,7 @@ MC_FORWARD_DECL_CLASS(McResult);
 class GadgetTest2
 {
     Q_GADGET
-    MC_JSON_SERIALIZATION
+    MC_JSON_SERIALIZATION()
 public:
     MC_POCO_PROPERTY(QString, text2);
 };
@@ -47,9 +47,8 @@ MC_DECL_METATYPE(GadgetTest2)
 class GadgetTest
 {
     Q_GADGET
-    MC_COMPONENT
-    MC_BEANNAME("gadgetTest")
-    MC_JSON_SERIALIZATION
+    MC_COMPONENT("gadgetTest")
+    MC_JSON_SERIALIZATION()
 public:
     MC_POCO_PROPERTY(QString, text);
     MC_POCO_PROPERTY(QList<TmpPtr>, t);
@@ -64,8 +63,7 @@ class InvokeTest : public ClassTestB
     Q_OBJECT
     MC_DECL_INIT(InvokeTest)
     MC_TYPELIST(ClassTestB)
-    MC_CONTROLLER
-    MC_BEANNAME("con")
+    MC_CONTROLLER("con")
 public:
     Q_INVOKABLE explicit InvokeTest(QObject *parent = nullptr);
 

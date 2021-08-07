@@ -7,27 +7,30 @@
 #include <QJsonArray>
 #include <QJsonObject>
 
+#include <McBoot/Requestor/McRequest.h>
 #include <McBoot/Utils/Callback/IMcCallback.h>
 #include <McBoot/Utils/Callback/Impl/McCppSyncCallback.h>
 
 #include "Param.h"
+#include "ResourceTest.h"
 
 MC_FORWARD_DECL_PRIVATE_DATA(Test);
 
 using ParamMap = QMap<QString, Param *>;
+using IIIMap = QMap<QString, IIIPtr>;
+using CustomRequestType = McCustomRequest<ParamPtr, int>;
+Q_DECLARE_METATYPE(CustomRequestType)
 
 class Test : public QObject
 {
     Q_OBJECT
     MC_TYPELIST();
-    MC_CONTROLLER
-    MC_BEANNAME("aaa")
-    MC_AUTOWIRED("param")
-    Q_PROPERTY(ParamPtr param MEMBER param)
-    MC_AUTOWIRED("paramMap")
-    Q_PROPERTY(ParamMap paramMap MEMBER paramMap)
+    MC_CONTROLLER("aaa")
+    MC_PROPERTY(ParamPtr, param, MEMBER param)
+    MC_PROPERTY(ParamMap, paramMap, MEMBER paramMap)
     MC_AUTOWIRED("t", "threadTest")
     Q_PROPERTY(QThread *t MEMBER threadTest)
+    MC_PROPERTY2(QList<IIIPtr>, res, MEMBER res)
 public:
     Q_INVOKABLE explicit Test(QObject *parent = nullptr);
     ~Test();
@@ -40,10 +43,14 @@ public:
     Q_INVOKABLE void aaa(const std::function<void(int)> &func);
     Q_INVOKABLE QVariant vvv(const IMcCallbackPtr &callback);
     Q_INVOKABLE ParamPtr ccc();
+    Q_INVOKABLE void ddd(const McRequest &req);
+    Q_INVOKABLE void ddd2(McCancel c, McProgress p);
+    Q_INVOKABLE void ddd3(const CustomRequestType &req);
 
     ParamPtr param;
     ParamMap paramMap;
     QThread *threadTest;
+    QList<IIIPtr> res;
 
     void callbackTest(const ParamPtr &var) noexcept
     {

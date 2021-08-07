@@ -1,3 +1,26 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021 mrcao20
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 #pragma once
 
 #include "McAbstractResponse.h"
@@ -8,10 +31,22 @@ class MCQUICKBOOT_EXPORT McCppResponse : public McAbstractResponse
 {
     Q_OBJECT
     MC_DECL_INIT(McCppResponse)
+    template<typename T>
+    struct MetaTypeIdHelper
+    {
+        static int metaTypeId() { return qMetaTypeId<typename T::Car>(); }
+    };
+    template<>
+    struct MetaTypeIdHelper<QtPrivate::List<>>
+    {
+        static int metaTypeId() { return -1; }
+    };
 
 public:
     explicit McCppResponse(QObject *parent = nullptr);
     ~McCppResponse() override;
+
+    QPointer<McCppResponse> capture();
 
     template<typename Func>
     McCppResponse &then(const typename QtPrivate::FunctionPointer<Func>::Object *recever,
@@ -19,11 +54,12 @@ public:
     {
         typedef QtPrivate::FunctionPointer<Func> FuncType;
 
-        Q_STATIC_ASSERT_X(int(FuncType::ArgumentCount) == 1,
-                          "The callback can only be one parameter.");
+        Q_STATIC_ASSERT_X(
+            int(FuncType::ArgumentCount) <= 1,
+            "The number of parameters of callback function can only be less than or equal to 1");
 
         return thenImpl(McPrivate::QVariantSelector<typename FuncType::Arguments>::Value,
-                        qMetaTypeId<typename FuncType::Arguments::Car>(),
+                        MetaTypeIdHelper<typename FuncType::Arguments>::metaTypeId(),
                         recever,
                         new QtPrivate::QSlotObject<Func,
                                                    typename FuncType::Arguments,
@@ -37,11 +73,12 @@ public:
     {
         typedef QtPrivate::FunctionPointer<Func> FuncType;
 
-        Q_STATIC_ASSERT_X(int(FuncType::ArgumentCount) == 1,
-                          "The callback can only be one parameter.");
+        Q_STATIC_ASSERT_X(
+            int(FuncType::ArgumentCount) <= 1,
+            "The number of parameters of callback function can only be less than or equal to 1");
 
         return thenImpl(McPrivate::QVariantSelector<typename FuncType::Arguments>::Value,
-                        qMetaTypeId<typename FuncType::Arguments::Car>(),
+                        MetaTypeIdHelper<typename FuncType::Arguments>::metaTypeId(),
                         nullptr,
                         new QtPrivate::QStaticSlotObject<Func,
                                                          typename FuncType::Arguments,
@@ -54,11 +91,12 @@ public:
     {
         typedef McPrivate::LambdaType<Func> FuncType;
 
-        Q_STATIC_ASSERT_X(int(FuncType::ArgumentCount) == 1,
-                          "The callback can only be one parameter.");
+        Q_STATIC_ASSERT_X(
+            int(FuncType::ArgumentCount) <= 1,
+            "The number of parameters of callback function can only be less than or equal to 1");
 
         return thenImpl(McPrivate::QVariantSelector<typename FuncType::Arguments>::Value,
-                        qMetaTypeId<typename FuncType::Arguments::Car>(),
+                        MetaTypeIdHelper<typename FuncType::Arguments>::metaTypeId(),
                         nullptr,
                         new QtPrivate::QFunctorSlotObject<Func,
                                                           int(FuncType::ArgumentCount),
@@ -73,11 +111,12 @@ public:
     {
         typedef QtPrivate::FunctionPointer<Func> FuncType;
 
-        Q_STATIC_ASSERT_X(int(FuncType::ArgumentCount) == 1,
-                          "The callback can only be one parameter.");
+        Q_STATIC_ASSERT_X(
+            int(FuncType::ArgumentCount) <= 1,
+            "The number of parameters of callback function can only be less than or equal to 1");
 
         return syncThenImpl(McPrivate::QVariantSelector<typename FuncType::Arguments>::Value,
-                            qMetaTypeId<typename FuncType::Arguments::Car>(),
+                            MetaTypeIdHelper<typename FuncType::Arguments>::metaTypeId(),
                             recever,
                             new QtPrivate::QSlotObject<Func,
                                                        typename FuncType::Arguments,
@@ -91,11 +130,12 @@ public:
     {
         typedef QtPrivate::FunctionPointer<Func> FuncType;
 
-        Q_STATIC_ASSERT_X(int(FuncType::ArgumentCount) == 1,
-                          "The callback can only be one parameter.");
+        Q_STATIC_ASSERT_X(
+            int(FuncType::ArgumentCount) <= 1,
+            "The number of parameters of callback function can only be less than or equal to 1");
 
         return syncThenImpl(McPrivate::QVariantSelector<typename FuncType::Arguments>::Value,
-                            qMetaTypeId<typename FuncType::Arguments::Car>(),
+                            MetaTypeIdHelper<typename FuncType::Arguments>::metaTypeId(),
                             nullptr,
                             new QtPrivate::QStaticSlotObject<Func,
                                                              typename FuncType::Arguments,
@@ -109,11 +149,12 @@ public:
     {
         typedef McPrivate::LambdaType<Func> FuncType;
 
-        Q_STATIC_ASSERT_X(int(FuncType::ArgumentCount) == 1,
-                          "The callback can only be one parameter.");
+        Q_STATIC_ASSERT_X(
+            int(FuncType::ArgumentCount) <= 1,
+            "The number of parameters of callback function can only be less than or equal to 1");
 
         return syncThenImpl(McPrivate::QVariantSelector<typename FuncType::Arguments>::Value,
-                            qMetaTypeId<typename FuncType::Arguments::Car>(),
+                            MetaTypeIdHelper<typename FuncType::Arguments>::metaTypeId(),
                             nullptr,
                             new QtPrivate::QFunctorSlotObject<Func,
                                                               int(FuncType::ArgumentCount),
@@ -128,11 +169,12 @@ public:
     {
         typedef QtPrivate::FunctionPointer<Func> FuncType;
 
-        Q_STATIC_ASSERT_X(int(FuncType::ArgumentCount) == 1,
-                          "The callback can only be one parameter.");
+        Q_STATIC_ASSERT_X(
+            int(FuncType::ArgumentCount) <= 1,
+            "The number of parameters of callback function can only be less than or equal to 1");
 
         return asyncThenImpl(McPrivate::QVariantSelector<typename FuncType::Arguments>::Value,
-                             qMetaTypeId<typename FuncType::Arguments::Car>(),
+                             MetaTypeIdHelper<typename FuncType::Arguments>::metaTypeId(),
                              recever,
                              new QtPrivate::QSlotObject<Func,
                                                         typename FuncType::Arguments,
@@ -146,11 +188,12 @@ public:
     {
         typedef QtPrivate::FunctionPointer<Func> FuncType;
 
-        Q_STATIC_ASSERT_X(int(FuncType::ArgumentCount) == 1,
-                          "The callback can only be one parameter.");
+        Q_STATIC_ASSERT_X(
+            int(FuncType::ArgumentCount) <= 1,
+            "The number of parameters of callback function can only be less than or equal to 1");
 
         return asyncThenImpl(McPrivate::QVariantSelector<typename FuncType::Arguments>::Value,
-                             qMetaTypeId<typename FuncType::Arguments::Car>(),
+                             MetaTypeIdHelper<typename FuncType::Arguments>::metaTypeId(),
                              nullptr,
                              new QtPrivate::QStaticSlotObject<Func,
                                                               typename FuncType::Arguments,
@@ -164,11 +207,12 @@ public:
     {
         typedef McPrivate::LambdaType<Func> FuncType;
 
-        Q_STATIC_ASSERT_X(int(FuncType::ArgumentCount) == 1,
-                          "The callback can only be one parameter.");
+        Q_STATIC_ASSERT_X(
+            int(FuncType::ArgumentCount) <= 1,
+            "The number of parameters of callback function can only be less than or equal to 1");
 
         return asyncThenImpl(McPrivate::QVariantSelector<typename FuncType::Arguments>::Value,
-                             qMetaTypeId<typename FuncType::Arguments::Car>(),
+                             MetaTypeIdHelper<typename FuncType::Arguments>::metaTypeId(),
                              nullptr,
                              new QtPrivate::QFunctorSlotObject<Func,
                                                                int(FuncType::ArgumentCount),
@@ -183,11 +227,12 @@ public:
     {
         typedef QtPrivate::FunctionPointer<Func> FuncType;
 
-        Q_STATIC_ASSERT_X(int(FuncType::ArgumentCount) == 1,
-                          "The callback can only be one parameter.");
+        Q_STATIC_ASSERT_X(
+            int(FuncType::ArgumentCount) <= 1,
+            "The number of parameters of callback function can only be less than or equal to 1");
 
         return errorImpl(McPrivate::QVariantSelector<typename FuncType::Arguments>::Value,
-                         qMetaTypeId<typename FuncType::Arguments::Car>(),
+                         MetaTypeIdHelper<typename FuncType::Arguments>::metaTypeId(),
                          recever,
                          new QtPrivate::QSlotObject<Func,
                                                     typename FuncType::Arguments,
@@ -201,11 +246,12 @@ public:
     {
         typedef QtPrivate::FunctionPointer<Func> FuncType;
 
-        Q_STATIC_ASSERT_X(int(FuncType::ArgumentCount) == 1,
-                          "The callback can only be one parameter.");
+        Q_STATIC_ASSERT_X(
+            int(FuncType::ArgumentCount) <= 1,
+            "The number of parameters of callback function can only be less than or equal to 1");
 
         return errorImpl(McPrivate::QVariantSelector<typename FuncType::Arguments>::Value,
-                         qMetaTypeId<typename FuncType::Arguments::Car>(),
+                         MetaTypeIdHelper<typename FuncType::Arguments>::metaTypeId(),
                          nullptr,
                          new QtPrivate::QStaticSlotObject<Func,
                                                           typename FuncType::Arguments,
@@ -218,17 +264,32 @@ public:
     {
         typedef McPrivate::LambdaType<Func> FuncType;
 
-        Q_STATIC_ASSERT_X(int(FuncType::ArgumentCount) == 1,
-                          "The callback can only be one parameter.");
+        Q_STATIC_ASSERT_X(
+            int(FuncType::ArgumentCount) <= 1,
+            "The number of parameters of callback function can only be less than or equal to 1");
 
         return errorImpl(McPrivate::QVariantSelector<typename FuncType::Arguments>::Value,
-                         qMetaTypeId<typename FuncType::Arguments::Car>(),
+                         MetaTypeIdHelper<typename FuncType::Arguments>::metaTypeId(),
                          nullptr,
                          new QtPrivate::QFunctorSlotObject<Func,
                                                            int(FuncType::ArgumentCount),
                                                            typename FuncType::Arguments,
                                                            typename FuncType::ReturnType>(
                              std::move(func)));
+    }
+
+    template<typename Func>
+    McCppResponse &progress(const typename QtPrivate::FunctionPointer<Func>::Object *recever,
+                            Func callback) noexcept
+    {
+        getProgress().callback(recever, callback);
+        return *this;
+    }
+    template<typename Func>
+    McCppResponse &progress(Func callback) noexcept
+    {
+        getProgress().callback(callback);
+        return *this;
     }
 
 protected:
