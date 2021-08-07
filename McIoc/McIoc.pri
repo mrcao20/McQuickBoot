@@ -1,16 +1,23 @@
+QT *= xml
+#QT *= core-private
+
+include($$PWD/../3rdparty/yaml-cpp.pri)
+include($$PWD/../3rdparty/zlib.pri)
+include($$PWD/../3rdparty/quazip.pri)
+
 INCLUDEPATH += $$PWD/include/
 
 HEADERS += \
     $$PWD/include/McIoc/ApplicationContext/IMcApplicationContext.h \
     $$PWD/include/McIoc/ApplicationContext/IMcReadableApplicationContext.h \
     $$PWD/include/McIoc/ApplicationContext/IMcRefreshableApplicationContext.h \
-    $$PWD/include/McIoc/ApplicationContext/McContainerGlobal.h \
     $$PWD/include/McIoc/ApplicationContext/impl/McAbstractApplicationContext.h \
     $$PWD/include/McIoc/ApplicationContext/impl/McAnnotationApplicationContext.h \
     $$PWD/include/McIoc/ApplicationContext/impl/McLocalPathApplicationContext.h \
     $$PWD/include/McIoc/ApplicationContext/impl/McReadableApplicationContext.h \
     $$PWD/include/McIoc/ApplicationContext/impl/McXmlApplicationContext.h \
     $$PWD/include/McIoc/BeanDefinition/IMcBeanDefinition.h \
+    $$PWD/include/McIoc/BeanDefinition/IMcCustomPlaceholder.h \
     $$PWD/include/McIoc/BeanDefinition/impl/McRootBeanDefinition.h \
     $$PWD/include/McIoc/BeanDefinitionReader/IMcBeanDefinitionReader.h \
     $$PWD/include/McIoc/BeanDefinitionReader/impl/McAbstractBeanDefinitionReader.h \
@@ -22,14 +29,19 @@ HEADERS += \
     $$PWD/include/McIoc/BeanFactory/IMcConfigurableBeanFactory.h \
     $$PWD/include/McIoc/BeanFactory/McBeanGlobal.h \
     $$PWD/include/McIoc/BeanFactory/impl/McAbstractBeanFactory.h \
+    $$PWD/include/McIoc/BeanFactory/impl/McAbstractNormalBeanFactory.h \
     $$PWD/include/McIoc/BeanFactory/impl/McBeanConnector.h \
     $$PWD/include/McIoc/BeanFactory/impl/McBeanEnum.h \
+    $$PWD/include/McIoc/BeanFactory/impl/McBeanPlaceholder.h \
     $$PWD/include/McIoc/BeanFactory/impl/McBeanReference.h \
-    $$PWD/include/McIoc/BeanFactory/impl/McDefaultBeanFactory.h \
     $$PWD/include/McIoc/BeanFactory/impl/McMetaTypeId.h \
+    $$PWD/include/McIoc/BeanFactory/impl/McPointerBeanFactory.h \
+    $$PWD/include/McIoc/BeanFactory/impl/McSharedBeanFactory.h \
     $$PWD/include/McIoc/Destroyer/IMcDestroyer.h \
     $$PWD/include/McIoc/Destroyer/impl/McNormalDestroyer.h \
+    $$PWD/include/McIoc/McConstantGlobal.h \
     $$PWD/include/McIoc/McVersion.h \
+    $$PWD/include/McIoc/ObjectBuilder/ObjectBuilder.h \
     $$PWD/include/McIoc/PropertyParser/IMcPropertyConverter.h \
     $$PWD/include/McIoc/PropertyParser/IMcPropertyParser.h \
     $$PWD/include/McIoc/PropertyParser/impl/McAbstarctPropertyConverter.h \
@@ -40,6 +52,7 @@ HEADERS += \
     $$PWD/include/McIoc/Slot/IMcSlot.h \
     $$PWD/include/McIoc/Thread/IMcDeleteThreadWhenQuit.h \
     $$PWD/include/McIoc/Thread/impl/McDefaultDeleteThreadWhenQuit.h \
+    $$PWD/include/McIoc/Utils/IMcNonCopyable.h \
     $$PWD/include/McIoc/Utils/Macro/MacroFillingFunc.h \
     $$PWD/include/McIoc/Utils/Macro/MacroSize.h \
     $$PWD/include/McIoc/Utils/McScopedFunction.h \
@@ -47,6 +60,7 @@ HEADERS += \
     $$PWD/include/McIoc/McMacroGlobal.h \
     $$PWD/include/McIoc/Utils/XmlBuilder/impl/McBean.h \
     $$PWD/include/McIoc/Utils/XmlBuilder/impl/McBeanCollection.h \
+    $$PWD/include/McIoc/Utils/XmlBuilder/impl/McPlaceholder.h \
     $$PWD/include/McIoc/Utils/XmlBuilder/impl/McProperty.h \
     $$PWD/include/McIoc/Utils/XmlBuilder/IMcXml.h \
     $$PWD/include/McIoc/Utils/XmlBuilder/IMcBean.h \
@@ -62,12 +76,14 @@ HEADERS += \
     $$PWD/include/McIoc/ApplicationContext/impl/McSettingApplicationContext.h \
     $$PWD/include/McIoc/ApplicationContext/impl/McIniSettingApplicationContext.h \
     $$PWD/include/McIoc/ApplicationContext/IMcRelatableApplicationContext.h \
-    $$PWD/include/McIoc/ApplicationContext/IMcConfigurableApplicationContext.h
+    $$PWD/include/McIoc/ApplicationContext/IMcConfigurableApplicationContext.h \
+    $$PWD/include/McIoc/Utils/McYaml.h \
+    $$PWD/include/McIoc/ApplicationContext/impl/McYamlSettingApplicationContext.h \
+    $$PWD/include/McIoc/Utils/Zip/McCompressor.h
 
 SOURCES += \
     $$PWD/src/ApplicationContext/McAbstractApplicationContext.cpp \
     $$PWD/src/ApplicationContext/McAnnotationApplicationContext.cpp \
-    $$PWD/src/ApplicationContext/McContainerGlobal.cpp \
     $$PWD/src/ApplicationContext/McLocalPathApplicationContext.cpp \
     $$PWD/src/ApplicationContext/McReadableApplicationContext.cpp \
     $$PWD/src/ApplicationContext/McXmlApplicationContext.cpp \
@@ -75,11 +91,12 @@ SOURCES += \
     $$PWD/src/BeanDefinitionReader/McAnnotationBeanDefinitionReader.cpp \
     $$PWD/src/BeanDefinitionReader/McXmlBeanDefinitionReader.cpp \
     $$PWD/src/BeanFactory/McAbstractBeanFactory.cpp \
-    $$PWD/src/BeanFactory/McBeanConnector.cpp \
-    $$PWD/src/BeanFactory/McBeanEnum.cpp \
-    $$PWD/src/BeanFactory/McBeanReference.cpp \
-    $$PWD/src/BeanFactory/McDefaultBeanFactory.cpp \
+    $$PWD/src/BeanFactory/McAbstractNormalBeanFactory.cpp \
     $$PWD/src/BeanFactory/McMetaTypeId.cpp \
+    $$PWD/src/BeanFactory/McPointerBeanFactory.cpp \
+    $$PWD/src/BeanFactory/McSharedBeanFactory.cpp \
+    $$PWD/src/McInitGlobal.cpp \
+    $$PWD/src/ObjectBuilder/ObjectBuilder.cpp \
     $$PWD/src/PropertyParser/McAbstarctPropertyConverter.cpp \
     $$PWD/src/PropertyParser/McAbstractPropertyParser.cpp \
     $$PWD/src/PropertyParser/McDefaultPropertyConverter.cpp \
@@ -88,6 +105,7 @@ SOURCES += \
     $$PWD/src/McGlobal.cpp \
     $$PWD/src/Utils/XmlBuilder/McBeanCollection.cpp \
     $$PWD/src/Utils/XmlBuilder/McBean.cpp \
+    $$PWD/src/Utils/XmlBuilder/McPlaceholder.cpp \
     $$PWD/src/Utils/XmlBuilder/McProperty.cpp \
     $$PWD/src/Utils/XmlBuilder/McConnect.cpp \
     $$PWD/src/Utils/XmlBuilder/McEnum.cpp \
@@ -97,12 +115,7 @@ SOURCES += \
     $$PWD/src/Utils/XmlBuilder/McValue.cpp \
     $$PWD/src/BeanDefinitionReader/McSettingBeanDefinitionReader.cpp \
     $$PWD/src/ApplicationContext/McSettingApplicationContext.cpp \
-    $$PWD/src/ApplicationContext/McIniSettingApplicationContext.cpp
-
-!contains(DEFINES, MC_NO_YAML) {
-    HEADERS += $$PWD/include/McIoc/Utils/McYaml.h \
-        $$PWD/include/McIoc/ApplicationContext/impl/McYamlSettingApplicationContext.h
-
-    SOURCES += $$PWD/src/Utils/McYaml.cpp \
-        $$PWD/src/ApplicationContext/McYamlSettingApplicationContext.cpp
-}
+    $$PWD/src/ApplicationContext/McIniSettingApplicationContext.cpp \
+    $$PWD/src/Utils/McYaml.cpp \
+    $$PWD/src/ApplicationContext/McYamlSettingApplicationContext.cpp \
+    $$PWD/src/Utils/Zip/McCompressor.cpp

@@ -4,8 +4,6 @@
 #
 #-------------------------------------------------
 
-QT += quick network
-
 TARGET = McQuickBoot
 TARGET = $$qt5LibraryTarget($$TARGET)
 
@@ -47,7 +45,7 @@ unix {
     lib_target.files = $$DESTDIR/$${TARGET}.lib $$DESTDIR/$${TARGET}.pdb
     
     module_target.path = $$[QT_INSTALL_PREFIX]/mkspecs/modules
-    module_target.files = $$PWD/../modules/qt_lib_mcquickboot.pri
+    module_target.files = $$PWD/../modules/qt_lib_quickboot.pri
     
     INSTALLS += include_target bin_target lib_target module_target
 }

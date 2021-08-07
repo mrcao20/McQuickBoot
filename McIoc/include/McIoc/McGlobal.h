@@ -1,24 +1,137 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021 mrcao20
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 #pragma once
 
 #include <functional>
 #include <mutex>
 
-#include <QSharedPointer>
-#include <QObject>
+#include <QDir>
 #include <QEvent>
+#include <QObject>
+#include <QSharedPointer>
 #include <QtCore/qmutex.h>
 
-#include "McVersion.h"
 #include "BeanFactory/McBeanGlobal.h"
+#include "McConstantGlobal.h"
+#include "McMacroGlobal.h"
+#include "McVersion.h"
 
 MC_FORWARD_DECL_CLASS(IMcApplicationContext)
 
+template<>
+inline bool qMapLessThanKey(const QVariant &key1, const QVariant &key2)
+{
+    return qMapLessThanKey(key1.data(), key2.data());
+}
+
 namespace McPrivate {
 
-class McGlobal
+template<typename T>
+struct IsQVariantHelper
 {
-    MC_DECL_INIT(McGlobal)
+    enum { Value = true, Value2 = false };
 };
+template<>
+struct IsQVariantHelper<const char *>
+{
+    enum { Value = false, Value2 = true };
+};
+template<>
+struct IsQVariantHelper<char *>
+{
+    enum { Value = false, Value2 = true };
+};
+template<int N>
+struct IsQVariantHelper<char[N]>
+{
+    enum { Value = false, Value2 = true };
+};
+
+template<typename T>
+struct QVariantSelector
+{
+    enum { Value = false };
+};
+template<>
+struct QVariantSelector<QVariant>
+{
+    enum { Value = true };
+};
+template<>
+struct QVariantSelector<const QVariant>
+{
+    enum { Value = true };
+};
+template<>
+struct QVariantSelector<QVariant &>
+{
+    enum { Value = true };
+};
+template<>
+struct QVariantSelector<const QVariant &>
+{
+    enum { Value = true };
+};
+template<>
+struct QVariantSelector<QtPrivate::List<>>
+{
+    enum { Value = false };
+};
+template<typename... Args>
+struct QVariantSelector<QtPrivate::List<Args...>>
+{
+    enum { Value = QVariantSelector<typename QtPrivate::List<Args...>::Car>::Value };
+};
+
+namespace LambdaDetail {
+
+template<typename R, typename C, typename M, typename... Args>
+struct Types
+{
+    using IsMutable = M;
+
+    enum { ArgumentCount = sizeof...(Args) };
+
+    using ReturnType = R;
+    using Arguments = QtPrivate::List<Args...>;
+};
+
+} // namespace LambdaDetail
+
+template<class T>
+struct LambdaType : LambdaType<decltype(&T::operator())>
+{};
+
+// 特化版本，函数为非const（对应的lambda表达式为mutable）
+template<class R, class C, class... Args>
+struct LambdaType<R (C::*)(Args...)> : LambdaDetail::Types<R, C, std::true_type, Args...>
+{};
+
+// 特化版本，函数为const
+template<class R, class C, class... Args>
+struct LambdaType<R (C::*)(Args...) const> : LambdaDetail::Types<R, C, std::false_type, Args...>
+{};
 
 template <typename Mutex, typename Lock =
 #if defined(__cpp_guaranteed_copy_elision) && __cpp_guaranteed_copy_elision >= 201606L
@@ -49,10 +162,12 @@ Lock mc_unique_lock(Mutex *mutex)
     return mutex ? Lock(*mutex) : Lock() ;
 }
 
-}
+//! beanName应当用QByteArray
+QString getBeanName(const QMetaObject *metaObj) noexcept;
+
+} // namespace McPrivate
 
 MC_DECL_POINTER(QObject)
-Q_DECLARE_METATYPE(QObjectPtr)
 
 class MCIOC_EXPORT McCustomEvent : public QEvent {
 public:
@@ -83,9 +198,9 @@ enum RoutinePriority : int {
 
 template<typename Container>
 bool isContains(int index, const Container &container) {
-	if (index >= 0 && index < container.size())
-		return true;
-	return false;
+    if (index >= 0 && index < container.size())
+        return true;
+    return false;
 }
 
 
@@ -111,6 +226,11 @@ MCIOC_EXPORT bool waitForExecFunc(
  * \return 
  */
 MCIOC_EXPORT QString toAbsolutePath(const QString &path) noexcept;
+MCIOC_EXPORT QString applicationDirPath() noexcept;
+MCIOC_EXPORT QDir applicationDir() noexcept;
+MCIOC_EXPORT void setApplicationDirPath(const QString &val) noexcept;
+MCIOC_EXPORT QString applicationFilePath() noexcept;
+MCIOC_EXPORT void setApplicationFilePath(const QString &val) noexcept;
 
 //! 获取所有被Component标记的bean
 MCIOC_EXPORT QList<QString> getAllComponent(IMcApplicationContextConstPtrRef appCtx) noexcept;
@@ -120,10 +240,56 @@ MCIOC_EXPORT QList<QString> getComponents(IMcApplicationContextConstPtrRef appCt
 MCIOC_EXPORT bool isComponent(const QMetaObject *metaObj) noexcept;
 //! 传入的元对象的组件类型是否为type
 MCIOC_EXPORT bool isComponentType(const QMetaObject *metaObj, const QString &type) noexcept;
+MCIOC_EXPORT bool isContainedTag(const QString &tags, const QString &tag) noexcept;
+MCIOC_EXPORT QObject *getObject(IMcApplicationContext *appCtx, const QString &beanName) noexcept;
 
 using StartUpFunction = std::function<void()>;
 using CleanUpFunction = std::function<void()>;
 MCIOC_EXPORT void addPreRoutine(int priority, const StartUpFunction &func) noexcept;
+MCIOC_EXPORT void callPreRoutine() noexcept;
+MCIOC_EXPORT void cleanPreRoutine() noexcept;
 MCIOC_EXPORT void addPostRoutine(int priority, const CleanUpFunction &func) noexcept;
 
-}
+namespace Ioc {
+
+MCIOC_EXPORT void connect(const QString &beanName,
+                          const QString &sender,
+                          const QString &signal,
+                          const QString &receiver,
+                          const QString &slot,
+                          Qt::ConnectionType type = Qt::AutoConnection) noexcept;
+
+MCIOC_EXPORT void connect(const QMetaObject *metaObj,
+                          const QString &sender,
+                          const QString &signal,
+                          const QString &receiver,
+                          const QString &slot,
+                          Qt::ConnectionType type = Qt::AutoConnection) noexcept;
+
+MCIOC_EXPORT QMetaObject::Connection connect(IMcApplicationContext *appCtx,
+                                             const QString &sender,
+                                             const QString &signal,
+                                             const QString &receiver,
+                                             const QString &slot,
+                                             Qt::ConnectionType type = Qt::AutoConnection) noexcept;
+
+MCIOC_EXPORT QMetaObject::Connection connect(IMcApplicationContext *appCtx,
+                                             const QString &sender,
+                                             const QString &signal,
+                                             QObject *receiver,
+                                             const QString &slot,
+                                             Qt::ConnectionType type = Qt::AutoConnection) noexcept;
+
+MCIOC_EXPORT bool disconnect(IMcApplicationContext *appCtx,
+                             const QString &sender,
+                             const QString &signal,
+                             const QString &receiver,
+                             const QString &slot) noexcept;
+
+MCIOC_EXPORT bool disconnect(IMcApplicationContext *appCtx,
+                             const QString &sender,
+                             const QString &signal,
+                             QObject *receiver,
+                             const QString &slot) noexcept;
+} // namespace Ioc
+} // namespace Mc

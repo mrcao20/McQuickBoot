@@ -1,0 +1,10 @@
+boot: 
+    application: 
+        requestor: 
+            maxThreadCount: 10
+        stateMachine: 
+            paths: ["./BootTest.scxml"]
+        log: 
+            xmlPaths: ["../../Examples/LogTest/logqt.xml"]
+            flag: "debug"
+        

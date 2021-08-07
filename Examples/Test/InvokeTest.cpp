@@ -3,12 +3,12 @@
 #include <QThread>
 #include <QDebug>
 
-#include <McIoc/ApplicationContext/McContainerGlobal.h>
 #include <McBoot/Controller/impl/McResult.h>
-#include <McBoot./Utils/McJsonUtils.h>
+#include <McBoot/Utils/McJsonUtils.h>
+#include <McIoc/McGlobal.h>
 
 MC_INIT(InvokeTest)
-MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(InvokeTest))
+MC_REGISTER_BEAN_FACTORY(InvokeTest)
 MC_INIT_END
 
 InvokeTest::InvokeTest(QObject *parent) 
@@ -20,11 +20,17 @@ void InvokeTest::invoke1() noexcept {
     qDebug() << "invoke1";
 }
 
-McResult *InvokeTest::invoke2() noexcept {
+McResultPtr InvokeTest::invoke2() noexcept
+{
     static quint64 i = 0;
     qDebug() << "-----------" << i++;
     auto obj = McResult::fail("");
     return obj;
+}
+
+McResult *InvokeTest::invoke22() noexcept
+{
+    return new McResult();
 }
 
 void InvokeTest::invoke3(const ObjectPtr &o) noexcept {

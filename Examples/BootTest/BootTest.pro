@@ -1,10 +1,9 @@
-QT += qml quick
+QT += qml quick scxml
 
 CONFIG += c++11
 
 SOURCES += main.cpp \
     InvokeTest.cpp \
-    QmlSocketTest.cpp \
     Object.cpp
 
 RESOURCES += qml.qrc
@@ -62,8 +61,13 @@ SrcConfigPath = $$replace(SrcConfigPath, /, \\)
 DstConfigPath = $$PWD/../../bin/Examples/
 DstConfigPath = $$replace(DstConfigPath, /, \\)
 QMAKE_POST_LINK += copy /y $$SrcConfigPath $$DstConfigPath
+SrcConfigPath = $$PWD/BootTest.scxml
+SrcConfigPath = $$replace(SrcConfigPath, /, \\)
+QMAKE_POST_LINK += && copy /y $$SrcConfigPath $$DstConfigPath
 
 HEADERS += \
     InvokeTest.h \
-    QmlSocketTest.h \
     Object.h
+
+STATECHARTS += \
+    BootTest.scxml

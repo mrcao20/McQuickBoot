@@ -1,3 +1,26 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021 mrcao20
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 #include "McLog/Appender/impl/McAbstractFormatAppender.h"
 
 #include <QCoreApplication>
@@ -61,37 +84,26 @@ void McAbstractFormatAppender::append(QtMsgType type, const QMessageLogContext &
         MC_PRINT_ERR("in release, need to manual define QT_MESSAGELOGCONTEXT\n");
     }
     auto message = l->format(type, context, str);
-    
-    if(d->immediateFlush) {
-        if(thread() == QThread::currentThread()) {
-            append_helper(message);
-        }else{
-            QMetaObject::invokeMethod(this
-                                      , MC_MACRO_STR(append_helper)
-                                      , Qt::BlockingQueuedConnection
-                                      , Q_ARG(QString, message));
-        }
-    }else{
-        auto e = new McCustomEvent(QEvent::User, message);
-        qApp->postEvent(this, e);
-    }
+
+    auto e = new McCustomEvent(QEvent::User, message);
+    qApp->postEvent(this, e);
 }
 
-void McAbstractFormatAppender::finished() noexcept
+void McAbstractFormatAppender::doFinished() noexcept
 {
-    McAbstractIODeviceAppender::finished();
-    
-    if(layout().isNull()) {
+    McAbstractIODeviceAppender::doFinished();
+
+    if (layout().isNull()) {
         auto l = McNormalLayoutPtr::create();
         l->finished();
         setLayout(l);
     }
 }
 
-void McAbstractFormatAppender::threadFinished() noexcept
+void McAbstractFormatAppender::doThreadFinished() noexcept
 {
-    McAbstractIODeviceAppender::threadFinished();
-    
+    McAbstractIODeviceAppender::doThreadFinished();
+
     auto l = layout();  //!< 一定存在
     auto pl = l.staticCast<McPatternLayout>();  //!< 一定成功
     if(pl->thread() != thread()) {
@@ -114,7 +126,23 @@ void McAbstractFormatAppender::append_helper(const QString &msg) noexcept
     if(out.isNull() || !out->isOpen()) {
         return;
     }
-    out->write(msg.toLocal8Bit());
-    out->write("\n", 1);
+    textStream() << msg;
+    if (d->immediateFlush) {
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+        textStream() << endl;
+#else
+        textStream() << Qt::endl;
+#endif
+    } else {
+#ifdef Q_OS_WIN
+        if (out->openMode().testFlag(QIODevice::Text)) {
+            textStream() << "\r\n";
+        } else {
+            textStream() << "\n";
+        }
+#else
+        textStream() << "\n";
+#endif
+    }
     writeAfter();
 }

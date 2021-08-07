@@ -46,7 +46,7 @@ unix {
     lib_target.files = $$DESTDIR/$${TARGET}.lib $$DESTDIR/$${TARGET}.pdb
     
     module_target.path = $$[QT_INSTALL_PREFIX]/mkspecs/modules
-    module_target.files = $$PWD/../modules/qt_lib_mclogqt.pri
+    module_target.files = $$PWD/../modules/qt_lib_logqt.pri
     
     INSTALLS += include_target bin_target lib_target module_target
 }

@@ -15,7 +15,6 @@ SOURCES += \
         InvokeTest.cpp \
         IocTest.cpp \
         Object.cpp \
-        QmlSocketTest.cpp \
         main.cpp
 
 RESOURCES += qml.qrc
@@ -45,7 +44,6 @@ HEADERS += \
     InvokeTest.h \
     IocTest.h \
     Object.h \
-    QmlSocketTest.h \
     ThreadTest.h
     
 include($$PWD/../../common.pri)

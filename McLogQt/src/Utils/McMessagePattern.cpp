@@ -1,3 +1,26 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021 mrcao20
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 #include "McLog/Utils/McMessagePattern.h"
 
 #include <QCoreApplication>
@@ -464,13 +487,13 @@ QString format(McMessagePatternPtr pattern, QtMsgType type, const QMessageLogCon
             message.append(QLatin1String(context.category));
         } else if (token == typeTokenC) {
             switch (type) {
-            case QtDebugMsg:   message.append(QLatin1String("debug")); break;
+            case QtDebugMsg:   message.append(QLatin1String("DEBUG")); break;
 #if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
-            case QtInfoMsg:    message.append(QLatin1String("info")); break;
+            case QtInfoMsg:    message.append(QLatin1String("INFO")); break;
 #endif
-            case QtWarningMsg: message.append(QLatin1String("warning")); break;
-            case QtCriticalMsg:message.append(QLatin1String("critical")); break;
-            case QtFatalMsg:   message.append(QLatin1String("fatal")); break;
+            case QtWarningMsg: message.append(QLatin1String("WARNING")); break;
+            case QtCriticalMsg:message.append(QLatin1String("CRITICAL")); break;
+            case QtFatalMsg:   message.append(QLatin1String("FATAL")); break;
             }
         } else if (token == fileTokenC) {
             if (context.file)

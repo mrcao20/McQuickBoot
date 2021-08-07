@@ -1,9 +1,9 @@
-#include <QCoreApplication>
-#include <QThread>
-#include <QDebug>
-#include <QTextStream>
-#include <QFile>
 #include <QBuffer>
+#include <QCoreApplication>
+#include <QDebug>
+#include <QFile>
+#include <QTextStream>
+#include <QThread>
 
 #include <McIoc/ApplicationContext/impl/McLocalPathApplicationContext.h>
 #include <McIoc/ApplicationContext/impl/McAnnotationApplicationContext.h>
@@ -17,6 +17,7 @@
 #include <McIoc/Utils/XmlBuilder/impl/McEnum.h>
 #include <McIoc/Utils/XmlBuilder/impl/McList.h>
 #include <McIoc/Utils/XmlBuilder/impl/McMap.h>
+#include <McIoc/Utils/XmlBuilder/impl/McPlaceholder.h>
 #include <McIoc/Utils/XmlBuilder/impl/McProperty.h>
 #include <McIoc/Utils/XmlBuilder/impl/McRef.h>
 #include <McIoc/Utils/XmlBuilder/impl/McValue.h>
@@ -32,7 +33,9 @@ int main(int argc, char *argv[])
     bc.addBean(b1);
     b1->setBeanName("r");
     b1->setClassName("R");
-    
+    b1->setSingleton(true);
+    b1->setPointer(false);
+
     McBeanPtr b = McBeanPtr::create();
     bc.addBean(b);
     b->setBeanName("c");
@@ -67,7 +70,10 @@ int main(int argc, char *argv[])
     McPropertyPtr p1 = McPropertyPtr::create();
     b->addContent(p1);
     p1->setContent("hrs", m);
-    
+    McPlaceholderPtr plh = McPlaceholderPtr::create();
+    plh->setPlaceholder("objectName");
+    m->addContent(plh, ref);
+
     McListPtr ll = McListPtr::create();
     ll->addContent("停封");
     McPropertyPtr pp2 = McPropertyPtr::create();
@@ -76,22 +82,25 @@ int main(int argc, char *argv[])
     
     auto doc = bc.toDomDocument();
     qDebug() << doc.toString(4);
-    QFile file(qApp->applicationDirPath() + "/test.xml");
+    QFile file(Mc::applicationDirPath() + "/test.xml");
     file.open(QIODevice::WriteOnly);
     QTextStream stream(&file);
     doc.save(stream, 4);
-    
-//    auto appContext = McLocalPathApplicationContextPtr::create(R"(E:\Github\McQuickBoot\Examples\IocTest\myspring.xml)");
-//    auto appContext = McAnnotationApplicationContextPtr::create();
+
     QSharedPointer<QBuffer> buf = QSharedPointer<QBuffer>::create();
     buf->open(QIODevice::ReadWrite);
     bc.writeToDevice(buf.data());
-    
-    auto appContext = McXmlApplicationContextPtr::create(buf.objectCast<QIODevice>());
+
+    auto appContext = McLocalPathApplicationContextPtr::create(
+        R"(../../Examples/IocTest/myspring.xml)");
+    //    auto appContext = McAnnotationApplicationContextPtr::create();
+    //    auto appContext = McXmlApplicationContextPtr::create(buf.objectCast<QIODevice>());
     QThread *t = new QThread(&a);
     t->start();
     qDebug() << "t:" << t;
     auto ia = appContext->getBean<IA>("c", t);
+    auto gadget = appContext->getBean<GadgetTest>("gadgetTest");
+    qDebug() << gadget->aaa << gadget->bbb;
     ia->a();
     return a.exec();
 }

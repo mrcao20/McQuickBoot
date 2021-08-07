@@ -5,8 +5,6 @@
 #-------------------------------------------------
 
 QT -= gui
-QT += xml
-QT += core-private
 
 TARGET = McIoc
 TARGET = $$qt5LibraryTarget($$TARGET)
@@ -47,7 +45,7 @@ unix {
     lib_target.files = $$DESTDIR/$${TARGET}.lib $$DESTDIR/$${TARGET}.pdb
     
     module_target.path = $$[QT_INSTALL_PREFIX]/mkspecs/modules
-    module_target.files = $$PWD/../modules/qt_lib_mcioc.pri
+    module_target.files = $$PWD/../modules/qt_lib_ioc.pri
     
     INSTALLS += include_target bin_target lib_target module_target
 }

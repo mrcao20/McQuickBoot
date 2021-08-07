@@ -1,3 +1,26 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021 mrcao20
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 #pragma once
 
 #include "../../McGlobal.h"
@@ -5,7 +28,6 @@
 class MCIOC_EXPORT McBeanReference : public QObject 
 {
     Q_OBJECT
-    MC_DECL_INIT(McBeanReference)
 public:
     QString getName() const noexcept 
     { return m_name; }
@@ -14,12 +36,15 @@ public:
 
     QString getPluginPath() const noexcept 
     { return m_pluginPath; }
-    void setPluginPath(const QString &pluginPath) noexcept 
-    { m_pluginPath = pluginPath; }
-    
+    void setPluginPath(const QString &pluginPath) noexcept { m_pluginPath = pluginPath; }
+
+    bool isPointer() const noexcept { return m_isPointer; }
+    void setPointer(bool val) noexcept { m_isPointer = val; }
+
 private:
-    QString m_name;						//!< 被引用bean的名称
+    QString m_name;                        //!< 被引用bean的名称
     QString m_pluginPath;               //!< 被引用的插件路径，这个参数和m_name只能有一个存在
+    bool m_isPointer{false};            //!< 插件是否为指针类型
 };
 
 MC_DECL_METATYPE(McBeanReference)

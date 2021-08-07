@@ -4,6 +4,12 @@
     <bean name="r" class="R">
         <property name="text" value="test r" />
     </bean>
+    <bean name="pointerTest" class="PointerTest" isPointer="true">
+    </bean>
+    <bean name="gadgetTest" class="GadgetTest">
+        <property name="aaa" value="1111" />
+        <property name="bbb" value="gadgetTest bbbb" />
+    </bean>
     <bean name="c" class="C">
         <connect sender=" this">
             <signal>signal_send()</signal>
@@ -15,6 +21,8 @@
             <value>test c</value>
         </property>
         <property name="r" ref="r"></property>
+        <property name="r2" ref="r"></property>
+        <property name="pointerTest" ref="pointerTest"></property>
         <property name="texts">
             <list>
                 <value>停封</value>
@@ -53,5 +61,30 @@
                 </entry>
             </map>
         </property>
+        <property name="hrs2">
+            <!-- 同list -->
+            <map>
+                <entry>
+                    <key><plh>className</plh></key>
+                    <value><ref>r</ref></value>
+                </entry>
+                <entry>
+                    <key><plh>objectName</plh></key>
+                    <value><ref>r</ref></value>
+                </entry>
+            </map>
+        </property>
+        <property name="hrs3">
+            <!-- 同list -->
+            <map plh="custom">
+                <list>
+                    <ref bean="r"></ref>
+                    <ref>r</ref>
+                    <ref>r</ref>
+                </list>
+            </map>
+        </property>
+        <property name="gadget" ref="gadgetTest"></property>
+        <property name="gadget2" ref="gadgetTest"></property>
     </bean>
 </beans>

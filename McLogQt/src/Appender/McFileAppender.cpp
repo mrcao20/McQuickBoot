@@ -1,3 +1,26 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021 mrcao20
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 #include "McLog/Appender/impl/McFileAppender.h"
 
 #include <QCoreApplication>
@@ -16,7 +39,7 @@ MC_PADDING_CLANG(7)
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McFileAppender)
-MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(McFileAppender))
+MC_REGISTER_BEAN_FACTORY(McFileAppender)
 MC_INIT_END
 
 McFileAppender::McFileAppender() 
@@ -58,10 +81,10 @@ void McFileAppender::setAppend(bool val) noexcept
     d->isAppend = val;
 }
 
-void McFileAppender::finished() noexcept 
+void McFileAppender::doFinished() noexcept
 {
-    McFileDeviceAppender::finished();
-    
+    McFileDeviceAppender::doFinished();
+
     QSharedPointer<QFile> file = QSharedPointer<QFile>::create();
     setDevice(file);
     
@@ -75,7 +98,7 @@ void McFileAppender::finished() noexcept
     }
     auto fileInfos = dir.entryInfoList(QDir::Files, QDir::Time);    //!< 获取最新被修改的文件
     QString localFilePath;
-    for(auto fileInfo : fileInfos) {
+    for (auto &fileInfo : qAsConst(fileInfos)) {
         auto fileName = fileInfo.fileName();
         if(match.hasMatch()) {  //!< 如果匹配成功，则list的长度一定为4
             auto list = match.capturedTexts();
@@ -99,17 +122,20 @@ void McFileAppender::finished() noexcept
             break;
         }
     }
-    
+
     if(localFilePath.isEmpty()) {
         localFilePath = newFilePath();
     }
     
     file->setFileName(localFilePath);
-    QIODevice::OpenMode mode = QIODevice::WriteOnly;
+    QIODevice::OpenMode mode = QIODevice::WriteOnly | QIODevice::Text;
     if (d->isAppend)
         mode |= QIODevice::Append;
-    file->open(mode);
-    
+    if (!file->open(mode)) {
+        MC_PRINT_ERR("error open file '%s' for write!!!\n", qPrintable(localFilePath));
+        return;
+    }
+
     tryNextFile();
 }
 

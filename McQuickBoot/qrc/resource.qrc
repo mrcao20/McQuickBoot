@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>requestor.mjs</file>
+    </qresource>
+</RCC>

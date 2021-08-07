@@ -1,6 +1,6 @@
 INCLUDEPATH += $$PWD/include/
 
 HEADERS += \\
-    $$PWD/include/Service/%{GlobalHdrFileName}
+    $$PWD/include/%{ProjectName}/%{GlobalHdrFileName}
 
 SOURCES +=

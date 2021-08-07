@@ -9,9 +9,7 @@
 
 #include "McIoc/ApplicationContext/impl/McLocalPathApplicationContext.h"
 #include "McIoc/ApplicationContext/impl/McAnnotationApplicationContext.h"
-#ifndef MC_NO_YAML
 #include "McIoc/ApplicationContext/impl/McYamlSettingApplicationContext.h"
-#endif
 #include "IocTest.h"
 #include "InvokeTest.h"
 #include <Object.h>
@@ -19,31 +17,53 @@
 #include "ThreadTest.h"
 #include <McBoot/Utils/McJsonUtils.h>
 
+class A
+{
+public:
+    A() { qDebug() << "A"; }
+};
+
+static A a;
+static int ttt = []() {
+    qDebug() << "ttt";
+    return 0;
+}();
+
+Q_GLOBAL_STATIC(int, aaa)
+
 #ifdef Q_CC_GNU
 static void  __attribute__((constructor)) before(void) 
 {
-	qDebug() << "before";
+    qDebug() << "before";
+    qDebug() << Q_QGS_aaa::guard;
+    Q_QGS_aaa::guard = 3;
+    qDebug() << Q_QGS_aaa::guard;
 }
 
 static void  __attribute__((destructor)) after(void) 
 {
-	qDebug() << "after";
+    qDebug() << "after";
 }
 #elif Q_CC_MSVC
-//#define SECNAME ".CRT$XCG"
-//#pragma section(SECNAME,long,read)
-//int foo()
-//{
-//    qDebug() << "before";
-//    return 0;
-//}
-//__declspec(allocate(SECNAME)) _PIFV dummy[] = { foo };
+#include <corecrt_startup.h>
+#define SECNAME ".CRT$XCY"
+#pragma section(SECNAME, long, read)
+int foo()
+{
+    qDebug() << "before";
+    qDebug() << Q_QGS_aaa::guard;
+    Q_QGS_aaa::guard = 2;
+    qDebug() << Q_QGS_aaa::guard;
+    return 0;
+}
+__declspec(allocate(SECNAME)) _PIFV dummy[] = {foo};
 #endif
 
 #define BB(par) MC_FIRST_TYPE_NAME((par))
 
 int main(int argc, char *argv[])
 {
+    qDebug() << Q_QGS_aaa::guard;
 //    qDebug() << ">>>>>>>>>>:::::" << BB(MC_TYPELIST(IocTest));
 //    QList<IocTestPtr> r;
 //    McJsonUtils::toJson(r);
@@ -74,16 +94,13 @@ int main(int argc, char *argv[])
              << QMetaType::type("QObject");
     
     ThreadTest *t = new ThreadTest();
+    t->start();
     IMcApplicationContextPtr appCon;
     //! XML注入方式
 //    appCon = McLocalPathApplicationContextPtr::create(
 //                QStringList() << ":/myspring.xml" << ":/xmltest2.xml");
-#ifdef MC_NO_YAML
-    return 0;
-#else
     appCon = McYamlSettingApplicationContextPtr::create(
                 ":/ioc.yml");
-#endif
     
     appCon->refresh(t);
     auto test = appCon->getBean<IocTestPtr>("test");
@@ -97,8 +114,7 @@ int main(int argc, char *argv[])
     
 //    auto test2 = appCon->getBean<IocTestPtr>("test2");
 //    qDebug() << test2->m_innerBean.objectCast<Object>()->m_text;
-    
-    t->start();
+
     //!< end
     
     //! 声明式注入方式

@@ -9,15 +9,15 @@ int main(int argc, char *argv[])
 
 @endif
     McQuickBoot::setPreInitFunc([](QCoreApplication *app){
-		Q_UNUSED(app)
-	});
-	McQuickBoot::setAfterInitFunc([](QCoreApplication *app, QQmlApplicationEngine *engine){
-		Q_UNUSED(app)
-		Q_UNUSED(engine)
-	});
+        Q_UNUSED(app)
+    });
+    McQuickBoot::setAfterInitFunc([](QCoreApplication *app, QQmlApplicationEngine *engine){
+        Q_UNUSED(app)
+        Q_UNUSED(engine)
+    });
 @if %{SingleApplication}
     return McQuickBoot::singleRun(argc, argv);
 @else
-	return McQuickBoot::run(argc, argv);
+    return McQuickBoot::run(argc, argv);
 @endif
 }

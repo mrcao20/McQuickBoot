@@ -1,3 +1,26 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021 mrcao20
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 #pragma once
 
 #include "../IMcConfigurableBeanFactory.h"
@@ -5,16 +28,15 @@
 
 MC_FORWARD_DECL_PRIVATE_DATA(McAbstractBeanFactory);
 
-class MCIOC_EXPORT McAbstractBeanFactory
-        : public QObject
-        , public IMcConfigurableBeanFactory
-        , public IMcBeanReferenceResolver 
+class MCIOC_EXPORT McAbstractBeanFactory : public QObject,
+                                           public IMcConfigurableBeanFactory,
+                                           public IMcBeanReferenceResolver
 {
-    
     Q_OBJECT
 public:
     using IMcBeanFactory::getBean;
-    
+    using IMcBeanFactory::getBeanPointer;
+
     explicit McAbstractBeanFactory(QObject *parent = nullptr);
     ~McAbstractBeanFactory() override;
 
@@ -27,7 +49,8 @@ public:
      * \param thread 将要生存的目标线程
      * \return 返回获取到的对象
      */
-    QObjectPtr getBean(const QString &name, QThread *thread) noexcept override;
+    QObjectPtr getBean(const QString &name, QThread *thread = nullptr) noexcept override;
+    QObject *getBeanPointer(const QString &name, QThread *thread = nullptr) noexcept override;
     /*!
      * \brief getBeanToVariant
      * 
@@ -37,7 +60,7 @@ public:
      * \param thread 将要生存的目标线程
      * \return 
      */
-    QVariant getBeanToVariant(const QString &name, QThread *thread)  noexcept override;
+    QVariant getBeanToVariant(const QString &name, QThread *thread = nullptr) noexcept override;
     /*!
      * \brief containsBean
      * 
@@ -47,7 +70,7 @@ public:
      * \retval true 存在
      * \retval false 不存在
      */
-    bool containsBean(const QString &name) noexcept override;
+    bool containsBean(const QString &name) const noexcept override;
     /*!
      * \brief isSingleton
      * 
@@ -63,8 +86,9 @@ public:
      * \param name beanName
      * \param beanDefinition bean的定义
      */
-    void registerBeanDefinition(const QString &name, IMcBeanDefinitionConstPtrRef beanDefinition) noexcept override;
-    
+    bool registerBeanDefinition(const QString &name,
+                                IMcBeanDefinitionConstPtrRef beanDefinition) noexcept override;
+
     IMcBeanDefinitionPtr unregisterBeanDefinition(const QString &name) noexcept override;
     
     /*!
@@ -76,7 +100,9 @@ public:
      * \retval true 已经注册过
      * \retval false 没有被注册
      */
-    bool isContained(const QString &name) noexcept override;
+    bool isContained(const QString &name) const noexcept override;
+
+    bool canRegister(IMcBeanDefinitionConstPtrRef beanDefinition) const noexcept override;
     /*!
      * \brief getBeanDefinitions
      * 
@@ -84,7 +110,7 @@ public:
      * \return bean定义的集合。
      * \see IMcBeanDefinitionRegistry
      */
-    QHash<QString, IMcBeanDefinitionPtr> getBeanDefinitions() noexcept override;
+    QHash<QString, IMcBeanDefinitionPtr> getBeanDefinitions() const noexcept override;
     /*!
      * \brief resolveBeanReference
      * 
@@ -94,6 +120,7 @@ public:
      * \return 
      */
     QObjectPtr resolveBeanReference(McBeanReferenceConstPtrRef beanRef) noexcept override;
+    QObject *resolveBeanReferencePointer(McBeanReferenceConstPtrRef beanRef) noexcept override;
     /*!
      * \brief resolveBeanReferenceToQVariant
      * 

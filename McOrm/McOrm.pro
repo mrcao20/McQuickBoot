@@ -5,7 +5,6 @@
 #-------------------------------------------------
 
 QT       -= gui
-QT += sql
 
 TARGET = McOrm
 TARGET = $$qt5LibraryTarget($$TARGET)

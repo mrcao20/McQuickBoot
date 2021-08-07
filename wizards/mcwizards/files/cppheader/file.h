@@ -13,11 +13,12 @@ MC_FORWARD_DECL_PRIVATE_DATA(%{CN});
 class %{CN} : public QObject
 {
     Q_OBJECT
-    MC_DEFINE_TYPELIST();
+    MC_DECL_INIT(%{CN})
+    MC_INTERFACES()
 public:
-    Q_INVOKABLE explicit %{CN}(QObject *parent = nullptr);
+    explicit %{CN}(QObject *parent = nullptr) noexcept;
     ~%{CN}() override;
-	
+    
 private:
     MC_DECL_PRIVATE(%{CN})
 };

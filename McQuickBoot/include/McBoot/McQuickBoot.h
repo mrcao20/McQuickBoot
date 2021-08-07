@@ -1,6 +1,29 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021 mrcao20
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 #pragma once
 
-#include "IMcQuickBoot.h"
+#include "McAbstractQuickBoot.h"
 
 #include <functional>
 
@@ -10,13 +33,10 @@
 
 #include "Application/McSingleApplication.h"
 #include "Application/McSingleCoreApplication.h"
-#include "McBoot/Requestor/McQmlRequestor.h"
-
-//! 此宏所对应的对象将在Application析构时销毁，所以一旦Application开始析构，就再也不要调用此宏
-#define $ McQuickBoot::requestor()
 
 QT_BEGIN_NAMESPACE
 class QQuickView;
+class QQuickWidget;
 QT_END_NAMESPACE
 
 MC_FORWARD_DECL_CLASS(IMcApplicationContext);
@@ -25,26 +45,29 @@ MC_FORWARD_DECL_PRIVATE_DATA(McQuickBoot);
 
 using std::function;
 
-class MCQUICKBOOT_EXPORT McQuickBoot : public QObject, public IMcQuickBoot
+class MCQUICKBOOT_EXPORT McQuickBoot : public McAbstractQuickBoot
 {
     Q_OBJECT
     MC_DECL_INIT(McQuickBoot)
 public:
     explicit McQuickBoot(QObject *parent = nullptr);
     ~McQuickBoot() override;
-    
+
     static void init(QCoreApplication *app, QQmlApplicationEngine *engine) noexcept;
     static QQmlEngine *engine() noexcept;
     static QQuickView *createQuickView(const QString &source, QWindow *parent = nullptr) noexcept;
-    
+    static QQuickWidget *createQuickWidget(const QString &source,
+                                           QWidget *parent = nullptr) noexcept;
+
+    static QSharedPointer<McQuickBoot> instance() noexcept;
+
     static void setPreInitFunc(const function<void(QCoreApplication *)> &func) noexcept;
-    static void setAfterInitFunc(const function<void(QCoreApplication *, QQmlApplicationEngine *)> &func) noexcept;
-    
-    static McQmlRequestorPtr requestor() noexcept;
-    
+    static void setAfterInitFunc(
+        const function<void(QCoreApplication *, QQmlApplicationEngine *)> &func) noexcept;
+
     template<typename T = QGuiApplication>
     static int run(int argc, char *argv[], const QString &path = "qrc:/main.qml") noexcept;
-    
+
     /*!
      * \brief singleRun
      * 
@@ -56,16 +79,16 @@ public:
      */
     template<typename T = McSingleApplication>
     static int singleRun(int argc, char *argv[], const QString &path = "qrc:/main.qml") noexcept;
- 
+
     void initBoot(QQmlEngine *engine) noexcept;
-    
+
+    //! 如果重新或新加载了某些组件，则调用此函数
+    void refresh() noexcept;
     IMcApplicationContextPtr getApplicationContext() const noexcept override;
-    
-    //! 获取所有被Component标记的bean
-    QList<QString> getAllComponent() noexcept;
-    //! 获取所有组建类型为componentType的bean的名称
-    QList<QString> getComponents(const QString &componentType) noexcept;
-    
+
+protected:
+    void initContainer() const noexcept override;
+
 private:
     MC_DECL_PRIVATE(McQuickBoot)
 };

@@ -1,6 +1,7 @@
 TEMPLATE = subdirs
 
 SUBDIRS += McIoc \
+    McWidgetIoc \
     McLogQt \
     McOrm \
     McQuickBoot \

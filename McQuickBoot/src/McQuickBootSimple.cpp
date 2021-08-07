@@ -1,14 +1,32 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021 mrcao20
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 #include "McBoot/McQuickBootSimple.h"
 
 #include <QDebug>
 
 #include <McIoc/ApplicationContext/impl/McAnnotationApplicationContext.h>
 #include <McIoc/BeanDefinition/IMcBeanDefinition.h>
-
-#include "McBoot/Controller/impl/McControllerContainer.h"
-#include "McBoot/Model/McModelContainer.h"
-#include "McBoot/Socket/impl/McQmlSocketContainer.h"
-#include "McBoot/BeanDefinitionReader/impl/McConfigurationFileBeanDefinitionReader.h"
 
 namespace {
 
@@ -19,34 +37,26 @@ struct McQuickBootSimpleStaticData
 
 }
 
-Q_GLOBAL_STATIC(McQuickBootSimpleStaticData, mcQuickBootSimpleStaticData)
+MC_GLOBAL_STATIC(McQuickBootSimpleStaticData, mcQuickBootSimpleStaticData)
 
 MC_DECL_PRIVATE_DATA(McQuickBootSimple)
 McAnnotationApplicationContextPtr context;
-McQmlRequestorPtr requestor;
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McQuickBootSimple)
 MC_DESTROY()
-if(!mcQuickBootSimpleStaticData.exists()) {
+if (!mcQuickBootSimpleStaticData.exists()) {
     return;
 }
-auto requestor = mcQuickBootSimpleStaticData->boot->d->requestor.data();
-mcQuickBootSimpleStaticData->boot->d->requestor.clear();
-delete requestor;
 mcQuickBootSimpleStaticData->boot.reset();
 MC_INIT_END
 
-McQuickBootSimple::McQuickBootSimple(QObject *parent)
-    : QObject(parent)
+McQuickBootSimple::McQuickBootSimple(QObject *parent) : McAbstractQuickBoot(parent)
 {
-    MC_NEW_PRIVATE_DATA(McQuickBootSimple)
+    MC_NEW_PRIVATE_DATA(McQuickBootSimple);
 }
 
-McQuickBootSimple::~McQuickBootSimple()
-{
-    qDebug() << "~McQuickBootSimple";
-}
+McQuickBootSimple::~McQuickBootSimple() {}
 
 void McQuickBootSimple::init() noexcept
 {
@@ -55,41 +65,32 @@ void McQuickBootSimple::init() noexcept
         return;
     }
     mcQuickBootSimpleStaticData->boot = McQuickBootSimplePtr::create();
+    McAbstractQuickBoot::setInstance(mcQuickBootSimpleStaticData->boot);
     McQuickBootSimplePtr &boot = mcQuickBootSimpleStaticData->boot;
     if(boot->d->context.isNull()) {
         boot->d->context = McAnnotationApplicationContextPtr::create();
-#ifndef MC_NO_YAML
-        auto reader = McConfigurationFileBeanDefinitionReaderPtr::create(boot->d->context);
-        reader->readBeanDefinition(boot->d->context.data());
-#endif
-        boot->d->context->refresh();  //!< 预加载bean
+        boot->doRefresh();
     }
-    auto appCtx = boot->d->context;
-    
-    auto controllerContainer = appCtx->getBean<McControllerContainer>("controllerContainer");
-    controllerContainer->init(boot);
-    
-    auto modelContainer = appCtx->getBean<McModelContainer>("modelContainer");
-    modelContainer->init(boot);
-    
-    auto socketContainer = appCtx->getBean<McQmlSocketContainer>("socketContainer");
-    socketContainer->init(boot);
-    
-    boot->d->requestor = appCtx->getBean<McQmlRequestor>("requestor");
-    boot->d->requestor->setControllerContainer(controllerContainer);
-    boot->d->requestor->setSocketContainer(socketContainer);
 }
 
-McQmlRequestorPtr McQuickBootSimple::requestor() noexcept
+QSharedPointer<McQuickBootSimple> McQuickBootSimple::instance() noexcept
 {
     McQuickBootSimplePtr &boot = mcQuickBootSimpleStaticData->boot;
-    if(boot.isNull()) {
-        return McQmlRequestorPtr();
-    }
-    return boot->d->requestor;
+    Q_ASSERT_X(!boot.isNull(), "McQuickBootSimplePtr::instance()", "please call init before");
+    return boot;
+}
+
+void McQuickBootSimple::refresh() noexcept
+{
+    d->context->generateReader();
+    doRefresh();
 }
 
 IMcApplicationContextPtr McQuickBootSimple::getApplicationContext() const noexcept 
 {
     return d->context;
+}
+
+void McQuickBootSimple::initContainer() const noexcept
+{
 }

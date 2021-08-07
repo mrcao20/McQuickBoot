@@ -1,3 +1,26 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021 mrcao20
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 #include "McLog/Appender/impl/McSizeRollingFileAppender.h"
 
 #include <QFile>
@@ -8,7 +31,7 @@ qint64 maxFileSizeBytes{-1};        //!< 单位: byte，默认-1表示用不创�
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McSizeRollingFileAppender)
-MC_REGISTER_BEAN_FACTORY(MC_TYPELIST(McSizeRollingFileAppender))
+MC_REGISTER_BEAN_FACTORY(McSizeRollingFileAppender)
 MC_INIT_END
 
 McSizeRollingFileAppender::McSizeRollingFileAppender() 
@@ -30,28 +53,28 @@ void McSizeRollingFileAppender::setMaxFileSize(const QString &val) noexcept
     d->maxFileSize = val.toUpper();
     
     auto temp = d->maxFileSize;
-    if(temp.endsWith("GB")) {
+    if (temp.endsWith("GB")) {
         temp.remove("GB");
         bool ok = false;
         auto size = temp.toLongLong(&ok);
         if(ok) {
             setMaxFileSizeBytes(size * 1024 * 1024 * 1024);
         }
-    }else if(temp.endsWith("MB")) {
+    } else if (temp.endsWith("MB")) {
         temp.remove("MB");
         bool ok = false;
         auto size = temp.toLongLong(&ok);
         if(ok) {
             setMaxFileSizeBytes(size * 1024 * 1024);
         }
-    }else if(temp.endsWith("KB")) {
+    } else if (temp.endsWith("KB")) {
         temp.remove("KB");
         bool ok = false;
         auto size = temp.toLongLong(&ok);
         if(ok) {
             setMaxFileSizeBytes(size * 1024);
         }
-    }else if(temp.endsWith("B")) {
+    } else if (temp.endsWith("B")) {
         temp.remove("B");
         bool ok = false;
         auto size = temp.toLongLong(&ok);

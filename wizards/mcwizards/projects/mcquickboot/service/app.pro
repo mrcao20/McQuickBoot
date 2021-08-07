@@ -1,5 +1,5 @@
 QT -= gui
-QT += mcquickboot
+QT += quickboot
 
 TARGET = %{ProjectName}
 TARGET = $$qt5LibraryTarget($$TARGET)
@@ -7,7 +7,7 @@ TARGET = $$qt5LibraryTarget($$TARGET)
 TEMPLATE = lib
 DEFINES += %{LibraryDefine}
 
-CONFIG += c++11
+CONFIG += c++17
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -37,7 +37,7 @@ CONFIG(release, debug|release) {
     DEFINES += QT_MESSAGELOGCONTEXT
 }
 
-DESTDIR = $$PWD/../bin
+DESTDIR = $$PWD/../bin/mcservices
 MOC_DIR = $$PWD/../moc/%{ProjectName}
 
 msvc {
