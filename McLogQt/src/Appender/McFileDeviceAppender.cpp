@@ -37,10 +37,7 @@ McFileDeviceAppender::~McFileDeviceAppender()
 {
 }
 
-void McFileDeviceAppender::writeBefore() noexcept
-{
-    
-}
+void McFileDeviceAppender::writeBefore() noexcept {}
 
 void McFileDeviceAppender::writeAfter() noexcept 
 {

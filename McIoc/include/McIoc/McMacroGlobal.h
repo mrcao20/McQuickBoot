@@ -93,10 +93,11 @@
 #define MC_PADDING_CLANG(size)  \
     char ___clang_padding___[size];
 
-#define MC_DECL_INIT(Class) \
-    static const int Class##_Static_Init;
+#define MC_DECL_INIT(Class) static const int Class##_Static_Init;
 
-#define MC_DECL_SUPER(SUPER) typedef SUPER super;
+#define MC_DECL_SUPER(SUPER) \
+private: \
+    typedef SUPER super;
 
 #define MC_FILLING_ROUTINE_PRIORITY_FUNC_0() Mc::RoutinePriority::Normal
 #define MC_FILLING_ROUTINE_PRIORITY_FUNC_1(args) args

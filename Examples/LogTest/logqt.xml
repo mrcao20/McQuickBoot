@@ -32,11 +32,13 @@
         <property name="threshold" value="debug-"></property>
         <property name="immediateFlush" value="true"></property>
         <!-- 单位可以是B，KB，MB，GB -->
-        <property name="maxFileSize" value="1KB"></property>
+        <property name="maxFileSize" value="1MB"></property>
         <property name="backupDirPath" value="./log/rollingFile/backup/"></property>
         <property name="backupDirPattern" value="%{time yyyy-MM-dd}"></property>
         <property name="dirPath" value="./log/rollingFile/"></property>
         <property name="fileNamePattern" value="log_%{time yyyy-MM-dd_hh-mm-ss}.log"></property>
+        <property name="useLockFile" value="true"></property>
+        <!-- <property name="lockFilePath" value="./lockFile"></property> -->
         <!-- 未设置layout，默认使用McNormalLayout -->
     </bean>
     <bean name="file" class="McFileAppender">
