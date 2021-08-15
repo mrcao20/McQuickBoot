@@ -43,9 +43,7 @@ McRollingFileAppender::McRollingFileAppender()
     MC_NEW_PRIVATE_DATA(McRollingFileAppender);
 }
 
-McRollingFileAppender::~McRollingFileAppender() 
-{
-}
+McRollingFileAppender::~McRollingFileAppender() {}
 
 QString McRollingFileAppender::backupDirPath() const noexcept 
 {
@@ -109,12 +107,6 @@ void McRollingFileAppender::nextFile() noexcept
     auto file = device().staticCast<QFile>();
 
     auto oldFilePath = file->fileName();
-    auto newFilePath = this->newFilePath();
-    if (newFilePath == oldFilePath) {
-        return;
-    }
-    auto mode = file->openMode();
-
     file->close();
 
     auto backupPath = newBackupPath(oldFilePath);
@@ -125,11 +117,7 @@ void McRollingFileAppender::nextFile() noexcept
     }
     QFile::rename(oldFilePath, dir.absoluteFilePath(QFileInfo(oldFilePath).fileName()));
 
-    file->setFileName(newFilePath);
-    if (!file->open(mode)) {
-        MC_PRINT_ERR("error open file '%s' for write!!!\n", qPrintable(newFilePath));
-        return;
-    }
+    checkExistsFile();
 }
 
 QString McRollingFileAppender::newBackupPath(const QString &oldFilePath) const noexcept 

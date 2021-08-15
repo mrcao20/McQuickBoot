@@ -37,6 +37,7 @@ public:
     virtual void setLogger(const QMap<QString, IMcLoggerPtr> &loggers) noexcept = 0;
     virtual IMcLoggerPtr getLogger(const QString &loggerName) noexcept = 0;
     virtual void runTask() noexcept = 0;
+    virtual void flushWhenQuit() noexcept = 0;
 };
 
 MC_DECL_METATYPE(IMcLoggerRepository)

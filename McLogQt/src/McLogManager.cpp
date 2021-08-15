@@ -32,6 +32,7 @@ MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McLogManager)
 MC_DESTROY(Mc::RoutinePriority::Min)
+McLogManager::instance()->d->loggerRepository->flushWhenQuit();
 McLogManager::uninstallQtMessageHandler();  //!< 此函数内部会加锁，loggerRepository析构时一定不会进入output函数
 McLogManager::instance()->d->loggerRepository.reset();
 MC_INIT_END

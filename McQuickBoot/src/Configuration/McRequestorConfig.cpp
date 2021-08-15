@@ -31,6 +31,7 @@ MC_INIT_END
 
 MC_DECL_PRIVATE_DATA(McRequestorConfig)
 int maxThreadCount{QThread::idealThreadCount()};
+bool autoIncrease{true};
 MC_DECL_PRIVATE_DATA_END
 
 McRequestorConfig::McRequestorConfig(QObject *parent) noexcept : QObject(parent)
@@ -48,4 +49,14 @@ int McRequestorConfig::maxThreadCount() const noexcept
 void McRequestorConfig::setMaxThreadCount(int val) noexcept
 {
     d->maxThreadCount = val;
+}
+
+bool McRequestorConfig::autoIncrease() const noexcept
+{
+    return d->autoIncrease;
+}
+
+void McRequestorConfig::setAutoIncrease(bool val) noexcept
+{
+    d->autoIncrease = val;
 }

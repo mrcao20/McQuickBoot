@@ -196,13 +196,19 @@ enum RoutinePriority : int {
     Max = 10
 };
 
+#ifdef MC_MANUAL_ENABLE_IOC
+namespace Ioc {
+MCIOC_EXPORT void init() noexcept;
+}
+#endif
+
 template<typename Container>
-bool isContains(int index, const Container &container) {
+bool isContains(int index, const Container &container) noexcept
+{
     if (index >= 0 && index < container.size())
         return true;
     return false;
 }
-
 
 /*!
  * \brief mcWaitForExecFunc，执行一个函数，当该函数返回true时或timeout超时时返回

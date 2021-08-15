@@ -86,20 +86,7 @@ void McFileAppender::doFinished() noexcept
     super::doFinished();
 
     checkExistsFile();
-}
-
-void McFileAppender::writeBefore() noexcept
-{
-    super::writeBefore();
-
-    auto file = device().staticCast<QFile>();
-    if (file.isNull()) {
-        return;
-    }
-    if (file->exists() && file->isOpen()) {
-        return;
-    }
-    checkExistsFile();
+    tryNextFile();
 }
 
 QString McFileAppender::newFilePath() const noexcept 
@@ -118,10 +105,16 @@ QString McFileAppender::newFilePath() const noexcept
                                 + list.at(3));
 }
 
-void McFileAppender::checkExistsFile() noexcept
+bool McFileAppender::checkExistsFile() noexcept
 {
-    QSharedPointer<QFile> file = QSharedPointer<QFile>::create();
-    setDevice(file);
+    QString oldFilePath;
+    auto file = device().staticCast<QFile>();
+    if (file.isNull()) {
+        file = QSharedPointer<QFile>::create();
+        setDevice(file);
+    } else {
+        oldFilePath = file->fileName();
+    }
 
     QRegularExpression re(R"((.*)%\{time (.*?)\}(.*))");
     auto match = re.match(d->fileNamePattern);
@@ -129,7 +122,7 @@ void McFileAppender::checkExistsFile() noexcept
     QDir dir(d->dirPath);
     if (!dir.exists() && !dir.mkpath(d->dirPath)) {
         MC_PRINT_ERR("the dir path: %s is not exists. but cannot create!\n", qPrintable(d->dirPath));
-        return;
+        return false;
     }
     auto fileInfos = dir.entryInfoList(QDir::Files, QDir::Time); //!< 获取最新被修改的文件
     QString localFilePath;
@@ -157,7 +150,7 @@ void McFileAppender::checkExistsFile() noexcept
         }
     }
 
-    if (localFilePath.isEmpty()) {
+    if (localFilePath.isEmpty() || localFilePath == oldFilePath) {
         localFilePath = newFilePath();
     }
 
@@ -167,8 +160,8 @@ void McFileAppender::checkExistsFile() noexcept
         mode |= QIODevice::Append;
     if (!file->open(mode)) {
         MC_PRINT_ERR("error open file '%s' for write!!!\n", qPrintable(localFilePath));
-        return;
+        return false;
     }
 
-    tryNextFile();
+    return true;
 }

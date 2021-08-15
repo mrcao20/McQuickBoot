@@ -51,13 +51,10 @@ public:
 
 protected:
     void doFinished() noexcept override;
-    void writeBefore() noexcept override;
 
 protected:
     QString newFilePath() const noexcept;
-
-private:
-    void checkExistsFile() noexcept;
+    bool checkExistsFile() noexcept;
 
 private:
     MC_DECL_PRIVATE(McFileAppender)

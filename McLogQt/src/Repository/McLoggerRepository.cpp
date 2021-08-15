@@ -40,6 +40,7 @@ int taskTimeout{3600000};
 QList<IMcAdditionalTaskPtr> parallelTasks;
 QList<IMcAdditionalTaskPtr> sequentialTasks;
 QTimer taskTimer;
+bool flushWhenQuit{false};
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McLoggerRepository)
@@ -62,7 +63,7 @@ McLoggerRepository::McLoggerRepository()
 
 McLoggerRepository::~McLoggerRepository()
 {
-    if(d->thread) {
+    if (d->thread) {
         if(QThread::currentThread() == thread()) {
             processEvents();
         } else {
@@ -109,6 +110,20 @@ void McLoggerRepository::runTask() noexcept
         executeTasks();
     } else {
         QMetaObject::invokeMethod(this, MC_STRINGIFY(executeTasks), Qt::BlockingQueuedConnection);
+    }
+}
+
+void McLoggerRepository::flushWhenQuit() noexcept
+{
+    if (!d->flushWhenQuit) {
+        return;
+    }
+    auto categories = d->loggers.keys();
+    for (const auto &category : qAsConst(categories)) {
+        qDebug(QLoggingCategory(category.toLocal8Bit()));
+        qInfo(QLoggingCategory(category.toLocal8Bit()));
+        qWarning(QLoggingCategory(category.toLocal8Bit()));
+        qCritical(QLoggingCategory(category.toLocal8Bit()));
     }
 }
 
