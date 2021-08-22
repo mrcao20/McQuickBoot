@@ -114,7 +114,7 @@ QVariant McSelectSqlSlot::queryObjectFromDb(int type,
 
     if (!paramNames.isEmpty()) {
         sql += " WHERE";
-        for (auto name : paramNames) {
+        for (auto &name : qAsConst(paramNames)) {
             sql += " `";
             sql += proColMap.value(name);
             sql += "` = ? AND";
@@ -122,7 +122,7 @@ QVariant McSelectSqlSlot::queryObjectFromDb(int type,
         sql.remove(sql.length() - 4, 4);
     }
     sqlQuery.prepare(sql);
-    for (auto param : params) {
+    for (auto &param : qAsConst(params)) {
         sqlQuery.addBindValue(param);
     }
     sqlQuery.exec();

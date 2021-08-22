@@ -233,6 +233,11 @@ QString getBeanName(const QMetaObject *metaObj) noexcept
     auto beanNameIndex = metaObj->indexOfClassInfo(MC_BEANNAME_TAG);
     auto func = [&beanName, metaObj]() {
         beanName = metaObj->className();
+        auto str = QLatin1String("::");
+        auto index = beanName.lastIndexOf(str);
+        if (index != -1) {
+            beanName = beanName.mid(index + str.size());
+        }
         Q_ASSERT(!beanName.isEmpty());
         auto firstChar = beanName.at(0);
         firstChar = firstChar.toLower();
