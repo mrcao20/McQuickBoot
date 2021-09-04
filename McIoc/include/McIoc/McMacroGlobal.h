@@ -41,6 +41,14 @@
 
 #define MC_STRINGIFY(x) #x
 
+#define MC_SAFETY_DELETE(p) \
+    { \
+        if (p != nullptr) { \
+            delete p; \
+            p = nullptr; \
+        } \
+    }
+
 #define MC_DECL_POINTER(Class) \
     using Class##Ptr = QSharedPointer<Class>; \
     using Class##ConstPtrRef = const QSharedPointer<Class> &;

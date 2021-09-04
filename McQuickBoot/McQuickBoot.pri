@@ -8,6 +8,8 @@ SOURCES += \
     $$PWD/src/Configuration/McConfigurationContainer.cpp \
     $$PWD/src/Configuration/McLogConfig.cpp \
     $$PWD/src/Configuration/McRequestorConfig.cpp \
+    $$PWD/src/Configuration/McRuntimeConfigConfig.cpp \
+    $$PWD/src/Configuration/McRuntimeConfigurer.cpp \
     $$PWD/src/Configuration/McStateMachineConfig.cpp \
     $$PWD/src/Configuration/McWidgetConfig.cpp \
     $$PWD/src/Configuration/Parser/McConfigurationParserFactory.cpp \
@@ -47,6 +49,8 @@ HEADERS +=  \
     $$PWD/include/McBoot/Application/McSingleApplication.h \
     $$PWD/include/McBoot/Application/McSingleCoreApplication.h \
     $$PWD/include/McBoot/Configuration/IMcQuickBootConfigurer.h \
+    $$PWD/include/McBoot/Configuration/McRuntimeConfigurer.h \
+    $$PWD/include/McBoot/Configuration/McRuntimeConfigurerConfig.h \
     $$PWD/include/McBoot/Configuration/Parser/IMcConfigurationParser.h \
     $$PWD/include/McBoot/Configuration/McConfigurationContainer.h \
     $$PWD/include/McBoot/Configuration/McLogConfig.h \

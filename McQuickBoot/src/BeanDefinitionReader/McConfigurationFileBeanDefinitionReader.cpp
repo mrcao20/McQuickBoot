@@ -71,7 +71,11 @@ McConfigurationFileBeanDefinitionReader::~McConfigurationFileBeanDefinitionReade
 
 void McConfigurationFileBeanDefinitionReader::addConfigPath(const QString &path) noexcept
 {
-    staticData->configPaths.append(path);
+    if (qApp == nullptr) {
+        staticData->configPaths.append(path);
+    } else {
+        staticData->configPaths.append(Mc::toAbsolutePath(path));
+    }
 }
 
 void McConfigurationFileBeanDefinitionReader::doReadBeanDefinition() noexcept 

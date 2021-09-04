@@ -21,38 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "McBoot/Utils/McCancel.h"
+#include "McBoot/Configuration/McRuntimeConfigurerConfig.h"
 
-MC_INIT(McCancel)
-qRegisterMetaType<McCancel>();
-MC_INIT_END
+MC_STATIC()
+MC_REGISTER_BEAN_FACTORY(McRuntimeConfigurerConfig)
+MC_STATIC_END
 
-McCancel::McCancel() noexcept
+MC_DECL_PRIVATE_DATA(McRuntimeConfigurerConfig)
+QString filePath;
+MC_DECL_PRIVATE_DATA_END
+
+McRuntimeConfigurerConfig::McRuntimeConfigurerConfig(QObject *parent) noexcept : QObject(parent)
 {
-    d = new McCancelSharedData();
+    MC_NEW_PRIVATE_DATA(McRuntimeConfigurerConfig);
 }
 
-McCancel::~McCancel() {}
+McRuntimeConfigurerConfig::~McRuntimeConfigurerConfig() {}
 
-bool McCancel::isCanceled() const noexcept
+QString McRuntimeConfigurerConfig::filePath() const noexcept
 {
-    return d->isCanceled.loadAcquire();
+    return d->filePath;
 }
 
-void McCancel::cancel() noexcept
+void McRuntimeConfigurerConfig::setFilePath(const QString &val) noexcept
 {
-    d->isCanceled.storeRelease(true);
-    if (!d->callback.isNull()) {
-        d->callback->call(d->isCanceled.loadAcquire());
-    }
-}
-
-QAtomicInteger<bool> &McCancel::capture() const noexcept
-{
-    return d->isCanceled;
-}
-
-void McCancel::setCallback(const IMcCallbackPtr &val) noexcept
-{
-    d->callback = val;
+    d->filePath = val;
 }
