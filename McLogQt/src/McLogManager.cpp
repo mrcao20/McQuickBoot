@@ -26,14 +26,32 @@
 #include "McLog/Repository/IMcLoggerRepository.h"
 #include "McLog/Logger/IMcLogger.h"
 
+namespace {
+void customMessageHandlerNone(QtMsgType msgType,
+                              const QMessageLogContext &msgLogCtx,
+                              const QString &msg) noexcept
+{
+    Q_UNUSED(msgType)
+    Q_UNUSED(msgLogCtx)
+    Q_UNUSED(msg)
+}
+} // namespace
+
 MC_DECL_PRIVATE_DATA(McLogManager)
 IMcLoggerRepositoryPtr loggerRepository;
+bool handlerWhenQuit{false};
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McLogManager)
 MC_DESTROY(Mc::RoutinePriority::Min)
+if (!McLogManager::instance()->loggerRepository().isNull()) {
+    McLogManager::instance()->loggerRepository()->flushWhenQuit();
+}
 McLogManager::uninstallQtMessageHandler();  //!< 此函数内部会加锁，loggerRepository析构时一定不会进入output函数
-McLogManager::instance()->d->loggerRepository.reset();
+if (McLogManager::instance()->d->handlerWhenQuit) {
+    qInstallMessageHandler(customMessageHandlerNone);
+}
+McLogManager::instance()->setLoggerRepository(IMcLoggerRepositoryPtr());
 MC_INIT_END
 
 McLogManager::McLogManager() 
@@ -73,7 +91,12 @@ void McLogManager::uninstallQtMessageHandler() noexcept
 
 void McLogManager::runTask() noexcept
 {
-    instance()->d->loggerRepository->runTask();
+    instance()->loggerRepository()->runTask();
+}
+
+void McLogManager::handlerWhenQuit(bool val) noexcept
+{
+    instance()->d->handlerWhenQuit = val;
 }
 
 void McLogManager::customMessageHandler(QtMsgType msgType, const QMessageLogContext &msgLogCtx, const QString &msg) noexcept 

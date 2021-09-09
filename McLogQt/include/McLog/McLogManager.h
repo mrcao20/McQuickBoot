@@ -45,6 +45,7 @@ public:
     static void installQtMessageHandler() noexcept;
     static void uninstallQtMessageHandler() noexcept;
     static void runTask() noexcept;
+    static void handlerWhenQuit(bool val) noexcept;
 
 private:
     static void customMessageHandler(QtMsgType msgType, const QMessageLogContext &msgLogCtx, const QString &msg) noexcept;

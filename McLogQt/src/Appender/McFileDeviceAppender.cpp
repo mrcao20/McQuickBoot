@@ -39,7 +39,13 @@ McFileDeviceAppender::~McFileDeviceAppender()
 
 void McFileDeviceAppender::writeBefore() noexcept
 {
-    
+    auto fileDevice = device().staticCast<QFileDevice>();
+
+    if (fileDevice.isNull()) {
+        return;
+    }
+
+    tryNextFile();
 }
 
 void McFileDeviceAppender::writeAfter() noexcept 

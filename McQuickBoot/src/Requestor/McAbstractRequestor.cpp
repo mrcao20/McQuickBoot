@@ -32,6 +32,7 @@
 #include <McIoc/ApplicationContext/IMcApplicationContext.h>
 
 #include "McBoot/Configuration/McRequestorConfig.h"
+#include "McBoot/Configuration/McRuntimeConfigurer.h"
 #include "McBoot/Configuration/McStateMachineConfig.h"
 #include "McBoot/Controller/IMcControllerContainer.h"
 #include "McBoot/Controller/impl/McAbstractResponse.h"
@@ -58,16 +59,21 @@ private:
 
 McRunnerEvent::~McRunnerEvent() {}
 
-MC_GLOBAL_STATIC(QThreadPool, requestorThreadPool)
-MC_GLOBAL_STATIC(QScxmlStateMachine *, staticStateMachine)
+MC_GLOBAL_STATIC_BEGIN(staticData)
+bool waitThreadPoolDone{true};
+QThreadPool requestorThreadPool;
+QScxmlStateMachine *staticStateMachine{nullptr};
+MC_GLOBAL_STATIC_END(staticData)
 
 MC_INIT(McAbstractRequestor)
 MC_REGISTER_CONTAINER_CONVERTER(QList<IMcResponseHandlerPtr>)
 MC_DESTROY(Mc::QuickBoot::ThreadPool)
-if (!requestorThreadPool.exists()) {
+if (!staticData.exists()) {
     return;
 }
-requestorThreadPool->waitForDone();
+if (staticData->waitThreadPoolDone) {
+    staticData->requestorThreadPool.waitForDone();
+}
 MC_INIT_END
 
 MC_DECL_PRIVATE_DATA(McAbstractRequestor)
@@ -75,6 +81,7 @@ IMcControllerContainerPtr controllerContainer;
 IMcModelContainerPtr modelContainer;
 McRequestorConfigPtr requestorConfig;
 McStateMachineConfigPtr stateMachineConfig;
+McRuntimeConfigurerPtr runtimeConfig;
 IMcApplicationContext *appCtx;
 QList<IMcResponseHandlerPtr> responseHanlders;
 MC_DECL_PRIVATE_DATA_END
@@ -90,12 +97,12 @@ McAbstractRequestor::~McAbstractRequestor()
 
 qint64 McAbstractRequestor::maxThreadCount() const noexcept
 {
-    return requestorThreadPool->maxThreadCount();
+    return staticData->requestorThreadPool.maxThreadCount();
 }
 
 void McAbstractRequestor::setMaxThreadCount(int val) noexcept
 {
-    requestorThreadPool->setMaxThreadCount(val);
+    staticData->requestorThreadPool.setMaxThreadCount(val);
 }
 
 IMcControllerContainerPtr McAbstractRequestor::controllerContainer() const noexcept
@@ -140,8 +147,8 @@ QObject *McAbstractRequestor::getModel(const QString &name) const noexcept
 
 QScxmlStateMachine *McAbstractRequestor::stateMachine() const noexcept
 {
-    if (staticStateMachine.exists() && (*staticStateMachine) != nullptr) {
-        return *staticStateMachine;
+    if (staticData->staticStateMachine != nullptr) {
+        return staticData->staticStateMachine;
     }
     if (d->stateMachineConfig.isNull()) {
         qFatal("please make sure file 'application.yml' exists");
@@ -155,7 +162,7 @@ QScxmlStateMachine *McAbstractRequestor::stateMachine() const noexcept
 
 bool McAbstractRequestor::isLoadStateMachine() const noexcept
 {
-    if (staticStateMachine.exists() && (*staticStateMachine) != nullptr) {
+    if (staticData->staticStateMachine != nullptr) {
         return true;
     }
     if (d->stateMachineConfig.isNull()) {
@@ -170,21 +177,28 @@ bool McAbstractRequestor::isLoadStateMachine() const noexcept
 
 void McAbstractRequestor::setStaticStateMachine(QScxmlStateMachine *val)
 {
-    *staticStateMachine = val;
+    staticData->staticStateMachine = val;
+}
+
+McRuntimeConfigurer &McAbstractRequestor::runtimeConfig() const
+{
+    return *d->runtimeConfig.data();
 }
 
 void McAbstractRequestor::customEvent(QEvent *event)
 {
     if (event->type() == QEvent::Type::User + 1) {
         McRunnerEvent *e = static_cast<McRunnerEvent *>(event);
-        if (requestorThreadPool->tryStart(e->runner())) {
-            return;
+        if (d->requestorConfig.isNull() || d->requestorConfig->autoIncrease()) {
+            if (staticData->requestorThreadPool.tryStart(e->runner())) {
+                return;
+            }
+            staticData->requestorThreadPool.reserveThread();
+            connect(e->runner(), &McRequestRunner::signal_finished, this, []() {
+                staticData->requestorThreadPool.releaseThread();
+            });
         }
-        requestorThreadPool->reserveThread();
-        connect(e->runner(), &McRequestRunner::signal_finished, this, []() {
-            requestorThreadPool->releaseThread();
-        });
-        requestorThreadPool->start(e->runner());
+        staticData->requestorThreadPool.start(e->runner());
     }
 }
 
@@ -214,6 +228,7 @@ void McAbstractRequestor::allFinished() noexcept
         maxThreadCount = QThread::idealThreadCount();
     } else {
         maxThreadCount = d->requestorConfig->maxThreadCount();
+        staticData->waitThreadPoolDone = d->requestorConfig->waitThreadPoolDone();
     }
     setMaxThreadCount(maxThreadCount);
     d->responseHanlders.append(McResponseHandlerFactory::getHandlers());

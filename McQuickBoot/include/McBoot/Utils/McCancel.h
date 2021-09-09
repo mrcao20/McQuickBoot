@@ -29,10 +29,12 @@
 #include <McIoc/McGlobal.h>
 
 #include "../McBootMacroGlobal.h"
+#include "Callback/Impl/McCppAsyncCallback.h"
 
 struct MCQUICKBOOT_EXPORT McCancelSharedData : public QSharedData
 {
     QAtomicInteger<bool> isCanceled{false};
+    IMcCallbackPtr callback;
 };
 
 class MCQUICKBOOT_EXPORT McCancel
@@ -44,6 +46,52 @@ public:
 
     bool isCanceled() const noexcept;
     void cancel() noexcept;
+    QAtomicInteger<bool> &capture() const noexcept;
+
+    template<typename Func>
+    void callback(const typename QtPrivate::FunctionPointer<Func>::Object *recever,
+                  Func func) noexcept
+    {
+        typedef QtPrivate::FunctionPointer<Func> FuncType;
+
+        Q_STATIC_ASSERT_X(
+            int(FuncType::ArgumentCount) <= 1,
+            "The number of parameters of callback function can only be less than or equal to "
+            "1(bool isCanceled)");
+
+        setCallback(McCppAsyncCallback::build(recever, func));
+    }
+    template<typename Func>
+    typename std::enable_if<int(QtPrivate::FunctionPointer<Func>::ArgumentCount) >= 0
+                                && !QtPrivate::FunctionPointer<Func>::IsPointerToMemberFunction,
+                            void>::type
+    callback(Func func) noexcept
+    {
+        typedef QtPrivate::FunctionPointer<Func> FuncType;
+
+        Q_STATIC_ASSERT_X(
+            int(FuncType::ArgumentCount) <= 1,
+            "The number of parameters of callback function can only be less than or equal to "
+            "1(bool isCanceled)");
+
+        setCallback(McCppAsyncCallback::build(func));
+    }
+    template<typename Func>
+    typename std::enable_if<QtPrivate::FunctionPointer<Func>::ArgumentCount == -1, void>::type
+    callback(Func func) noexcept
+    {
+        typedef McPrivate::LambdaType<Func> FuncType;
+
+        Q_STATIC_ASSERT_X(
+            int(FuncType::ArgumentCount) <= 1,
+            "The number of parameters of callback function can only be less than or equal to "
+            "1(bool isCanceled)");
+
+        setCallback(McCppAsyncCallback::build(func));
+    }
+
+private:
+    void setCallback(const IMcCallbackPtr &val) noexcept;
 
 private:
     QExplicitlySharedDataPointer<McCancelSharedData> d;

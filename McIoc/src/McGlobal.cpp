@@ -68,6 +68,7 @@ int iocStaticInit()
     });
     return 1;
 }
+#ifndef MC_MANUAL_ENABLE_IOC
 #ifdef Q_CC_GNU
 static void __attribute__((constructor)) __iocStaticInit__(void)
 {
@@ -85,6 +86,7 @@ int __iocStaticInit__()
 __declspec(allocate(SECNAME)) _PIFV dummy[] = {__iocStaticInit__};
 #else
 Q_CONSTRUCTOR_FUNCTION(iocStaticInit)
+#endif
 #endif
 
 static const void *constData(const QVariant::Private &d)
@@ -231,6 +233,11 @@ QString getBeanName(const QMetaObject *metaObj) noexcept
     auto beanNameIndex = metaObj->indexOfClassInfo(MC_BEANNAME_TAG);
     auto func = [&beanName, metaObj]() {
         beanName = metaObj->className();
+        auto str = QLatin1String("::");
+        auto index = beanName.lastIndexOf(str);
+        if (index != -1) {
+            beanName = beanName.mid(index + str.size());
+        }
         Q_ASSERT(!beanName.isEmpty());
         auto firstChar = beanName.at(0);
         firstChar = firstChar.toLower();
@@ -274,6 +281,15 @@ QString getStandardPath(QStandardPaths::StandardLocation type)
 } // namespace
 
 namespace Mc {
+
+#ifdef MC_MANUAL_ENABLE_IOC
+namespace Ioc {
+void init() noexcept
+{
+    McPrivate::iocStaticInit();
+}
+} // namespace Ioc
+#endif
 
 bool waitForExecFunc(const std::function<bool()> &func, qint64 timeout) noexcept 
 {
