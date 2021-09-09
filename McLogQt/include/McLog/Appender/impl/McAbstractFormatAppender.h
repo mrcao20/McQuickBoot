@@ -33,10 +33,13 @@ class MCLOGQT_EXPORT McAbstractFormatAppender
         : public McAbstractIODeviceAppender
 {
     Q_OBJECT
+    MC_DECL_SUPER(McAbstractIODeviceAppender)
     MC_DECL_INIT(McAbstractFormatAppender)
     MC_TYPELIST(McAbstractIODeviceAppender)
     Q_PROPERTY(IMcLayoutPtr layout READ layout WRITE setLayout)
     Q_PROPERTY(bool immediateFlush READ immediateFlush WRITE setImmediateFlush)
+    Q_PROPERTY(bool useLockFile READ useLockFile WRITE setUseLockFile)
+    Q_PROPERTY(QString lockFilePath READ lockFilePath WRITE setLockFilePath)
 public:
     McAbstractFormatAppender();
     ~McAbstractFormatAppender() override;
@@ -46,12 +49,21 @@ public:
     
     bool immediateFlush() const noexcept;
     void setImmediateFlush(bool val) noexcept;
-    
-    void append(QtMsgType type, const QMessageLogContext &context, const QString &str) noexcept override;
+
+    bool useLockFile() const noexcept;
+    void setUseLockFile(bool val) noexcept;
+
+    QString lockFilePath() const noexcept;
+    void setLockFilePath(const QString &val) noexcept;
+
+    void append(QtMsgType type,
+                const QMessageLogContext &context,
+                const QString &str) noexcept override;
 
 protected:
     void doFinished() noexcept override;
     void doThreadFinished() noexcept override;
+    void doAllFinished() noexcept override;
 
     void customEvent(QEvent *event) override;
     

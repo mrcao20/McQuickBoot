@@ -37,7 +37,8 @@ public:
 protected:
     void writeBefore() noexcept override;
     void writeAfter() noexcept override;
-    
+
+protected:
     virtual void tryNextFile() noexcept;
 };
 

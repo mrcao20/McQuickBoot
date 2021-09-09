@@ -30,6 +30,7 @@ MC_FORWARD_DECL_PRIVATE_DATA(McFileAppender);
 class MCLOGQT_EXPORT McFileAppender : public McFileDeviceAppender 
 {
     Q_OBJECT
+    MC_DECL_SUPER(McFileDeviceAppender)
     MC_DECL_INIT(McFileAppender)
     MC_TYPELIST(McFileDeviceAppender)
     Q_PROPERTY(QString dirPath READ dirPath WRITE setDirPath)
@@ -53,7 +54,8 @@ protected:
 
 protected:
     QString newFilePath() const noexcept;
-    
+    bool checkExistsFile() noexcept;
+
 private:
     MC_DECL_PRIVATE(McFileAppender)
 };

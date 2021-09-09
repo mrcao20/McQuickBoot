@@ -35,17 +35,12 @@ struct MCQUICKBOOT_EXPORT McProgressSharedData : public QSharedData
     IMcCallbackPtr callback;
 };
 
-class MCQUICKBOOT_EXPORT McProgress : public QObject
+class MCQUICKBOOT_EXPORT McProgress
 {
-    Q_OBJECT
     MC_DECL_INIT(McProgress)
 public:
     McProgress() noexcept;
     ~McProgress();
-    McProgress(const McProgress &o) noexcept;
-    McProgress(McProgress &&o) noexcept;
-    McProgress &operator=(const McProgress &o) noexcept;
-    McProgress &operator=(McProgress &&o) noexcept;
 
     int current() const noexcept;
     void setCurrent(int val) noexcept;

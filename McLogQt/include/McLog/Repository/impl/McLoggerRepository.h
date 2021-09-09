@@ -44,6 +44,8 @@ class MCLOGQT_EXPORT McLoggerRepository
     Q_PRIVATE_PROPERTY(d, int taskTimeout MEMBER taskTimeout)
     Q_PRIVATE_PROPERTY(d, QList<IMcAdditionalTaskPtr> parallelTasks MEMBER parallelTasks)
     Q_PRIVATE_PROPERTY(d, QList<IMcAdditionalTaskPtr> sequentialTasks MEMBER sequentialTasks)
+    Q_PRIVATE_PROPERTY(d, bool flushWhenQuit MEMBER flushWhenQuit)
+    Q_PRIVATE_PROPERTY(d, bool waitThreadFinished MEMBER waitThreadFinished)
 public:
     Q_INVOKABLE McLoggerRepository();
     ~McLoggerRepository() override;
@@ -53,6 +55,7 @@ public:
     void setLogger(const QMap<QString, IMcLoggerPtr> &loggers) noexcept override;
     IMcLoggerPtr getLogger(const QString &loggerName) noexcept override;
     void runTask() noexcept override;
+    void flushWhenQuit() noexcept override;
 
     void deleteWhenQuit() noexcept override;
 

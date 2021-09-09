@@ -57,7 +57,9 @@ QVariant McDefaultPropertyConverter::convertRef(const QVariant &value) const noe
     }
     if (!objVar.isValid()) {
         //! 失败，记录错误信息
-        qCritical() << "cannot get bean from beanReference";
+        qCritical("cannot get bean from beanReference. for bean name: %s. or plugin path: %s",
+                  qPrintable(ref->getName()),
+                  qPrintable(ref->getPluginPath()));
         return QVariant();
     }
     return objVar;

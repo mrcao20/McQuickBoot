@@ -34,25 +34,6 @@ McProgress::McProgress() noexcept
 
 McProgress::~McProgress() {}
 
-McProgress::McProgress(const McProgress &o) noexcept : d(o.d) {}
-
-McProgress::McProgress(McProgress &&o) noexcept
-{
-    d.swap(o.d);
-}
-
-McProgress &McProgress::operator=(const McProgress &o) noexcept
-{
-    d = o.d;
-    return *this;
-}
-
-McProgress &McProgress::operator=(McProgress &&o) noexcept
-{
-    d.swap(o.d);
-    return *this;
-}
-
 int McProgress::current() const noexcept
 {
     return d->current.loadAcquire();

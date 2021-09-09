@@ -40,6 +40,8 @@ int taskTimeout{3600000};
 QList<IMcAdditionalTaskPtr> parallelTasks;
 QList<IMcAdditionalTaskPtr> sequentialTasks;
 QTimer taskTimer;
+bool flushWhenQuit{false};
+bool waitThreadFinished{true};
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McLoggerRepository)
@@ -62,21 +64,25 @@ McLoggerRepository::McLoggerRepository()
 
 McLoggerRepository::~McLoggerRepository()
 {
-    if(d->thread) {
-        if(QThread::currentThread() == thread()) {
-            processEvents();
-        } else {
-            QMetaObject::invokeMethod(this, "processEvents", Qt::BlockingQueuedConnection);
+    if (QThread::currentThread() == thread()) {
+        processEvents();
+    } else {
+        QMetaObject::invokeMethod(this, "processEvents", Qt::BlockingQueuedConnection);
+    }
+    if (d->thread == nullptr) {
+        return;
+    }
+    auto cleanup = qScopeGuard([this]() { MC_SAFETY_DELETE(d->thread); });
+    d->thread->quit();
+    if (!d->waitThreadFinished) {
+        return;
+    }
+    if (d->thread->thread() != QThread::currentThread()) {
+        d->thread->wait();
+    } else {
+        while (!d->thread->isFinished() || d->thread->isRunning()) {
+            QThread::msleep(100);
         }
-        d->thread->quit();
-        if(d->thread->thread() != QThread::currentThread()) {
-            d->thread->wait();
-        } else {
-            while(!d->thread->isFinished() || d->thread->isRunning()) {
-                QThread::msleep(100);
-            }
-        }
-        delete d->thread;
     }
 }
 
@@ -109,6 +115,20 @@ void McLoggerRepository::runTask() noexcept
         executeTasks();
     } else {
         QMetaObject::invokeMethod(this, MC_STRINGIFY(executeTasks), Qt::BlockingQueuedConnection);
+    }
+}
+
+void McLoggerRepository::flushWhenQuit() noexcept
+{
+    if (!d->flushWhenQuit) {
+        return;
+    }
+    auto categories = d->loggers.keys();
+    for (const auto &category : qAsConst(categories)) {
+        qDebug(QLoggingCategory(category.toLocal8Bit()));
+        qInfo(QLoggingCategory(category.toLocal8Bit()));
+        qWarning(QLoggingCategory(category.toLocal8Bit()));
+        qCritical(QLoggingCategory(category.toLocal8Bit()));
     }
 }
 
@@ -152,7 +172,7 @@ void McLoggerRepository::executeTasks() noexcept
 
 void McLoggerRepository::processEvents() noexcept
 {
-    d->thread->eventDispatcher()->processEvents(QEventLoop::AllEvents);
+    thread()->eventDispatcher()->processEvents(QEventLoop::AllEvents);
 }
 
 #include "moc_McLoggerRepository.cpp"

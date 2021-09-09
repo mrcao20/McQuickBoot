@@ -58,15 +58,16 @@ int main(int argc, char *argv[])
     qInfo(MC_LOGGER("Lidar[0]")) << "Lidar[0]info";
     qInfo(MC_LOGGER("TestLogger")) << "test logger";
     qInfo(MC_LOGGER("TestLogger2")) << "test logger";
-    //    QtConcurrent::run([]() {
-    //        for (int i = 0; i < 100; i++) {
-    //            //            QThread::msleep(100);
-    //            qDebug() << i;
-    //            if (i == 10) {
-    //                //                qFatal("aa");
-    //            }
-    //        }
-    //    });
+    QtConcurrent::run([]() {
+        QThread::msleep(2000);
+        auto tid = QThread::currentThreadId();
+        for (int i = 0; i < 100; i++) {
+            qDebug() << "tid:" << tid << " " << i;
+            if (i == 10) {
+                //                qFatal("aa");
+            }
+        }
+    });
 
     QQmlApplicationEngine engine;
     const QUrl url(QStringLiteral("qrc:/main.qml"));

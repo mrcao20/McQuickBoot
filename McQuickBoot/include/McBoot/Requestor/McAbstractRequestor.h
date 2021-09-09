@@ -38,16 +38,17 @@ class QJSEngine;
 class QScxmlStateMachine;
 QT_END_NAMESPACE
 
-MC_FORWARD_DECL_PRIVATE_DATA(McAbstractRequestor);
-
-MC_FORWARD_DECL_CLASS(IMcControllerContainer);
-MC_FORWARD_DECL_CLASS(IMcModelContainer);
-MC_FORWARD_DECL_CLASS(McRequestorConfig);
-MC_FORWARD_DECL_CLASS(McStateMachineConfig);
-MC_FORWARD_DECL_CLASS(IMcResponseHandler);
-
 class McAbstractResponse;
 class IMcApplicationContext;
+
+MC_FORWARD_DECL_CLASS(IMcControllerContainer)
+MC_FORWARD_DECL_CLASS(IMcModelContainer)
+MC_FORWARD_DECL_CLASS(McRequestorConfig)
+MC_FORWARD_DECL_CLASS(McStateMachineConfig)
+MC_FORWARD_DECL_CLASS(McRuntimeConfigurer)
+MC_FORWARD_DECL_CLASS(IMcResponseHandler)
+
+MC_FORWARD_DECL_PRIVATE_DATA(McAbstractRequestor)
 
 class MCQUICKBOOT_EXPORT McAbstractRequestor : public QObject,
                                                public IMcNonCopyable
@@ -58,6 +59,7 @@ class MCQUICKBOOT_EXPORT McAbstractRequestor : public QObject,
     MC_PRIVATE_PROPERTY(IMcControllerContainerPtr, controllerContainer, MEMBER controllerContainer)
     MC_PRIVATE_PROPERTY(IMcModelContainerPtr, modelContainer, MEMBER modelContainer)
     MC_PRIVATE_PROPERTY(McRequestorConfigPtr, requestorConfig, MEMBER requestorConfig)
+    MC_PRIVATE_PROPERTY(McRuntimeConfigurerPtr, runtimeConfig, MEMBER runtimeConfig)
     MC_PRIVATE_PROPERTY(McStateMachineConfigPtr, stateMachineConfig, MEMBER stateMachineConfig)
     MC_PRIVATE_PROPERTY2(QList<IMcResponseHandlerPtr>, responseHanlders, MEMBER responseHanlders)
 public:
@@ -77,6 +79,8 @@ public:
     QScxmlStateMachine *stateMachine() const noexcept;
     bool isLoadStateMachine() const noexcept;
     static void setStaticStateMachine(QScxmlStateMachine *val);
+
+    McRuntimeConfigurer &runtimeConfig() const;
 
 protected:
     void customEvent(QEvent *event) override;
