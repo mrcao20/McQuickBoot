@@ -36,11 +36,6 @@ class MCQUICKBOOT_EXPORT McCppResponse : public McAbstractResponse
     {
         static int metaTypeId() { return qMetaTypeId<typename T::Car>(); }
     };
-    template<>
-    struct MetaTypeIdHelper<QtPrivate::List<>>
-    {
-        static int metaTypeId() { return -1; }
-    };
 
 public:
     explicit McCppResponse(QObject *parent = nullptr);
@@ -317,4 +312,10 @@ private:
 
 private:
     MC_DECL_PRIVATE(McCppResponse)
+};
+
+template<>
+struct McCppResponse::MetaTypeIdHelper<QtPrivate::List<>>
+{
+    static int metaTypeId() { return -1; }
 };

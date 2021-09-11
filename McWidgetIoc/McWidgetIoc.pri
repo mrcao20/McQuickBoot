@@ -1,6 +1,6 @@
 QT *= widgets
 
-include($$PWD/../3rdparty/framelesshelper.pri)
+#include($$PWD/../3rdparty/framelesshelper.pri)
 include($$PWD/../3rdparty/AdvancedDockingSystem/AdvancedDockingSystem.pri)
 
 INCLUDEPATH += $$PWD/include/

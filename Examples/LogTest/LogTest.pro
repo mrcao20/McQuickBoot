@@ -54,7 +54,11 @@ DEPENDPATH += $$PWD/../../McLogQt/include
 
 # 将/替换为\\才能正确识别路径
 SrcConfigPath = $$PWD/logqt.xml
-SrcConfigPath = $$replace(SrcConfigPath, /, \\)
 DstConfigPath = $$PWD/../../bin/Examples/
-DstConfigPath = $$replace(DstConfigPath, /, \\)
-QMAKE_POST_LINK += copy /y $$SrcConfigPath $$DstConfigPath
+win32 {
+    SrcConfigPath = $$replace(SrcConfigPath, /, \\)
+    DstConfigPath = $$replace(DstConfigPath, /, \\)
+    QMAKE_POST_LINK += copy /y $$SrcConfigPath $$DstConfigPath
+} else {
+    QMAKE_POST_LINK += cp $$SrcConfigPath $$DstConfigPath
+}
