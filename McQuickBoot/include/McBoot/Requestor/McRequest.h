@@ -89,11 +89,6 @@ private:
             return CheckHelper<Args...>::check(index + 1, params);
         }
     };
-    template<>
-    struct CheckHelper<>
-    {
-        static bool check(int, const QVariantList &) noexcept { return true; }
-    };
 
 private:
     QExplicitlySharedDataPointer<McRequestSharedData> d;
@@ -102,6 +97,12 @@ private:
     friend class McControllerContainer;
     template<typename T>
     friend class Mc::QuickBoot::Private::CustomRequestBuilder;
+};
+
+template<>
+struct McRequest::CheckHelper<>
+{
+    static bool check(int, const QVariantList &) noexcept { return true; }
 };
 
 Q_DECLARE_METATYPE(McRequest)
