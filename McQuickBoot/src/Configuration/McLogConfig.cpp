@@ -30,23 +30,23 @@ MC_REGISTER_BEAN_FACTORY(McLogConfig)
 MC_STATIC_END
 
 MC_DECL_PRIVATE_DATA(McLogConfig)
-QStringList xmlPaths;
-QString flag;
 MC_DECL_PRIVATE_DATA_END
 
-McLogConfig::McLogConfig(QObject *parent) noexcept : QObject(parent)
+McLogConfig::McLogConfig(QObject *parent) noexcept : McAbstractXmlPathConfig(parent)
 {
     MC_NEW_PRIVATE_DATA(McLogConfig);
 }
 
 McLogConfig::~McLogConfig() {}
 
-void McLogConfig::allFinished() noexcept
+void McLogConfig::doFinished() noexcept
 {
-    if (d->xmlPaths.isEmpty()) {
+    super::doFinished();
+    auto paths = xmlPaths();
+    if (paths.isEmpty()) {
         return;
     }
-    McXMLConfigurator::configure(d->xmlPaths, d->flag);
+    McXMLConfigurator::configure(paths, flag());
 }
 
 #include "moc_McLogConfig.cpp"

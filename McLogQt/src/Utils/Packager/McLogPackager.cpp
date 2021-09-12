@@ -87,8 +87,8 @@ void McLogPackager::execute() noexcept
     if (!McCompressor::compressFiles(tarPath, filePaths)) {
         return;
     }
-    for (auto files : filePaths) {
-        for (auto file : files) {
+    for (auto &files : qAsConst(filePaths)) {
+        for (auto &file : files) {
             qInfo() << "The file has packed. deleted:" << file;
             QFile::remove(file);
         }
@@ -125,6 +125,9 @@ QStringList McLogPackager::checkFiles(int depth, const QString &path) noexcept
 
 bool McLogPackager::fileNameCheck(const QString &fileName) noexcept
 {
+    if (d->filters.isEmpty()) {
+        return true;
+    }
     for (auto &filter : qAsConst(d->filters)) {
         QRegularExpression reg(filter);
         auto match = reg.match(fileName);

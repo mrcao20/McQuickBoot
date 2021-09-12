@@ -23,31 +23,31 @@
  */
 #pragma once
 
-#include "McAbstractPathConfig.h"
+#include "../McBootGlobal.h"
 
-MC_FORWARD_DECL_CLASS(QScxmlStateMachine);
+MC_FORWARD_DECL_PRIVATE_DATA(McAbstractPathConfig)
 
-MC_FORWARD_DECL_PRIVATE_DATA(McStateMachineConfig);
-
-class McStateMachineConfig : public McAbstractPathConfig
+class McAbstractPathConfig : public QObject
 {
     Q_OBJECT
-    MC_DECL_SUPER(McAbstractPathConfig)
-    MC_COMPONENT("stateMachineConfig")
-    MC_CONFIGURATION_PROPERTIES("boot.application.stateMachine")
-    Q_PRIVATE_PROPERTY(d, QStringList paths MEMBER paths)
+    Q_PRIVATE_PROPERTY(d, QString dirPath MEMBER dirPath)
+    Q_PRIVATE_PROPERTY(d, QStringList filters MEMBER filters)
 public:
-    Q_INVOKABLE explicit McStateMachineConfig(QObject *parent = nullptr) noexcept;
-    ~McStateMachineConfig() override;
+    explicit McAbstractPathConfig(QObject *parent = nullptr) noexcept;
+    ~McAbstractPathConfig();
 
-    QScxmlStateMachinePtr stateMachine() const noexcept;
+    QStringList filterPaths() const noexcept;
 
 protected:
-    void doFinished() noexcept override;
+    virtual void doFinished() noexcept;
 
 private:
-    MC_DECL_PRIVATE(McStateMachineConfig)
+    Q_INVOKABLE
+    MC_FINISHED
+    void allFinished() noexcept;
+
+    bool fileNameCheck(const QString &fileName) noexcept;
+
+private:
+    MC_DECL_PRIVATE(McAbstractPathConfig)
 };
-
-MC_DECL_METATYPE(McStateMachineConfig)
-

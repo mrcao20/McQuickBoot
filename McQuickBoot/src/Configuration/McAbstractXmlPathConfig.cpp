@@ -21,33 +21,45 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include "McBoot/Configuration/McAbstractXmlPathConfig.h"
 
-#include "McAbstractPathConfig.h"
+MC_DECL_PRIVATE_DATA(McAbstractXmlPathConfig)
+QStringList xmlPaths;
+QString flag;
+MC_DECL_PRIVATE_DATA_END
 
-MC_FORWARD_DECL_CLASS(QScxmlStateMachine);
-
-MC_FORWARD_DECL_PRIVATE_DATA(McStateMachineConfig);
-
-class McStateMachineConfig : public McAbstractPathConfig
+McAbstractXmlPathConfig::McAbstractXmlPathConfig(QObject *parent) noexcept
+    : McAbstractPathConfig(parent)
 {
-    Q_OBJECT
-    MC_DECL_SUPER(McAbstractPathConfig)
-    MC_COMPONENT("stateMachineConfig")
-    MC_CONFIGURATION_PROPERTIES("boot.application.stateMachine")
-    Q_PRIVATE_PROPERTY(d, QStringList paths MEMBER paths)
-public:
-    Q_INVOKABLE explicit McStateMachineConfig(QObject *parent = nullptr) noexcept;
-    ~McStateMachineConfig() override;
+    MC_NEW_PRIVATE_DATA(McAbstractXmlPathConfig);
+}
 
-    QScxmlStateMachinePtr stateMachine() const noexcept;
+McAbstractXmlPathConfig::~McAbstractXmlPathConfig() {}
 
-protected:
-    void doFinished() noexcept override;
+QStringList McAbstractXmlPathConfig::xmlPaths() const noexcept
+{
+    return d->xmlPaths;
+}
 
-private:
-    MC_DECL_PRIVATE(McStateMachineConfig)
-};
+void McAbstractXmlPathConfig::setXmlPaths(const QStringList &val) noexcept
+{
+    d->xmlPaths = val;
+}
 
-MC_DECL_METATYPE(McStateMachineConfig)
+QString McAbstractXmlPathConfig::flag() const noexcept
+{
+    return d->flag;
+}
 
+void McAbstractXmlPathConfig::setFlag(const QString &val) noexcept
+{
+    d->flag = val;
+}
+
+void McAbstractXmlPathConfig::doFinished() noexcept
+{
+    super::doFinished();
+    d->xmlPaths.append(filterPaths());
+}
+
+#include "moc_McAbstractXmlPathConfig.cpp"

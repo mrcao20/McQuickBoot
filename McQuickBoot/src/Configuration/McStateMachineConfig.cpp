@@ -34,8 +34,7 @@ QStringList paths;
 QScxmlStateMachinePtr stateMachine;
 MC_DECL_PRIVATE_DATA_END
 
-McStateMachineConfig::McStateMachineConfig(QObject *parent) noexcept
-    : QObject(parent)
+McStateMachineConfig::McStateMachineConfig(QObject *parent) noexcept : McAbstractPathConfig(parent)
 {
     MC_NEW_PRIVATE_DATA(McStateMachineConfig);
 }
@@ -49,8 +48,10 @@ QScxmlStateMachinePtr McStateMachineConfig::stateMachine() const noexcept
     return d->stateMachine;
 }
 
-void McStateMachineConfig::allFinished() noexcept
+void McStateMachineConfig::doFinished() noexcept
 {
+    super::doFinished();
+    d->paths.append(filterPaths());
     if (d->paths.length() != 1) {
         return;
     }

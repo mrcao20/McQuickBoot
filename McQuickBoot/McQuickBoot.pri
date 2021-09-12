@@ -5,6 +5,8 @@ INCLUDEPATH += $$PWD/include/
 SOURCES += \
     $$PWD/src/Application/McSingleApplication.cpp \
     $$PWD/src/Application/McSingleCoreApplication.cpp \
+    $$PWD/src/Configuration/McAbstractPathConfig.cpp \
+    $$PWD/src/Configuration/McAbstractXmlPathConfig.cpp \
     $$PWD/src/Configuration/McConfigurationContainer.cpp \
     $$PWD/src/Configuration/McLogConfig.cpp \
     $$PWD/src/Configuration/McRequestorConfig.cpp \
@@ -49,6 +51,8 @@ HEADERS +=  \
     $$PWD/include/McBoot/Application/McSingleApplication.h \
     $$PWD/include/McBoot/Application/McSingleCoreApplication.h \
     $$PWD/include/McBoot/Configuration/IMcQuickBootConfigurer.h \
+    $$PWD/include/McBoot/Configuration/McAbstractPathConfig.h \
+    $$PWD/include/McBoot/Configuration/McAbstractXmlPathConfig.h \
     $$PWD/include/McBoot/Configuration/McRuntimeConfigurer.h \
     $$PWD/include/McBoot/Configuration/McRuntimeConfigurerConfig.h \
     $$PWD/include/McBoot/Configuration/Parser/IMcConfigurationParser.h \

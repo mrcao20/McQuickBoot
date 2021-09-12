@@ -32,25 +32,25 @@ MC_REGISTER_BEAN_FACTORY(McWidgetConfig)
 MC_STATIC_END
 
 MC_DECL_PRIVATE_DATA(McWidgetConfig)
-QStringList xmlPaths;
 QString mainWindowName{"mainWindow"};
-QString flag;
 int destroyPriority{Mc::Normal};
 MC_DECL_PRIVATE_DATA_END
 
-McWidgetConfig::McWidgetConfig(QObject *parent) noexcept : QObject(parent)
+McWidgetConfig::McWidgetConfig(QObject *parent) noexcept : McAbstractXmlPathConfig(parent)
 {
     MC_NEW_PRIVATE_DATA(McWidgetConfig);
 }
 
 McWidgetConfig::~McWidgetConfig() {}
 
-void McWidgetConfig::allFinished() noexcept
+void McWidgetConfig::doFinished() noexcept
 {
-    if (d->xmlPaths.isEmpty()) {
+    super::doFinished();
+    auto paths = xmlPaths();
+    if (paths.isEmpty()) {
         return;
     }
-    auto appCtx = McXmlWidgetApplicationContextPtr::create(d->xmlPaths, d->flag);
+    auto appCtx = McXmlWidgetApplicationContextPtr::create(paths, flag());
     auto w = appCtx->getBean(d->mainWindowName);
     if (w == nullptr) {
         return;

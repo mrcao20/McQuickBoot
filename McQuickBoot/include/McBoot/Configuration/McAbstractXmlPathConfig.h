@@ -25,29 +25,27 @@
 
 #include "McAbstractPathConfig.h"
 
-MC_FORWARD_DECL_CLASS(QScxmlStateMachine);
+MC_FORWARD_DECL_PRIVATE_DATA(McAbstractXmlPathConfig)
 
-MC_FORWARD_DECL_PRIVATE_DATA(McStateMachineConfig);
-
-class McStateMachineConfig : public McAbstractPathConfig
+class McAbstractXmlPathConfig : public McAbstractPathConfig
 {
     Q_OBJECT
     MC_DECL_SUPER(McAbstractPathConfig)
-    MC_COMPONENT("stateMachineConfig")
-    MC_CONFIGURATION_PROPERTIES("boot.application.stateMachine")
-    Q_PRIVATE_PROPERTY(d, QStringList paths MEMBER paths)
+    Q_PROPERTY(QStringList xmlPaths READ xmlPaths WRITE setXmlPaths)
+    Q_PROPERTY(QString flag READ flag WRITE setFlag)
 public:
-    Q_INVOKABLE explicit McStateMachineConfig(QObject *parent = nullptr) noexcept;
-    ~McStateMachineConfig() override;
+    explicit McAbstractXmlPathConfig(QObject *parent = nullptr) noexcept;
+    ~McAbstractXmlPathConfig();
 
-    QScxmlStateMachinePtr stateMachine() const noexcept;
+    QStringList xmlPaths() const noexcept;
+    void setXmlPaths(const QStringList &val) noexcept;
+
+    QString flag() const noexcept;
+    void setFlag(const QString &val) noexcept;
 
 protected:
     void doFinished() noexcept override;
 
 private:
-    MC_DECL_PRIVATE(McStateMachineConfig)
+    MC_DECL_PRIVATE(McAbstractXmlPathConfig)
 };
-
-MC_DECL_METATYPE(McStateMachineConfig)
-
