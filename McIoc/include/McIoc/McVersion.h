@@ -31,7 +31,7 @@
 //! version when you make small feature changes.
 #define MC_MINOR 5
 //! version when you make backwards-compatible bug fixes.
-#define MC_PATCH 2
+#define MC_PATCH 3
 //! MC_INTERNAL version for perpurse like feature test, bug fix test,development, et
 #define MC_INTERNAL 0
 

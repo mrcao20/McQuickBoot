@@ -3,7 +3,11 @@ QT *= xml
 
 include($$PWD/../3rdparty/yaml-cpp.pri)
 include($$PWD/../3rdparty/zlib.pri)
-include($$PWD/../3rdparty/quazip.pri)
+!contains(DEFINES, MC_DISABLE_QUAZIP) {
+    include($$PWD/../3rdparty/quazip.pri)
+    HEADERS += $$PWD/include/McIoc/Utils/Zip/McCompressor.h
+    SOURCES += $$PWD/src/Utils/Zip/McCompressor.cpp
+}
 
 INCLUDEPATH += $$PWD/include/
 
@@ -78,8 +82,7 @@ HEADERS += \
     $$PWD/include/McIoc/ApplicationContext/IMcRelatableApplicationContext.h \
     $$PWD/include/McIoc/ApplicationContext/IMcConfigurableApplicationContext.h \
     $$PWD/include/McIoc/Utils/McYaml.h \
-    $$PWD/include/McIoc/ApplicationContext/impl/McYamlSettingApplicationContext.h \
-    $$PWD/include/McIoc/Utils/Zip/McCompressor.h
+    $$PWD/include/McIoc/ApplicationContext/impl/McYamlSettingApplicationContext.h
 
 SOURCES += \
     $$PWD/src/ApplicationContext/McAbstractApplicationContext.cpp \
@@ -117,5 +120,4 @@ SOURCES += \
     $$PWD/src/ApplicationContext/McSettingApplicationContext.cpp \
     $$PWD/src/ApplicationContext/McIniSettingApplicationContext.cpp \
     $$PWD/src/Utils/McYaml.cpp \
-    $$PWD/src/ApplicationContext/McYamlSettingApplicationContext.cpp \
-    $$PWD/src/Utils/Zip/McCompressor.cpp
+    $$PWD/src/ApplicationContext/McYamlSettingApplicationContext.cpp
