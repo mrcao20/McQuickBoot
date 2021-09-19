@@ -33,6 +33,7 @@ MC_DECL_PRIVATE_DATA(McRequestorConfig)
 int maxThreadCount{QThread::idealThreadCount()};
 bool autoIncrease{true};
 bool waitThreadPoolDone{true};
+int threadPoolWaitTimeout{-1};
 MC_DECL_PRIVATE_DATA_END
 
 McRequestorConfig::McRequestorConfig(QObject *parent) noexcept : QObject(parent)
@@ -70,4 +71,14 @@ bool McRequestorConfig::waitThreadPoolDone() const noexcept
 void McRequestorConfig::setWaitThreadPoolDone(bool val) noexcept
 {
     d->waitThreadPoolDone = val;
+}
+
+int McRequestorConfig::threadPoolWaitTimeout() const noexcept
+{
+    return d->threadPoolWaitTimeout;
+}
+
+void McRequestorConfig::setThreadPoolWaitTimeout(int val) noexcept
+{
+    d->threadPoolWaitTimeout = val;
 }

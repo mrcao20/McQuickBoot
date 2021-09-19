@@ -30,21 +30,40 @@ MC_INIT(McConsoleAppender)
 MC_REGISTER_BEAN_FACTORY(McConsoleAppender)
 MC_INIT_END
 
+MC_DECL_PRIVATE_DATA(McConsoleAppender)
+QString console;
+MC_DECL_PRIVATE_DATA_END
+
 McConsoleAppender::McConsoleAppender() 
 {
+    MC_NEW_PRIVATE_DATA(McConsoleAppender);
 }
 
 McConsoleAppender::~McConsoleAppender() 
 {
 }
 
+QString McConsoleAppender::console() const noexcept
+{
+    return d->console;
+}
+
+void McConsoleAppender::setConsole(const QString &val) noexcept
+{
+    d->console = val;
+}
+
 void McConsoleAppender::doFinished() noexcept
 {
-    McFileDeviceAppender::doFinished();
+    super::doFinished();
 
     QSharedPointer<QFile> file = QSharedPointer<QFile>::create();
 
-    if (!file->open(stderr, QIODevice::WriteOnly)) {
+    FILE *cFile = stderr;
+    if (d->console == QLatin1String("stdout")) {
+        cFile = stdout;
+    }
+    if (!file->open(cFile, QIODevice::WriteOnly)) {
         MC_PRINT_ERR("error open stdout for write console!!!\n");
         return;
     }

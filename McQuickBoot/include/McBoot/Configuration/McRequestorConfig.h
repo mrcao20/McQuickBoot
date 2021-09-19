@@ -36,6 +36,7 @@ class McRequestorConfig : public QObject
     Q_PROPERTY(int maxThreadCount READ maxThreadCount WRITE setMaxThreadCount)
     Q_PROPERTY(bool autoIncrease READ autoIncrease WRITE setAutoIncrease)
     Q_PROPERTY(bool waitThreadPoolDone READ waitThreadPoolDone WRITE setWaitThreadPoolDone)
+    Q_PROPERTY(int threadPoolWaitTimeout READ threadPoolWaitTimeout WRITE setThreadPoolWaitTimeout)
 public:
     Q_INVOKABLE McRequestorConfig(QObject *parent = nullptr) noexcept;
     ~McRequestorConfig();
@@ -48,6 +49,9 @@ public:
 
     bool waitThreadPoolDone() const noexcept;
     void setWaitThreadPoolDone(bool val) noexcept;
+
+    int threadPoolWaitTimeout() const noexcept;
+    void setThreadPoolWaitTimeout(int val) noexcept;
 
 private:
     MC_DECL_PRIVATE(McRequestorConfig)

@@ -65,9 +65,11 @@ QVariant McAbstractNormalBeanFactory::doCreate(IMcBeanDefinitionConstPtrRef bean
     if(!pluginPath.isEmpty()){
         QPluginLoader loader(pluginPath);
         if (!loader.load()) {
-            qWarning() << pluginPath << "cannot load!!";
+            qCWarning(mcIoc()) << pluginPath << "cannot load!!"
+                               << "error string:" << loader.errorString();
             return QVariant();
         }
+        Mc::callPreRoutine();
         obj = loader.instance();
     }else{
         auto isGadget = (QMetaType::type(beanDefinition->getClassName().toLocal8Bit())
@@ -77,8 +79,8 @@ QVariant McAbstractNormalBeanFactory::doCreate(IMcBeanDefinitionConstPtrRef bean
         }
         auto beanMetaObj = beanDefinition->getBeanMetaObject();
         if (!beanMetaObj) {
-            qCritical() << QString("the class '%1' is not in meta-object system")
-                               .arg(beanDefinition->getClassName());
+            qCCritical(mcIoc()) << QString("the class '%1' is not in meta-object system")
+                                       .arg(beanDefinition->getClassName());
             return QVariant();
         }
         QByteArray className = beanMetaObj->className();
@@ -92,20 +94,22 @@ QVariant McAbstractNormalBeanFactory::doCreate(IMcBeanDefinitionConstPtrRef bean
         }
     }
     if (!obj) {
-        qCritical() << QString("bean '%1' cannot instantiation, please make sure that have a "
-                               "non-parameter constructor and declared by Q_INVOKABLE")
-                           .arg(beanDefinition->getClassName());
+        qCCritical(mcIoc()) << QString(
+                                   "bean '%1' cannot instantiation, please make sure that have a "
+                                   "non-parameter constructor and declared by Q_INVOKABLE")
+                                   .arg(beanDefinition->getClassName());
         return QVariant();
     }
     callStartFunction(obj); //!< 调用构造开始函数
     QVariantMap proValues;
     if (!addPropertyValue(obj, beanDefinition, proValues)) {
-        qCritical() << QString("failed to init definition '%1'").arg(obj->metaObject()->className());
+        qCCritical(mcIoc()) << QString("failed to init definition '%1'")
+                                   .arg(obj->metaObject()->className());
         return QVariant();
     }
     if (!addObjectConnect(obj, beanDefinition, proValues)) {
-        qCritical() << QString("failed to add object connect '%1'")
-                           .arg(obj->metaObject()->className());
+        qCCritical(mcIoc()) << QString("failed to add object connect '%1'")
+                                   .arg(obj->metaObject()->className());
         return QVariant();
     }
     callFinishedFunction(obj); //!< 调用构造完成函数
@@ -123,8 +127,9 @@ QVariant McAbstractNormalBeanFactory::doCreate(IMcBeanDefinitionConstPtrRef bean
     } else if (obj->thread() != QThread::currentThread() && obj->thread()->isRunning()) {
         conType = Qt::BlockingQueuedConnection;
     } else {
-        qCritical() << "if you want to moved to other thread. please make sure call QThread::start "
-                       "before call getBean/refresh.";
+        qCCritical(mcIoc())
+            << "if you want to moved to other thread. please make sure call QThread::start "
+               "before call getBean/refresh.";
     }
     callTagFunction(obj, MC_STRINGIFY(MC_ALL_FINISHED), conType);
     callTagFunction(obj, MC_STRINGIFY(MC_COMPLETE), conType);
@@ -175,13 +180,14 @@ QVariant McAbstractNormalBeanFactory::parseOnGadget(
     auto type = QMetaType::type(beanDefinition->getClassName().toLocal8Bit());
     auto bean = QMetaType::create(type);
     if (bean == nullptr) {
-        qCritical() << "Cannot make gadget for:" << beanDefinition->getClassName();
+        qCCritical(mcIoc()) << "Cannot make gadget for:" << beanDefinition->getClassName();
         return QVariant();
     }
     auto beanMetaObj = beanDefinition->getBeanMetaObject();
     callStartFunction(bean, beanMetaObj); //!< 调用构造开始函数
     if (!addPropertyValue(bean, beanMetaObj, beanDefinition)) {
-        qCritical() << QString("failed to init definition '%1'").arg(beanMetaObj->className());
+        qCCritical(mcIoc()) << QString("failed to init definition '%1'")
+                                   .arg(beanMetaObj->className());
         return QVariant();
     }
     callFinishedFunction(bean, beanMetaObj); //!< 调用构造完成函数
@@ -285,7 +291,7 @@ bool McAbstractNormalBeanFactory::addObjectConnect(QObject *bean,
             signalStr.remove(0, 1);
         }
         if(signalStr.isEmpty()) {
-            qCritical() << "signal is not exists";
+            qCCritical(mcIoc()) << "signal is not exists";
             return false;
         }
         int signalIndex = signalMetaObj->indexOfSignal(signalStr.toLocal8Bit());
@@ -309,7 +315,7 @@ bool McAbstractNormalBeanFactory::addObjectConnect(QObject *bean,
             slotStr.remove(0, 1);
         }
         if(slotStr.isEmpty()) {
-            qCritical() << "slot is not exists";
+            qCCritical(mcIoc()) << "slot is not exists";
             return false;
         }
         int slotIndex = slotMetaObj->indexOfMethod(slotStr.toLocal8Bit());

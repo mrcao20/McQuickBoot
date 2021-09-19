@@ -61,6 +61,7 @@ McRunnerEvent::~McRunnerEvent() {}
 
 MC_GLOBAL_STATIC_BEGIN(staticData)
 bool waitThreadPoolDone{true};
+int threadPoolWaitTimeout{-1};
 QThreadPool requestorThreadPool;
 QScxmlStateMachine *staticStateMachine{nullptr};
 MC_GLOBAL_STATIC_END(staticData)
@@ -72,7 +73,7 @@ if (!staticData.exists()) {
     return;
 }
 if (staticData->waitThreadPoolDone) {
-    staticData->requestorThreadPool.waitForDone();
+    staticData->requestorThreadPool.waitForDone(staticData->threadPoolWaitTimeout);
 }
 MC_INIT_END
 
@@ -229,6 +230,7 @@ void McAbstractRequestor::allFinished() noexcept
     } else {
         maxThreadCount = d->requestorConfig->maxThreadCount();
         staticData->waitThreadPoolDone = d->requestorConfig->waitThreadPoolDone();
+        staticData->threadPoolWaitTimeout = d->requestorConfig->threadPoolWaitTimeout();
     }
     setMaxThreadCount(maxThreadCount);
     d->responseHanlders.append(McResponseHandlerFactory::getHandlers());

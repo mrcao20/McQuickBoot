@@ -46,6 +46,7 @@ class MCLOGQT_EXPORT McLoggerRepository
     Q_PRIVATE_PROPERTY(d, QList<IMcAdditionalTaskPtr> sequentialTasks MEMBER sequentialTasks)
     Q_PRIVATE_PROPERTY(d, bool flushWhenQuit MEMBER flushWhenQuit)
     Q_PRIVATE_PROPERTY(d, bool waitThreadFinished MEMBER waitThreadFinished)
+    Q_PRIVATE_PROPERTY(d, qint64 threadWaitTimeout MEMBER threadWaitTimeout)
 public:
     Q_INVOKABLE McLoggerRepository();
     ~McLoggerRepository() override;
