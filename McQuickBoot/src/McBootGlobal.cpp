@@ -37,6 +37,8 @@ struct McBootGlobalStaticData
     QLatin1String libraryCheckSymbol;
     QStringList serviceSearchPaths;
     QStringList serviceLibraryPaths;
+    char *preallocMemory{nullptr};
+    std::function<void()> newHandlerFunc;
 };
 
 } // namespace
@@ -81,6 +83,25 @@ for (auto &tmpPath : qAsConst(mcBootGlobalStaticData->serviceLibraryPaths)) {
 }
 MC_STATIC_END
 
+namespace {
+
+void fatalNewHandler()
+{
+    Mc::setNewHandlerType(Mc::QuickBoot::NewHandlerType::None);
+    qFatal("out of memory");
+}
+
+void preallocNewHandler()
+{
+    Mc::setNewHandlerType(Mc::QuickBoot::NewHandlerType::None);
+    MC_SAFETY_DELETE2(mcBootGlobalStaticData->preallocMemory)
+    if (mcBootGlobalStaticData->newHandlerFunc != nullptr) {
+        mcBootGlobalStaticData->newHandlerFunc();
+    }
+}
+
+} // namespace
+
 namespace Mc {
 
 void setDefaultSearch(bool val)
@@ -114,6 +135,26 @@ void addServiceLibraryPath(const QStringList &paths)
 {
     for (auto &path : qAsConst(paths)) {
         mcBootGlobalStaticData->serviceLibraryPaths.append(path);
+    }
+}
+
+void setNewHandlerType(QuickBoot::NewHandlerType type,
+                       quint64 size,
+                       const std::function<void()> &func)
+{
+    if (type == QuickBoot::NewHandlerType::None) {
+        std::set_new_handler(nullptr);
+    } else if (type == QuickBoot::NewHandlerType::Fatal) {
+        std::set_new_handler(&fatalNewHandler);
+    } else {
+        if (size < 0) {
+            return;
+        }
+        mcBootGlobalStaticData->newHandlerFunc = func;
+        if (size > 0) {
+            mcBootGlobalStaticData->preallocMemory = new char[size];
+        }
+        std::set_new_handler(&preallocNewHandler);
     }
 }
 
