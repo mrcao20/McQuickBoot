@@ -50,37 +50,8 @@ qRegisterMetaType<QScxmlStateMachine *>();
 if (mcBootGlobalStaticData->isDefaultSearch) {
     Mc::addServiceSearchPath("./mcservices");
 }
-for (auto &searchPath : qAsConst(mcBootGlobalStaticData->serviceSearchPaths)) {
-    QDir dir(Mc::toAbsolutePath(searchPath));
-    auto fileInfos = dir.entryInfoList(QDir::Files);
-    for (auto &fileInfo : qAsConst(fileInfos)) {
-        auto path = fileInfo.absoluteFilePath();
-        Mc::addServiceLibraryPath(path);
-    }
-}
-for (auto &tmpPath : qAsConst(mcBootGlobalStaticData->serviceLibraryPaths)) {
-    auto libPath = Mc::toAbsolutePath(tmpPath);
-    if (!QLibrary::isLibrary(libPath)) {
-        continue;
-    }
-    QLibrary library(libPath);
-    if (!library.load()) {
-        qWarning() << libPath << "cannot load!! error string:" << library.errorString();
-        continue;
-    }
-    auto cleanup = qScopeGuard([]() { Mc::callPreRoutine(); });
-    if (mcBootGlobalStaticData->libraryCheckSymbol.isNull()
-        || mcBootGlobalStaticData->libraryCheckSymbol.isEmpty()) {
-        continue;
-    }
-    auto func = library.resolve(mcBootGlobalStaticData->libraryCheckSymbol.data());
-    if (func != nullptr) {
-        continue;
-    }
-    cleanup.dismiss();
-    Mc::cleanPreRoutine();
-    library.unload();
-}
+Mc::loadLibraryForDir(mcBootGlobalStaticData->serviceSearchPaths);
+Mc::loadLibrary(mcBootGlobalStaticData->serviceLibraryPaths);
 MC_STATIC_END
 
 namespace {
@@ -135,6 +106,55 @@ void addServiceLibraryPath(const QStringList &paths)
 {
     for (auto &path : qAsConst(paths)) {
         mcBootGlobalStaticData->serviceLibraryPaths.append(path);
+    }
+}
+
+void loadLibrary(const QString &path)
+{
+    auto libPath = Mc::toAbsolutePath(path);
+    if (!QLibrary::isLibrary(libPath)) {
+        return;
+    }
+    QLibrary library(libPath);
+    if (!library.load()) {
+        qCWarning(mcQuickBoot) << libPath << "cannot load!! error string:" << library.errorString();
+        return;
+    }
+    auto cleanup = qScopeGuard([]() { Mc::callPreRoutine(); });
+    if (mcBootGlobalStaticData->libraryCheckSymbol.isNull()
+        || mcBootGlobalStaticData->libraryCheckSymbol.isEmpty()) {
+        return;
+    }
+    auto func = library.resolve(mcBootGlobalStaticData->libraryCheckSymbol.data());
+    if (func != nullptr) {
+        return;
+    }
+    cleanup.dismiss();
+    Mc::cleanPreRoutine();
+    library.unload();
+}
+
+void loadLibrary(const QStringList &paths)
+{
+    for (auto &tmpPath : paths) {
+        loadLibrary(tmpPath);
+    }
+}
+
+void loadLibraryForDir(const QString &path)
+{
+    QDir dir(Mc::toAbsolutePath(path));
+    auto fileInfos = dir.entryInfoList(QDir::Files);
+    for (auto &fileInfo : qAsConst(fileInfos)) {
+        auto path = fileInfo.absoluteFilePath();
+        loadLibrary(path);
+    }
+}
+
+void loadLibraryForDir(const QStringList &paths)
+{
+    for (auto &tmpPath : paths) {
+        loadLibraryForDir(tmpPath);
     }
 }
 

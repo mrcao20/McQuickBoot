@@ -62,6 +62,11 @@ MCQUICKBOOT_EXPORT void addServiceSearchPath(const QStringList &paths);
 //! 必须传入动态库全路径，可以是相对与可执行程序的相对路径
 MCQUICKBOOT_EXPORT void addServiceLibraryPath(const QString &path);
 MCQUICKBOOT_EXPORT void addServiceLibraryPath(const QStringList &paths);
+//! 加载动态库，会自动处理库中静态代码块
+MCQUICKBOOT_EXPORT void loadLibrary(const QString &path);
+MCQUICKBOOT_EXPORT void loadLibrary(const QStringList &paths);
+MCQUICKBOOT_EXPORT void loadLibraryForDir(const QString &path);
+MCQUICKBOOT_EXPORT void loadLibraryForDir(const QStringList &paths);
 
 //! 如果type为Prealloc，则可以传入第二个参数标识预分配内存的大小，单位：byte，默认64KB。
 //! 此时还可以传入第三个参数，为一个函数。当预分配的内存释放之后，就会调用该函数。

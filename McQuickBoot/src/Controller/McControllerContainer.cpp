@@ -66,11 +66,13 @@ void McControllerContainer::init(const IMcQuickBoot *boot) noexcept
     for (const auto &beanName : beanNames) {
         auto obj = appCtx->getBean(beanName);
         if(!obj) {
-            qCritical() << QString("controller for named '%1' not exists").arg(beanName);
+            qCCritical(mcQuickBoot)
+                << QString("controller for named '%1' not exists").arg(beanName);
             continue;
         }
         if (d->controllers.contains(beanName)) {
-            qCritical() << QString("controller for named '%1' is repeated").arg(beanName);
+            qCCritical(mcQuickBoot)
+                << QString("controller for named '%1' is repeated").arg(beanName);
             continue;
         }
         d->controllers.insert(beanName, obj);
