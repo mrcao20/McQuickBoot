@@ -13,11 +13,12 @@ SOURCES += \
     $$PWD/src/Configuration/McAbstractPathConfig.cpp \
     $$PWD/src/Configuration/McAbstractXmlPathConfig.cpp \
     $$PWD/src/Configuration/McConfigurationContainer.cpp \
+    $$PWD/src/Configuration/McControllerConfig.cpp \
     $$PWD/src/Configuration/McIocConfig.cpp \
     $$PWD/src/Configuration/McLogConfig.cpp \
     $$PWD/src/Configuration/McRequestorConfig.cpp \
-    $$PWD/src/Configuration/McRuntimeConfigConfig.cpp \
     $$PWD/src/Configuration/McRuntimeConfigurer.cpp \
+    $$PWD/src/Configuration/McRuntimeConfigurerConfig.cpp \
     $$PWD/src/Configuration/McWidgetConfig.cpp \
     $$PWD/src/Configuration/Parser/McConfigurationParserFactory.cpp \
     $$PWD/src/Configuration/Parser/McQuickBootConfigurerParser.cpp \
@@ -59,6 +60,7 @@ HEADERS +=  \
     $$PWD/include/McBoot/Configuration/IMcQuickBootConfigurer.h \
     $$PWD/include/McBoot/Configuration/McAbstractPathConfig.h \
     $$PWD/include/McBoot/Configuration/McAbstractXmlPathConfig.h \
+    $$PWD/include/McBoot/Configuration/McControllerConfig.h \
     $$PWD/include/McBoot/Configuration/McIocConfig.h \
     $$PWD/include/McBoot/Configuration/McLogConfig.h \
     $$PWD/include/McBoot/Configuration/McRuntimeConfigurer.h \

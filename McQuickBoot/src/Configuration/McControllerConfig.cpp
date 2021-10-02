@@ -21,25 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "McBoot/Configuration/McRuntimeConfigurer.h"
+#include "McBoot/Configuration/McControllerConfig.h"
 
-#include "McBoot/Configuration/McRuntimeConfigurerConfig.h"
+MC_STATIC()
+MC_REGISTER_BEAN_FACTORY(McControllerConfig)
+MC_STATIC_END
 
-MC_INIT(McRuntimeConfigurer)
-MC_REGISTER_BEAN_FACTORY(McRuntimeConfigurer)
-MC_INIT_END
-
-MC_DECL_PRIVATE_DATA(McRuntimeConfigurer)
-McRuntimeConfigurerConfigPtr runtimeConfigurerConfig;
+MC_DECL_PRIVATE_DATA(McControllerConfig)
+QStringList controllers;
 MC_DECL_PRIVATE_DATA_END
 
-McRuntimeConfigurer::McRuntimeConfigurer()
+McControllerConfig::McControllerConfig(QObject *parent) noexcept : QObject(parent)
 {
-    MC_NEW_PRIVATE_DATA(McRuntimeConfigurer);
+    MC_NEW_PRIVATE_DATA(McControllerConfig);
 }
 
-McRuntimeConfigurer::~McRuntimeConfigurer() {}
+McControllerConfig::~McControllerConfig() {}
 
-void McRuntimeConfigurer::finished() {}
+QStringList McControllerConfig::controllers() const noexcept
+{
+    return d->controllers;
+}
 
-#include "moc_McRuntimeConfigurer.cpp"
+void McControllerConfig::setControllers(const QStringList &val) noexcept
+{
+    d->controllers = val;
+}

@@ -29,6 +29,12 @@ MC_DECL_PRIVATE_DATA(McEventDispatcher)
 McEventRouter router;
 MC_DECL_PRIVATE_DATA_END
 
+McEventDispatcher *McEventDispatcher::instance() noexcept
+{
+    static McEventDispatcher ins;
+    return &ins;
+}
+
 QMetaObject::Connection McEventDispatcher::connectToEvent(const QString &scxmlEventSpec,
                                                           const QObject *receiver,
                                                           const char *method,

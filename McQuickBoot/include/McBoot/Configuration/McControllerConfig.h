@@ -21,25 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "McBoot/Configuration/McRuntimeConfigurer.h"
+#pragma once
 
-#include "McBoot/Configuration/McRuntimeConfigurerConfig.h"
+#include "../McBootGlobal.h"
 
-MC_INIT(McRuntimeConfigurer)
-MC_REGISTER_BEAN_FACTORY(McRuntimeConfigurer)
-MC_INIT_END
+MC_FORWARD_DECL_PRIVATE_DATA(McControllerConfig);
 
-MC_DECL_PRIVATE_DATA(McRuntimeConfigurer)
-McRuntimeConfigurerConfigPtr runtimeConfigurerConfig;
-MC_DECL_PRIVATE_DATA_END
-
-McRuntimeConfigurer::McRuntimeConfigurer()
+class McControllerConfig : public QObject
 {
-    MC_NEW_PRIVATE_DATA(McRuntimeConfigurer);
-}
+    Q_OBJECT
+    MC_COMPONENT("controllerConfig")
+    MC_CONFIGURATION_PROPERTIES("boot.application.controller")
+    Q_PROPERTY(QStringList controllers READ controllers WRITE setControllers)
+public:
+    explicit McControllerConfig(QObject *parent = nullptr) noexcept;
+    ~McControllerConfig() override;
 
-McRuntimeConfigurer::~McRuntimeConfigurer() {}
+    QStringList controllers() const noexcept;
+    void setControllers(const QStringList &val) noexcept;
 
-void McRuntimeConfigurer::finished() {}
+private:
+    MC_DECL_PRIVATE(McControllerConfig)
+};
 
-#include "moc_McRuntimeConfigurer.cpp"
+MC_DECL_METATYPE(McControllerConfig)

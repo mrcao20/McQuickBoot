@@ -26,13 +26,16 @@
 #include <QVariant>
 
 #include "../../McMacroGlobal.h"
+#include "../IMcNonCopyable.h"
 #include "../McQVariantConverter.h"
 
 MC_FORWARD_DECL_PRIVATE_DATA(McEventDispatcher)
 
-class MCIOC_EXPORT McEventDispatcher : protected McQVariantConverter
+class MCIOC_EXPORT McEventDispatcher : protected McQVariantConverter, public IMcNonCopyable
 {
 public:
+    static McEventDispatcher *instance() noexcept;
+
     QMetaObject::Connection connectToEvent(const QString &scxmlEventSpec,
                                            const QObject *receiver,
                                            const char *method,
@@ -109,3 +112,5 @@ protected:
 private:
     MC_DECL_PRIVATE(McEventDispatcher)
 };
+
+#define McEvt (*McEventDispatcher::instance())
