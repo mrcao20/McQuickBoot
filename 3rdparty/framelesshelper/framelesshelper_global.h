@@ -25,15 +25,16 @@
 #pragma once
 
 #include <QtCore/qglobal.h>
+#include <QtCore/qobject.h>
 
-#ifndef FRAMELESSHELPER_EXPORT
+#ifndef FRAMELESSHELPER_API
 #ifdef FRAMELESSHELPER_STATIC
-#define FRAMELESSHELPER_EXPORT
+#define FRAMELESSHELPER_API
 #else
 #ifdef FRAMELESSHELPER_BUILD_LIBRARY
-#define FRAMELESSHELPER_EXPORT Q_DECL_EXPORT
+#define FRAMELESSHELPER_API Q_DECL_EXPORT
 #else
-#define FRAMELESSHELPER_EXPORT Q_DECL_IMPORT
+#define FRAMELESSHELPER_API Q_DECL_IMPORT
 #endif
 #endif
 #endif
@@ -42,31 +43,81 @@
 #define Q_OS_WINDOWS
 #endif
 
-#ifndef Q_DISABLE_MOVE
-#define Q_DISABLE_MOVE(Class) \
-    Class(Class &&) = delete; \
-    Class &operator=(Class &&) = delete;
-#endif
-
 #ifndef Q_DISABLE_COPY_MOVE
 #define Q_DISABLE_COPY_MOVE(Class) \
     Q_DISABLE_COPY(Class) \
-    Q_DISABLE_MOVE(Class)
+    Class(Class &&) = delete; \
+    Class &operator=(Class &&) = delete;
 #endif
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 7, 0))
 #define qAsConst(i) std::as_const(i)
 #endif
 
-namespace _flh_global {
+#if !defined(Q_OS_WINDOWS) || defined(FRAMELESSHELPER_TEST_UNIX)
+#define FRAMELESSHELPER_USE_UNIX_VERSION
+#endif
 
-[[maybe_unused]] const char _flh_framelessEnabled_flag[] = "_FRAMELESSHELPER_FRAMELESS_MODE_ENABLED";
-[[maybe_unused]] const char _flh_borderWidth_flag[] = "_FRAMELESSHELPER_WINDOW_BORDER_WIDTH";
-[[maybe_unused]] const char _flh_borderHeight_flag[] = "_FRAMELESSHELPER_WINDOW_BORDER_HEIGHT";
-[[maybe_unused]] const char _flh_titleBarHeight_flag[] = "_FRAMELESSHELPER_WINDOW_TITLE_BAR_HEIGHT";
-[[maybe_unused]] const char _flh_ignoredObjects_flag[] = "_FRAMELESSHELPER_WINDOW_TITLE_BAR_IGNORED_OBJECTS";
-[[maybe_unused]] const char _flh_useNativeTitleBar_flag[] = "_FRAMELESSHELPER_USE_NATIVE_TITLE_BAR";
-[[maybe_unused]] const char _flh_preserveNativeFrame_flag[] = "_FRAMELESSHELPER_PRESERVE_NATIVE_WINDOW_FRAME";
-[[maybe_unused]] const char _flh_forcePreserveNativeFrame_flag[] = "_FRAMELESSHELPER_FORCE_PRESERVE_NATIVE_WINDOW_FRAME";
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+#define Q_NODISCARD [[nodiscard]]
+#else
+#define Q_NODISCARD
+#endif
+
+#ifndef FRAMELESSHELPER_NAMESPACE
+#define FRAMELESSHELPER_NAMESPACE __flh_ns
+#endif
+
+#ifndef FRAMELESSHELPER_BEGIN_NAMESPACE
+#define FRAMELESSHELPER_BEGIN_NAMESPACE namespace FRAMELESSHELPER_NAMESPACE {
+#endif
+
+#ifndef FRAMELESSHELPER_END_NAMESPACE
+#define FRAMELESSHELPER_END_NAMESPACE }
+#endif
+
+#ifndef FRAMELESSHELPER_USE_NAMESPACE
+#define FRAMELESSHELPER_USE_NAMESPACE using namespace FRAMELESSHELPER_NAMESPACE;
+#endif
+
+#ifndef FRAMELESSHELPER_PREPEND_NAMESPACE
+#define FRAMELESSHELPER_PREPEND_NAMESPACE(X) ::FRAMELESSHELPER_NAMESPACE::X
+#endif
+
+FRAMELESSHELPER_BEGIN_NAMESPACE
+
+Q_NAMESPACE_EXPORT(FRAMELESSHELPER_API)
+
+namespace Constants
+{
+
+[[maybe_unused]] constexpr char kFramelessModeFlag[] = "_FRAMELESSHELPER_FRAMELESS_MODE";
+[[maybe_unused]] constexpr char kResizeBorderThicknessFlag[] = "_FRAMELESSHELPER_RESIZE_BORDER_THICKNESS";
+[[maybe_unused]] constexpr char kCaptionHeightFlag[] = "_FRAMELESSHELPER_CAPTION_HEIGHT";
+[[maybe_unused]] constexpr char kTitleBarHeightFlag[] = "_FRAMELESSHELPER_TITLE_BAR_HEIGHT";
+[[maybe_unused]] constexpr char kHitTestVisibleInChromeFlag[] = "_FRAMELESSHELPER_HIT_TEST_VISIBLE_IN_CHROME";
+[[maybe_unused]] constexpr char kUseNativeTitleBarFlag[] = "_FRAMELESSHELPER_USE_NATIVE_TITLE_BAR";
+[[maybe_unused]] constexpr char kPreserveNativeFrameFlag[] = "_FRAMELESSHELPER_PRESERVE_NATIVE_WINDOW_FRAME";
+[[maybe_unused]] constexpr char kForcePreserveNativeFrameFlag[] = "_FRAMELESSHELPER_FORCE_PRESERVE_NATIVE_WINDOW_FRAME";
+[[maybe_unused]] constexpr char kWindowFixedSizeFlag[] = "_FRAMELESSHELPER_WINDOW_FIXED_SIZE";
 
 }
+
+enum class SystemMetric : int
+{
+    ResizeBorderThickness = 0,
+    CaptionHeight,
+    TitleBarHeight
+};
+Q_ENUM_NS(SystemMetric)
+
+enum class ColorizationArea : int
+{
+    None = 0,
+    StartMenu_TaskBar_ActionCenter,
+    TitleBar_WindowBorder,
+    All
+};
+Q_ENUM_NS(ColorizationArea)
+
+FRAMELESSHELPER_END_NAMESPACE

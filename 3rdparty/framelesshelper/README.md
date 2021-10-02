@@ -36,9 +36,9 @@ int main(int argc, char *argv[]) {
 }
 ```
 
-Please refer to [the QWidget example](/examples/QWidget/main.cpp) for more detailed information.
+Please refer to [the QWidget example](/examples/widget/) for more detailed information.
 
-### Ignore areas and etc
+### Some details
 
 ```cpp
 // Only **TOP LEVEL** QWidgets and QWindows are supported.
@@ -57,8 +57,15 @@ win->setMaximumSize(1280, 720);
 // Minimum window size
 win->setMinimumSize(800, 540);
 // The **POINTER** of a QWidget or QQuickItem
-FramelessWindowsManager::addIgnoreObject(win, ui->pushButton_minimize);
+FramelessWindowsManager::setHitTestVisibleInChrome(win, ui->pushButton_minimize, true);
 ```
+
+## IMPORTANT NOTES
+
+- For [QDockWidget](https://doc.qt.io/qt-6/qdockwidget.html), it supports set a custom title bar widget officially, no need to use this library, and this library is known to be not working well for QDockWidgets. Please refer to <https://doc.qt.io/qt-6/qdockwidget.html#setTitleBarWidget> for more details.
+- Only top level windows ([QWindow](https://doc.qt.io/qt-6/qwindow.html) and [QWidget](https://doc.qt.io/qt-6/qwidget.html)) are supported.
+- Win32: There are some known issues when DWM composition is disabled. This is unsupported and not tested and will not be fixed. However, PRs are always welcome.
+- Win32: High DPI scaling must be enabled for your application otherwise some Win32 APIs may return wrong value and thus it may result in unexpected behavior.
 
 ## Supported Platforms
 

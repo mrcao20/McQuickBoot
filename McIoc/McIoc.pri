@@ -1,5 +1,5 @@
 QT *= xml
-#QT *= core-private
+QT *= core-private
 
 include($$PWD/../3rdparty/yaml-cpp.pri)
 include($$PWD/../3rdparty/zlib.pri)
@@ -56,9 +56,12 @@ HEADERS += \
     $$PWD/include/McIoc/Slot/IMcSlot.h \
     $$PWD/include/McIoc/Thread/IMcDeleteThreadWhenQuit.h \
     $$PWD/include/McIoc/Thread/impl/McDefaultDeleteThreadWhenQuit.h \
+    $$PWD/include/McIoc/Utils/Event/McEventDispatcher.h \
+    $$PWD/include/McIoc/Utils/Event/McEventRouter.h \
     $$PWD/include/McIoc/Utils/IMcNonCopyable.h \
     $$PWD/include/McIoc/Utils/Macro/MacroFillingFunc.h \
     $$PWD/include/McIoc/Utils/Macro/MacroSize.h \
+    $$PWD/include/McIoc/Utils/McQVariantConverter.h \
     $$PWD/include/McIoc/Utils/McScopedFunction.h \
     $$PWD/include/McIoc/McGlobal.h \
     $$PWD/include/McIoc/McMacroGlobal.h \
@@ -106,6 +109,8 @@ SOURCES += \
     $$PWD/src/PropertyParser/McDefaultPropertyParser.cpp \
     $$PWD/src/Thread/McDefaultDeleteThreadWhenQuit.cpp \
     $$PWD/src/McGlobal.cpp \
+    $$PWD/src/Utils/Event/McEventDispatcher.cpp \
+    $$PWD/src/Utils/Event/McEventRouter.cpp \
     $$PWD/src/Utils/XmlBuilder/McBeanCollection.cpp \
     $$PWD/src/Utils/XmlBuilder/McBean.cpp \
     $$PWD/src/Utils/XmlBuilder/McPlaceholder.cpp \

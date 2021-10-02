@@ -35,7 +35,9 @@ QT_BEGIN_NAMESPACE
 class QRunable;
 class QJSValue;
 class QJSEngine;
+#ifdef MC_ENABLE_QSCXML
 class QScxmlStateMachine;
+#endif
 QT_END_NAMESPACE
 
 class McAbstractResponse;
@@ -44,7 +46,9 @@ class IMcApplicationContext;
 MC_FORWARD_DECL_CLASS(IMcControllerContainer)
 MC_FORWARD_DECL_CLASS(IMcModelContainer)
 MC_FORWARD_DECL_CLASS(McRequestorConfig)
+#ifdef MC_ENABLE_QSCXML
 MC_FORWARD_DECL_CLASS(McStateMachineConfig)
+#endif
 MC_FORWARD_DECL_CLASS(McRuntimeConfigurer)
 MC_FORWARD_DECL_CLASS(IMcResponseHandler)
 
@@ -55,12 +59,16 @@ class MCQUICKBOOT_EXPORT McAbstractRequestor : public QObject,
 {
     Q_OBJECT
     MC_DECL_INIT(McAbstractRequestor)
+#ifdef MC_ENABLE_QSCXML
     Q_PROPERTY(QScxmlStateMachine *stateMachine READ stateMachine NOTIFY stateMachineChanged)
+#endif
     MC_PRIVATE_PROPERTY(IMcControllerContainerPtr, controllerContainer, MEMBER controllerContainer)
     MC_PRIVATE_PROPERTY(IMcModelContainerPtr, modelContainer, MEMBER modelContainer)
     MC_PRIVATE_PROPERTY(McRequestorConfigPtr, requestorConfig, MEMBER requestorConfig)
     MC_PRIVATE_PROPERTY(McRuntimeConfigurerPtr, runtimeConfig, MEMBER runtimeConfig)
+#ifdef MC_ENABLE_QSCXML
     MC_PRIVATE_PROPERTY(McStateMachineConfigPtr, stateMachineConfig, MEMBER stateMachineConfig)
+#endif
     MC_PRIVATE_PROPERTY2(QList<IMcResponseHandlerPtr>, responseHanlders, MEMBER responseHanlders)
 public:
     Q_INVOKABLE explicit McAbstractRequestor(QObject *parent = nullptr);
@@ -76,9 +84,11 @@ public:
     Q_INVOKABLE QObject *getBean(const QString &name) const noexcept;
     Q_INVOKABLE QObject *getModel(const QString &name) const noexcept;
 
+#ifdef MC_ENABLE_QSCXML
     QScxmlStateMachine *stateMachine() const noexcept;
     bool isLoadStateMachine() const noexcept;
     static void setStaticStateMachine(QScxmlStateMachine *val);
+#endif
 
     McRuntimeConfigurer &runtimeConfig() const;
 
@@ -89,7 +99,9 @@ protected:
     QVariant getBeanToVariant(const QString &name) const noexcept;
 
 private:
+#ifdef MC_ENABLE_QSCXML
     Q_SIGNAL void stateMachineChanged();
+#endif
 
     Q_INVOKABLE
     MC_ALL_FINISHED

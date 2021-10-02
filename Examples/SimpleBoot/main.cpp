@@ -46,7 +46,6 @@ int main(int argc, char *argv[])
     std::function<void(int)> a = [](int b) { qDebug() << "++++++++++++++" << b; };
     QMetaObject::invokeMethod(&t, "aaa", Q_ARG(std::function<void(int)>, a));
     McQuickBootSimple::init();
-    qDebug() << "cccccccccccc" << $.stateMachine();
     $.connect("aaa", SIGNAL(signal_sig()), "param", SLOT(slot_slt()));
     ParamPtr p = ParamPtr::create();
     $.connect("aaa", SIGNAL(signal_sig3(int)), p.data(), &Param::callbackTest3);

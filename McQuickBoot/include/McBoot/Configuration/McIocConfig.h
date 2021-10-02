@@ -25,31 +25,23 @@
 
 #include "McAbstractXmlPathConfig.h"
 
-MC_FORWARD_DECL_CLASS(IMcApplicationContext)
+MC_FORWARD_DECL_PRIVATE_DATA(McIocConfig);
 
-MC_FORWARD_DECL_PRIVATE_DATA(McLogConfig);
-
-class McLogConfig : public McAbstractXmlPathConfig
+class McIocConfig : public McAbstractXmlPathConfig
 {
     Q_OBJECT
     MC_DECL_SUPER(McAbstractXmlPathConfig)
-    MC_COMPONENT("logConfig")
-    MC_CONFIGURATION_PROPERTIES("boot.application.log")
-    Q_PROPERTY(QString repositoryName READ repositoryName WRITE setRepositoryName)
+    MC_COMPONENT("iocConfig")
+    MC_CONFIGURATION_PROPERTIES("boot.application.ioc")
 public:
-    explicit McLogConfig(QObject *parent = nullptr) noexcept;
-    ~McLogConfig() override;
-
-    QString repositoryName() const noexcept;
-    void setRepositoryName(const QString &val) noexcept;
-
-    IMcApplicationContextPtr appCtx() const noexcept;
+    explicit McIocConfig(QObject *parent = nullptr) noexcept;
+    ~McIocConfig() override;
 
 protected:
     void doFinished() noexcept override;
 
 private:
-    MC_DECL_PRIVATE(McLogConfig)
+    MC_DECL_PRIVATE(McIocConfig)
 };
 
-MC_DECL_METATYPE(McLogConfig)
+MC_DECL_METATYPE(McIocConfig)

@@ -26,6 +26,7 @@
 #include <QLoggingCategory>
 
 #include <McIoc/McGlobal.h>
+#include <McIoc/Utils/Event/McEventDispatcher.h>
 
 #include "McBootConstantGlobal.h"
 #include "McBootMacroGlobal.h"

@@ -23,33 +23,33 @@
  */
 #pragma once
 
-#include "McAbstractXmlPathConfig.h"
+#include <QHash>
+#include <QObject>
 
-MC_FORWARD_DECL_CLASS(IMcApplicationContext)
-
-MC_FORWARD_DECL_PRIVATE_DATA(McLogConfig);
-
-class McLogConfig : public McAbstractXmlPathConfig
+class McEventRouter : public QObject
 {
     Q_OBJECT
-    MC_DECL_SUPER(McAbstractXmlPathConfig)
-    MC_COMPONENT("logConfig")
-    MC_CONFIGURATION_PROPERTIES("boot.application.log")
-    Q_PROPERTY(QString repositoryName READ repositoryName WRITE setRepositoryName)
 public:
-    explicit McLogConfig(QObject *parent = nullptr) noexcept;
-    ~McLogConfig() override;
+    explicit McEventRouter(QObject *parent = nullptr) : QObject(parent) {}
 
-    QString repositoryName() const noexcept;
-    void setRepositoryName(const QString &val) noexcept;
+    QMetaObject::Connection connectToEvent(const QStringList &segments,
+                                           const QObject *receiver,
+                                           const char *method,
+                                           Qt::ConnectionType type);
+    QMetaObject::Connection connectToEvent(const QStringList &segments,
+                                           const QObject *receiver,
+                                           void **slot,
+                                           QtPrivate::QSlotObjectBase *method,
+                                           Qt::ConnectionType type);
 
-    IMcApplicationContextPtr appCtx() const noexcept;
+    void route(const QStringList &segments, const QVariant &data);
 
-protected:
-    void doFinished() noexcept override;
+signals:
+    void eventOccurred(const QVariant &data);
 
 private:
-    MC_DECL_PRIVATE(McLogConfig)
-};
+    McEventRouter *child(const QString &segment);
 
-MC_DECL_METATYPE(McLogConfig)
+private:
+    QHash<QString, McEventRouter *> children;
+};

@@ -73,7 +73,9 @@ void McRequestRunner::run()
     auto cleanup = qScopeGuard([this]() { emit signal_finished(); });
     McRequest req;
     if (!d->response.isNull()) {
+        d->response->setStarted();
         req.setCancel(d->response->getCancel());
+        req.setPause(d->response->getPause());
         req.setProgress(d->response->getProgress());
     }
     auto body = d->controllerContainer->invoke(d->uri, d->body, req);

@@ -23,8 +23,6 @@
  */
 #include "McBoot/Configuration/McWidgetConfig.h"
 
-#include <QWidget>
-
 #include <McWidgetIoc/ApplicationContext/Impl/McXmlWidgetApplicationContext.h>
 
 MC_STATIC()
@@ -32,6 +30,7 @@ MC_REGISTER_BEAN_FACTORY(McWidgetConfig)
 MC_STATIC_END
 
 MC_DECL_PRIVATE_DATA(McWidgetConfig)
+IMcWidgetApplicationContextPtr appCtx;
 QString mainWindowName{"mainWindow"};
 int destroyPriority{Mc::Normal};
 MC_DECL_PRIVATE_DATA_END
@@ -43,6 +42,31 @@ McWidgetConfig::McWidgetConfig(QObject *parent) noexcept : McAbstractXmlPathConf
 
 McWidgetConfig::~McWidgetConfig() {}
 
+QString McWidgetConfig::mainWindowName() const noexcept
+{
+    return d->mainWindowName;
+}
+
+void McWidgetConfig::setMainWindowName(const QString &val) noexcept
+{
+    d->mainWindowName = val;
+}
+
+int McWidgetConfig::destroyPriority() const noexcept
+{
+    return d->destroyPriority;
+}
+
+void McWidgetConfig::setDestroyPriority(int val) noexcept
+{
+    d->destroyPriority = val;
+}
+
+IMcWidgetApplicationContextPtr McWidgetConfig::appCtx() const noexcept
+{
+    return d->appCtx;
+}
+
 void McWidgetConfig::doFinished() noexcept
 {
     super::doFinished();
@@ -50,16 +74,10 @@ void McWidgetConfig::doFinished() noexcept
     if (paths.isEmpty()) {
         return;
     }
-    auto appCtx = McXmlWidgetApplicationContextPtr::create(paths, flag());
-    auto w = appCtx->getBean(d->mainWindowName);
-    if (w == nullptr) {
-        return;
+    QStringList xmlPaths;
+    for (auto &path : qAsConst(paths)) {
+        auto xmlPath = Mc::toAbsolutePath(path);
+        xmlPaths << xmlPath;
     }
-    Mc::addPostRoutine(d->destroyPriority, [w]() {
-        w->hide();
-        delete w;
-    });
-    w->show();
+    d->appCtx = McXmlWidgetApplicationContextPtr::create(xmlPaths, flag());
 }
-
-#include "moc_McWidgetConfig.cpp"

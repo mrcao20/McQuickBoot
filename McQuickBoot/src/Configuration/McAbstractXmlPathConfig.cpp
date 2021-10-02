@@ -26,6 +26,7 @@
 MC_DECL_PRIVATE_DATA(McAbstractXmlPathConfig)
 QStringList xmlPaths;
 QString flag;
+bool mergeInto{false};
 MC_DECL_PRIVATE_DATA_END
 
 McAbstractXmlPathConfig::McAbstractXmlPathConfig(QObject *parent) noexcept
@@ -54,6 +55,16 @@ QString McAbstractXmlPathConfig::flag() const noexcept
 void McAbstractXmlPathConfig::setFlag(const QString &val) noexcept
 {
     d->flag = val;
+}
+
+bool McAbstractXmlPathConfig::mergeInto() const noexcept
+{
+    return d->mergeInto;
+}
+
+void McAbstractXmlPathConfig::setMergeInto(bool val) noexcept
+{
+    d->mergeInto = val;
 }
 
 void McAbstractXmlPathConfig::doFinished() noexcept

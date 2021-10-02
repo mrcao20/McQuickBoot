@@ -23,7 +23,7 @@
  */
 #include "McWidgetIoc/Window/McWidget.h"
 
-//#include "framelesswindowsmanager.h"
+#include "framelesswindowsmanager.h"
 
 MC_STATIC()
 auto pid = qRegisterMetaType<McWidget *>();
@@ -45,7 +45,7 @@ void McWidget::showEvent(QShowEvent *event)
 {
     QWidget::showEvent(event);
     if (!d->isInited) {
-        //        FramelessWindowsManager::addWindow(windowHandle());
+        __flh_ns::FramelessWindowsManager::addWindow(windowHandle());
         d->isInited = true;
     }
 }

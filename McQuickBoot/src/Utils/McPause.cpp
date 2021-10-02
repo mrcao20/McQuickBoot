@@ -21,35 +21,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include "McBoot/Utils/McPause.h"
 
-#include "McAbstractXmlPathConfig.h"
+MC_INIT(McPause)
+qRegisterMetaType<McPause>();
+MC_INIT_END
 
-MC_FORWARD_DECL_CLASS(IMcApplicationContext)
-
-MC_FORWARD_DECL_PRIVATE_DATA(McLogConfig);
-
-class McLogConfig : public McAbstractXmlPathConfig
+McPause::McPause() noexcept
 {
-    Q_OBJECT
-    MC_DECL_SUPER(McAbstractXmlPathConfig)
-    MC_COMPONENT("logConfig")
-    MC_CONFIGURATION_PROPERTIES("boot.application.log")
-    Q_PROPERTY(QString repositoryName READ repositoryName WRITE setRepositoryName)
-public:
-    explicit McLogConfig(QObject *parent = nullptr) noexcept;
-    ~McLogConfig() override;
+    d = new McPauseSharedData();
+}
 
-    QString repositoryName() const noexcept;
-    void setRepositoryName(const QString &val) noexcept;
+McPause::~McPause() {}
 
-    IMcApplicationContextPtr appCtx() const noexcept;
+bool McPause::isPaused() const noexcept
+{
+    return d->isPaused.loadAcquire();
+}
 
-protected:
-    void doFinished() noexcept override;
+void McPause::pause() noexcept
+{
+    setPaused(true);
+}
 
-private:
-    MC_DECL_PRIVATE(McLogConfig)
-};
+void McPause::resume() noexcept
+{
+    setPaused(false);
+}
 
-MC_DECL_METATYPE(McLogConfig)
+QAtomicInteger<bool> &McPause::capture() const noexcept
+{
+    return d->isPaused;
+}
+
+void McPause::setCallback(const IMcCallbackPtr &val) noexcept
+{
+    d->callback = val;
+}
+
+void McPause::setPaused(bool val) noexcept
+{
+    d->isPaused.storeRelease(val);
+    if (!d->callback.isNull()) {
+        d->callback->call(d->isPaused.loadAcquire());
+    }
+}

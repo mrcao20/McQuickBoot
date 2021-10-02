@@ -33,7 +33,7 @@
 //! version when you make backwards-compatible bug fixes.
 #define MC_PATCH 3
 //! MC_INTERNAL version for perpurse like feature test, bug fix test,development, et
-#define MC_INTERNAL 4
+#define MC_INTERNAL 5
 
 #ifdef QT_DEBUG
 #define MC_VERSION_STR (QString::number(MC_MAJOR) + "." + QString::number(MC_MINOR) + "." + QString::number(MC_PATCH) + "." + QString::number(MC_INTERNAL))

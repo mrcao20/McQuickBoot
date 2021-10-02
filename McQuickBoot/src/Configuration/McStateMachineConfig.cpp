@@ -27,6 +27,7 @@
 
 MC_STATIC()
 MC_REGISTER_BEAN_FACTORY(McStateMachineConfig)
+qRegisterMetaType<QScxmlStateMachine *>();
 MC_STATIC_END
 
 MC_DECL_PRIVATE_DATA(McStateMachineConfig)

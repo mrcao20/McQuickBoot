@@ -21,35 +21,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include "McBoot/Configuration/McIocConfig.h"
 
-#include "McAbstractXmlPathConfig.h"
+#include <McIoc/ApplicationContext/impl/McLocalPathApplicationContext.h>
 
-MC_FORWARD_DECL_CLASS(IMcApplicationContext)
+#include "McBoot/McAbstractQuickBoot.h"
 
-MC_FORWARD_DECL_PRIVATE_DATA(McLogConfig);
+MC_STATIC()
+MC_REGISTER_BEAN_FACTORY(McIocConfig)
+MC_STATIC_END
 
-class McLogConfig : public McAbstractXmlPathConfig
+MC_DECL_PRIVATE_DATA(McIocConfig)
+MC_DECL_PRIVATE_DATA_END
+
+McIocConfig::McIocConfig(QObject *parent) noexcept : McAbstractXmlPathConfig(parent)
 {
-    Q_OBJECT
-    MC_DECL_SUPER(McAbstractXmlPathConfig)
-    MC_COMPONENT("logConfig")
-    MC_CONFIGURATION_PROPERTIES("boot.application.log")
-    Q_PROPERTY(QString repositoryName READ repositoryName WRITE setRepositoryName)
-public:
-    explicit McLogConfig(QObject *parent = nullptr) noexcept;
-    ~McLogConfig() override;
+    MC_NEW_PRIVATE_DATA(McIocConfig);
+}
 
-    QString repositoryName() const noexcept;
-    void setRepositoryName(const QString &val) noexcept;
+McIocConfig::~McIocConfig() {}
 
-    IMcApplicationContextPtr appCtx() const noexcept;
-
-protected:
-    void doFinished() noexcept override;
-
-private:
-    MC_DECL_PRIVATE(McLogConfig)
-};
-
-MC_DECL_METATYPE(McLogConfig)
+void McIocConfig::doFinished() noexcept
+{
+    super::doFinished();
+    auto paths = xmlPaths();
+    if (paths.isEmpty()) {
+        return;
+    }
+    QStringList xmlPaths;
+    for (auto &path : qAsConst(paths)) {
+        auto xmlPath = Mc::toAbsolutePath(path);
+        xmlPaths << xmlPath;
+    }
+    IMcApplicationContextPtr appCtx = McLocalPathApplicationContextPtr::create(xmlPaths, flag());
+    McAbstractQuickBoot::instance()->getApplicationContext()->registerBeanDefinition(
+        appCtx->getBeanDefinitions());
+}

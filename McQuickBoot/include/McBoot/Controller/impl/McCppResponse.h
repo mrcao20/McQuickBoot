@@ -25,11 +25,14 @@
 
 #include "McAbstractResponse.h"
 
+#include <QPointer>
+
 MC_FORWARD_DECL_PRIVATE_DATA(McCppResponse);
 
 class MCQUICKBOOT_EXPORT McCppResponse : public McAbstractResponse
 {
     Q_OBJECT
+    MC_DECL_SUPER(McAbstractResponse)
     MC_DECL_INIT(McCppResponse)
     template<typename T>
     struct MetaTypeIdHelper
@@ -40,6 +43,13 @@ class MCQUICKBOOT_EXPORT McCppResponse : public McAbstractResponse
 public:
     explicit McCppResponse(QObject *parent = nullptr);
     ~McCppResponse() override;
+
+    using super::result;
+    template<typename T>
+    T result() const noexcept
+    {
+        return body().value<T>();
+    }
 
     QPointer<McCppResponse> capture();
 

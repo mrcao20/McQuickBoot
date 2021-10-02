@@ -23,13 +23,15 @@
  */
 #include "McBoot/Configuration/McLogConfig.h"
 
-#include <McLog/Configurator/McXMLConfigurator.h>
+#include <McIoc/ApplicationContext/impl/McLocalPathApplicationContext.h>
 
 MC_STATIC()
 MC_REGISTER_BEAN_FACTORY(McLogConfig)
 MC_STATIC_END
 
 MC_DECL_PRIVATE_DATA(McLogConfig)
+IMcApplicationContextPtr appCtx;
+QString repositoryName{"defaultLoggerRepository"};
 MC_DECL_PRIVATE_DATA_END
 
 McLogConfig::McLogConfig(QObject *parent) noexcept : McAbstractXmlPathConfig(parent)
@@ -39,6 +41,21 @@ McLogConfig::McLogConfig(QObject *parent) noexcept : McAbstractXmlPathConfig(par
 
 McLogConfig::~McLogConfig() {}
 
+QString McLogConfig::repositoryName() const noexcept
+{
+    return d->repositoryName;
+}
+
+void McLogConfig::setRepositoryName(const QString &val) noexcept
+{
+    d->repositoryName = val;
+}
+
+IMcApplicationContextPtr McLogConfig::appCtx() const noexcept
+{
+    return d->appCtx;
+}
+
 void McLogConfig::doFinished() noexcept
 {
     super::doFinished();
@@ -46,7 +63,10 @@ void McLogConfig::doFinished() noexcept
     if (paths.isEmpty()) {
         return;
     }
-    McXMLConfigurator::configure(paths, flag());
+    QStringList xmlPaths;
+    for (auto &path : qAsConst(paths)) {
+        auto xmlPath = Mc::toAbsolutePath(path);
+        xmlPaths << xmlPath;
+    }
+    d->appCtx = McLocalPathApplicationContextPtr::create(xmlPaths, flag());
 }
-
-#include "moc_McLogConfig.cpp"

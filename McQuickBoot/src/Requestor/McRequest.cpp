@@ -39,6 +39,11 @@ McCancel McRequest::cancel() const noexcept
     return d->cancel;
 }
 
+McPause McRequest::pause() const noexcept
+{
+    return d->pause;
+}
+
 McProgress McRequest::progress() const noexcept
 {
     return d->progress;
@@ -60,6 +65,11 @@ QVariant McRequest::variant(int i) const noexcept
 void McRequest::setCancel(const McCancel &val) noexcept
 {
     d->cancel = val;
+}
+
+void McRequest::setPause(const McPause &val) noexcept
+{
+    d->pause = val;
 }
 
 void McRequest::setProgress(const McProgress &val) noexcept

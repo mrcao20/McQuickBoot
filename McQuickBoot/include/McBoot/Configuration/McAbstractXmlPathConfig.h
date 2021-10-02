@@ -33,6 +33,7 @@ class McAbstractXmlPathConfig : public McAbstractPathConfig
     MC_DECL_SUPER(McAbstractPathConfig)
     Q_PROPERTY(QStringList xmlPaths READ xmlPaths WRITE setXmlPaths)
     Q_PROPERTY(QString flag READ flag WRITE setFlag)
+    Q_PROPERTY(bool mergeInto READ mergeInto WRITE setMergeInto)
 public:
     explicit McAbstractXmlPathConfig(QObject *parent = nullptr) noexcept;
     ~McAbstractXmlPathConfig();
@@ -42,6 +43,9 @@ public:
 
     QString flag() const noexcept;
     void setFlag(const QString &val) noexcept;
+
+    bool mergeInto() const noexcept;
+    void setMergeInto(bool val) noexcept;
 
 protected:
     void doFinished() noexcept override;

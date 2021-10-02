@@ -49,6 +49,7 @@ public:
     bool isSingleton(const QString &name) noexcept override;
     bool registerBeanDefinition(const QString &name,
                                 IMcBeanDefinitionConstPtrRef beanDefinition) noexcept override;
+    bool registerBeanDefinition(const QHash<QString, IMcBeanDefinitionPtr> &vals) noexcept override;
     IMcBeanDefinitionPtr unregisterBeanDefinition(const QString &name) noexcept override;
     bool canRegister(IMcBeanDefinitionConstPtrRef beanDefinition) const noexcept override;
     bool isContained(const QString &name) const noexcept override;

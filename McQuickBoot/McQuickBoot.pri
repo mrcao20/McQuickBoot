@@ -1,4 +1,9 @@
-QT *= quick quickwidgets scxml
+QT *= quick quickwidgets
+
+contains(DEFINES, MC_ENABLE_QSCXML) {
+    message(enable qscxml)
+    QT *= scxml
+}
 
 INCLUDEPATH += $$PWD/include/
 
@@ -8,11 +13,11 @@ SOURCES += \
     $$PWD/src/Configuration/McAbstractPathConfig.cpp \
     $$PWD/src/Configuration/McAbstractXmlPathConfig.cpp \
     $$PWD/src/Configuration/McConfigurationContainer.cpp \
+    $$PWD/src/Configuration/McIocConfig.cpp \
     $$PWD/src/Configuration/McLogConfig.cpp \
     $$PWD/src/Configuration/McRequestorConfig.cpp \
     $$PWD/src/Configuration/McRuntimeConfigConfig.cpp \
     $$PWD/src/Configuration/McRuntimeConfigurer.cpp \
-    $$PWD/src/Configuration/McStateMachineConfig.cpp \
     $$PWD/src/Configuration/McWidgetConfig.cpp \
     $$PWD/src/Configuration/Parser/McConfigurationParserFactory.cpp \
     $$PWD/src/Configuration/Parser/McQuickBootConfigurerParser.cpp \
@@ -44,6 +49,7 @@ SOURCES += \
     $$PWD/src/Utils/McCancel.cpp \
     $$PWD/src/Utils/McJsonUtils.cpp \
     $$PWD/src/BeanDefinitionReader/McConfigurationFileBeanDefinitionReader.cpp \
+    $$PWD/src/Utils/McPause.cpp \
     $$PWD/src/Utils/McProgress.cpp \
     $$PWD/src/Utils/Response/McResponseHandlerFactory.cpp
 
@@ -53,14 +59,14 @@ HEADERS +=  \
     $$PWD/include/McBoot/Configuration/IMcQuickBootConfigurer.h \
     $$PWD/include/McBoot/Configuration/McAbstractPathConfig.h \
     $$PWD/include/McBoot/Configuration/McAbstractXmlPathConfig.h \
+    $$PWD/include/McBoot/Configuration/McIocConfig.h \
+    $$PWD/include/McBoot/Configuration/McLogConfig.h \
     $$PWD/include/McBoot/Configuration/McRuntimeConfigurer.h \
     $$PWD/include/McBoot/Configuration/McRuntimeConfigurerConfig.h \
     $$PWD/include/McBoot/Configuration/Parser/IMcConfigurationParser.h \
     $$PWD/include/McBoot/Configuration/McConfigurationContainer.h \
-    $$PWD/include/McBoot/Configuration/McLogConfig.h \
     $$PWD/include/McBoot/Configuration/McRequestorConfig.h \
     $$PWD/include/McBoot/Configuration/McSimpleBeanDefinition.h \
-    $$PWD/include/McBoot/Configuration/McStateMachineConfig.h \
     $$PWD/include/McBoot/Configuration/McWidgetConfig.h \
     $$PWD/include/McBoot/Configuration/Parser/Impl/McQuickBootConfigurerParser.h \
     $$PWD/include/McBoot/Configuration/Parser/McConfigurationParserFactory.h \
@@ -100,9 +106,15 @@ HEADERS +=  \
     $$PWD/include/McBoot/Utils/McCancel.h \
     $$PWD/include/McBoot/Utils/McJsonUtils.h \
     $$PWD/include/McBoot/BeanDefinitionReader/impl/McConfigurationFileBeanDefinitionReader.h \
+    $$PWD/include/McBoot/Utils/McPause.h \
     $$PWD/include/McBoot/Utils/McProgress.h \
     $$PWD/include/McBoot/Utils/Response/IMcResponseHandler.h \
     $$PWD/include/McBoot/Utils/Response/McResponseHandlerFactory.h
+
+contains(DEFINES, MC_ENABLE_QSCXML) {
+    SOURCES += $$PWD/src/Configuration/McStateMachineConfig.cpp
+    HEADERS += $$PWD/include/McBoot/Configuration/McStateMachineConfig.h
+}
 
 RESOURCES += \
     $$PWD/qrc/resource.qrc

@@ -1,7 +1,6 @@
 #include "InvokeTest.h"
 
 #include <QDebug>
-#include <QScxmlStateMachine>
 #include <QThread>
 
 #include <McBoot/Controller/impl/McQmlResponse.h>
@@ -113,12 +112,7 @@ void InvokeTest::end() noexcept {
         jsonArr.append(jsonObj);
         auto ga = McJsonUtils::fromJson<QList<GadgetTestPtr>>(jsonArr);
         qDebug() << ga.front()->t2->text2;
-        $.stateMachine()->submitEvent("entryState3");
     });
-    $.stateMachine()->connectToState("State_2",
-                                     [](bool active) { qDebug() << "entry State_2" << active; });
-    $.stateMachine()->connectToState("State_3",
-                                     [](bool active) { qDebug() << "entry State_3" << active; });
 }
 
 void InvokeTest::threadEnd() noexcept {

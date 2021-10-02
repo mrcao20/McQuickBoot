@@ -23,33 +23,21 @@
  */
 #pragma once
 
-#include "McAbstractXmlPathConfig.h"
+#include "../McGlobal.h"
 
-MC_FORWARD_DECL_CLASS(IMcApplicationContext)
-
-MC_FORWARD_DECL_PRIVATE_DATA(McLogConfig);
-
-class McLogConfig : public McAbstractXmlPathConfig
+class McQVariantConverter
 {
-    Q_OBJECT
-    MC_DECL_SUPER(McAbstractXmlPathConfig)
-    MC_COMPONENT("logConfig")
-    MC_CONFIGURATION_PROPERTIES("boot.application.log")
-    Q_PROPERTY(QString repositoryName READ repositoryName WRITE setRepositoryName)
 public:
-    explicit McLogConfig(QObject *parent = nullptr) noexcept;
-    ~McLogConfig() override;
-
-    QString repositoryName() const noexcept;
-    void setRepositoryName(const QString &val) noexcept;
-
-    IMcApplicationContextPtr appCtx() const noexcept;
-
-protected:
-    void doFinished() noexcept override;
-
-private:
-    MC_DECL_PRIVATE(McLogConfig)
+    template<typename T>
+    typename std::enable_if<McPrivate::IsQVariantHelper<T>::Value, QVariant>::type toQVariant(T &&t)
+    {
+        return QVariant::fromValue(t);
+    }
+    QVariant toQVariant(const QVariant &t) { return t; }
+    template<typename T>
+    typename std::enable_if<McPrivate::IsQVariantHelper<T>::Value2, QVariant>::type toQVariant(
+        const T &t)
+    {
+        return QVariant(t);
+    }
 };
-
-MC_DECL_METATYPE(McLogConfig)
