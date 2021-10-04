@@ -1,5 +1,5 @@
 #include <QGuiApplication>
-#include <QQmlApplicationEngine>
+#include <QMetaMethod>
 
 #include <McBoot/Controller/impl/McResult.h>
 #include <McBoot/McQuickBootSimple.h>

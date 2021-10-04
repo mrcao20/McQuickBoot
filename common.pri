@@ -10,6 +10,8 @@ CONFIG(release, debug|release) {
 # DEFINES += MC_DISABLE_QUAZIP
 # 添加QScxml的依赖
 # DEFINES += MC_ENABLE_QSCXML
+# 轻量级启动，去掉QML相关的依赖
+# DEFINES += MC_TINY_QUICK_BOOT
 
 msvc {
     QMAKE_CFLAGS += /utf-8

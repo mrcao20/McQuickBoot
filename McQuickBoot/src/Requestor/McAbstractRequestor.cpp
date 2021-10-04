@@ -26,7 +26,9 @@
 #include <QCoreApplication>
 #include <QDebug>
 #include <QEvent>
+#ifndef MC_TINY_QUICK_BOOT
 #include <QQmlEngine>
+#endif
 #include <QThreadPool>
 
 #include <McIoc/ApplicationContext/IMcApplicationContext.h>
@@ -142,7 +144,9 @@ QObject *McAbstractRequestor::getBean(const QString &name) const noexcept
     if (obj == nullptr) {
         qWarning() << "cannot get bean for named:" << name;
     } else {
+#ifndef MC_TINY_QUICK_BOOT
         QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+#endif
     }
     return obj;
 }

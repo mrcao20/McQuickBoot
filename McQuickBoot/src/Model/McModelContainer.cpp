@@ -24,7 +24,9 @@
 #include "McBoot/Model/impl/McModelContainer.h"
 
 #include <QDebug>
+#ifndef MC_TINY_QUICK_BOOT
 #include <QQmlEngine>
+#endif
 
 #include <McIoc/ApplicationContext/IMcApplicationContext.h>
 
@@ -63,7 +65,9 @@ void McModelContainer::init(const IMcQuickBoot *boot) noexcept
             qCritical() << QString("model for named '%1' is repeated").arg(beanName);
             continue;
         }
+#ifndef MC_TINY_QUICK_BOOT
         QQmlEngine::setObjectOwnership(obj.data(), QQmlEngine::CppOwnership);
+#endif
         d->models.insert(beanName, obj);
     }
 }

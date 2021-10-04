@@ -28,7 +28,6 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QMetaMethod>
-#include <QQmlEngine>
 
 #include <McIoc/ApplicationContext/IMcApplicationContext.h>
 #include <McIoc/BeanFactory/impl/McMetaTypeId.h>
@@ -37,7 +36,9 @@
 #include "McBoot/Controller/impl/McResult.h"
 #include "McBoot/IMcQuickBoot.h"
 #include "McBoot/Requestor/McRequest.h"
+#ifndef MC_TINY_QUICK_BOOT
 #include "McBoot/Utils/Callback/Impl/McQmlSyncCallback.h"
+#endif
 #include "McBoot/Utils/McJsonUtils.h"
 
 MC_INIT(McControllerContainer)
@@ -219,6 +220,7 @@ QVariant McControllerContainer::invokeForUri(QObjectConstPtrRef bean,
 
 bool McControllerContainer::makeCallback(QVariantMap &args, const QMetaMethod &m) noexcept
 {
+#ifndef MC_TINY_QUICK_BOOT
     if (!args.contains(Mc::QuickBoot::Constant::Argument::qmlCallback)) {
         return true;
     }
@@ -248,6 +250,7 @@ bool McControllerContainer::makeCallback(QVariantMap &args, const QMetaMethod &m
     }
     args.remove(Mc::QuickBoot::Constant::Argument::qmlCallback);
     args.insert(m.parameterNames().constLast(), qmlSyncCallbackVar);
+#endif
     return true;
 }
 
