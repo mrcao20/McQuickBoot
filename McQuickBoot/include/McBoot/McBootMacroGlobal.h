@@ -96,6 +96,7 @@
 #define MC_CUSTOM_FUNC_DEFINE_QUICKBOOT_WORK_THREAD(Class, func) \
     QThread *Class::MC_QUICKBOOT_WORK_THREAD_NAME() const noexcept { return func(); }
 
+#ifdef MC_ENABLE_QSCXML
 // State Machine
 #define MC_QUICKBOOT_STATE_MACHINE_NAME __mc__quickBootStateMachine
 #define MC_INLINE_QUICKBOOT_STATE_MACHINE(Class) \
@@ -119,3 +120,4 @@
 
 #define MC_CUSTOM_FUNC_DEFINE_QUICKBOOT_STATE_MACHINE(Class, func) \
     QScxmlStateMachine *Class::MC_QUICKBOOT_STATE_MACHINE_NAME() const noexcept { return func(); }
+#endif

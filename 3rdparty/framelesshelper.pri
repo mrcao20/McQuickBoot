@@ -19,10 +19,16 @@ qtHaveModule(quick) {
     SOURCES += $$PWD/framelesshelper/framelessquickhelper.cpp
 }
 win32 {
-    HEADERS += $$PWD/framelesshelper/framelesshelper_win32.h
+    HEADERS += \
+        $$PWD/framelesshelper/framelesshelper_windows.h
+        $$PWD/framelesshelper/framelesshelper_win32.h
     SOURCES += \
         $$PWD/framelesshelper/utilities_win32.cpp \
         $$PWD/framelesshelper/framelesshelper_win32.cpp
-    LIBS += -luser32 -lshell32 -lgdi32 -ldwmapi
+    LIBS += -luser32 -lshell32 -ldwmapi
     RC_FILE = $$PWD/framelesshelper/framelesshelper.rc
+} else:unix:!macx {
+    SOURCES += $$PWD/framelesshelper/utilities_linux.cpp
+} else {
+    SOURCES += $$PWD/framelesshelper/utilities_macos.mm
 }

@@ -6,6 +6,12 @@ CONFIG(release, debug|release) {
 
 # 如果你在McIoc项目中声明此宏，那么你需要在进入main函数后，QCoreApplication构造之前手动调用Mc::Ioc::init来启动MC_STATIC的功能
 # DEFINES += MC_MANUAL_ENABLE_IOC
+# 因为quazip的开源协议为lgpl，暂时没法直接源码引入，所以定义此宏用于去掉该库，以后会考虑单独抽出McCore库来链接一些第三方库，并单独为其指定lgpl的开源协议
+# DEFINES += MC_DISABLE_QUAZIP
+# 添加QScxml的依赖
+# DEFINES += MC_ENABLE_QSCXML
+# 轻量级启动，去掉QML相关的依赖
+# DEFINES += MC_TINY_QUICK_BOOT
 
 msvc {
     QMAKE_CFLAGS += /utf-8

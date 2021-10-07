@@ -23,25 +23,30 @@
  */
 #pragma once
 
-#include "../McBootGlobal.h"
+#include "McAbstractXmlPathConfig.h"
+
+MC_FORWARD_DECL_CLASS(IMcApplicationContext)
 
 MC_FORWARD_DECL_PRIVATE_DATA(McLogConfig);
 
-class McLogConfig : public QObject
+class McLogConfig : public McAbstractXmlPathConfig
 {
     Q_OBJECT
+    MC_DECL_SUPER(McAbstractXmlPathConfig)
     MC_COMPONENT("logConfig")
     MC_CONFIGURATION_PROPERTIES("boot.application.log")
-    Q_PRIVATE_PROPERTY(d, QStringList xmlPaths MEMBER xmlPaths)
-    Q_PRIVATE_PROPERTY(d, QString flag MEMBER flag)
+    Q_PROPERTY(QString repositoryName READ repositoryName WRITE setRepositoryName)
 public:
     explicit McLogConfig(QObject *parent = nullptr) noexcept;
     ~McLogConfig() override;
 
-private:
-    Q_INVOKABLE
-    MC_BEAN_FINISHED
-    void allFinished() noexcept;
+    QString repositoryName() const noexcept;
+    void setRepositoryName(const QString &val) noexcept;
+
+    IMcApplicationContextPtr appCtx() const noexcept;
+
+protected:
+    void doFinished() noexcept override;
 
 private:
     MC_DECL_PRIVATE(McLogConfig)

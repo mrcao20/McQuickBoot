@@ -23,7 +23,6 @@
  */
 #include "McBoot/Controller/impl/McCppResponse.h"
 
-#include <QQmlEngine>
 #include <QVariant>
 
 #include <McIoc/Utils/McScopedFunction.h>

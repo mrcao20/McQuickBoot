@@ -109,6 +109,9 @@ void McLogDeleter::checkFiles(int depth, const QString &path) noexcept
 
 bool McLogDeleter::fileNameCheck(const QString &fileName) noexcept
 {
+    if (d->filters.isEmpty()) {
+        return true;
+    }
     for(auto &filter : qAsConst(d->filters)) {
         QRegularExpression reg(filter);
         auto match = reg.match(fileName);

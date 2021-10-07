@@ -39,6 +39,7 @@ class MCLOGQT_EXPORT McAbstractFormatAppender
     Q_PROPERTY(IMcLayoutPtr layout READ layout WRITE setLayout)
     Q_PROPERTY(bool immediateFlush READ immediateFlush WRITE setImmediateFlush)
     Q_PROPERTY(bool useLockFile READ useLockFile WRITE setUseLockFile)
+    Q_PROPERTY(bool isPrintError READ isPrintError WRITE setPrintError)
     Q_PROPERTY(QString lockFilePath READ lockFilePath WRITE setLockFilePath)
 public:
     McAbstractFormatAppender();
@@ -52,6 +53,9 @@ public:
 
     bool useLockFile() const noexcept;
     void setUseLockFile(bool val) noexcept;
+
+    bool isPrintError() const noexcept;
+    void setPrintError(bool val) noexcept;
 
     QString lockFilePath() const noexcept;
     void setLockFilePath(const QString &val) noexcept;

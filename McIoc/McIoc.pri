@@ -1,9 +1,13 @@
 QT *= xml
-#QT *= core-private
+QT *= core-private
 
 include($$PWD/../3rdparty/yaml-cpp.pri)
 include($$PWD/../3rdparty/zlib.pri)
-include($$PWD/../3rdparty/quazip.pri)
+!contains(DEFINES, MC_DISABLE_QUAZIP) {
+    include($$PWD/../3rdparty/quazip.pri)
+    HEADERS += $$PWD/include/McIoc/Utils/Zip/McCompressor.h
+    SOURCES += $$PWD/src/Utils/Zip/McCompressor.cpp
+}
 
 INCLUDEPATH += $$PWD/include/
 
@@ -52,9 +56,12 @@ HEADERS += \
     $$PWD/include/McIoc/Slot/IMcSlot.h \
     $$PWD/include/McIoc/Thread/IMcDeleteThreadWhenQuit.h \
     $$PWD/include/McIoc/Thread/impl/McDefaultDeleteThreadWhenQuit.h \
+    $$PWD/include/McIoc/Utils/Event/McEventDispatcher.h \
+    $$PWD/include/McIoc/Utils/Event/McEventRouter.h \
     $$PWD/include/McIoc/Utils/IMcNonCopyable.h \
     $$PWD/include/McIoc/Utils/Macro/MacroFillingFunc.h \
     $$PWD/include/McIoc/Utils/Macro/MacroSize.h \
+    $$PWD/include/McIoc/Utils/McQVariantConverter.h \
     $$PWD/include/McIoc/Utils/McScopedFunction.h \
     $$PWD/include/McIoc/McGlobal.h \
     $$PWD/include/McIoc/McMacroGlobal.h \
@@ -78,8 +85,7 @@ HEADERS += \
     $$PWD/include/McIoc/ApplicationContext/IMcRelatableApplicationContext.h \
     $$PWD/include/McIoc/ApplicationContext/IMcConfigurableApplicationContext.h \
     $$PWD/include/McIoc/Utils/McYaml.h \
-    $$PWD/include/McIoc/ApplicationContext/impl/McYamlSettingApplicationContext.h \
-    $$PWD/include/McIoc/Utils/Zip/McCompressor.h
+    $$PWD/include/McIoc/ApplicationContext/impl/McYamlSettingApplicationContext.h
 
 SOURCES += \
     $$PWD/src/ApplicationContext/McAbstractApplicationContext.cpp \
@@ -103,6 +109,8 @@ SOURCES += \
     $$PWD/src/PropertyParser/McDefaultPropertyParser.cpp \
     $$PWD/src/Thread/McDefaultDeleteThreadWhenQuit.cpp \
     $$PWD/src/McGlobal.cpp \
+    $$PWD/src/Utils/Event/McEventDispatcher.cpp \
+    $$PWD/src/Utils/Event/McEventRouter.cpp \
     $$PWD/src/Utils/XmlBuilder/McBeanCollection.cpp \
     $$PWD/src/Utils/XmlBuilder/McBean.cpp \
     $$PWD/src/Utils/XmlBuilder/McPlaceholder.cpp \
@@ -117,5 +125,4 @@ SOURCES += \
     $$PWD/src/ApplicationContext/McSettingApplicationContext.cpp \
     $$PWD/src/ApplicationContext/McIniSettingApplicationContext.cpp \
     $$PWD/src/Utils/McYaml.cpp \
-    $$PWD/src/ApplicationContext/McYamlSettingApplicationContext.cpp \
-    $$PWD/src/Utils/Zip/McCompressor.cpp
+    $$PWD/src/ApplicationContext/McYamlSettingApplicationContext.cpp

@@ -23,27 +23,33 @@
  */
 #pragma once
 
-#include "../McBootGlobal.h"
+#include "McAbstractXmlPathConfig.h"
+
+MC_FORWARD_DECL_CLASS(IMcWidgetApplicationContext)
 
 MC_FORWARD_DECL_PRIVATE_DATA(McWidgetConfig);
 
-class McWidgetConfig : public QObject
+class McWidgetConfig : public McAbstractXmlPathConfig
 {
     Q_OBJECT
+    MC_DECL_SUPER(McAbstractXmlPathConfig)
     MC_COMPONENT("widgetConfig")
     MC_CONFIGURATION_PROPERTIES("boot.application.widget")
-    Q_PRIVATE_PROPERTY(d, QStringList xmlPaths MEMBER xmlPaths)
-    Q_PRIVATE_PROPERTY(d, QString mainWindowName MEMBER mainWindowName)
-    Q_PRIVATE_PROPERTY(d, QString flag MEMBER flag)
-    Q_PRIVATE_PROPERTY(d, int destroyPriority MEMBER destroyPriority)
+    Q_PROPERTY(QString mainWindowName READ mainWindowName WRITE setMainWindowName)
+    Q_PROPERTY(int destroyPriority READ destroyPriority WRITE setDestroyPriority)
 public:
     explicit McWidgetConfig(QObject *parent = nullptr) noexcept;
     ~McWidgetConfig() override;
 
-private:
-    Q_INVOKABLE
-    MC_BEAN_FINISHED
-    void allFinished() noexcept;
+    QString mainWindowName() const noexcept;
+    void setMainWindowName(const QString &val) noexcept;
+    int destroyPriority() const noexcept;
+    void setDestroyPriority(int val) noexcept;
+
+    IMcWidgetApplicationContextPtr appCtx() const noexcept;
+
+protected:
+    void doFinished() noexcept override;
 
 private:
     MC_DECL_PRIVATE(McWidgetConfig)

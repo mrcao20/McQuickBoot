@@ -37,14 +37,13 @@ MC_FORWARD_DECL_STRUCT(McAssociativeMetaId)
 
 MC_FORWARD_DECL_PRIVATE_DATA(McControllerContainer);
 
-class MCQUICKBOOT_EXPORT McControllerContainer 
-        : public QObject
-        , public IMcControllerContainer 
+class MCQUICKBOOT_EXPORT McControllerContainer : public QObject, public IMcControllerContainer
 {
     Q_OBJECT
     MC_DECL_INIT(McControllerContainer)
     MC_INTERFACES(IMcControllerContainer)
     MC_COMPONENT("controllerContainer")
+    MC_PRIVATE_PROPERTY(McControllerConfigPtr, controllerConfig, MEMBER controllerConfig)
 public:
     explicit McControllerContainer(QObject *parent = nullptr);
     ~McControllerContainer() override;

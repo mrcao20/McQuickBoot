@@ -24,3 +24,28 @@
 #include "McWidgetIoc/McWidgetGlobal.h"
 
 Q_LOGGING_CATEGORY(mcWidgetIoc, "mc.ioc.widget")
+
+//! 内置类型注册
+#include <QLabel>
+#include <QStackedWidget>
+
+#include "McWidgetIoc/BuiltInBeanBuilder/McBuiltInBeanContainer.h"
+
+MC_STATIC(Mc::WidgetIoc::BuildInTypeRegistry)
+MC_REGISTER_LIST_CONVERTER(QList<QWidget *>)
+{
+    auto func = [](QStackedWidget *w, const QString &name, const QVariant &val) {
+        if (name == "widgets") {
+            auto widgets = val.value<QList<QWidget *>>();
+            for (auto widget : widgets) {
+                w->addWidget(widget);
+            }
+        }
+    };
+    McBuiltInBeanContainer::addBuilderFactory<QStackedWidget>(func);
+}
+{
+    auto func = [](QLabel *w, const QString &name, const QVariant &val) { w->setProperty(name.toLocal8Bit(), val); };
+    McBuiltInBeanContainer::addBuilderFactory<QLabel>(func);
+}
+MC_STATIC_END

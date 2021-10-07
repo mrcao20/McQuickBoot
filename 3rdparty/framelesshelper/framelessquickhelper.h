@@ -27,48 +27,42 @@
 #include "framelesshelper_global.h"
 #include <QtQuick/qquickitem.h>
 
-class FRAMELESSHELPER_EXPORT FramelessQuickHelper : public QQuickItem
+FRAMELESSHELPER_BEGIN_NAMESPACE
+
+class FRAMELESSHELPER_API FramelessQuickHelper : public QQuickItem
 {
     Q_OBJECT
     Q_DISABLE_COPY_MOVE(FramelessQuickHelper)
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+#ifdef QML_NAMED_ELEMENT
     QML_NAMED_ELEMENT(FramelessHelper)
 #endif
-    Q_PROPERTY(int borderWidth READ borderWidth WRITE setBorderWidth NOTIFY borderWidthChanged)
-    Q_PROPERTY(int borderHeight READ borderHeight WRITE setBorderHeight NOTIFY borderHeightChanged)
-    Q_PROPERTY(int titleBarHeight READ titleBarHeight WRITE setTitleBarHeight NOTIFY titleBarHeightChanged)
+    Q_PROPERTY(qreal resizeBorderThickness READ resizeBorderThickness WRITE setResizeBorderThickness NOTIFY resizeBorderThicknessChanged)
+    Q_PROPERTY(qreal titleBarHeight READ titleBarHeight WRITE setTitleBarHeight NOTIFY titleBarHeightChanged)
     Q_PROPERTY(bool resizable READ resizable WRITE setResizable NOTIFY resizableChanged)
-    Q_PROPERTY(QColor nativeFrameColor READ nativeFrameColor NOTIFY nativeFrameColorChanged)
 
 public:
     explicit FramelessQuickHelper(QQuickItem *parent = nullptr);
     ~FramelessQuickHelper() override = default;
 
-    int borderWidth() const;
-    void setBorderWidth(const int val);
+    Q_NODISCARD qreal resizeBorderThickness() const;
+    void setResizeBorderThickness(const qreal val);
 
-    int borderHeight() const;
-    void setBorderHeight(const int val);
+    Q_NODISCARD qreal titleBarHeight() const;
+    void setTitleBarHeight(const qreal val);
 
-    int titleBarHeight() const;
-    void setTitleBarHeight(const int val);
-
-    bool resizable() const;
+    Q_NODISCARD bool resizable() const;
     void setResizable(const bool val);
-
-    QColor nativeFrameColor() const;
 
 public Q_SLOTS:
     void removeWindowFrame();
-    void addIgnoreObject(QQuickItem *val);
+    void bringBackWindowFrame();
+    Q_NODISCARD bool isWindowFrameless() const;
+    void setHitTestVisibleInChrome(QQuickItem *item, const bool visible);
 
 Q_SIGNALS:
-    void borderWidthChanged();
-    void borderHeightChanged();
-    void titleBarHeightChanged();
-    void resizableChanged();
-    void nativeFrameColorChanged();
-
-private:
-    QMetaObject::Connection m_frameColorConnection = {};
+    void resizeBorderThicknessChanged(qreal);
+    void titleBarHeightChanged(qreal);
+    void resizableChanged(bool);
 };
+
+FRAMELESSHELPER_END_NAMESPACE

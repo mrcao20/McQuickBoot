@@ -66,9 +66,11 @@ QWidget *McDefaultWidgetBeanFactory::doCreate(IMcBeanDefinitionConstPtrRef beanD
     if (!pluginPath.isEmpty()) {
         QPluginLoader loader(pluginPath);
         if (!loader.load()) {
-            qCWarning(mcWidgetIoc()) << pluginPath << "cannot load!!";
+            qCWarning(mcWidgetIoc()) << pluginPath << "cannot load!!"
+                                     << "error string:" << loader.errorString();
             return nullptr;
         }
+        Mc::callPreRoutine();
         obj = loader.instance();
     } else {
         auto beanMetaObj = beanDefinition->getBeanMetaObject();

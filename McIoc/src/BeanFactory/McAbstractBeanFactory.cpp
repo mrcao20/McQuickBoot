@@ -110,6 +110,20 @@ bool McAbstractBeanFactory::registerBeanDefinition(
     return true;
 }
 
+bool McAbstractBeanFactory::registerBeanDefinition(
+    const QHash<QString, IMcBeanDefinitionPtr> &vals) noexcept
+{
+    bool ret = true;
+    QHashIterator<QString, IMcBeanDefinitionPtr> itr(vals);
+    while (itr.hasNext()) {
+        auto item = itr.next();
+        if (!registerBeanDefinition(item.key(), item.value())) {
+            ret = false;
+        }
+    }
+    return ret;
+}
+
 IMcBeanDefinitionPtr McAbstractBeanFactory::unregisterBeanDefinition(const QString &name) noexcept
 {
     QMutexLocker locker(&d->mtx);

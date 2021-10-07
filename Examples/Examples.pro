@@ -4,6 +4,7 @@ SUBDIRS += \
     BootWidget \
     IocTest \
     LogTest \
+    QuickBootExample \
     ServiceTest \
     SimpleBoot \
     Test \
