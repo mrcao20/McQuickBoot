@@ -23,8 +23,6 @@
  */
 #include "McBoot/Configuration/McWidgetConfig.h"
 
-#include <QWidget>
-
 #include <McWidgetIoc/ApplicationContext/Impl/McXmlWidgetApplicationContext.h>
 
 MC_STATIC()
@@ -32,34 +30,54 @@ MC_REGISTER_BEAN_FACTORY(McWidgetConfig)
 MC_STATIC_END
 
 MC_DECL_PRIVATE_DATA(McWidgetConfig)
-QStringList xmlPaths;
+IMcWidgetApplicationContextPtr appCtx;
 QString mainWindowName{"mainWindow"};
-QString flag;
 int destroyPriority{Mc::Normal};
 MC_DECL_PRIVATE_DATA_END
 
-McWidgetConfig::McWidgetConfig(QObject *parent) noexcept : QObject(parent)
+McWidgetConfig::McWidgetConfig(QObject *parent) noexcept : McAbstractXmlPathConfig(parent)
 {
     MC_NEW_PRIVATE_DATA(McWidgetConfig);
 }
 
 McWidgetConfig::~McWidgetConfig() {}
 
-void McWidgetConfig::allFinished() noexcept
+QString McWidgetConfig::mainWindowName() const noexcept
 {
-    if (d->xmlPaths.isEmpty()) {
-        return;
-    }
-    auto appCtx = McXmlWidgetApplicationContextPtr::create(d->xmlPaths, d->flag);
-    auto w = appCtx->getBean(d->mainWindowName);
-    if (w == nullptr) {
-        return;
-    }
-    Mc::addPostRoutine(d->destroyPriority, [w]() {
-        w->hide();
-        delete w;
-    });
-    w->show();
+    return d->mainWindowName;
 }
 
-#include "moc_McWidgetConfig.cpp"
+void McWidgetConfig::setMainWindowName(const QString &val) noexcept
+{
+    d->mainWindowName = val;
+}
+
+int McWidgetConfig::destroyPriority() const noexcept
+{
+    return d->destroyPriority;
+}
+
+void McWidgetConfig::setDestroyPriority(int val) noexcept
+{
+    d->destroyPriority = val;
+}
+
+IMcWidgetApplicationContextPtr McWidgetConfig::appCtx() const noexcept
+{
+    return d->appCtx;
+}
+
+void McWidgetConfig::doFinished() noexcept
+{
+    super::doFinished();
+    auto paths = xmlPaths();
+    if (paths.isEmpty()) {
+        return;
+    }
+    QStringList xmlPaths;
+    for (auto &path : qAsConst(paths)) {
+        auto xmlPath = Mc::toAbsolutePath(path);
+        xmlPaths << xmlPath;
+    }
+    d->appCtx = McXmlWidgetApplicationContextPtr::create(xmlPaths, flag());
+}

@@ -23,15 +23,16 @@
  */
 #pragma once
 
-#include "../McBootGlobal.h"
+#include "McAbstractPathConfig.h"
 
 MC_FORWARD_DECL_CLASS(QScxmlStateMachine);
 
 MC_FORWARD_DECL_PRIVATE_DATA(McStateMachineConfig);
 
-class McStateMachineConfig : public QObject
+class McStateMachineConfig : public McAbstractPathConfig
 {
     Q_OBJECT
+    MC_DECL_SUPER(McAbstractPathConfig)
     MC_COMPONENT("stateMachineConfig")
     MC_CONFIGURATION_PROPERTIES("boot.application.stateMachine")
     Q_PRIVATE_PROPERTY(d, QStringList paths MEMBER paths)
@@ -41,10 +42,8 @@ public:
 
     QScxmlStateMachinePtr stateMachine() const noexcept;
 
-private:
-    Q_INVOKABLE
-    MC_ALL_FINISHED
-    void allFinished() noexcept;
+protected:
+    void doFinished() noexcept override;
 
 private:
     MC_DECL_PRIVATE(McStateMachineConfig)

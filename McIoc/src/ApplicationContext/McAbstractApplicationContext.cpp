@@ -135,6 +135,20 @@ bool McAbstractApplicationContext::registerBeanDefinition(
     return false;
 }
 
+bool McAbstractApplicationContext::registerBeanDefinition(
+    const QHash<QString, IMcBeanDefinitionPtr> &vals) noexcept
+{
+    bool ret = true;
+    QHashIterator<QString, IMcBeanDefinitionPtr> itr(vals);
+    while (itr.hasNext()) {
+        auto item = itr.next();
+        if (!registerBeanDefinition(item.key(), item.value())) {
+            ret = false;
+        }
+    }
+    return ret;
+}
+
 IMcBeanDefinitionPtr McAbstractApplicationContext::unregisterBeanDefinition(const QString &name) noexcept
 {
     if(d->configurableBeanFactory->containsBean(name)) {

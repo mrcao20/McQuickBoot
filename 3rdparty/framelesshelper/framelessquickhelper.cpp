@@ -25,51 +25,33 @@
 #include "framelessquickhelper.h"
 #include "framelesswindowsmanager.h"
 #include <QtQuick/qquickwindow.h>
-#include "utilities.h"
+
+FRAMELESSHELPER_BEGIN_NAMESPACE
 
 FramelessQuickHelper::FramelessQuickHelper(QQuickItem *parent) : QQuickItem(parent)
 {
-    connect(this, &FramelessQuickHelper::windowChanged, this, [this](QQuickWindow *win){
-        if (m_frameColorConnection) {
-            disconnect(m_frameColorConnection);
-        }
-        if (win) {
-            m_frameColorConnection = connect(win, &QQuickWindow::activeChanged, this, &FramelessQuickHelper::nativeFrameColorChanged);
-        }
-    });
 }
 
-int FramelessQuickHelper::borderWidth() const
+qreal FramelessQuickHelper::resizeBorderThickness() const
 {
-    return FramelessWindowsManager::getBorderWidth(window());
+    return FramelessWindowsManager::getResizeBorderThickness(window());
 }
 
-void FramelessQuickHelper::setBorderWidth(const int val)
+void FramelessQuickHelper::setResizeBorderThickness(const qreal val)
 {
-    FramelessWindowsManager::setBorderWidth(window(), val);
-    Q_EMIT borderWidthChanged();
+    FramelessWindowsManager::setResizeBorderThickness(window(), qRound(val));
+    Q_EMIT resizeBorderThicknessChanged(val);
 }
 
-int FramelessQuickHelper::borderHeight() const
-{
-    return FramelessWindowsManager::getBorderHeight(window());
-}
-
-void FramelessQuickHelper::setBorderHeight(const int val)
-{
-    FramelessWindowsManager::setBorderHeight(window(), val);
-    Q_EMIT borderHeightChanged();
-}
-
-int FramelessQuickHelper::titleBarHeight() const
+qreal FramelessQuickHelper::titleBarHeight() const
 {
     return FramelessWindowsManager::getTitleBarHeight(window());
 }
 
-void FramelessQuickHelper::setTitleBarHeight(const int val)
+void FramelessQuickHelper::setTitleBarHeight(const qreal val)
 {
-    FramelessWindowsManager::setTitleBarHeight(window(), val);
-    Q_EMIT titleBarHeightChanged();
+    FramelessWindowsManager::setTitleBarHeight(window(), qRound(val));
+    Q_EMIT titleBarHeightChanged(val);
 }
 
 bool FramelessQuickHelper::resizable() const
@@ -80,16 +62,7 @@ bool FramelessQuickHelper::resizable() const
 void FramelessQuickHelper::setResizable(const bool val)
 {
     FramelessWindowsManager::setResizable(window(), val);
-    Q_EMIT resizableChanged();
-}
-
-QColor FramelessQuickHelper::nativeFrameColor() const
-{
-    const auto win = window();
-    if (!win) {
-        return Qt::black;
-    }
-    return Utilities::getNativeWindowFrameColor(win->isActive());
+    Q_EMIT resizableChanged(val);
 }
 
 void FramelessQuickHelper::removeWindowFrame()
@@ -97,11 +70,23 @@ void FramelessQuickHelper::removeWindowFrame()
     FramelessWindowsManager::addWindow(window());
 }
 
-void FramelessQuickHelper::addIgnoreObject(QQuickItem *val)
+void FramelessQuickHelper::bringBackWindowFrame()
 {
-    Q_ASSERT(val);
-    if (!val) {
+    FramelessWindowsManager::removeWindow(window());
+}
+
+bool FramelessQuickHelper::isWindowFrameless() const
+{
+    return FramelessWindowsManager::isWindowFrameless(window());
+}
+
+void FramelessQuickHelper::setHitTestVisibleInChrome(QQuickItem *item, const bool visible)
+{
+    Q_ASSERT(item);
+    if (!item) {
         return;
     }
-    FramelessWindowsManager::addIgnoreObject(window(), val);
+    FramelessWindowsManager::setHitTestVisibleInChrome(window(), item, visible);
 }
+
+FRAMELESSHELPER_END_NAMESPACE

@@ -28,15 +28,17 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QMetaMethod>
-#include <QQmlEngine>
 
 #include <McIoc/ApplicationContext/IMcApplicationContext.h>
 #include <McIoc/BeanFactory/impl/McMetaTypeId.h>
 
+#include "McBoot/Configuration/McControllerConfig.h"
 #include "McBoot/Controller/impl/McResult.h"
 #include "McBoot/IMcQuickBoot.h"
 #include "McBoot/Requestor/McRequest.h"
+#ifndef MC_TINY_QUICK_BOOT
 #include "McBoot/Utils/Callback/Impl/McQmlSyncCallback.h"
+#endif
 #include "McBoot/Utils/McJsonUtils.h"
 
 MC_INIT(McControllerContainer)
@@ -46,6 +48,7 @@ MC_INIT_END
 
 MC_DECL_PRIVATE_DATA(McControllerContainer)
 QMap<QString, QObjectPtr> controllers;    //!< 键为beanName，值为controller对象
+McControllerConfigPtr controllerConfig;
 MC_DECL_PRIVATE_DATA_END
 
 McControllerContainer::McControllerContainer(QObject *parent)
@@ -63,14 +66,19 @@ void McControllerContainer::init(const IMcQuickBoot *boot) noexcept
     d->controllers.clear();
     auto appCtx = boot->getApplicationContext();
     auto beanNames = Mc::getComponents(appCtx, MC_CONTROLLER_TAG);
+    if (!d->controllerConfig.isNull()) {
+        beanNames.append(d->controllerConfig->controllers());
+    }
     for (const auto &beanName : beanNames) {
         auto obj = appCtx->getBean(beanName);
         if(!obj) {
-            qCritical() << QString("controller for named '%1' not exists").arg(beanName);
+            qCCritical(mcQuickBoot)
+                << QString("controller for named '%1' not exists").arg(beanName);
             continue;
         }
         if (d->controllers.contains(beanName)) {
-            qCritical() << QString("controller for named '%1' is repeated").arg(beanName);
+            qCCritical(mcQuickBoot)
+                << QString("controller for named '%1' is repeated").arg(beanName);
             continue;
         }
         d->controllers.insert(beanName, obj);
@@ -212,6 +220,7 @@ QVariant McControllerContainer::invokeForUri(QObjectConstPtrRef bean,
 
 bool McControllerContainer::makeCallback(QVariantMap &args, const QMetaMethod &m) noexcept
 {
+#ifndef MC_TINY_QUICK_BOOT
     if (!args.contains(Mc::QuickBoot::Constant::Argument::qmlCallback)) {
         return true;
     }
@@ -241,6 +250,7 @@ bool McControllerContainer::makeCallback(QVariantMap &args, const QMetaMethod &m
     }
     args.remove(Mc::QuickBoot::Constant::Argument::qmlCallback);
     args.insert(m.parameterNames().constLast(), qmlSyncCallbackVar);
+#endif
     return true;
 }
 
@@ -608,3 +618,5 @@ QVariant McControllerContainer::fail(const QString &val) const noexcept
     result->setInternalError(true);
     return QVariant::fromValue(result);
 }
+
+#include "moc_McControllerContainer.cpp"

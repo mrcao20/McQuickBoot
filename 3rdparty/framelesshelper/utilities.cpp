@@ -24,7 +24,10 @@
 
 #include "utilities.h"
 #include <QtCore/qdebug.h>
+#include <QtCore/qvariant.h>
 #include <QtGui/qguiapplication.h>
+
+FRAMELESSHELPER_BEGIN_NAMESPACE
 
 QWindow *Utilities::findWindow(const WId winId)
 {
@@ -33,6 +36,9 @@ QWindow *Utilities::findWindow(const WId winId)
         return nullptr;
     }
     const QWindowList windows = QGuiApplication::topLevelWindows();
+    if (windows.isEmpty()) {
+        return nullptr;
+    }
     for (auto &&window : qAsConst(windows)) {
         if (window && window->handle()) {
             if (window->winId() == winId) {
@@ -45,7 +51,7 @@ QWindow *Utilities::findWindow(const WId winId)
 
 bool Utilities::shouldUseNativeTitleBar()
 {
-    return qEnvironmentVariableIsSet(_flh_global::_flh_useNativeTitleBar_flag);
+    return qEnvironmentVariableIsSet(Constants::kUseNativeTitleBarFlag);
 }
 
 bool Utilities::isWindowFixedSize(const QWindow *window)
@@ -55,7 +61,7 @@ bool Utilities::isWindowFixedSize(const QWindow *window)
         return false;
     }
 #ifdef Q_OS_WINDOWS
-    if (window->flags().testFlag(Qt::MSWindowsFixedSizeDialogHint)) {
+    if (window->flags() & Qt::MSWindowsFixedSizeDialogHint) {
         return true;
     }
 #endif
@@ -67,50 +73,52 @@ bool Utilities::isWindowFixedSize(const QWindow *window)
     return false;
 }
 
-bool Utilities::isMouseInSpecificObjects(const QPointF &mousePos, const QObjectList &objects, const qreal dpr)
+bool Utilities::isHitTestVisibleInChrome(const QWindow *window)
 {
-    if (mousePos.isNull()) {
-        qWarning() << "Mouse position point is null.";
+    Q_ASSERT(window);
+    if (!window) {
         return false;
     }
-    if (objects.isEmpty()) {
-        qWarning() << "Object list is empty.";
+    const auto objs = qvariant_cast<QObjectList>(window->property(Constants::kHitTestVisibleInChromeFlag));
+    if (objs.isEmpty()) {
         return false;
     }
-    for (auto &&object : qAsConst(objects)) {
-        if (!object) {
-            qWarning() << "Object pointer is null.";
+    for (auto &&obj : qAsConst(objs)) {
+        if (!obj || !(obj->isWidgetType() || obj->inherits("QQuickItem"))) {
             continue;
         }
-        if (!object->isWidgetType() && !object->inherits("QQuickItem")) {
-            qWarning() << object << "is not a QWidget or QQuickItem!";
+        if (!obj->property("visible").toBool()) {
             continue;
         }
-        if (!object->property("visible").toBool()) {
-            qDebug() << "Skipping invisible object" << object;
-            continue;
-        }
-        const auto mapOriginPointToWindow = [](const QObject *obj) -> QPointF {
-            Q_ASSERT(obj);
-            if (!obj) {
-                return {};
-            }
-            QPointF point = {obj->property("x").toReal(), obj->property("y").toReal()};
-            for (QObject *parent = obj->parent(); parent; parent = parent->parent()) {
-                point += {parent->property("x").toReal(), parent->property("y").toReal()};
-                if (parent->isWindowType()) {
-                    break;
-                }
-            }
-            return point;
-        };
-        const QPointF originPoint = mapOriginPointToWindow(object);
-        const qreal width = object->property("width").toReal();
-        const qreal height = object->property("height").toReal();
-        const QRectF rect = {originPoint.x() * dpr, originPoint.y() * dpr, width * dpr, height * dpr};
-        if (rect.contains(mousePos)) {
+        const QPointF originPoint = mapOriginPointToWindow(obj);
+        const qreal width = obj->property("width").toReal();
+        const qreal height = obj->property("height").toReal();
+        const QRectF rect = {originPoint.x(), originPoint.y(), width, height};
+        if (rect.contains(QCursor::pos(window->screen()))) {
             return true;
         }
     }
     return false;
 }
+
+QPointF Utilities::mapOriginPointToWindow(const QObject *object)
+{
+    Q_ASSERT(object);
+    if (!object) {
+        return {};
+    }
+    if (!object->isWidgetType() && !object->inherits("QQuickItem")) {
+        qWarning() << object << "is not a QWidget or a QQuickItem.";
+        return {};
+    }
+    QPointF point = {object->property("x").toReal(), object->property("y").toReal()};
+    for (QObject *parent = object->parent(); parent; parent = parent->parent()) {
+        point += {parent->property("x").toReal(), parent->property("y").toReal()};
+        if (parent->isWindowType()) {
+            break;
+        }
+    }
+    return point;
+}
+
+FRAMELESSHELPER_END_NAMESPACE

@@ -23,13 +23,20 @@
  */
 #include "McBoot/McAbstractQuickBoot.h"
 
+#ifdef MC_ENABLE_QSCXML
 #include <QScxmlStateMachine>
+#endif
 #include <QThread>
+#include <QWidget>
 
 #include <McIoc/ApplicationContext/IMcApplicationContext.h>
+#include <McLog/Configurator/McXMLConfigurator.h>
+#include <McWidgetIoc/ApplicationContext/IMcWidgetApplicationContext.h>
 
 #include "McBoot/BeanDefinitionReader/impl/McConfigurationFileBeanDefinitionReader.h"
 #include "McBoot/Configuration/McConfigurationContainer.h"
+#include "McBoot/Configuration/McLogConfig.h"
+#include "McBoot/Configuration/McWidgetConfig.h"
 #include "McBoot/Controller/impl/McControllerContainer.h"
 #include "McBoot/Model/impl/McModelContainer.h"
 #include "McBoot/Service/impl/McServiceContainer.h"
@@ -144,6 +151,7 @@ void McAbstractQuickBoot::doRefresh(const QStringList &preloadBeans) noexcept
     auto context = getApplicationContext();
     auto reader = McConfigurationFileBeanDefinitionReaderPtr::create(context);
     reader->readBeanDefinition(context.data());
+    context->getBean("iocConfig");
     auto configurationContainer = context->getBean<McConfigurationContainer>(
         "configurationContainer");
     configurationContainer->init(this);
@@ -157,13 +165,43 @@ void McAbstractQuickBoot::doRefresh(const QStringList &preloadBeans) noexcept
     for (auto &preloadBean : qAsConst(preloadBeans)) {
         context->getBean(preloadBean, d->workThread);
     }
+#ifdef MC_ENABLE_QSCXML
     auto stateMachineName = QT_STRINGIFY(MC_QUICKBOOT_STATE_MACHINE_NAME);
     if (context->containsBean(stateMachineName)) {
         auto val = context->getBeanPointer<QScxmlStateMachine *>(stateMachineName);
         McAbstractRequestor::setStaticStateMachine(val);
     }
+#endif
     d->requestor = context->getBean<McCppRequestor>("cppRequestor", d->workThread);
     context->refresh(d->workThread); //!< 预加载bean
+    do {
+        auto logConfig = context->getBean<McLogConfig>("logConfig");
+        if (logConfig.isNull() || logConfig->appCtx().isNull()) {
+            break;
+        }
+        if (logConfig->mergeInto()) {
+            logConfig->appCtx()->registerBeanDefinition(context->getBeanDefinitions());
+        }
+        McXMLConfigurator::configure(logConfig->appCtx(), logConfig->repositoryName());
+    } while (false);
+    do {
+        auto widgetConfig = context->getBean<McWidgetConfig>("widgetConfig");
+        if (widgetConfig.isNull() || widgetConfig->appCtx().isNull()) {
+            break;
+        }
+        if (widgetConfig->mergeInto()) {
+            widgetConfig->appCtx()->registerBeanDefinition(context->getBeanDefinitions());
+        }
+        auto w = widgetConfig->appCtx()->getBean(widgetConfig->mainWindowName());
+        if (w == nullptr) {
+            break;
+        }
+        Mc::addPostRoutine(widgetConfig->destroyPriority(), [w]() {
+            w->hide();
+            delete w;
+        });
+        w->show();
+    } while (false);
     auto controllerContainer = context->getBean<McControllerContainer>("controllerContainer");
     controllerContainer->init(this);
     auto modelContainer = context->getBean<McModelContainer>("modelContainer");

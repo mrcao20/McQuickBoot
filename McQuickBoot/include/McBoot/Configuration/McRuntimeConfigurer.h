@@ -33,7 +33,8 @@ class MCQUICKBOOT_EXPORT McRuntimeConfigurer : public QObject
 {
     Q_OBJECT
     MC_DECL_INIT(McRuntimeConfigurer)
-    MC_PRIVATE_PROPERTY(McRuntimeConfigurerConfigPtr, runtimeConfig, MEMBER runtimeConfig)
+    MC_COMPONENT("runtimeConfig")
+    MC_PRIVATE_PROPERTY(McRuntimeConfigurerConfigPtr, runtimeConfigurerConfig, MEMBER runtimeConfigurerConfig)
 public:
     McRuntimeConfigurer();
     ~McRuntimeConfigurer();

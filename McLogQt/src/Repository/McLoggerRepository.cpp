@@ -42,6 +42,7 @@ QList<IMcAdditionalTaskPtr> sequentialTasks;
 QTimer taskTimer;
 bool flushWhenQuit{false};
 bool waitThreadFinished{true};
+qint64 threadWaitTimeout{-1};
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McLoggerRepository)
@@ -77,10 +78,16 @@ McLoggerRepository::~McLoggerRepository()
     if (!d->waitThreadFinished) {
         return;
     }
-    if (d->thread->thread() != QThread::currentThread()) {
-        d->thread->wait();
+    QDeadlineTimer deadlineTimer;
+    if (d->threadWaitTimeout == -1) {
+        deadlineTimer = QDeadlineTimer(QDeadlineTimer::Forever);
     } else {
-        while (!d->thread->isFinished() || d->thread->isRunning()) {
+        deadlineTimer = QDeadlineTimer(d->threadWaitTimeout);
+    }
+    if (d->thread->thread() != QThread::currentThread()) {
+        d->thread->wait(deadlineTimer);
+    } else {
+        while ((!d->thread->isFinished() || d->thread->isRunning()) && !deadlineTimer.hasExpired()) {
             QThread::msleep(100);
         }
     }

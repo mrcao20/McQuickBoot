@@ -49,6 +49,14 @@
         } \
     }
 
+#define MC_SAFETY_DELETE2(p) \
+    { \
+        if (p != nullptr) { \
+            delete[] p; \
+            p = nullptr; \
+        } \
+    }
+
 #define MC_DECL_POINTER(Class) \
     using Class##Ptr = QSharedPointer<Class>; \
     using Class##ConstPtrRef = const QSharedPointer<Class> &;

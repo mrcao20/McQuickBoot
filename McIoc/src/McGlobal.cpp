@@ -40,6 +40,8 @@
 #include "McIoc/ApplicationContext/impl/McAnnotationApplicationContext.h"
 #include "McIoc/BeanDefinition/IMcBeanDefinition.h"
 
+Q_LOGGING_CATEGORY(mcIoc, "mc.ioc")
+
 namespace McPrivate {
 
 using StartUpFuncs = QMap<int, QVector<Mc::StartUpFunction>>;

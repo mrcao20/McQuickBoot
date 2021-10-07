@@ -24,6 +24,7 @@
 #pragma once
 
 #include "../../Utils/McCancel.h"
+#include "../../Utils/McPause.h"
 #include "../../Utils/McProgress.h"
 
 MC_FORWARD_DECL_CLASS(IMcResponseHandler);
@@ -47,9 +48,13 @@ public:
 
     Q_INVOKABLE void cancel() noexcept;
     Q_INVOKABLE bool isCanceled() const noexcept;
-
-    QVariant body() const noexcept;
-    void setBody(const QVariant &var) noexcept;
+    Q_INVOKABLE void pause() noexcept;
+    Q_INVOKABLE void resume() noexcept;
+    Q_INVOKABLE bool isPaused() const noexcept;
+    Q_INVOKABLE bool isStarted() const noexcept;
+    Q_INVOKABLE bool isFinished() const noexcept;
+    Q_INVOKABLE QVariant result() const noexcept;
+    Q_INVOKABLE bool waitForFinished(qint64 msec = -1) const noexcept;
 
     bool isAsyncCall() const noexcept;
     void setAsyncCall(bool val) noexcept;
@@ -63,8 +68,14 @@ protected:
     virtual void callCallback() noexcept = 0;
     virtual void callError() noexcept = 0;
 
+    QVariant body() const noexcept;
+    void setBody(const QVariant &var) noexcept;
+    void setStarted(bool val = true) noexcept;
+    void setFinished(bool val = true) noexcept;
+
     McProgress &getProgress() const noexcept;
     McCancel &getCancel() const noexcept;
+    McPause &getPause() const noexcept;
 
 private:
     void call() noexcept;

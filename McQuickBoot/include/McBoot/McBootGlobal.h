@@ -26,6 +26,7 @@
 #include <QLoggingCategory>
 
 #include <McIoc/McGlobal.h>
+#include <McIoc/Utils/Event/McEventDispatcher.h>
 
 #include "McBootConstantGlobal.h"
 #include "McBootMacroGlobal.h"
@@ -41,11 +42,17 @@
 namespace Mc {
 namespace QuickBoot {
 
-enum RoutinePriority : int {
-    ThreadPool = Mc::Normal - 1, // requestor中线程池优先级
+enum RoutinePriority {
+    ThreadPool = Mc::Normal - 1, //!< requestor中线程池优先级
 };
 
-}
+enum class NewHandlerType {
+    None = -1, //!< 不处理new失败的情况
+    Fatal = 0, //!< 如果出现new失败的情况，直接调用qFatal打印错误消息，并退出程序
+    Prealloc = 1 //!< 采用预分配内存的方案
+};
+
+} // namespace QuickBoot
 
 // 是否添加默认查找路径，默认会到mcservices目录下查找，如果不需要则需要手动调用此函数置为false
 MCQUICKBOOT_EXPORT void setDefaultSearch(bool val);
@@ -56,6 +63,18 @@ MCQUICKBOOT_EXPORT void addServiceSearchPath(const QStringList &paths);
 //! 必须传入动态库全路径，可以是相对与可执行程序的相对路径
 MCQUICKBOOT_EXPORT void addServiceLibraryPath(const QString &path);
 MCQUICKBOOT_EXPORT void addServiceLibraryPath(const QStringList &paths);
+//! 加载动态库，会自动处理库中静态代码块
+MCQUICKBOOT_EXPORT void loadLibrary(const QString &path);
+MCQUICKBOOT_EXPORT void loadLibrary(const QStringList &paths);
+MCQUICKBOOT_EXPORT void loadLibraryForDir(const QString &path);
+MCQUICKBOOT_EXPORT void loadLibraryForDir(const QStringList &paths);
+
+//! 如果type为Prealloc，则可以传入第二个参数标识预分配内存的大小，单位：byte，默认64KB。
+//! 此时还可以传入第三个参数，为一个函数。当预分配的内存释放之后，就会调用该函数。
+//! 否则第二个参数无效
+MCQUICKBOOT_EXPORT void setNewHandlerType(QuickBoot::NewHandlerType type,
+                                          quint64 size = 65536,
+                                          const std::function<void()> &func = nullptr);
 
 } // namespace Mc
 

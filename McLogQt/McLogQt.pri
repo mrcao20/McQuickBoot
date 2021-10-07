@@ -1,5 +1,10 @@
 QT *= concurrent
 
+!contains(DEFINES, MC_DISABLE_QUAZIP) {
+    HEADERS += $$PWD/include/McLog/Utils/Packager/McLogPackager.h
+    SOURCES += $$PWD/src/Utils/Packager/McLogPackager.cpp
+}
+
 INCLUDEPATH += $$PWD/include/
 
 SOURCES += \
@@ -33,7 +38,6 @@ SOURCES += \
     $$PWD/src/Appender/McAbstractFormatAppender.cpp \
     $$PWD/src/Utils/Deleter/McLogDeleter.cpp \
     $$PWD/src/Utils/McFileUtils.cpp \
-    $$PWD/src/Utils/Packager/McLogPackager.cpp \
     $$PWD/src/Utils/McMessagePattern.cpp
 
 HEADERS += \
@@ -79,7 +83,6 @@ HEADERS += \
     $$PWD/include/McLog/Appender/impl/McAbstractFormatAppender.h \
     $$PWD/include/McLog/Utils/Deleter/McLogDeleter.h \
     $$PWD/include/McLog/Utils/McFileUtils.h \
-    $$PWD/include/McLog/Utils/McMessagePattern.h \
-    $$PWD/include/McLog/Utils/Packager/McLogPackager.h
+    $$PWD/include/McLog/Utils/McMessagePattern.h
 
 RESOURCES +=

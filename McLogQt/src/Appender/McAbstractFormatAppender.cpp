@@ -35,6 +35,7 @@ MC_DECL_PRIVATE_DATA(McAbstractFormatAppender)
 IMcLayoutPtr layout;
 bool immediateFlush{false}; //!< 是否立即刷新输出，默认为false
 bool useLockFile{false}; //!< 是否使用文件锁，如果程序允许同时运行多个，则需要此功能
+bool isPrintError{true}; //!< 是否打印因没有定义QT_MESSAGELOGCONTEXT宏导致的错误消息
 QString lockFilePath{"./.mcLogQt/~.lockFile"};
 QScopedPointer<QLockFile> lockFile;
 MC_DECL_PRIVATE_DATA_END
@@ -81,6 +82,16 @@ void McAbstractFormatAppender::setUseLockFile(bool val) noexcept
     d->useLockFile = val;
 }
 
+bool McAbstractFormatAppender::isPrintError() const noexcept
+{
+    return d->isPrintError;
+}
+
+void McAbstractFormatAppender::setPrintError(bool val) noexcept
+{
+    d->isPrintError = val;
+}
+
 QString McAbstractFormatAppender::lockFilePath() const noexcept
 {
     return d->lockFilePath;
@@ -103,9 +114,8 @@ void McAbstractFormatAppender::append(QtMsgType type, const QMessageLogContext &
         return;
     }
     //! 如果没有定义QT_MESSAGELOGCONTEXT
-    if (context.file == nullptr
-        && context.line == 0
-        && context.function == nullptr) {
+    if (context.file == nullptr && context.line == 0 && context.function == nullptr
+        && d->isPrintError) {
         MC_PRINT_ERR("in release, need to manual define QT_MESSAGELOGCONTEXT\n");
     }
     auto message = l->format(type, context, str);

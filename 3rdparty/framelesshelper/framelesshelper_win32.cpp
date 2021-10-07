@@ -22,67 +22,25 @@
  * SOFTWARE.
  */
 
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-
-#ifndef _CRT_SECURE_NO_WARNINGS
-#define _CRT_SECURE_NO_WARNINGS
-#endif
-
 #include "framelesshelper_win32.h"
 #include <QtCore/qdebug.h>
 #include <QtCore/qvariant.h>
 #include <QtCore/qcoreapplication.h>
 #include <QtGui/qwindow.h>
-#include <QtCore/qt_windows.h>
-#include <shellapi.h>
 #include "utilities.h"
+#include "framelesshelper_windows.h"
 
-#ifndef WM_NCUAHDRAWCAPTION
-// Not documented, only available since Windows Vista
-#define WM_NCUAHDRAWCAPTION 0x00AE
-#endif
+FRAMELESSHELPER_BEGIN_NAMESPACE
 
-#ifndef WM_NCUAHDRAWFRAME
-// Not documented, only available since Windows Vista
-#define WM_NCUAHDRAWFRAME 0x00AF
-#endif
-
-#ifndef ABM_GETAUTOHIDEBAREX
-// Only available since Windows 8.1
-#define ABM_GETAUTOHIDEBAREX 0x0000000b
-#endif
-
-#ifndef IsMinimized
-// Only available since Windows 2000
-#define IsMinimized(h) IsIconic(h)
-#endif
-
-#ifndef IsMaximized
-// Only available since Windows 2000
-#define IsMaximized(h) IsZoomed(h)
-#endif
-
-#ifndef GET_X_LPARAM
-// Only available since Windows 2000
-#define GET_X_LPARAM(lp) ((int) (short) LOWORD(lp))
-#endif
-
-#ifndef GET_Y_LPARAM
-// Only available since Windows 2000
-#define GET_Y_LPARAM(lp) ((int) (short) HIWORD(lp))
-#endif
-
-static inline bool shouldHaveWindowFrame()
+[[nodiscard]] static inline bool shouldHaveWindowFrame()
 {
     if (Utilities::shouldUseNativeTitleBar()) {
         // We have to use the original window frame unconditionally if we
         // want to use the native title bar.
         return true;
     }
-    const bool should = qEnvironmentVariableIsSet(_flh_global::_flh_preserveNativeFrame_flag);
-    const bool force = qEnvironmentVariableIsSet(_flh_global::_flh_forcePreserveNativeFrame_flag);
+    const bool should = qEnvironmentVariableIsSet(Constants::kPreserveNativeFrameFlag);
+    const bool force = qEnvironmentVariableIsSet(Constants::kForcePreserveNativeFrameFlag);
     if (should || force) {
         if (force) {
             return true;
@@ -96,19 +54,63 @@ static inline bool shouldHaveWindowFrame()
     return false;
 }
 
-// The thickness of an auto-hide taskbar in pixels.
-static const int kAutoHideTaskbarThicknessPx = 2;
-static const int kAutoHideTaskbarThicknessPy = kAutoHideTaskbarThicknessPx;
-
-static QScopedPointer<FramelessHelperWin> g_instance;
-
-static inline void setup()
+struct FramelessHelperWinData
 {
-    if (g_instance.isNull()) {
-        g_instance.reset(new FramelessHelperWin);
-        qApp->installNativeEventFilter(g_instance.data());
+    [[nodiscard]] bool create() {
+        if (!m_instance.isNull()) {
+            return false;
+        }
+        m_instance.reset(new FramelessHelperWin);
+        return !m_instance.isNull();
     }
-}
+
+    [[nodiscard]] bool release() {
+        if (!m_instance.isNull()) {
+            m_instance.reset();
+        }
+        return m_instance.isNull();
+    }
+
+    [[nodiscard]] bool isNull() const {
+        return m_instance.isNull();
+    }
+
+    [[nodiscard]] bool install() {
+        if (isInstalled()) {
+            return true;
+        }
+        if (isNull()) {
+            if (!create()) {
+                return false;
+            }
+        }
+        QCoreApplication::instance()->installNativeEventFilter(m_instance.data());
+        m_installed = true;
+        return true;
+    }
+
+    [[nodiscard]] bool uninstall() {
+        if (!isInstalled()) {
+            return true;
+        }
+        if (isNull()) {
+            return false;
+        }
+        QCoreApplication::instance()->removeNativeEventFilter(m_instance.data());
+        m_installed = false;
+        return true;
+    }
+
+    [[nodiscard]] bool isInstalled() const {
+        return m_installed;
+    }
+
+private:
+    QScopedPointer<FramelessHelperWin> m_instance;
+    bool m_installed = false;
+};
+
+Q_GLOBAL_STATIC(FramelessHelperWinData, g_framelessHelperWinData)
 
 static inline void installHelper(QWindow *window, const bool enable)
 {
@@ -116,35 +118,28 @@ static inline void installHelper(QWindow *window, const bool enable)
     if (!window) {
         return;
     }
-    window->setProperty(_flh_global::_flh_framelessEnabled_flag, enable);
     Utilities::updateQtFrameMargins(window, enable);
-    Utilities::updateFrameMargins(window, !enable);
-    Utilities::triggerFrameChange(window);
+    const WId winId = window->winId();
+    Utilities::updateFrameMargins(winId, !enable);
+    Utilities::triggerFrameChange(winId);
+    window->setProperty(Constants::kFramelessModeFlag, enable);
 }
 
 FramelessHelperWin::FramelessHelperWin() = default;
 
-FramelessHelperWin::~FramelessHelperWin()
-{
-    if (!g_instance.isNull()) {
-        qApp->removeNativeEventFilter(g_instance.data());
-    }
-}
+FramelessHelperWin::~FramelessHelperWin() = default;
 
 void FramelessHelperWin::addFramelessWindow(QWindow *window)
 {
     Q_ASSERT(window);
-    setup();
-    installHelper(window, true);
-}
-
-bool FramelessHelperWin::isWindowFrameless(const QWindow *window)
-{
-    Q_ASSERT(window);
     if (!window) {
-        return false;
+        return;
     }
-    return window->property(_flh_global::_flh_framelessEnabled_flag).toBool();
+    if (g_framelessHelperWinData()->install()) {
+        installHelper(window, true);
+    } else {
+        qCritical() << "Failed to install native event filter.";
+    }
 }
 
 void FramelessHelperWin::removeFramelessWindow(QWindow *window)
@@ -156,42 +151,13 @@ void FramelessHelperWin::removeFramelessWindow(QWindow *window)
     installHelper(window, false);
 }
 
-void FramelessHelperWin::setIgnoredObjects(QWindow *window, const QObjectList &objects)
-{
-    Q_ASSERT(window);
-    if (!window) {
-        return;
-    }
-    window->setProperty(_flh_global::_flh_ignoredObjects_flag, QVariant::fromValue(objects));
-}
-
-QObjectList FramelessHelperWin::getIgnoredObjects(const QWindow *window)
-{
-    Q_ASSERT(window);
-    if (!window) {
-        return {};
-    }
-    return qvariant_cast<QObjectList>(window->property(_flh_global::_flh_ignoredObjects_flag));
-}
-
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
 bool FramelessHelperWin::nativeEventFilter(const QByteArray &eventType, void *message, qintptr *result)
 #else
 bool FramelessHelperWin::nativeEventFilter(const QByteArray &eventType, void *message, long *result)
 #endif
 {
-    // "result" can't be null in theory and I don't see any projects check
-    // this, everyone is assuming it will never be null, including Microsoft,
-    // but according to Lucas, frameless applications crashed on many Win7
-    // machines because it's null. The temporary solution is also strange:
-    // upgrade drivers or switch to the basic theme.
-    if (!result) {
-        return false;
-    }
-    // The example code in Qt's documentation has this check. I don't know
-    // whether we really need this check or not, but adding this check won't
-    // bring us harm anyway.
-    if (eventType != "windows_generic_MSG") {
+    if ((eventType != QByteArrayLiteral("windows_generic_MSG")) || !message || !result) {
         return false;
     }
 #if (QT_VERSION == QT_VERSION_CHECK(5, 11, 1))
@@ -200,13 +166,13 @@ bool FramelessHelperWin::nativeEventFilter(const QByteArray &eventType, void *me
 #else
     const auto msg = static_cast<LPMSG>(message);
 #endif
-    if (!msg || (msg && !msg->hwnd)) {
+    if (!msg->hwnd) {
         // Why sometimes the window handle is null? Is it designed to be?
         // Anyway, we should skip it in this case.
         return false;
     }
     const QWindow *window = Utilities::findWindow(reinterpret_cast<WId>(msg->hwnd));
-    if (!window || (window && !window->property(_flh_global::_flh_framelessEnabled_flag).toBool())) {
+    if (!window || !window->property(Constants::kFramelessModeFlag).toBool()) {
         return false;
     }
     switch (msg->message) {
@@ -285,18 +251,17 @@ bool FramelessHelperWin::nativeEventFilter(const QByteArray &eventType, void *me
             break;
         }
 
-        if (!msg->wParam) {
+        if (msg->wParam == FALSE) {
             *result = 0;
             return true;
         }
-        bool nonClientAreaExists = false;
         const auto clientRect = &(reinterpret_cast<LPNCCALCSIZE_PARAMS>(msg->lParam)->rgrc[0]);
         if (shouldHaveWindowFrame()) {
             // Store the original top before the default window proc
             // applies the default frame.
             const LONG originalTop = clientRect->top;
             // Apply the default frame
-            const LRESULT ret = DefWindowProcW(msg->hwnd, WM_NCCALCSIZE, msg->wParam, msg->lParam);
+            const LRESULT ret = DefWindowProcW(msg->hwnd, WM_NCCALCSIZE, TRUE, msg->lParam);
             if (ret != 0) {
                 *result = ret;
                 return true;
@@ -305,24 +270,23 @@ bool FramelessHelperWin::nativeEventFilter(const QByteArray &eventType, void *me
             // default frame was applied.
             clientRect->top = originalTop;
         }
+        bool nonClientAreaExists = false;
         // We don't need this correction when we're fullscreen. We will
         // have the WS_POPUP size, so we don't have to worry about
         // borders, and the default frame will be fine.
         if (IsMaximized(msg->hwnd) && (window->windowState() != Qt::WindowFullScreen)) {
-            // Windows automatically adds a standard width border to all
-            // sides when a window is maximized. We have to remove it
-            // otherwise the content of our window will be cut-off from
-            // the screen.
-            // The value of border width and border height should be
-            // identical in most cases, when the scale factor is 1.0, it
-            // should be eight pixels.
-            const int bh = getSystemMetric(window, Utilities::SystemMetric::BorderHeight, true);
-            clientRect->top += bh;
+            // When a window is maximized, its size is actually a little bit more
+            // than the monitor's work area. The window is positioned and sized in
+            // such a way that the resize handles are outside of the monitor and
+            // then the window is clipped to the monitor so that the resize handle
+            // do not appear because you don't need them (because you can't resize
+            // a window when it's maximized unless you restore it).
+            const int resizeBorderThickness = Utilities::getSystemMetric(window, SystemMetric::ResizeBorderThickness, true);
+            clientRect->top += resizeBorderThickness;
             if (!shouldHaveWindowFrame()) {
-                clientRect->bottom -= bh;
-                const int bw = getSystemMetric(window, Utilities::SystemMetric::BorderWidth, true);
-                clientRect->left += bw;
-                clientRect->right -= bw;
+                clientRect->bottom -= resizeBorderThickness;
+                clientRect->left += resizeBorderThickness;
+                clientRect->right -= resizeBorderThickness;
             }
             nonClientAreaExists = true;
         }
@@ -332,7 +296,7 @@ bool FramelessHelperWin::nativeEventFilter(const QByteArray &eventType, void *me
         // Make sure to use MONITOR_DEFAULTTONEAREST, so that this will
         // still find the right monitor even when we're restoring from
         // minimized.
-        if (IsMaximized(msg->hwnd)) {
+        if (IsMaximized(msg->hwnd) || (window->windowState() == Qt::WindowFullScreen)) {
             APPBARDATA abd;
             SecureZeroMemory(&abd, sizeof(abd));
             abd.cbSize = sizeof(abd);
@@ -348,7 +312,14 @@ bool FramelessHelperWin::nativeEventFilter(const QByteArray &eventType, void *me
                     SecureZeroMemory(&monitorInfo, sizeof(monitorInfo));
                     monitorInfo.cbSize = sizeof(monitorInfo);
                     const HMONITOR monitor = MonitorFromWindow(msg->hwnd, MONITOR_DEFAULTTONEAREST);
-                    GetMonitorInfoW(monitor, &monitorInfo);
+                    if (!monitor) {
+                        qWarning() << Utilities::getSystemErrorMessage(QStringLiteral("MonitorFromWindow"));
+                        break;
+                    }
+                    if (GetMonitorInfoW(monitor, &monitorInfo) == FALSE) {
+                        qWarning() << Utilities::getSystemErrorMessage(QStringLiteral("GetMonitorInfoW"));
+                        break;
+                    }
                     // This helper can be used to determine if there's a
                     // auto-hide taskbar on the given edge of the monitor
                     // we're currently on.
@@ -359,7 +330,7 @@ bool FramelessHelperWin::nativeEventFilter(const QByteArray &eventType, void *me
                         _abd.uEdge = edge;
                         _abd.rc = monitorInfo.rcMonitor;
                         const auto hTaskbar = reinterpret_cast<HWND>(SHAppBarMessage(ABM_GETAUTOHIDEBAREX, &_abd));
-                        return hTaskbar != nullptr;
+                        return (hTaskbar != nullptr);
                     };
                     top = hasAutohideTaskbar(ABE_TOP);
                     bottom = hasAutohideTaskbar(ABE_BOTTOM);
@@ -375,16 +346,27 @@ bool FramelessHelperWin::nativeEventFilter(const QByteArray &eventType, void *me
                     _abd.hWnd = FindWindowW(L"Shell_TrayWnd", nullptr);
                     if (_abd.hWnd) {
                         const HMONITOR windowMonitor = MonitorFromWindow(msg->hwnd, MONITOR_DEFAULTTONEAREST);
+                        if (!windowMonitor) {
+                            qWarning() << Utilities::getSystemErrorMessage(QStringLiteral("MonitorFromWindow"));
+                            break;
+                        }
                         const HMONITOR taskbarMonitor = MonitorFromWindow(_abd.hWnd, MONITOR_DEFAULTTOPRIMARY);
+                        if (!taskbarMonitor) {
+                            qWarning() << Utilities::getSystemErrorMessage(QStringLiteral("MonitorFromWindow"));
+                            break;
+                        }
                         if (taskbarMonitor == windowMonitor) {
                             SHAppBarMessage(ABM_GETTASKBARPOS, &_abd);
                             edge = _abd.uEdge;
                         }
+                    } else {
+                        qWarning() << "Failed to retrieve the task bar window handle.";
+                        break;
                     }
-                    top = edge == ABE_TOP;
-                    bottom = edge == ABE_BOTTOM;
-                    left = edge == ABE_LEFT;
-                    right = edge == ABE_RIGHT;
+                    top = (edge == ABE_TOP);
+                    bottom = (edge == ABE_BOTTOM);
+                    left = (edge == ABE_LEFT);
+                    right = (edge == ABE_RIGHT);
                 }
                 // If there's a taskbar on any side of the monitor, reduce
                 // our size a little bit on that edge.
@@ -398,16 +380,16 @@ bool FramelessHelperWin::nativeEventFilter(const QByteArray &eventType, void *me
                 // This does however work fine for maximized.
                 if (top) {
                     // Peculiarly, when we're fullscreen,
-                    clientRect->top += kAutoHideTaskbarThicknessPy;
+                    clientRect->top += kAutoHideTaskbarThickness;
                     nonClientAreaExists = true;
                 } else if (bottom) {
-                    clientRect->bottom -= kAutoHideTaskbarThicknessPy;
+                    clientRect->bottom -= kAutoHideTaskbarThickness;
                     nonClientAreaExists = true;
                 } else if (left) {
-                    clientRect->left += kAutoHideTaskbarThicknessPx;
+                    clientRect->left += kAutoHideTaskbarThickness;
                     nonClientAreaExists = true;
                 } else if (right) {
-                    clientRect->right -= kAutoHideTaskbarThicknessPx;
+                    clientRect->right -= kAutoHideTaskbarThickness;
                     nonClientAreaExists = true;
                 }
             }
@@ -415,10 +397,16 @@ bool FramelessHelperWin::nativeEventFilter(const QByteArray &eventType, void *me
 #if 0
         // Fix the flickering issue while resizing.
         // "clientRect->right += 1;" also works.
-        // The only draw back of this small trick is it will affect
-        // Qt's coordinate system. It makes the "canvas" of the window
-        // larger than it should be. Be careful if you need to paint
-        // something manually either through QPainter or Qt Quick.
+        // This small technique is known to have two draw backs:
+        // (1) Qt's coordinate system will be confused because the canvas size
+        // doesn't match the client area size so you will get some warnings
+        // from Qt and you should also be careful when you try to draw something
+        // manually through QPainter or in Qt Quick, be aware of the coordinate
+        // mismatch issue when you calculate position yourself.
+        // (2) Qt's window system will take some wrong actions when the window
+        // is being resized. For example, the window size will become 1px smaller
+        // or bigger everytime when resize() is called because the client area size
+        // is not correct. It confuses QPA's internal logic.
         clientRect->bottom += 1;
 #endif
         // If the window bounds change, we're going to relayout and repaint
@@ -449,7 +437,7 @@ bool FramelessHelperWin::nativeEventFilter(const QByteArray &eventType, void *me
     case WM_NCPAINT: {
         // 边框阴影处于非客户区的范围，因此如果直接阻止非客户区的绘制，会导致边框阴影丢失
 
-        if (!Utilities::isDwmBlurAvailable() && !shouldHaveWindowFrame()) {
+        if (!Utilities::isDwmCompositionAvailable() && !shouldHaveWindowFrame()) {
             // Only block WM_NCPAINT when DWM composition is disabled. If
             // it's blocked when DWM composition is enabled, the frame
             // shadow won't be drawn.
@@ -463,19 +451,19 @@ bool FramelessHelperWin::nativeEventFilter(const QByteArray &eventType, void *me
         if (shouldHaveWindowFrame()) {
             break;
         } else {
-            if (Utilities::isDwmBlurAvailable()) {
+            if (Utilities::isDwmCompositionAvailable()) {
                 // DefWindowProc won't repaint the window border if lParam
                 // (normally a HRGN) is -1. See the following link's "lParam"
                 // section:
                 // https://docs.microsoft.com/en-us/windows/win32/winmsg/wm-ncactivate
                 // Don't use "*result = 0" otherwise the window won't respond
                 // to the window active state change.
-                *result = DefWindowProcW(msg->hwnd, msg->message, msg->wParam, -1);
+                *result = DefWindowProcW(msg->hwnd, WM_NCACTIVATE, msg->wParam, -1);
             } else {
-                if (static_cast<BOOL>(msg->wParam)) {
-                    *result = FALSE;
-                } else {
+                if (msg->wParam == FALSE) {
                     *result = TRUE;
+                } else {
+                    *result = FALSE;
                 }
             }
             return true;
@@ -551,20 +539,36 @@ bool FramelessHelperWin::nativeEventFilter(const QByteArray &eventType, void *me
             break;
         }
 
-        const qreal dpr = window->devicePixelRatio();
-        const QPointF globalMouse = QCursor::pos(window->screen()) * dpr;
-        POINT winLocalMouse = {qRound(globalMouse.x()), qRound(globalMouse.y())};
-        ScreenToClient(msg->hwnd, &winLocalMouse);
+        POINT winLocalMouse = {GET_X_LPARAM(msg->lParam), GET_Y_LPARAM(msg->lParam)};
+        if (ScreenToClient(msg->hwnd, &winLocalMouse) == FALSE) {
+            qWarning() << Utilities::getSystemErrorMessage(QStringLiteral("ScreenToClient"));
+            break;
+        }
         const QPointF localMouse = {static_cast<qreal>(winLocalMouse.x), static_cast<qreal>(winLocalMouse.y)};
-        const bool isInIgnoreObjects = Utilities::isMouseInSpecificObjects(globalMouse, getIgnoredObjects(window), dpr);
-        const int bh = getSystemMetric(window, Utilities::SystemMetric::BorderHeight, true);
-        const int tbh = getSystemMetric(window, Utilities::SystemMetric::TitleBarHeight, true);
-        const bool isTitleBar = (localMouse.y() <= tbh) && !isInIgnoreObjects;
-        const bool isTop = localMouse.y() <= bh;
+        RECT clientRect = {0, 0, 0, 0};
+        if (GetClientRect(msg->hwnd, &clientRect) == FALSE) {
+            qWarning() << Utilities::getSystemErrorMessage(QStringLiteral("GetClientRect"));
+            break;
+        }
+        const LONG windowWidth = clientRect.right;
+        const int resizeBorderThickness = Utilities::getSystemMetric(window, SystemMetric::ResizeBorderThickness, true);
+        const int titleBarHeight = Utilities::getSystemMetric(window, SystemMetric::TitleBarHeight, true);
+        bool isTitleBar = false;
+        if (IsMaximized(msg->hwnd) || (window->windowState() == Qt::WindowFullScreen)) {
+            isTitleBar = (localMouse.y() >= 0) && (localMouse.y() <= titleBarHeight)
+                    && (localMouse.x() >= 0) && (localMouse.x() <= windowWidth)
+                    && !Utilities::isHitTestVisibleInChrome(window);
+        }
+        if (window->windowState() == Qt::WindowNoState) {
+            isTitleBar = (localMouse.y() > resizeBorderThickness) && (localMouse.y() <= titleBarHeight)
+                    && (localMouse.x() > resizeBorderThickness) && (localMouse.x() < (windowWidth - resizeBorderThickness))
+                    && !Utilities::isHitTestVisibleInChrome(window);
+        }
+        const bool isTop = localMouse.y() <= resizeBorderThickness;
         if (shouldHaveWindowFrame()) {
             // This will handle the left, right and bottom parts of the frame
             // because we didn't change them.
-            const LRESULT originalRet = DefWindowProcW(msg->hwnd, WM_NCHITTEST, msg->wParam, msg->lParam);
+            const LRESULT originalRet = DefWindowProcW(msg->hwnd, WM_NCHITTEST, 0, msg->lParam);
             if (originalRet != HTCLIENT) {
                 *result = originalRet;
                 return true;
@@ -585,24 +589,19 @@ bool FramelessHelperWin::nativeEventFilter(const QByteArray &eventType, void *me
             *result = HTCLIENT;
             return true;
         } else {
-            const auto getHitTestResult =
-                [msg, isTitleBar, &localMouse, bh, isTop, window]() -> LRESULT {
-                RECT clientRect = {0, 0, 0, 0};
-                GetClientRect(msg->hwnd, &clientRect);
-                const LONG ww = clientRect.right;
-                const LONG wh = clientRect.bottom;
-                const int bw = getSystemMetric(window, Utilities::SystemMetric::BorderWidth, true);
+            const LRESULT hitTestResult = [clientRect, msg, isTitleBar, &localMouse, resizeBorderThickness, windowWidth, isTop, window]{
                 if (IsMaximized(msg->hwnd)) {
                     if (isTitleBar) {
                         return HTCAPTION;
                     }
                     return HTCLIENT;
                 }
-                const bool isBottom = (localMouse.y() >= (wh - bh));
+                const LONG windowHeight = clientRect.bottom;
+                const bool isBottom = (localMouse.y() >= (windowHeight - resizeBorderThickness));
                 // Make the border a little wider to let the user easy to resize on corners.
-                const int factor = (isTop || isBottom) ? 2 : 1;
-                const bool isLeft = (localMouse.x() <= (bw * factor));
-                const bool isRight = (localMouse.x() >= (ww - (bw * factor)));
+                const qreal factor = (isTop || isBottom) ? 2.0 : 1.0;
+                const bool isLeft = (localMouse.x() <= qRound(static_cast<qreal>(resizeBorderThickness) * factor));
+                const bool isRight = (localMouse.x() >= (windowWidth - qRound(static_cast<qreal>(resizeBorderThickness) * factor)));
                 const bool fixedSize = Utilities::isWindowFixedSize(window);
                 const auto getBorderValue = [fixedSize](int value) -> int {
                     return fixedSize ? HTCLIENT : value;
@@ -635,8 +634,8 @@ bool FramelessHelperWin::nativeEventFilter(const QByteArray &eventType, void *me
                     return HTCAPTION;
                 }
                 return HTCLIENT;
-            };
-            *result = getHitTestResult();
+            }();
+            *result = hitTestResult;
             return true;
         }
     }
@@ -648,46 +647,37 @@ bool FramelessHelperWin::nativeEventFilter(const QByteArray &eventType, void *me
 
         // Disable painting while these messages are handled to prevent them
         // from drawing a window caption over the client area.
-        const auto oldStyle = GetWindowLongPtrW(msg->hwnd, GWL_STYLE);
+        const LONG_PTR oldStyle = GetWindowLongPtrW(msg->hwnd, GWL_STYLE);
         // Prevent Windows from drawing the default title bar by temporarily
         // toggling the WS_VISIBLE style.
-        SetWindowLongPtrW(msg->hwnd, GWL_STYLE, oldStyle & ~WS_VISIBLE);
-        Utilities::triggerFrameChange(window);
+        if (SetWindowLongPtrW(msg->hwnd, GWL_STYLE, static_cast<LONG_PTR>(oldStyle & ~WS_VISIBLE)) == 0) {
+            qWarning() << Utilities::getSystemErrorMessage(QStringLiteral("SetWindowLongPtrW"));
+            break;
+        }
+        const auto winId = reinterpret_cast<WId>(msg->hwnd);
+        Utilities::triggerFrameChange(winId);
         const LRESULT ret = DefWindowProcW(msg->hwnd, msg->message, msg->wParam, msg->lParam);
-        SetWindowLongPtrW(msg->hwnd, GWL_STYLE, oldStyle);
-        Utilities::triggerFrameChange(window);
+        if (SetWindowLongPtrW(msg->hwnd, GWL_STYLE, oldStyle) == 0) {
+            qWarning() << Utilities::getSystemErrorMessage(QStringLiteral("SetWindowLongPtrW"));
+            break;
+        }
+        Utilities::triggerFrameChange(winId);
         *result = ret;
         return true;
     }
+    case WM_SIZE: {
+        const bool normal = (msg->wParam == SIZE_RESTORED);
+        const bool max = (msg->wParam == SIZE_MAXIMIZED);
+        const bool full = (window->windowState() == Qt::WindowFullScreen);
+        if (normal || max || full) {
+            Utilities::updateFrameMargins(reinterpret_cast<WId>(msg->hwnd), (max || full));
+            Utilities::updateQtFrameMargins(const_cast<QWindow *>(window), true);
+        }
+    } break;
     default:
         break;
     }
     return false;
 }
 
-void FramelessHelperWin::setBorderWidth(QWindow *window, const int bw)
-{
-    Q_ASSERT(window);
-    if (!window) {
-        return;
-    }
-    window->setProperty(_flh_global::_flh_borderWidth_flag, bw);
-}
-
-void FramelessHelperWin::setBorderHeight(QWindow *window, const int bh)
-{
-    Q_ASSERT(window);
-    if (!window) {
-        return;
-    }
-    window->setProperty(_flh_global::_flh_borderHeight_flag, bh);
-}
-
-void FramelessHelperWin::setTitleBarHeight(QWindow *window, const int tbh)
-{
-    Q_ASSERT(window);
-    if (!window) {
-        return;
-    }
-    window->setProperty(_flh_global::_flh_titleBarHeight_flag, tbh);
-}
+FRAMELESSHELPER_END_NAMESPACE

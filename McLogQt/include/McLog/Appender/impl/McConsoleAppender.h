@@ -25,17 +25,27 @@
 
 #include "McFileDeviceAppender.h"
 
+MC_FORWARD_DECL_PRIVATE_DATA(McConsoleAppender)
+
 class MCLOGQT_EXPORT McConsoleAppender : public McFileDeviceAppender 
 {
     Q_OBJECT
+    MC_DECL_SUPER(McFileDeviceAppender)
     MC_DECL_INIT(McConsoleAppender)
-    MC_TYPELIST(McFileDeviceAppender)
+    MC_INTERFACES(McFileDeviceAppender)
+    Q_PROPERTY(QString console READ console WRITE setConsole)
 public:
     Q_INVOKABLE McConsoleAppender();
     ~McConsoleAppender() override;
 
+    QString console() const noexcept;
+    void setConsole(const QString &val) noexcept;
+
 protected:
     void doFinished() noexcept override;
+
+private:
+    MC_DECL_PRIVATE(McConsoleAppender)
 };
 
 MC_DECL_METATYPE(McConsoleAppender)

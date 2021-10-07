@@ -134,7 +134,14 @@ QVariant JsonUtils::makeObjectValue(const QByteArray &typeName, const QVariant &
         return QVariant();
     }
     const QMetaObject *mobj = QMetaType::metaObjectForType(typeId);
-    QObject *obj = mobj->newInstance();
+    //! 提出公共构造方法，和IOC中统一
+    QObject *obj = nullptr;
+    auto builder = McPrivate::IQObjectBuilder::getQObjectBuilder(typeId);
+    if (builder.isNull()) {
+        obj = mobj->newInstance();
+    } else {
+        obj = builder->create();
+    }
     int count = mobj->propertyCount();
     auto args = arg.toMap();
     for (int i = 0; i < count; ++i) {

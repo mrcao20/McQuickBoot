@@ -45,7 +45,7 @@ void McWidget::showEvent(QShowEvent *event)
 {
     QWidget::showEvent(event);
     if (!d->isInited) {
-        FramelessWindowsManager::addWindow(windowHandle());
+        __flh_ns::FramelessWindowsManager::addWindow(windowHandle());
         d->isInited = true;
     }
 }

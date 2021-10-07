@@ -42,8 +42,9 @@ public:
      * \param beanDefinition bean的定义，包含bean中所有相关数据
      */
     virtual bool registerBeanDefinition(const QString &name,
-                                        IMcBeanDefinitionConstPtrRef beanDefinition) noexcept
-        = 0;
+                                        IMcBeanDefinitionConstPtrRef beanDefinition) noexcept = 0;
+    virtual bool registerBeanDefinition(
+        const QHash<QString, IMcBeanDefinitionPtr> &vals) noexcept = 0;
 
     /*!
      * \brief unregisterBeanDefinition

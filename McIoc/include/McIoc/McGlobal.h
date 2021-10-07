@@ -28,6 +28,7 @@
 
 #include <QDir>
 #include <QEvent>
+#include <QLoggingCategory>
 #include <QObject>
 #include <QSharedPointer>
 #include <QtCore/qmutex.h>
@@ -36,6 +37,8 @@
 #include "McConstantGlobal.h"
 #include "McMacroGlobal.h"
 #include "McVersion.h"
+
+Q_DECLARE_LOGGING_CATEGORY(mcIoc)
 
 MC_FORWARD_DECL_CLASS(IMcApplicationContext)
 

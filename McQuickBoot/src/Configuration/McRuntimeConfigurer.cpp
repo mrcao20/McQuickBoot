@@ -30,7 +30,7 @@ MC_REGISTER_BEAN_FACTORY(McRuntimeConfigurer)
 MC_INIT_END
 
 MC_DECL_PRIVATE_DATA(McRuntimeConfigurer)
-McRuntimeConfigurerConfigPtr runtimeConfig;
+McRuntimeConfigurerConfigPtr runtimeConfigurerConfig;
 MC_DECL_PRIVATE_DATA_END
 
 McRuntimeConfigurer::McRuntimeConfigurer()

@@ -27,6 +27,7 @@
 
 #include "../McBootGlobal.h"
 #include "../Utils/McCancel.h"
+#include "../Utils/McPause.h"
 #include "../Utils/McProgress.h"
 
 namespace Mc::QuickBoot::Private {
@@ -39,6 +40,7 @@ class CustomRequestBuilder;
 struct MCQUICKBOOT_EXPORT McRequestSharedData : public QSharedData
 {
     McCancel cancel;
+    McPause pause;
     McProgress progress;
     QVariantList params;
 };
@@ -51,6 +53,7 @@ public:
     ~McRequest();
 
     McCancel cancel() const noexcept;
+    McPause pause() const noexcept;
     McProgress progress() const noexcept;
 
     int count() const noexcept;
@@ -73,6 +76,7 @@ public:
 
 private:
     void setCancel(const McCancel &val) noexcept;
+    void setPause(const McPause &val) noexcept;
     void setProgress(const McProgress &val) noexcept;
     void setParams(const QVariantList &val) noexcept;
     template<typename...>
@@ -89,11 +93,6 @@ private:
             return CheckHelper<Args...>::check(index + 1, params);
         }
     };
-    template<>
-    struct CheckHelper<>
-    {
-        static bool check(int, const QVariantList &) noexcept { return true; }
-    };
 
 private:
     QExplicitlySharedDataPointer<McRequestSharedData> d;
@@ -102,6 +101,12 @@ private:
     friend class McControllerContainer;
     template<typename T>
     friend class Mc::QuickBoot::Private::CustomRequestBuilder;
+};
+
+template<>
+struct McRequest::CheckHelper<>
+{
+    static bool check(int, const QVariantList &) noexcept { return true; }
 };
 
 Q_DECLARE_METATYPE(McRequest)

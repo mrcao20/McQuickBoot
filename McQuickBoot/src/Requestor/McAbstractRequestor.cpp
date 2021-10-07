@@ -26,14 +26,18 @@
 #include <QCoreApplication>
 #include <QDebug>
 #include <QEvent>
+#ifndef MC_TINY_QUICK_BOOT
 #include <QQmlEngine>
+#endif
 #include <QThreadPool>
 
 #include <McIoc/ApplicationContext/IMcApplicationContext.h>
 
 #include "McBoot/Configuration/McRequestorConfig.h"
 #include "McBoot/Configuration/McRuntimeConfigurer.h"
+#ifdef MC_ENABLE_QSCXML
 #include "McBoot/Configuration/McStateMachineConfig.h"
+#endif
 #include "McBoot/Controller/IMcControllerContainer.h"
 #include "McBoot/Controller/impl/McAbstractResponse.h"
 #include "McBoot/Controller/impl/McRequestRunner.h"
@@ -61,8 +65,11 @@ McRunnerEvent::~McRunnerEvent() {}
 
 MC_GLOBAL_STATIC_BEGIN(staticData)
 bool waitThreadPoolDone{true};
+int threadPoolWaitTimeout{-1};
 QThreadPool requestorThreadPool;
+#ifdef MC_ENABLE_QSCXML
 QScxmlStateMachine *staticStateMachine{nullptr};
+#endif
 MC_GLOBAL_STATIC_END(staticData)
 
 MC_INIT(McAbstractRequestor)
@@ -72,7 +79,7 @@ if (!staticData.exists()) {
     return;
 }
 if (staticData->waitThreadPoolDone) {
-    staticData->requestorThreadPool.waitForDone();
+    staticData->requestorThreadPool.waitForDone(staticData->threadPoolWaitTimeout);
 }
 MC_INIT_END
 
@@ -80,7 +87,9 @@ MC_DECL_PRIVATE_DATA(McAbstractRequestor)
 IMcControllerContainerPtr controllerContainer;
 IMcModelContainerPtr modelContainer;
 McRequestorConfigPtr requestorConfig;
+#ifdef MC_ENABLE_QSCXML
 McStateMachineConfigPtr stateMachineConfig;
+#endif
 McRuntimeConfigurerPtr runtimeConfig;
 IMcApplicationContext *appCtx;
 QList<IMcResponseHandlerPtr> responseHanlders;
@@ -135,7 +144,9 @@ QObject *McAbstractRequestor::getBean(const QString &name) const noexcept
     if (obj == nullptr) {
         qWarning() << "cannot get bean for named:" << name;
     } else {
+#ifndef MC_TINY_QUICK_BOOT
         QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+#endif
     }
     return obj;
 }
@@ -145,6 +156,7 @@ QObject *McAbstractRequestor::getModel(const QString &name) const noexcept
     return d->modelContainer->getModel(name);
 }
 
+#ifdef MC_ENABLE_QSCXML
 QScxmlStateMachine *McAbstractRequestor::stateMachine() const noexcept
 {
     if (staticData->staticStateMachine != nullptr) {
@@ -179,6 +191,7 @@ void McAbstractRequestor::setStaticStateMachine(QScxmlStateMachine *val)
 {
     staticData->staticStateMachine = val;
 }
+#endif
 
 McRuntimeConfigurer &McAbstractRequestor::runtimeConfig() const
 {
@@ -229,6 +242,7 @@ void McAbstractRequestor::allFinished() noexcept
     } else {
         maxThreadCount = d->requestorConfig->maxThreadCount();
         staticData->waitThreadPoolDone = d->requestorConfig->waitThreadPoolDone();
+        staticData->threadPoolWaitTimeout = d->requestorConfig->threadPoolWaitTimeout();
     }
     setMaxThreadCount(maxThreadCount);
     d->responseHanlders.append(McResponseHandlerFactory::getHandlers());

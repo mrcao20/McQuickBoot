@@ -11,6 +11,8 @@
     </bean>
     
     <bean name="console" class="McConsoleAppender">
+        <!-- 如果此属性不设置为stdout，它将默认为stderr -->
+        <!-- <property name="console" value="stdout"></property> -->
         <property name="immediateFlush" value="true"></property>
         <property name="layout" ref="ttccLayout"></property>
     </bean>

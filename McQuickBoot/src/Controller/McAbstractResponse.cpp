@@ -36,11 +36,14 @@
 MC_DECL_PRIVATE_DATA(McAbstractResponse)
 bool isAsyncCall{false}; //! 是否在次线程调用callback，默认不需要
 McCancel cancel;
+McPause pause;
 McProgress progress;
 QVariant body;
 QPointer<QObject> attachedObject;
 bool isAttached{false};
 QList<IMcResponseHandlerPtr> responseHanlders;
+QAtomicInteger<bool> isStarted{false};
+QAtomicInteger<bool> isFinished{false};
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McAbstractResponse)
@@ -68,22 +71,39 @@ bool McAbstractResponse::isCanceled() const noexcept
     return d->cancel.isCanceled();
 }
 
-QVariant McAbstractResponse::body() const noexcept
+void McAbstractResponse::pause() noexcept
 {
-    return d->body;
+    d->pause.pause();
 }
 
-void McAbstractResponse::setBody(const QVariant &var) noexcept
+void McAbstractResponse::resume() noexcept
 {
-    d->body = var;
+    d->pause.resume();
+}
 
-    if (isAsyncCall()) {
-        call();
-        return;
-    }
+bool McAbstractResponse::isPaused() const noexcept
+{
+    return d->pause.isPaused();
+}
 
-    //! 发布的事件由QT删除
-    qApp->postEvent(this, new QEvent(static_cast<QEvent::Type>(QEvent::Type::User + 1)));
+bool McAbstractResponse::isStarted() const noexcept
+{
+    return d->isStarted.loadRelaxed();
+}
+
+bool McAbstractResponse::isFinished() const noexcept
+{
+    return d->isFinished.loadRelaxed();
+}
+
+QVariant McAbstractResponse::result() const noexcept
+{
+    return body();
+}
+
+bool McAbstractResponse::waitForFinished(qint64 msec) const noexcept
+{
+    return Mc::waitForExecFunc([this]() { return this->isFinished(); }, msec);
 }
 
 bool McAbstractResponse::isAsyncCall() const noexcept
@@ -115,6 +135,34 @@ void McAbstractResponse::customEvent(QEvent *event)
     }
 }
 
+QVariant McAbstractResponse::body() const noexcept
+{
+    return d->body;
+}
+
+void McAbstractResponse::setBody(const QVariant &var) noexcept
+{
+    d->body = var;
+
+    if (isAsyncCall()) {
+        call();
+        return;
+    }
+
+    //! 发布的事件由QT删除
+    qApp->postEvent(this, new QEvent(static_cast<QEvent::Type>(QEvent::Type::User + 1)));
+}
+
+void McAbstractResponse::setStarted(bool val) noexcept
+{
+    d->isStarted.storeRelaxed(val);
+}
+
+void McAbstractResponse::setFinished(bool val) noexcept
+{
+    d->isFinished.storeRelaxed(val);
+}
+
 McProgress &McAbstractResponse::getProgress() const noexcept
 {
     return d->progress;
@@ -125,9 +173,17 @@ McCancel &McAbstractResponse::getCancel() const noexcept
     return d->cancel;
 }
 
+McPause &McAbstractResponse::getPause() const noexcept
+{
+    return d->pause;
+}
+
 void McAbstractResponse::call() noexcept
 {
-    McScopedFunction cleanup([this]() { this->deleteLater(); });
+    McScopedFunction cleanup([this]() {
+        this->setFinished();
+        this->deleteLater();
+    });
     Q_UNUSED(cleanup)
 
     for (const auto &handler : qAsConst(d->responseHanlders)) {

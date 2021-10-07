@@ -52,6 +52,20 @@ bool McAbstractWidgetApplicationContext::registerBeanDefinition(
     return d->configurableBeanFactory->registerBeanDefinition(name, beanDefinition);
 }
 
+bool McAbstractWidgetApplicationContext::registerBeanDefinition(
+    const QHash<QString, IMcBeanDefinitionPtr> &vals) noexcept
+{
+    bool ret = true;
+    QHashIterator<QString, IMcBeanDefinitionPtr> itr(vals);
+    while (itr.hasNext()) {
+        auto item = itr.next();
+        if (!registerBeanDefinition(item.key(), item.value())) {
+            ret = false;
+        }
+    }
+    return ret;
+}
+
 IMcBeanDefinitionPtr McAbstractWidgetApplicationContext::unregisterBeanDefinition(
     const QString &name) noexcept
 {

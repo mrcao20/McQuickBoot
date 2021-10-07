@@ -88,6 +88,7 @@ public:
      */
     bool registerBeanDefinition(const QString &name,
                                 IMcBeanDefinitionConstPtrRef beanDefinition) noexcept override;
+    bool registerBeanDefinition(const QHash<QString, IMcBeanDefinitionPtr> &vals) noexcept override;
 
     IMcBeanDefinitionPtr unregisterBeanDefinition(const QString &name) noexcept override;
     
