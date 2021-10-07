@@ -21,24 +21,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include "Service2.h"
 
-#include <qglobal.h>
+#include <QDebug>
+#include <QThread>
 
-//! version format MC_MAJOR.MC_MINOR.MC_PATCH.MC_INTERNAL
-//! version when you make big feature changes.
-#define MC_MAJOR 1
-//! version when you make small feature changes.
-#define MC_MINOR 5
-//! version when you make backwards-compatible bug fixes.
-#define MC_PATCH 3
-//! MC_INTERNAL version for perpurse like feature test, bug fix test,development, et
-#define MC_INTERNAL 8
+#include "Domain/RequestVo.h"
+#include "Domain/ReturnVo.h"
 
-#ifdef QT_DEBUG
-#define MC_VERSION_STR (QString::number(MC_MAJOR) + "." + QString::number(MC_MINOR) + "." + QString::number(MC_PATCH) + "." + QString::number(MC_INTERNAL))
-#define MC_VERSION ((MC_MAJOR<<24)|(MC_MINOR<<16)|(MC_PATCH<<8)|(MC_INTERNAL))
-#else
-#define MC_VERSION_STR (QString::number(MC_MAJOR) + "." + QString::number(MC_MINOR) + "." + QString::number(MC_PATCH))
-#define MC_VERSION ((MC_MAJOR<<16)|(MC_MINOR<<8)|(MC_PATCH))
-#endif
+MC_STATIC()
+MC_REGISTER_BEAN_FACTORY(Service2)
+MC_STATIC_END
+
+void Service2::method1()
+{
+    qDebug() << QStringLiteral(u"业务功能1，将耗时1s。执行线程为：") << QThread::currentThread();
+    QThread::sleep(1);
+    qDebug() << QStringLiteral(u"业务功能1完成");
+}
+
+int Service2::method2(const QString &arg)
+{
+    qDebug() << "method2:" << arg;
+    return 2;
+}
+
+ReturnVoPtr Service2::method3(const QList<RequestVoPtr> &vos)
+{
+    qDebug() << QStringLiteral(u"method3:") << vos;
+    auto ret = ReturnVoPtr::create();
+    ret->ret = QStringLiteral(u"method3返回");
+    return ret;
+}

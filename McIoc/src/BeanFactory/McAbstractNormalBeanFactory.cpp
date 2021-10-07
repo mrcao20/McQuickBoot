@@ -87,6 +87,7 @@ QVariant McAbstractNormalBeanFactory::doCreate(IMcBeanDefinitionConstPtrRef bean
         className.append("*");
         auto id = QMetaType::type(className);
         auto builder = McPrivate::IQObjectBuilder::getQObjectBuilder(id);
+        //! 可以不用if-else，使用责任链模式优化代码
         if (builder.isNull()) {
             obj = beanMetaObj->newInstance();
         } else {

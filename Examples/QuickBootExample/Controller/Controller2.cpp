@@ -21,24 +21,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include "Controller2.h"
 
-#include <qglobal.h>
+#include <QDebug>
 
-//! version format MC_MAJOR.MC_MINOR.MC_PATCH.MC_INTERNAL
-//! version when you make big feature changes.
-#define MC_MAJOR 1
-//! version when you make small feature changes.
-#define MC_MINOR 5
-//! version when you make backwards-compatible bug fixes.
-#define MC_PATCH 3
-//! MC_INTERNAL version for perpurse like feature test, bug fix test,development, et
-#define MC_INTERNAL 8
+#include "Domain/RequestVo.h"
+#include "Domain/ReturnVo.h"
+#include "Service/Service2.h"
 
-#ifdef QT_DEBUG
-#define MC_VERSION_STR (QString::number(MC_MAJOR) + "." + QString::number(MC_MINOR) + "." + QString::number(MC_PATCH) + "." + QString::number(MC_INTERNAL))
-#define MC_VERSION ((MC_MAJOR<<24)|(MC_MINOR<<16)|(MC_PATCH<<8)|(MC_INTERNAL))
-#else
-#define MC_VERSION_STR (QString::number(MC_MAJOR) + "." + QString::number(MC_MINOR) + "." + QString::number(MC_PATCH))
-#define MC_VERSION ((MC_MAJOR<<16)|(MC_MINOR<<8)|(MC_PATCH))
-#endif
+MC_STATIC()
+MC_REGISTER_BEAN_FACTORY(Controller2)
+MC_STATIC_END
+
+void Controller2::method1()
+{
+    m_service2->method1();
+}
+
+int Controller2::method2(const QString &arg)
+{
+    return m_service2->method2(arg);
+}
+
+ReturnVoPtr Controller2::method3(const QList<RequestVoPtr> &vos)
+{
+    return m_service2->method3(vos);
+}
+
+ReturnVoPtr Controller2::method4(const RequestVoPtr &vo)
+{
+    qDebug() << QStringLiteral(u"method4:") << vo->req;
+    auto ret = ReturnVoPtr::create();
+    ret->ret = QStringLiteral(u"method4返回");
+    return ret;
+}

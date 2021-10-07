@@ -30,3 +30,9 @@
 #include "McWidgetMacroGlobal.h"
 
 Q_DECLARE_LOGGING_CATEGORY(mcWidgetIoc)
+
+namespace Mc::WidgetIoc {
+
+enum RoutinePriority { BuildInTypeRegistry = Mc::RoutinePriority::Normal + 1 };
+
+}

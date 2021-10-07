@@ -21,24 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include <QApplication>
+#include <QDebug>
 
-#include <qglobal.h>
+#include <McBoot/McQuickBoot.h>
+#include <McBoot/McQuickBootSimple.h>
 
-//! version format MC_MAJOR.MC_MINOR.MC_PATCH.MC_INTERNAL
-//! version when you make big feature changes.
-#define MC_MAJOR 1
-//! version when you make small feature changes.
-#define MC_MINOR 5
-//! version when you make backwards-compatible bug fixes.
-#define MC_PATCH 3
-//! MC_INTERNAL version for perpurse like feature test, bug fix test,development, et
-#define MC_INTERNAL 8
-
-#ifdef QT_DEBUG
-#define MC_VERSION_STR (QString::number(MC_MAJOR) + "." + QString::number(MC_MINOR) + "." + QString::number(MC_PATCH) + "." + QString::number(MC_INTERNAL))
-#define MC_VERSION ((MC_MAJOR<<24)|(MC_MINOR<<16)|(MC_PATCH<<8)|(MC_INTERNAL))
+int main(int argc, char *argv[])
+{
+#if 0
+    McQuickBoot::setPreInitFunc([](QCoreApplication *) {
+        qDebug() << QStringLiteral(u"此代码将在QGuiApplication构造完成后，框架初始化之前调用");
+    });
+    McQuickBoot::setAfterInitFunc([](QCoreApplication *, QQmlApplicationEngine *) {
+        qDebug() << QStringLiteral(u"此代码将在QGuiApplication构造完成后并且框架初始化之后调用");
+    });
+    return McQuickBoot::run<QApplication>(argc, argv, QLatin1String("qrc:/main.qml"));
 #else
-#define MC_VERSION_STR (QString::number(MC_MAJOR) + "." + QString::number(MC_MINOR) + "." + QString::number(MC_PATCH))
-#define MC_VERSION ((MC_MAJOR<<16)|(MC_MINOR<<8)|(MC_PATCH))
+    QApplication app(argc, argv);
+    McQuickBootSimple::init();
+    return app.exec();
 #endif
+}

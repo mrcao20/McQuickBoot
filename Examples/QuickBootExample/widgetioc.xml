@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+    <bean name="mainWindow" class="MainWindow">
+        <property name="widgets">
+            <list>
+<!--                <ref bean="childWidget1" />-->
+                <ref bean="childWidget3" />
+                <ref bean="childWidget2" />
+            </list>
+        </property>
+    </bean>
+<!--    <bean name="childWidget1" class="ChildWidget1" />-->
+    <bean name="childWidget2" class="ChildWidget2" />
+    <bean name="childWidget3" class="ChildWidget3" />
+</beans>

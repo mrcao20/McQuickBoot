@@ -21,24 +21,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include "MainWindow.h"
 
-#include <qglobal.h>
+#include <QHBoxLayout>
 
-//! version format MC_MAJOR.MC_MINOR.MC_PATCH.MC_INTERNAL
-//! version when you make big feature changes.
-#define MC_MAJOR 1
-//! version when you make small feature changes.
-#define MC_MINOR 5
-//! version when you make backwards-compatible bug fixes.
-#define MC_PATCH 3
-//! MC_INTERNAL version for perpurse like feature test, bug fix test,development, et
-#define MC_INTERNAL 8
+#include <McWidgetIoc/McWidgetGlobal.h>
 
-#ifdef QT_DEBUG
-#define MC_VERSION_STR (QString::number(MC_MAJOR) + "." + QString::number(MC_MINOR) + "." + QString::number(MC_PATCH) + "." + QString::number(MC_INTERNAL))
-#define MC_VERSION ((MC_MAJOR<<24)|(MC_MINOR<<16)|(MC_PATCH<<8)|(MC_INTERNAL))
-#else
-#define MC_VERSION_STR (QString::number(MC_MAJOR) + "." + QString::number(MC_MINOR) + "." + QString::number(MC_PATCH))
-#define MC_VERSION ((MC_MAJOR<<16)|(MC_MINOR<<8)|(MC_PATCH))
-#endif
+MC_STATIC()
+qRegisterMetaType<MainWindow *>();
+//! WidgetIoc内部已经对QList<QWidget *>进行了注册，所以这里不再需要注册
+//! MC_REGISTER_LIST_CONVERTER(QList<QWidget *>)
+MC_STATIC_END
+
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
+{
+    setCentralWidget(new QWidget(this));
+    auto layout = new QHBoxLayout(centralWidget());
+    centralWidget()->setLayout(layout);
+}
+
+QList<QWidget *> MainWindow::widgets() const
+{
+    QList<QWidget *> ws;
+    auto count = centralWidget()->layout()->count();
+    for (int i = 0; i < count; ++i) {
+        auto item = centralWidget()->layout()->itemAt(i);
+        if (item->widget() == nullptr) {
+            continue;
+        }
+        ws.append(item->widget());
+    }
+    return ws;
+}
+
+void MainWindow::setWidgets(const QList<QWidget *> &val)
+{
+    for (auto w : val) {
+        centralWidget()->layout()->addWidget(w);
+    }
+}
