@@ -72,7 +72,7 @@ QVariant McSharedBeanFactory::convertToQVariant(QObject *obj) noexcept
     QObjectPtr bean(obj, Mc::McCustomDeleter());
     var.setValue(bean);
     QString typeName = QString("%1Ptr").arg(bean->metaObject()->className());
-    if (!var.convert(QMetaType::type(typeName.toLocal8Bit()))) {
+    if (!var.convert(QMetaType::fromName(typeName.toLocal8Bit()))) {
         qCritical() << QString("failed convert QObjectPtr to '%1'").arg(typeName);
         return QVariant();
     }
@@ -93,10 +93,10 @@ QVariant McSharedBeanFactory::convertToQVariant(void *gadget, const QMetaObject 
 {
     QByteArray clazzName = metaObj->className();
     clazzName.append('*');
-    QVariant var(QMetaType::type(clazzName), &gadget);
+    QVariant var(QMetaType::fromName(clazzName), &gadget);
     QByteArray typeName = metaObj->className();
     typeName.append("Ptr");
-    if (!var.convert(QMetaType::type(typeName))) {
+    if (!var.convert(QMetaType::fromName(typeName))) {
         qCritical() << QString("failed convert VoidPtr to '%1'").arg(typeName.data());
         return QVariant();
     }

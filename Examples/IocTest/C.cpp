@@ -42,7 +42,6 @@ void R::slot_recv() noexcept
 #include <McIoc/McGlobal.h>
 
 MC_AUTO_INIT(C)
-MC_REGISTER_CONTAINER_CONVERTER(QList<QString>);    //!< 容器需要额外注册，只需注册一次即可到处使用，此宏多次调用只生效一次
 MC_REGISTER_LIST_CONVERTER(QVector<RPtr>);  //!< 和MC_REGISTER_CONTAINER_CONVERTER效果一样
 MC_REGISTER_MAP_CONVERTER(StringMap);       //!< 重定义之后需要使用重定义之后的类型
 MC_REGISTER_CONTAINER_CONVERTER(RHash);     //!< 和MC_REGISTER_MAP_CONVERTER效果一样

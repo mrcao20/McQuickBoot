@@ -86,7 +86,7 @@ void McAbstractIODeviceAppender::doAllFinished() noexcept
     if (d->codec == nullptr) {
         d->codec = QTextCodec::codecForName(d->codecName);
     }
-    d->textStream.setCodec(d->codec);
+    //    d->textStream.setCodec(d->codec);
 }
 
 QTextStream &McAbstractIODeviceAppender::textStream() noexcept

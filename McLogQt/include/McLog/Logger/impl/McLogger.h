@@ -27,6 +27,8 @@
 
 #include <QList>
 
+Q_MOC_INCLUDE("McLog/Appender/IMcConfigurableAppender.h")
+
 MC_FORWARD_DECL_CLASS(IMcConfigurableAppender)
 
 MC_FORWARD_DECL_PRIVATE_DATA(McLogger);

@@ -48,7 +48,7 @@ void McSelectSqlSlot::query(void **args, const QMetaMethod &sig, const QByteArra
         QMetaType::convert(returnVar.data(), returnVar.userType(), args[0], returnType);
     } else {
         Q_ASSERT(args[1] != nullptr);
-        QVariant var(sig.parameterType(0), args[1]);
+        QVariant var(sig.parameterMetaType(0), args[1]);
         if(var.canConvert<QList<QVariant>>()) {
             auto list = var.value<QList<QVariant>>();
             queryForParam(list);
@@ -65,7 +65,7 @@ QVariant McSelectSqlSlot::queryForReturn(void **args, const QMetaMethod &sig) no
     //! 由于args是由sig对应的方法的参数列表构造出的
     //! 所以args的长度减一一定和method的parameterCount数量一致
     for(int i = 0; i < sig.parameterCount(); ++i) {
-        QVariant param(sig.parameterType(i), args[i + 1]);
+        QVariant param(sig.parameterMetaType(i), args[i + 1]);
         params.append(param);
     }
     

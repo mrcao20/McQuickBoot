@@ -7,7 +7,6 @@ MC_AUTO_INIT(IocTest)
 //Mc::Ioc::connect("test", "interface", "signal()", "this", "slot()");
 MC_CONNECT("interface", "signal()", "this", "slot()");
 MC_REGISTER_LIST_CONVERTER(QVector<InterfacePtr>)
-MC_REGISTER_LIST_CONVERTER(QList<QString>)
 MC_REGISTER_MAP_CONVERTER(QStringMap)
 MC_REGISTER_MAP_CONVERTER(IHash)
 MC_INIT_END

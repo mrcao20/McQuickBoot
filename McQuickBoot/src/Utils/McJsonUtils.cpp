@@ -191,7 +191,7 @@ QVariant JsonUtils::makeGadgetValue(int type, const QVariant &arg) noexcept
                       mobj->className());
     }
     auto gadgetIds = McMetaTypeId::gadgetIds();
-    QVariant value(gadgetIds.value(type)->pointerId, &gadget);
+    QVariant value(QMetaType(gadgetIds.value(type)->pointerId), &gadget);
     return value;
 }
 
