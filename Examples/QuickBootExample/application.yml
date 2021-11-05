@@ -1,5 +1,0 @@
-boot:
-    application:
-        widget:
-            xmlPaths: ["../../Examples/QuickBootExample/widgetioc.xml"]
-            mainWindowName: "mainWindow"
