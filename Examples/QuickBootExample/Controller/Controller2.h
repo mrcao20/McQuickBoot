@@ -25,6 +25,9 @@
 
 #include <McBoot/McBootGlobal.h>
 
+Q_MOC_INCLUDE("Service/Service2.h")
+Q_MOC_INCLUDE("Domain/RequestVo.h")
+
 MC_FORWARD_DECL_CLASS(Service2)
 MC_FORWARD_DECL_STRUCT(ReturnVo)
 MC_FORWARD_DECL_STRUCT(RequestVo)

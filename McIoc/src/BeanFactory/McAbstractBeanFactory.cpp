@@ -31,7 +31,7 @@
 
 MC_DECL_PRIVATE_DATA(McAbstractBeanFactory)
 QHash<QString, IMcBeanDefinitionPtr> hash;
-QMutex mtx{ QMutex::Recursive };
+QRecursiveMutex mtx;
 QThread *targetThread{nullptr};     //!< 生成对象的目标线程
 MC_DECL_PRIVATE_DATA_END
 

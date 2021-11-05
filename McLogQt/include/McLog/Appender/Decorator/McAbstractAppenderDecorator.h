@@ -24,9 +24,11 @@
 #pragma once
 
 #include <QObject>
+#include <QList>
+
 #include "../IMcConfigurableAppender.h"
 
-#include <QList>
+Q_MOC_INCLUDE("McLog/Appender/Decorator/McAppenderSeparator.h")
 
 MC_FORWARD_DECL_STRUCT(McAppenderSeparator);
 

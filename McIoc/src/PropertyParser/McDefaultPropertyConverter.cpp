@@ -74,13 +74,9 @@ QVariant McDefaultPropertyConverter::convertEnum(const QVariant &value) const no
     }
     const QMetaObject *mo = nullptr;
     if (e->scope() == "Qt") {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-        mo = qt_getQtMetaObject();
-#else
-        mo = &staticQtMetaObject;
-#endif
+        mo = &Qt::staticMetaObject;
     } else {
-        mo = QMetaType::metaObjectForType(QMetaType::type(qPrintable(e->scope())));
+        mo = QMetaType::fromName(qPrintable(e->scope())).metaObject();
     }
     if(mo == nullptr) {
         qCritical("cannot get meta object for type: %s\n", qPrintable(e->scope()));

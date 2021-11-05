@@ -63,7 +63,7 @@
         <!-- 可用配置：{documents} = QStandardPaths::DocumentsLocation -->
         <!-- 可用配置：{temp} = QStandardPaths::TempLocation -->
         <!-- 可用配置：{home} = QStandardPaths::HomeLocation -->
-        <!-- 可用配置：{data} = QStandardPaths::DataLocation第一个路径 -->
+        <!-- 可用配置：{appLocalData} = QStandardPaths::AppLocalDataLocation第一个路径 -->
         <!-- 可用配置：{cache} = QStandardPaths::CacheLocation -->
         <!-- 可用配置：{config} = QStandardPaths::GenericConfigLocation第一个路径 -->
         <!-- 可用配置：{appData} = QStandardPaths::AppDataLocation第一个路径 -->

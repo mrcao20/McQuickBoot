@@ -425,7 +425,7 @@ struct McListConverterRegisterHelper
 {
     static void registerConverter()
     {
-        if (QMetaType::hasRegisteredConverterFunction(qMetaTypeId<From>(), qMetaTypeId<To>()))
+        if (QMetaType::hasRegisteredConverterFunction(QMetaType::fromType<From>(), QMetaType::fromType<To>()))
             return;
         QVariant var;
         var.setValue(From());
@@ -441,7 +441,7 @@ struct McMapConverterRegisterHelper
 {
     static void registerConverter()
     {
-        if (QMetaType::hasRegisteredConverterFunction(qMetaTypeId<From>(), qMetaTypeId<To>()))
+        if (QMetaType::hasRegisteredConverterFunction(QMetaType::fromType<From>(), QMetaType::fromType<To>()))
             return;
         QVariant var;
         var.setValue(From());

@@ -129,34 +129,6 @@ struct convert<QMap<Key, Value> >
     }
 };
 
-// QVector
-template<typename T>
-struct convert<QVector<T> >
-{
-    static Node encode(const QVector<T> &rhs)
-    {
-        Node node(NodeType::Sequence);
-        for (const T &value : rhs) {
-            node.push_back(value);
-        }
-        return node;
-    }
-
-    static bool decode(const Node &node, QVector<T> &rhs)
-    {
-        if (!node.IsSequence())
-            return false;
-
-        rhs.clear();
-        const_iterator it = node.begin();
-        while (it != node.end()) {
-            rhs.push_back(it->as<T>());
-            ++it;
-        }
-        return true;
-    }
-};
-
 // QList
 template<typename T>
 struct convert<QList<T> >
@@ -180,31 +152,6 @@ struct convert<QList<T> >
         while (it != node.end()) {
             rhs.push_back(it->as<T>());
             ++it;
-        }
-        return true;
-    }
-};
-
-// QPair
-template<typename T, typename U>
-struct convert<QPair<T, U> >
-{
-    static Node encode(const QPair<T, U> &rhs)
-    {
-        Node node(NodeType::Map);
-        node.force_insert(rhs.first, rhs.second);
-        return node;
-    }
-
-    static bool decode(const Node &node, QPair<T, U> &rhs)
-    {
-        if (!node.IsMap())
-            return false;
-        
-        const_iterator itr = node.begin();
-        if (itr != node.end()) {
-            rhs.first = itr->first.as<T>();
-            rhs.second = itr->second.as<U>();
         }
         return true;
     }
@@ -268,7 +215,7 @@ void writeYamlFile_helper(QVariantMap &map, const QStringList &keyList, const QV
     }
     QVariantMap childMap;
     QVariant &existVar = map[keyList.first()];
-    if(static_cast<QMetaType::Type>(existVar.type()) == QMetaType::QVariantMap) {
+    if (existVar.typeId() == QMetaType::QVariantMap) {
         childMap = existVar.toMap();
     }
     writeYamlFile_helper(childMap, keyList.mid(1), value);
@@ -285,11 +232,7 @@ bool writeYamlFile(QIODevice &device, const QSettings::SettingsMap &map)
         QVariantMap resultMap;
         for(auto key : map.keys()) {
             auto value = map.value(key);
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
             QStringList keyList = key.split("/", Qt::SkipEmptyParts);
-#else
-            QStringList keyList = key.split("/", QString::SkipEmptyParts);
-#endif
             writeYamlFile_helper(resultMap, keyList, value);
         }
         for(auto key : resultMap.keys()) {

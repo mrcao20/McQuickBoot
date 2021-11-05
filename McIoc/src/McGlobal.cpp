@@ -23,9 +23,6 @@
  */
 #include "McIoc/McGlobal.h"
 
-//#include <private/qvariant_p.h>
-//#include <private/qmetatype_p.h>
-
 #include <QCoreApplication>
 #include <QDebug>
 #include <QDir>
@@ -91,131 +88,6 @@ Q_CONSTRUCTOR_FUNCTION(iocStaticInit)
 #endif
 #endif
 
-static const void *constData(const QVariant::Private &d)
-{
-    return d.is_shared ? d.data.shared->ptr : reinterpret_cast<const void *>(&d.data.c);
-}
-
-static void customConstruct(QVariant::Private *d, const void *copy)
-{
-    const QMetaType type(d->type);
-    const uint size = type.sizeOf();
-    if (!size) {
-        qWarning("Trying to construct an instance of an invalid type, type id: %i", d->type);
-        d->type = QMetaType::UnknownType;
-        return;
-    }
-
-    // this logic should match with QVariantIntegrator::CanUseInternalSpace
-    if (size <= sizeof(QVariant::Private::Data)
-            && (type.flags() & (QMetaType::MovableType | QMetaType::IsEnumeration))) {
-        type.construct(&d->data.ptr, copy);
-        d->is_null = d->data.ptr == nullptr;
-        d->is_shared = false;
-    } else {
-        // Private::Data contains long long, and long double is the biggest standard type.
-        const size_t maxAlignment =
-            qMax(Q_ALIGNOF(QVariant::Private::Data), Q_ALIGNOF(long double));
-        const size_t s = sizeof(QVariant::PrivateShared);
-        const size_t offset = s + ((s * maxAlignment - s) % maxAlignment);
-        void *data = operator new(offset + size);
-        void *ptr = static_cast<char *>(data) + offset;
-        type.construct(ptr, copy);
-        d->is_null = ptr == nullptr;
-        d->is_shared = true;
-        d->data.shared = new (data) QVariant::PrivateShared(ptr);
-    }
-}
-
-static void customClear(QVariant::Private *d)
-{
-    if (!d->is_shared) {
-        QMetaType::destruct(d->type, &d->data.ptr);
-    } else {
-        QMetaType::destruct(d->type, d->data.shared->ptr);
-        d->data.shared->~PrivateShared();
-        operator delete(d->data.shared);
-    }
-}
-
-static bool customIsNull(const QVariant::Private *d)
-{
-    if (d->is_null)
-        return true;
-    const char *const typeName = QMetaType::typeName(d->type);
-    if (Q_UNLIKELY(!typeName) && Q_LIKELY(!QMetaType::isRegistered(d->type)))
-        qFatal("QVariant::isNull: type %d unknown to QVariant.", d->type);
-    uint typeNameLen = qstrlen(typeName);
-    if (typeNameLen > 0 && typeName[typeNameLen - 1] == '*') {
-        const void *d_ptr = d->is_shared ? d->data.shared->ptr : &(d->data.ptr);
-        return *static_cast<void *const *>(d_ptr) == nullptr;
-    }
-    return false;
-}
-
-static bool customCompare(const QVariant::Private *a, const QVariant::Private *b)
-{
-    const char *const typeName = QMetaType::typeName(a->type);
-    if (Q_UNLIKELY(!typeName) && Q_LIKELY(!QMetaType::isRegistered(a->type)))
-        qFatal("QVariant::compare: type %d unknown to QVariant.", a->type);
-
-    const void *a_ptr = a->is_shared ? a->data.shared->ptr : &(a->data.ptr);
-    const void *b_ptr = b->is_shared ? b->data.shared->ptr : &(b->data.ptr);
-
-    uint typeNameLen = qstrlen(typeName);
-    if (typeNameLen > 0 && typeName[typeNameLen - 1] == '*')
-        return *static_cast<void *const *>(a_ptr) == *static_cast<void *const *>(b_ptr);
-
-    if (a->is_null && b->is_null)
-        return true;
-
-    return !memcmp(a_ptr, b_ptr, QMetaType::sizeOf(a->type));
-}
-
-//static bool customConvert(const QVariant::Private *d, int t, void *result, bool *ok)
-//{
-//    if (d->type >= QMetaType::User || t >= QMetaType::User) {
-//        if (QMetaType::convert(constData(*d), d->type, result, t)) {
-//            if (ok)
-//                *ok = true;
-//            return true;
-//        }
-//    }
-//    auto kernelHandler = qcoreVariantHandler();
-//    return kernelHandler->convert(d, t, result, ok);
-//}
-
-#if !defined(QT_NO_DEBUG_STREAM)
-static void customStreamDebug(QDebug dbg, const QVariant &variant) {
-#ifndef QT_BOOTSTRAPPED
-    QMetaType::TypeFlags flags = QMetaType::typeFlags(variant.userType());
-    if (flags & QMetaType::PointerToQObject)
-        dbg.nospace() << qvariant_cast<QObject*>(variant);
-#else
-    Q_UNUSED(dbg);
-    Q_UNUSED(variant);
-#endif
-}
-#endif
-
-//const QVariant::Handler mc_custom_variant_handler = {
-//    customConstruct,
-//    customClear,
-//    customIsNull,
-//#ifndef QT_NO_DATASTREAM
-//    nullptr,
-//    nullptr,
-//#endif
-//    customCompare,
-//    customConvert,
-//    nullptr,
-//#if !defined(QT_NO_DEBUG_STREAM)
-//    customStreamDebug
-//#else
-//    nullptr
-//#endif
-//};
-
 MC_STATIC(Mc::RoutinePriority::Max + 10)
 auto pId = qRegisterMetaType<QObject *>();
 auto sId = qRegisterMetaType<QObjectPtr>();
@@ -223,10 +95,6 @@ McMetaTypeId::addQObjectPointerIds(pId, sId);
 McMetaTypeId::addSharedPointerId(sId, pId);
 qRegisterMetaType<QObjectPtr>(MC_STRINGIFY(QObjectPtr));
 qRegisterMetaType<QObjectPtr>(MC_STRINGIFY(QObjectConstPtrRef));
-
-//auto kernelHandler = qcoreVariantHandler();
-//QVariantPrivate::registerHandler(QModulesPrivate::Core, kernelHandler);
-//QVariantPrivate::registerHandler(QModulesPrivate::Unknown, &mc_custom_variant_handler);
 MC_STATIC_END
 
 QString getBeanName(const QMetaObject *metaObj) noexcept
@@ -322,15 +190,15 @@ bool waitForExecFunc(const std::function<bool()> &func, qint64 timeout) noexcept
 
 QString toAbsolutePath(const QString &inPath) noexcept
 {
-    static QHash<QString, QStandardPaths::StandardLocation>
-        pathPlhs{{"{desktop}", QStandardPaths::DesktopLocation},
-                 {"{documents}", QStandardPaths::DocumentsLocation},
-                 {"{temp}", QStandardPaths::TempLocation},
-                 {"{home}", QStandardPaths::HomeLocation},
-                 {"{data}", QStandardPaths::DataLocation},
-                 {"{cache}", QStandardPaths::CacheLocation},
-                 {"{config}", QStandardPaths::GenericConfigLocation},
-                 {"{appData}", QStandardPaths::AppDataLocation}};
+    static QHash<QString, QStandardPaths::StandardLocation> pathPlhs{{"{desktop}", QStandardPaths::DesktopLocation},
+                                                                     {"{documents}", QStandardPaths::DocumentsLocation},
+                                                                     {"{temp}", QStandardPaths::TempLocation},
+                                                                     {"{home}", QStandardPaths::HomeLocation},
+                                                                     {"{appLocalData}",
+                                                                      QStandardPaths::AppLocalDataLocation},
+                                                                     {"{cache}", QStandardPaths::CacheLocation},
+                                                                     {"{config}", QStandardPaths::GenericConfigLocation},
+                                                                     {"{appData}", QStandardPaths::AppDataLocation}};
     static QStringList pathPlhKeys = pathPlhs.keys();
     auto path = inPath;
     for (const auto &key : pathPlhKeys) {

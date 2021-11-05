@@ -25,6 +25,8 @@
 
 #include "McAbstractIODeviceAppender.h"
 
+Q_MOC_INCLUDE("McLog/Layout/IMcLayout.h")
+
 MC_FORWARD_DECL_CLASS(IMcLayout);
 
 MC_FORWARD_DECL_PRIVATE_DATA(McAbstractFormatAppender);

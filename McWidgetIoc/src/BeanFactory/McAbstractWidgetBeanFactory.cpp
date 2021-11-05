@@ -31,7 +31,7 @@
 
 MC_DECL_PRIVATE_DATA(McAbstractWidgetBeanFactory)
 QHash<QString, IMcBeanDefinitionPtr> hash;
-QMutex mtx{QMutex::Recursive};
+QRecursiveMutex mtx;
 MC_DECL_PRIVATE_DATA_END
 
 McAbstractWidgetBeanFactory::McAbstractWidgetBeanFactory(QObject *parent) : QObject(parent)

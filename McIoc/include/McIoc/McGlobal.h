@@ -42,10 +42,10 @@ Q_DECLARE_LOGGING_CATEGORY(mcIoc)
 
 MC_FORWARD_DECL_CLASS(IMcApplicationContext)
 
-template<>
-inline bool qMapLessThanKey(const QVariant &key1, const QVariant &key2)
+inline bool operator<(const QVariant &left, const QVariant &right)
 {
-    return qMapLessThanKey(key1.data(), key2.data());
+    auto res = QVariant::compare(left, right);
+    return res == QPartialOrdering::Less;
 }
 
 namespace McPrivate {
