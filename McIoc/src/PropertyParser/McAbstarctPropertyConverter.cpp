@@ -42,15 +42,16 @@ McAbstarctPropertyConverter::~McAbstarctPropertyConverter()
 
 QVariant McAbstarctPropertyConverter::convert(const QVariant &value) const noexcept
 {
-    if(value.canConvert<McBeanReferencePtr>()) {
+    auto type = value.metaType();
+    if (type == QMetaType::fromType<McBeanReferencePtr>()) {
         return convertRef(value);
-    } else if(value.canConvert<McBeanEnumPtr>()) {
+    } else if (type == QMetaType::fromType<McBeanEnumPtr>()) {
         return convertEnum(value);
-    } else if(value.canConvert<QVariantList>()) {
+    } else if (type == QMetaType::fromType<QVariantList>()) {
         return convertList(value);
-    } else if(value.canConvert<QMap<QVariant, QVariant>>()) {
+    } else if (type == QMetaType::fromType<QMap<QVariant, QVariant>>()) {
         return convertMap(value);
-    } else{
+    } else {
         return value;
     }
 }

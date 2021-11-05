@@ -8,6 +8,7 @@
 
 int main(int argc, char *argv[])
 {
+    QQuickWindow::setGraphicsApi(QSGRendererInterface::OpenGL);
     QApplication a(argc, argv);
     QQmlApplicationEngine engine;
     McQuickBoot::init(&a, &engine);

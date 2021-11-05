@@ -83,7 +83,7 @@ void McQmlConnection::call(void **arguments) noexcept
 {
     QJSValueList args;
     for (int i = 0; i < d->sig.parameterCount(); ++i) {
-        QVariant param(d->sig.parameterType(i), arguments[i + 1]);
+        QVariant param(d->sig.parameterMetaType(i), arguments[i + 1]);
         param = McJsonUtils::serialize(param);
         args << d->jsEngine->toScriptValue(param);
     }

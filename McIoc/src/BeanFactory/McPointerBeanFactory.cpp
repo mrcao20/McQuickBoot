@@ -68,7 +68,7 @@ QVariant McPointerBeanFactory::convertToQVariant(QObject *obj) noexcept
     QVariant var;
     var.setValue(obj);
     QString typeName = QString("%1*").arg(obj->metaObject()->className());
-    if (!var.convert(QMetaType::type(typeName.toLocal8Bit()))) {
+    if (!var.convert(QMetaType::fromName(typeName.toLocal8Bit()))) {
         qCritical() << QString("failed convert QObject* to '%1'").arg(typeName);
         return QVariant();
     }
@@ -83,6 +83,6 @@ QVariant McPointerBeanFactory::convertToQVariant(void *gadget, const QMetaObject
 {
     QByteArray clazzName = metaObj->className();
     clazzName.append('*');
-    QVariant var(QMetaType::type(clazzName), &gadget);
+    QVariant var(QMetaType::fromName(clazzName), &gadget);
     return var;
 }

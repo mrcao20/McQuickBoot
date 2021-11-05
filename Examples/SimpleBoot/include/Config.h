@@ -6,6 +6,8 @@
 
 #include <McBoot/Configuration/IMcQuickBootConfigurer.h>
 
+Q_MOC_INCLUDE("Param.h")
+
 MC_FORWARD_DECL_CLASS(Param);
 MC_FORWARD_DECL_CLASS(Test);
 

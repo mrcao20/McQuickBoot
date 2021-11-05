@@ -1,4 +1,4 @@
-QT *= xml
+QT *= xml core5compat
 QT *= core-private
 
 include($$PWD/../3rdparty/yaml-cpp.pri)

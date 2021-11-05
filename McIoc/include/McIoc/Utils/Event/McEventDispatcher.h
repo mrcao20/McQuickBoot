@@ -61,13 +61,10 @@ public:
 
     // connect state to a functor or function pointer (without context)
     template<typename Functor>
-    inline
-        typename QtPrivate::QEnableIf<!QtPrivate::FunctionPointer<Functor>::IsPointerToMemberFunction
-                                          && !std::is_same<const char *, Functor>::value,
-                                      QMetaObject::Connection>::Type
-        connectToEvent(const QString &scxmlEventSpec,
-                       Functor functor,
-                       Qt::ConnectionType type = Qt::AutoConnection)
+    inline typename std::enable_if<!QtPrivate::FunctionPointer<Functor>::IsPointerToMemberFunction
+                                       && !std::is_same<const char *, Functor>::value,
+                                   QMetaObject::Connection>::Type
+    connectToEvent(const QString &scxmlEventSpec, Functor functor, Qt::ConnectionType type = Qt::AutoConnection)
     {
         // Use this as context
         return connectToEvent(scxmlEventSpec, this, functor, type);
@@ -75,14 +72,13 @@ public:
 
     // connectToEvent to a functor or function pointer (with context)
     template<typename Functor>
-    inline
-        typename QtPrivate::QEnableIf<!QtPrivate::FunctionPointer<Functor>::IsPointerToMemberFunction
-                                          && !std::is_same<const char *, Functor>::value,
-                                      QMetaObject::Connection>::Type
-        connectToEvent(const QString &scxmlEventSpec,
-                       const QObject *context,
-                       Functor functor,
-                       Qt::ConnectionType type = Qt::AutoConnection)
+    inline typename std::enable_if<!QtPrivate::FunctionPointer<Functor>::IsPointerToMemberFunction
+                                       && !std::is_same<const char *, Functor>::value,
+                                   QMetaObject::Connection>::Type
+    connectToEvent(const QString &scxmlEventSpec,
+                   const QObject *context,
+                   Functor functor,
+                   Qt::ConnectionType type = Qt::AutoConnection)
     {
         QtPrivate::QSlotObjectBase *slotObj
             = new QtPrivate::QFunctorSlotObject<Functor, 1, QtPrivate::List<QVariant>, void>(

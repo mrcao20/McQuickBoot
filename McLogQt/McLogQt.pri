@@ -1,4 +1,4 @@
-QT *= concurrent
+QT *= concurrent core5compat
 
 !contains(DEFINES, MC_DISABLE_QUAZIP) {
     HEADERS += $$PWD/include/McLog/Utils/Packager/McLogPackager.h
