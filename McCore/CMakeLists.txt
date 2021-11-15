@@ -7,16 +7,22 @@ include_directories(${Qt6Core_PRIVATE_INCLUDE_DIRS})
 set(PROJECT_HEADERS
     McMacroGlobal.h
     McGlobal.h
+    McMetaType.h
     Event/McEventDispatcher.h
     Event/McEventRouter.h
     Utils/McQVariantConverter.h
-    Utils/IMcNonCopyable.h
+    Config/McRuntimeConfig.h
+    Config/McRuntimeConfigObject.h
+    Config/McRuntimeConfigValue.h
 )
 
 set(PROJECT_SOURCES
     McGlobal.cpp
     Event/McEventDispatcher.cpp
     Event/McEventRouter.cpp
+    Config/McRuntimeConfig.cpp
+    Config/McRuntimeConfigObject.cpp
+    Config/McRuntimeConfigValue.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED

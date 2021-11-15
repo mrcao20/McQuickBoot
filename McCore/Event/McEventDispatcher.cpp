@@ -70,3 +70,10 @@ QMetaObject::Connection McEventDispatcher::connectToEventImpl(const QString &scx
                                     slotObj,
                                     type);
 }
+
+namespace Mc {
+McEventDispatcher &eventDispatcher() noexcept
+{
+    return *McEventDispatcher::instance();
+}
+} // namespace Mc

@@ -62,9 +62,7 @@
         } \
     }
 
-#define MC_DECL_POINTER(Class) \
-    using Class##Ptr = QSharedPointer<Class>; \
-    using Class##ConstPtrRef = const QSharedPointer<Class> &;
+#define MC_DECL_POINTER(Class) using Class##Ptr = QSharedPointer<Class>;
 
 #define MC_DECL_POINTER_NS(Class, NS) \
     namespace NS { \
@@ -127,6 +125,9 @@ private: \
         Q_UNUSED(_); \
     } \
     Mc::addPreRoutine(McPrivate::extractRoutinePriority(__VA_ARGS__), [](){
+#define MC_AUTO_INIT(Class, ...) \
+    MC_INIT(Class, __VA_ARGS__) \
+    mcRegisterMetaType<Class>();
 #define MC_DESTROY(...) \
     }); \
     Mc::addPostRoutine(McPrivate::extractRoutinePriority(__VA_ARGS__), [](){

@@ -25,10 +25,14 @@
 
 #include <QDir>
 #include <QEvent>
+#include <QLoggingCategory>
 #include <QObject>
 #include <QVariant>
 
 #include "McMacroGlobal.h"
+#include "McMetaType.h"
+
+Q_DECLARE_LOGGING_CATEGORY(mcCore)
 
 inline bool operator<(const QVariant &left, const QVariant &right)
 {

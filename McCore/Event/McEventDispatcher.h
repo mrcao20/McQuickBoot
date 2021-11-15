@@ -26,15 +26,14 @@
 #include <QVariant>
 
 #include "../McMacroGlobal.h"
-#include "../Utils/IMcNonCopyable.h"
 #include "../Utils/McQVariantConverter.h"
 
 MC_FORWARD_DECL_PRIVATE_DATA(McEventDispatcher)
 
-class MC_CORE_EXPORT McEventDispatcher : protected McQVariantConverter, public IMcNonCopyable
+class MC_CORE_EXPORT McEventDispatcher : protected McQVariantConverter
 {
-private:
     McEventDispatcher() noexcept;
+    Q_DISABLE_COPY_MOVE(McEventDispatcher)
 
 public:
     static McEventDispatcher *instance() noexcept;
@@ -112,4 +111,8 @@ private:
     MC_DECL_PRIVATE(McEventDispatcher)
 };
 
-#define McEvt (*McEventDispatcher::instance())
+namespace Mc {
+MC_CORE_EXPORT McEventDispatcher &eventDispatcher() noexcept;
+}
+
+#define mcEvt() Mc::eventDispatcher()

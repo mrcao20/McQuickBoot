@@ -23,15 +23,11 @@
  */
 #pragma once
 
-class IMcNonCopyable
+#include "McGlobal.h"
+
+class MC_CORE_EXPORT McRuntimeConfigObject
 {
+    Q_DISABLE_COPY_MOVE(McRuntimeConfigObject)
 public:
-    IMcNonCopyable() noexcept = default;
-    virtual ~IMcNonCopyable() = default;
-    
-private:
-    IMcNonCopyable(const IMcNonCopyable &) = delete;
-    IMcNonCopyable &operator=(const IMcNonCopyable &) = delete;
-    IMcNonCopyable(IMcNonCopyable &&) = delete;
-    IMcNonCopyable &operator=(IMcNonCopyable &&) = delete;
+    McRuntimeConfigObject() noexcept = default;
 };

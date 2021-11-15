@@ -67,6 +67,7 @@ if(INSTALL_TO_QT)
 endif()
 
 add_subdirectory(McCore)
+add_subdirectory(McIoc)
 if(BUILD_EXAMPLES)
     add_subdirectory(Examples)
 endif()

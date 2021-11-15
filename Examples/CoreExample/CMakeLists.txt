@@ -2,11 +2,13 @@ project(CoreExample)
 
 set(PROJECT_HEADERS
     MainWindow.h
+    RegisterTest.h
 )
 
 set(PROJECT_SOURCES
     main.cpp
     MainWindow.cpp
+    RegisterTest.cpp
 )
 
 set(PROJECT_FORMS

@@ -28,19 +28,21 @@
 #include <QTimer>
 #include <QUrl>
 
+Q_LOGGING_CATEGORY(mcCore, "mc.core")
+
 namespace McPrivate {
 
 using StartUpFuncs = QMap<int, QVector<Mc::StartUpFunction>>;
-Q_GLOBAL_STATIC(StartUpFuncs, preRFuncs)
-using VFuncs = QMap<int, QVector<Mc::CleanUpFunction>>;
-Q_GLOBAL_STATIC(VFuncs, postRFuncs)
+Q_GLOBAL_STATIC(StartUpFuncs, preFuncs)
+using CleanUpFuncs = QMap<int, QVector<Mc::CleanUpFunction>>;
+Q_GLOBAL_STATIC(CleanUpFuncs, postFuncs)
 
 int coreStaticInit()
 {
     qAddPreRoutine([]() { Mc::callPreRoutine(); });
     qAddPostRoutine([]() {
-        VFuncs funcs;
-        funcs.swap(*postRFuncs);
+        CleanUpFuncs funcs;
+        funcs.swap(*postFuncs);
         auto keys = funcs.keys();
         for (int i = keys.length() - 1; i >= 0; --i) {
             auto list = funcs.value(keys.value(i));
@@ -48,11 +50,10 @@ int coreStaticInit()
                 list.at(j)();
             }
         }
-        Q_QGS_postRFuncs::guard.storeRelaxed(QtGlobalStatic::Initialized);
+        Q_QGS_postFuncs::guard.storeRelaxed(QtGlobalStatic::Initialized);
     });
     return 1;
 }
-#ifndef MC_AUTO_CALL_PRE_ROUTINE
 #ifdef Q_CC_GNU
 static void __attribute__((constructor)) __coreStaticInit__(void)
 {
@@ -71,7 +72,6 @@ __declspec(allocate(SECNAME)) _PIFV dummy[] = {__coreStaticInit__};
 #else
 Q_CONSTRUCTOR_FUNCTION(coreStaticInit)
 #endif
-#endif
 
 } // namespace McPrivate
 
@@ -80,6 +80,7 @@ McCustomEvent::~McCustomEvent() noexcept {}
 MC_GLOBAL_STATIC_BEGIN(coreGlobalStaticData)
 QString applicationDirPath;
 QString applicationName;
+QVector<McMetaType> metaTypes;
 MC_GLOBAL_STATIC_END(coreGlobalStaticData)
 
 namespace {
@@ -205,7 +206,7 @@ void setApplicationFilePath(const QString &val) noexcept
 
 void addPreRoutine(int priority, const StartUpFunction &func) noexcept
 {
-    McPrivate::StartUpFuncs *funcs = McPrivate::preRFuncs;
+    McPrivate::StartUpFuncs *funcs = McPrivate::preFuncs;
     if (!funcs) {
         return;
     }
@@ -216,7 +217,7 @@ void callPreRoutine() noexcept
 {
     using namespace McPrivate;
     StartUpFuncs funcs;
-    funcs.swap(*preRFuncs);
+    funcs.swap(*preFuncs);
     auto keys = funcs.keys();
     for (int i = keys.length() - 1; i >= 0; --i) {
         auto list = funcs.value(keys.value(i));
@@ -224,17 +225,17 @@ void callPreRoutine() noexcept
             list.at(j)();
         }
     }
-    Q_QGS_preRFuncs::guard.storeRelaxed(QtGlobalStatic::Initialized);
+    Q_QGS_preFuncs::guard.storeRelaxed(QtGlobalStatic::Initialized);
 }
 
 void cleanPreRoutine() noexcept
 {
-    McPrivate::preRFuncs->clear();
+    McPrivate::preFuncs->clear();
 }
 
 void addPostRoutine(int priority, const CleanUpFunction &func) noexcept
 {
-    McPrivate::VFuncs *funcs = McPrivate::postRFuncs;
+    McPrivate::CleanUpFuncs *funcs = McPrivate::postFuncs;
     if (!funcs) {
         return;
     }
@@ -242,3 +243,130 @@ void addPostRoutine(int priority, const CleanUpFunction &func) noexcept
 }
 
 } // namespace Mc
+
+void McMetaType::registerMetaType(const McMetaType &type) noexcept
+{
+    if (!type.isValid() || type.d->isRegistered.loadRelaxed()) {
+        return;
+    }
+    type.d->isRegistered.storeRelaxed(true);
+    type.d->metaType.id();
+    type.d->pMetaType.id();
+    type.d->sMetaType.id();
+    coreGlobalStaticData->metaTypes.append(type);
+}
+
+McMetaType McMetaType::fromQMetaType(const QMetaType &type) noexcept
+{
+    auto itr = std::find_if(coreGlobalStaticData->metaTypes.constBegin(),
+                            coreGlobalStaticData->metaTypes.constEnd(),
+                            [&type](const McMetaType &t) { return type == t.d->metaType; });
+    if (itr == coreGlobalStaticData->metaTypes.constEnd()) {
+        return McMetaType();
+    }
+    return *itr;
+}
+
+McMetaType McMetaType::fromPQMetaType(const QMetaType &type) noexcept
+{
+    auto itr = std::find_if(coreGlobalStaticData->metaTypes.constBegin(),
+                            coreGlobalStaticData->metaTypes.constEnd(),
+                            [&type](const McMetaType &t) { return type == t.d->pMetaType; });
+    if (itr == coreGlobalStaticData->metaTypes.constEnd()) {
+        return McMetaType();
+    }
+    return *itr;
+}
+
+McMetaType McMetaType::fromSQMetaType(const QMetaType &type) noexcept
+{
+    auto itr = std::find_if(coreGlobalStaticData->metaTypes.constBegin(),
+                            coreGlobalStaticData->metaTypes.constEnd(),
+                            [&type](const McMetaType &t) { return type == t.d->sMetaType; });
+    if (itr == coreGlobalStaticData->metaTypes.constEnd()) {
+        return McMetaType();
+    }
+    return *itr;
+}
+
+McMetaType McMetaType::fromTypeName(const QByteArray &typeName) noexcept
+{
+    auto itr = std::find_if(coreGlobalStaticData->metaTypes.constBegin(),
+                            coreGlobalStaticData->metaTypes.constEnd(),
+                            [&typeName](const McMetaType &t) { return typeName == t.d->metaType.name(); });
+    if (itr == coreGlobalStaticData->metaTypes.constEnd()) {
+        return McMetaType();
+    }
+    return *itr;
+}
+
+McMetaType McMetaType::fromPTypeName(const QByteArray &typeName) noexcept
+{
+    auto itr = std::find_if(coreGlobalStaticData->metaTypes.constBegin(),
+                            coreGlobalStaticData->metaTypes.constEnd(),
+                            [&typeName](const McMetaType &t) { return typeName == t.d->pMetaType.name(); });
+    if (itr == coreGlobalStaticData->metaTypes.constEnd()) {
+        return McMetaType();
+    }
+    return *itr;
+}
+
+McMetaType McMetaType::fromSTypeName(const QByteArray &typeName) noexcept
+{
+    auto itr = std::find_if(coreGlobalStaticData->metaTypes.constBegin(),
+                            coreGlobalStaticData->metaTypes.constEnd(),
+                            [&typeName](const McMetaType &t) { return typeName == t.d->sMetaType.name(); });
+    if (itr == coreGlobalStaticData->metaTypes.constEnd()) {
+        return McMetaType();
+    }
+    return *itr;
+}
+
+QVector<McMetaType> McMetaType::metaTypes() noexcept
+{
+    return coreGlobalStaticData->metaTypes;
+}
+
+QMetaType McMetaType::metaType() const noexcept
+{
+    if (!isValid()) {
+        return QMetaType();
+    }
+    return d->metaType;
+}
+
+QMetaType McMetaType::pMetaType() const noexcept
+{
+    if (!isValid()) {
+        return QMetaType();
+    }
+    return d->pMetaType;
+}
+
+QMetaType McMetaType::sMetaType() const noexcept
+{
+    if (!isValid()) {
+        return QMetaType();
+    }
+    return d->sMetaType;
+}
+
+void McMetaType::addParentMetaType(const McMetaType &type) const noexcept
+{
+    if (!isValid() || !type.isValid()) {
+        return;
+    }
+    if (d->parents == nullptr) {
+        //! 由于d为编译期静态变量，全局唯一且整个程序生命周期均存在，此处可不析构
+        d->parents = new QVector<McMetaType>();
+    }
+    d->parents->append(type);
+}
+
+QVector<McMetaType> McMetaType::parentMetaTypes() const noexcept
+{
+    if (!isValid() || d->parents == nullptr) {
+        return QVector<McMetaType>();
+    }
+    return *d->parents;
+}

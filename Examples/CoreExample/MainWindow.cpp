@@ -16,8 +16,11 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    McEvt.connectToEvent("button.click", this, [](const QVariant &var) { qDebug() << var; });
-    connect(ui->pushButton, &QPushButton::clicked, this, []() { McEvt.submitEvent("button.click", 1); });
+    Mc::eventDispatcher().connectToEvent("button.click", this, [](const QVariant &var) { qDebug() << var; });
+    connect(ui->pushButton, &QPushButton::clicked, this, []() {
+        static int i = 1;
+        mcEvt().submitEvent("button.click", i++);
+    });
 }
 
 MainWindow::~MainWindow()
