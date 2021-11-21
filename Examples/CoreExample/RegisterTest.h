@@ -38,3 +38,5 @@ class RegisterTest : public QObject, public IRegisterTest
     MC_INTERFACES(IRegisterTest)
 public:
 };
+
+MC_DECL_POINTER(RegisterTest)

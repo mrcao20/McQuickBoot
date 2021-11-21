@@ -34,12 +34,6 @@
 
 Q_DECLARE_LOGGING_CATEGORY(mcCore)
 
-inline bool operator<(const QVariant &left, const QVariant &right)
-{
-    auto res = QVariant::compare(left, right);
-    return res == QPartialOrdering::Less;
-}
-
 namespace McPrivate {
 
 template<typename T>
@@ -171,6 +165,7 @@ bool isContains(int index, const Container &container) noexcept
  */
 MC_CORE_EXPORT bool waitForExecFunc(const std::function<bool()> &func, qint64 timeout = -1) noexcept;
 
+MC_CORE_EXPORT void registerPathPlaceholder(const QString &placeholder, const std::function<QString()> &func) noexcept;
 MC_CORE_EXPORT QString toAbsolutePath(const QString &path) noexcept;
 MC_CORE_EXPORT QString applicationDirPath() noexcept;
 MC_CORE_EXPORT QDir applicationDir() noexcept;

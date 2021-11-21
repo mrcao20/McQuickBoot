@@ -12,6 +12,7 @@ project(McQuickBoot
     LANGUAGES CXX)
 
 option(BUILD_EXAMPLES "Build examples" ON)
+option(BUILD_STATIC "Build static" OFF)
 option(INSTALL_TO_QT "Install output to qt location" OFF)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -38,6 +39,13 @@ endif()
 set(MC_QUICKBOOT_INSTALL_HEADERS ${CMAKE_INSTALL_PREFIX}/include)
 set(MC_QUICKBOOT_INSTALL_LIBS ${CMAKE_INSTALL_PREFIX}/lib)
 set(MC_QUICKBOOT_INSTALL_BINS ${CMAKE_INSTALL_PREFIX}/bin)
+
+if(BUILD_STATIC)
+    set(MC_BUILD_TYPE STATIC)
+    add_definitions(-DMC_BUILD_STATIC)
+else()
+    set(MC_BUILD_TYPE SHARED)
+endif()
 
 if(INSTALL_TO_QT)
     get_target_property(qmake Qt6::qmake LOCATION)

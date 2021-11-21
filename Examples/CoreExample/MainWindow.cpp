@@ -7,7 +7,9 @@
 #include <McCore/McGlobal.h>
 
 MC_STATIC()
-qDebug() << "core example init";
+Mc::registerPathPlaceholder("{custom}/bin", []() { return QCoreApplication::applicationDirPath(); });
+qDebug() << "core example init: " << Mc::toAbsolutePath("{custom}/bin");
+qDebug() << "core example init: " << Mc::toAbsolutePath("{appData}/bin");
 MC_STATIC_END
 
 MainWindow::MainWindow(QWidget *parent)

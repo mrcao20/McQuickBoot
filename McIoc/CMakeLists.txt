@@ -13,7 +13,7 @@ set(PROJECT_SOURCES
     McIocGlobal.cpp
 )
 
-add_library(${PROJECT_NAME} SHARED
+add_library(${PROJECT_NAME} ${MC_BUILD_TYPE}
     ${PROJECT_HEADERS}
     ${PROJECT_SOURCES}
 )

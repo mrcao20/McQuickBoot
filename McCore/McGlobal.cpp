@@ -77,14 +77,7 @@ Q_CONSTRUCTOR_FUNCTION(coreStaticInit)
 
 McCustomEvent::~McCustomEvent() noexcept {}
 
-MC_GLOBAL_STATIC_BEGIN(coreGlobalStaticData)
-QString applicationDirPath;
-QString applicationName;
-QVector<McMetaType> metaTypes;
-MC_GLOBAL_STATIC_END(coreGlobalStaticData)
-
 namespace {
-
 QString getStandardPath(QStandardPaths::StandardLocation type)
 {
     auto paths = QStandardPaths::standardLocations(type);
@@ -93,11 +86,25 @@ QString getStandardPath(QStandardPaths::StandardLocation type)
     }
     return paths.first();
 }
-
 } // namespace
 
-namespace Mc {
+MC_GLOBAL_STATIC_BEGIN(coreGlobalStaticData)
+QString applicationDirPath;
+QString applicationName;
+QHash<QString, std::function<QString()>> pathPlaceholders{
+    {QLatin1String("{desktop}"), std::bind(getStandardPath, QStandardPaths::DesktopLocation)},
+    {QLatin1String("{documents}"), std::bind(getStandardPath, QStandardPaths::DocumentsLocation)},
+    {QLatin1String("{temp}"), std::bind(getStandardPath, QStandardPaths::TempLocation)},
+    {QLatin1String("{home}"), std::bind(getStandardPath, QStandardPaths::HomeLocation)},
+    {QLatin1String("{appLocalData}"), std::bind(getStandardPath, QStandardPaths::AppLocalDataLocation)},
+    {QLatin1String("{data}"), std::bind(getStandardPath, QStandardPaths::AppLocalDataLocation)},
+    {QLatin1String("{cache}"), std::bind(getStandardPath, QStandardPaths::CacheLocation)},
+    {QLatin1String("{config}"), std::bind(getStandardPath, QStandardPaths::GenericConfigLocation)},
+    {QLatin1String("{appData}"), std::bind(getStandardPath, QStandardPaths::AppDataLocation)},
+};
+MC_GLOBAL_STATIC_END(coreGlobalStaticData)
 
+namespace Mc {
 bool waitForExecFunc(const std::function<bool()> &func, qint64 timeout) noexcept
 {
     QEventLoop loop;
@@ -125,23 +132,19 @@ bool waitForExecFunc(const std::function<bool()> &func, qint64 timeout) noexcept
     return ret;
 }
 
+void registerPathPlaceholder(const QString &placeholder, const std::function<QString()> &func) noexcept
+{
+    coreGlobalStaticData->pathPlaceholders.insert(placeholder, func);
+}
+
 QString toAbsolutePath(const QString &inPath) noexcept
 {
-    static QHash<QString, QStandardPaths::StandardLocation> pathPlhs{{"{desktop}", QStandardPaths::DesktopLocation},
-                                                                     {"{documents}", QStandardPaths::DocumentsLocation},
-                                                                     {"{temp}", QStandardPaths::TempLocation},
-                                                                     {"{home}", QStandardPaths::HomeLocation},
-                                                                     {"{appLocalData}",
-                                                                      QStandardPaths::AppLocalDataLocation},
-                                                                     {"{cache}", QStandardPaths::CacheLocation},
-                                                                     {"{config}", QStandardPaths::GenericConfigLocation},
-                                                                     {"{appData}", QStandardPaths::AppDataLocation}};
-    static QStringList pathPlhKeys = pathPlhs.keys();
+    QStringList pathPlhKeys = coreGlobalStaticData->pathPlaceholders.keys();
     auto path = inPath;
     for (const auto &key : pathPlhKeys) {
-        const auto &value = pathPlhs.value(key);
+        const auto &value = coreGlobalStaticData->pathPlaceholders.value(key);
         QString plhPath;
-        if (path.contains(key) && !(plhPath = getStandardPath(value)).isEmpty()) {
+        if (path.contains(key) && !(plhPath = value()).isEmpty()) {
             path.replace(key, plhPath);
         }
     }
@@ -241,132 +244,4 @@ void addPostRoutine(int priority, const CleanUpFunction &func) noexcept
     }
     (*funcs)[priority].prepend(func);
 }
-
 } // namespace Mc
-
-void McMetaType::registerMetaType(const McMetaType &type) noexcept
-{
-    if (!type.isValid() || type.d->isRegistered.loadRelaxed()) {
-        return;
-    }
-    type.d->isRegistered.storeRelaxed(true);
-    type.d->metaType.id();
-    type.d->pMetaType.id();
-    type.d->sMetaType.id();
-    coreGlobalStaticData->metaTypes.append(type);
-}
-
-McMetaType McMetaType::fromQMetaType(const QMetaType &type) noexcept
-{
-    auto itr = std::find_if(coreGlobalStaticData->metaTypes.constBegin(),
-                            coreGlobalStaticData->metaTypes.constEnd(),
-                            [&type](const McMetaType &t) { return type == t.d->metaType; });
-    if (itr == coreGlobalStaticData->metaTypes.constEnd()) {
-        return McMetaType();
-    }
-    return *itr;
-}
-
-McMetaType McMetaType::fromPQMetaType(const QMetaType &type) noexcept
-{
-    auto itr = std::find_if(coreGlobalStaticData->metaTypes.constBegin(),
-                            coreGlobalStaticData->metaTypes.constEnd(),
-                            [&type](const McMetaType &t) { return type == t.d->pMetaType; });
-    if (itr == coreGlobalStaticData->metaTypes.constEnd()) {
-        return McMetaType();
-    }
-    return *itr;
-}
-
-McMetaType McMetaType::fromSQMetaType(const QMetaType &type) noexcept
-{
-    auto itr = std::find_if(coreGlobalStaticData->metaTypes.constBegin(),
-                            coreGlobalStaticData->metaTypes.constEnd(),
-                            [&type](const McMetaType &t) { return type == t.d->sMetaType; });
-    if (itr == coreGlobalStaticData->metaTypes.constEnd()) {
-        return McMetaType();
-    }
-    return *itr;
-}
-
-McMetaType McMetaType::fromTypeName(const QByteArray &typeName) noexcept
-{
-    auto itr = std::find_if(coreGlobalStaticData->metaTypes.constBegin(),
-                            coreGlobalStaticData->metaTypes.constEnd(),
-                            [&typeName](const McMetaType &t) { return typeName == t.d->metaType.name(); });
-    if (itr == coreGlobalStaticData->metaTypes.constEnd()) {
-        return McMetaType();
-    }
-    return *itr;
-}
-
-McMetaType McMetaType::fromPTypeName(const QByteArray &typeName) noexcept
-{
-    auto itr = std::find_if(coreGlobalStaticData->metaTypes.constBegin(),
-                            coreGlobalStaticData->metaTypes.constEnd(),
-                            [&typeName](const McMetaType &t) { return typeName == t.d->pMetaType.name(); });
-    if (itr == coreGlobalStaticData->metaTypes.constEnd()) {
-        return McMetaType();
-    }
-    return *itr;
-}
-
-McMetaType McMetaType::fromSTypeName(const QByteArray &typeName) noexcept
-{
-    auto itr = std::find_if(coreGlobalStaticData->metaTypes.constBegin(),
-                            coreGlobalStaticData->metaTypes.constEnd(),
-                            [&typeName](const McMetaType &t) { return typeName == t.d->sMetaType.name(); });
-    if (itr == coreGlobalStaticData->metaTypes.constEnd()) {
-        return McMetaType();
-    }
-    return *itr;
-}
-
-QVector<McMetaType> McMetaType::metaTypes() noexcept
-{
-    return coreGlobalStaticData->metaTypes;
-}
-
-QMetaType McMetaType::metaType() const noexcept
-{
-    if (!isValid()) {
-        return QMetaType();
-    }
-    return d->metaType;
-}
-
-QMetaType McMetaType::pMetaType() const noexcept
-{
-    if (!isValid()) {
-        return QMetaType();
-    }
-    return d->pMetaType;
-}
-
-QMetaType McMetaType::sMetaType() const noexcept
-{
-    if (!isValid()) {
-        return QMetaType();
-    }
-    return d->sMetaType;
-}
-
-void McMetaType::addParentMetaType(const McMetaType &type) const noexcept
-{
-    if (!isValid() || !type.isValid()) {
-        return;
-    }
-    if (d->parents == nullptr) {
-        //! 由于d为编译期静态变量，全局唯一且整个程序生命周期均存在，此处可不析构
-        d->parents = new QVector<McMetaType>();
-    }
-    d->parents->append(type);
-}
-
-QVector<McMetaType> McMetaType::parentMetaTypes() const noexcept
-{
-    if (!isValid() || d->parents == nullptr) {
-        return QVector<McMetaType>();
-    }
-    return *d->parents;
-}

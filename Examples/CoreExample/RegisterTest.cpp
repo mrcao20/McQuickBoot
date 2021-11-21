@@ -23,5 +23,10 @@
  */
 #include "RegisterTest.h"
 
+#include <QList>
+#include <QMap>
+
 MC_AUTO_INIT(RegisterTest)
+mcRegisterContainerConverter<QList<RegisterTestPtr>>();
+mcRegisterContainerConverter<QMap<int, RegisterTestPtr>>();
 MC_INIT_END

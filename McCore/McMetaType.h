@@ -24,6 +24,7 @@
 #pragma once
 
 #include <QtCore/QMetaType>
+#include <QtCore/QVariant>
 #include <QtCore/QtGlobal>
 
 #include "McMacroGlobal.h"
@@ -36,6 +37,12 @@ public: \
 private:
 
 #define MC_INTERFACES(...) MC_TYPELIST(__VA_ARGS__)
+
+inline bool operator<(const QVariant &left, const QVariant &right)
+{
+    auto res = QVariant::compare(left, right);
+    return res == QPartialOrdering::Less;
+}
 
 class McMetaType;
 namespace McPrivate {
@@ -54,6 +61,30 @@ public:
     mutable QVector<McMetaType> *parents;
 };
 
+class ListMetaTypeInterface
+{
+public:
+    //! 是否已经保存在容器中
+    mutable QAtomicInteger<bool> isRegistered;
+    //! 列表自身类型
+    QMetaType metaType;
+    //! 容器内存储的数据类型
+    QMetaType valueMetaType;
+};
+
+class MapMetaTypeInterface
+{
+public:
+    //! 是否已经保存在容器中
+    mutable QAtomicInteger<bool> isRegistered;
+    //! 映射自身类型
+    QMetaType metaType;
+    //! 容器内键的数据类型
+    QMetaType keyMetaType;
+    //! 容器内值的数据类型
+    QMetaType valueMetaType;
+};
+
 template<typename T>
 struct MetaTypeInterfaceWrapper
 {
@@ -67,10 +98,45 @@ struct MetaTypeInterfaceWrapper
 };
 
 template<typename T>
+struct ListMetaTypeInterfaceWrapper
+{
+    static inline constexpr const ListMetaTypeInterface metaType = {
+        /*.isRegistered=*/false,
+        /*.metaType=*/QMetaType::fromType<T>(),
+        /*.valueMetaType=*/QMetaType::fromType<typename T::value_type>(),
+    };
+};
+
+template<typename T>
+struct MapMetaTypeInterfaceWrapper
+{
+    static inline constexpr const MapMetaTypeInterface metaType = {
+        /*.isRegistered=*/false,
+        /*.metaType=*/QMetaType::fromType<T>(),
+        /*.keyMetaType=*/QMetaType::fromType<typename T::key_type>(),
+        /*.valueMetaType=*/QMetaType::fromType<typename T::mapped_type>(),
+    };
+};
+
+template<typename T>
 constexpr const MetaTypeInterface *metaTypeInterfaceForType() noexcept
 {
     using Ty = std::remove_cv_t<std::remove_reference_t<T>>;
     return &MetaTypeInterfaceWrapper<Ty>::metaType;
+}
+
+template<typename T>
+constexpr const ListMetaTypeInterface *listMetaTypeInterfaceForType() noexcept
+{
+    using Ty = std::remove_cv_t<std::remove_reference_t<T>>;
+    return &ListMetaTypeInterfaceWrapper<Ty>::metaType;
+}
+
+template<typename T>
+constexpr const MapMetaTypeInterface *mapMetaTypeInterfaceForType() noexcept
+{
+    using Ty = std::remove_cv_t<std::remove_reference_t<T>>;
+    return &MapMetaTypeInterfaceWrapper<Ty>::metaType;
 }
 } // namespace McPrivate
 
@@ -122,6 +188,85 @@ private:
     const McPrivate::MetaTypeInterface *d{nullptr};
 };
 
+class MC_CORE_EXPORT McListMetaType
+{
+public:
+    constexpr McListMetaType() noexcept = default;
+    constexpr McListMetaType(const McPrivate::ListMetaTypeInterface *val) noexcept : d(val) {}
+
+    static void registerMetaType(const McListMetaType &type) noexcept;
+
+    static McListMetaType fromQMetaType(const QMetaType &type) noexcept;
+    static QVector<McListMetaType> metaTypes() noexcept;
+
+    ///! 列表自身类型
+    QMetaType metaType() const noexcept;
+    //! 容器内存储的数据类型
+    QMetaType valueMetaType() const noexcept;
+
+    bool isValid() const noexcept { return d != nullptr; }
+
+    template<typename T>
+    constexpr static McListMetaType fromType()
+    {
+        return McListMetaType(McPrivate::listMetaTypeInterfaceForType<T>());
+    }
+
+    friend bool operator==(McListMetaType a, McListMetaType b)
+    {
+        if (a.d == b.d)
+            return true;
+        if (a.d == nullptr || b.d == nullptr)
+            return false;
+        return a.d->metaType == b.d->metaType && a.d->valueMetaType == b.d->valueMetaType;
+    }
+    friend bool operator!=(McListMetaType a, McListMetaType b) { return !(a == b); }
+
+private:
+    const McPrivate::ListMetaTypeInterface *d{nullptr};
+};
+
+class MC_CORE_EXPORT McMapMetaType
+{
+public:
+    constexpr McMapMetaType() noexcept = default;
+    constexpr McMapMetaType(const McPrivate::MapMetaTypeInterface *val) noexcept : d(val) {}
+
+    static void registerMetaType(const McMapMetaType &type) noexcept;
+
+    static McMapMetaType fromQMetaType(const QMetaType &type) noexcept;
+    static QVector<McMapMetaType> metaTypes() noexcept;
+
+    //! 映射自身类型
+    QMetaType metaType() const noexcept;
+    //! 容器内键的数据类型
+    QMetaType keyMetaType() const noexcept;
+    //! 容器内值的数据类型
+    QMetaType valueMetaType() const noexcept;
+
+    bool isValid() const noexcept { return d != nullptr; }
+
+    template<typename T>
+    constexpr static McMapMetaType fromType()
+    {
+        return McMapMetaType(McPrivate::mapMetaTypeInterfaceForType<T>());
+    }
+
+    friend bool operator==(McMapMetaType a, McMapMetaType b)
+    {
+        if (a.d == b.d)
+            return true;
+        if (a.d == nullptr || b.d == nullptr)
+            return false;
+        return a.d->metaType == b.d->metaType && a.d->keyMetaType == b.d->keyMetaType
+               && a.d->valueMetaType == b.d->valueMetaType;
+    }
+    friend bool operator!=(McMapMetaType a, McMapMetaType b) { return !(a == b); }
+
+private:
+    const McPrivate::MapMetaTypeInterface *d{nullptr};
+};
+
 namespace McPrivate {
 
 template<typename...>
@@ -140,24 +285,6 @@ struct TypeList<>
 {};
 
 template<typename From, typename To>
-To sharedPointerObjectConverter(const From &from) noexcept
-{
-    return from.template objectCast<typename To::Type>();
-}
-
-template<typename T>
-QSharedPointer<T> gadgetConverter(T *from) noexcept
-{
-    return QSharedPointer<T>(from);
-}
-
-template<typename From, typename To>
-To sharedToStar(const From &from) noexcept
-{
-    return from.operator->();
-}
-
-template<typename From, typename To>
 struct RegisterConverterHelper2
 {
     using FromPtr = QSharedPointer<From>;
@@ -174,7 +301,7 @@ struct RegisterConverterHelper2
             }
         }
         if (!QMetaType::hasRegisteredConverterFunction<FromPtr, To *>()) {
-            QMetaType::registerConverter<FromPtr, To *>(sharedToStar<FromPtr, To *>);
+            QMetaType::registerConverter<FromPtr, To *>([](const FromPtr &from) { return from.operator->(); });
         }
         constexpr McMetaType srcMetaType = McMetaType::fromType<From>();
         constexpr McMetaType dstMetaType = McMetaType::fromType<To>();
@@ -227,19 +354,20 @@ struct MetaTypeRegister2
     {
         using TPtr = QSharedPointer<T>;
         if (!QMetaType::hasRegisteredConverterFunction<TPtr, T *>()) {
-            QMetaType::registerConverter<TPtr, T *>(sharedToStar<TPtr, T *>);
+            QMetaType::registerConverter<TPtr, T *>([](const TPtr &from) { return from.operator->(); });
         }
         if constexpr (bool(QtPrivate::IsGadgetHelper<T>::IsRealGadget)) {
             if (!QMetaType::hasRegisteredConverterFunction<T *, TPtr>()) {
-                QMetaType::registerConverter<T *, TPtr>(gadgetConverter<T>);
+                QMetaType::registerConverter<T *, TPtr>([](T *from) { return QSharedPointer<T>(from); });
             }
-        } else if (bool(QtPrivate::IsPointerToTypeDerivedFromQObject<T *>::Value)) {
+        } else if constexpr (bool(QtPrivate::IsPointerToTypeDerivedFromQObject<T *>::Value)) {
             using QObjectPtr = QSharedPointer<QObject>;
             if (!QMetaType::hasRegisteredConverterFunction<TPtr, QObjectPtr>()) {
                 QMetaType::registerConverter<TPtr, QObjectPtr>();
             }
             if (!QMetaType::hasRegisteredConverterFunction<QObjectPtr, TPtr>()) {
-                QMetaType::registerConverter<QObjectPtr, TPtr>(sharedPointerObjectConverter<QObjectPtr, TPtr>);
+                QMetaType::registerConverter<QObjectPtr, TPtr>(
+                    [](const QObjectPtr &from) { return from.template objectCast<T>(); });
             }
         }
         constexpr McMetaType metaType = McMetaType::fromType<T>();
@@ -274,4 +402,77 @@ inline void mcRegisterMetaType() noexcept
 {
     static_assert(!std::is_pointer<T>::value, "mcRegisterMetaType's template type must not be a pointer type");
     McPrivate::MetaTypeRegister<T>::registerMetaType();
+}
+
+template<typename T>
+inline void mcRegisterContainerConverter() noexcept
+{
+    constexpr QMetaType metaType = QMetaType::fromType<T>();
+    if constexpr (bool(QtPrivate::IsSequentialContainer<T>::Value)) {
+        using ValueType = typename T::value_type;
+        mcRegisterContainerConverter<ValueType>();
+        constexpr McListMetaType customMetaType = McListMetaType::fromType<T>();
+        McListMetaType::registerMetaType(customMetaType);
+        constexpr QMetaType listMetaType = QMetaType::fromType<QVariantList>();
+        if (!QMetaType::hasRegisteredConverterFunction(listMetaType, metaType)) {
+            QVariant var(listMetaType);
+            if (!var.canConvert(metaType)) {
+                QMetaType::registerConverter<QVariantList, T>([](const QVariantList &from) {
+                    T to;
+                    for (const auto &f : from) {
+                        to << f.template value<typename T::value_type>();
+                    }
+                    return to;
+                });
+            }
+        }
+        if (!QMetaType::hasRegisteredConverterFunction(metaType, listMetaType)) {
+            QVariant var(metaType);
+            if (!var.canConvert(listMetaType)) {
+                QMetaType::registerConverter<T, QVariantList>([](const T &from) {
+                    QVariantList to;
+                    for (const auto &f : from) {
+                        to << QVariant::fromValue(f);
+                    }
+                    return to;
+                });
+            }
+        }
+    } else if constexpr (bool(QtPrivate::IsAssociativeContainer<T>::Value)) {
+        using KeyType = typename T::key_type;
+        using ValueType = typename T::mapped_type;
+        mcRegisterContainerConverter<KeyType>();
+        mcRegisterContainerConverter<ValueType>();
+        constexpr McMapMetaType customMetaType = McMapMetaType::fromType<T>();
+        McMapMetaType::registerMetaType(customMetaType);
+        constexpr QMetaType mapMetaType = QMetaType::fromType<QMap<QVariant, QVariant>>();
+        if (!QMetaType::hasRegisteredConverterFunction(mapMetaType, metaType)) {
+            QVariant var(mapMetaType);
+            if (!var.canConvert(metaType)) {
+                QMetaType::registerConverter<QMap<QVariant, QVariant>, T>([](const QMap<QVariant, QVariant> &from) {
+                    T to;
+                    using keyType = typename T::key_type;
+                    using mappedType = typename T::mapped_type;
+                    for (auto itr = from.cbegin(), end = from.cend(); itr != end; ++itr) {
+                        keyType key = itr.key().template value<keyType>();
+                        mappedType value = itr.value().template value<mappedType>();
+                        to.insert(key, value);
+                    }
+                    return to;
+                });
+            }
+        }
+        if (!QMetaType::hasRegisteredConverterFunction(metaType, mapMetaType)) {
+            QVariant var(metaType);
+            if (!var.canConvert(mapMetaType)) {
+                QMetaType::registerConverter<T, QMap<QVariant, QVariant>>([](const T &from) {
+                    QMap<QVariant, QVariant> to;
+                    for (auto itr = from.cbegin(), end = from.cend(); itr != end; ++itr) {
+                        to.insert(QVariant::fromValue(itr.key()), QVariant::fromValue(itr.value()));
+                    }
+                    return to;
+                });
+            }
+        }
+    }
 }

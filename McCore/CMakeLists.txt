@@ -18,6 +18,7 @@ set(PROJECT_HEADERS
 
 set(PROJECT_SOURCES
     McGlobal.cpp
+    McMetaType.cpp
     Event/McEventDispatcher.cpp
     Event/McEventRouter.cpp
     Config/McRuntimeConfig.cpp
@@ -25,7 +26,7 @@ set(PROJECT_SOURCES
     Config/McRuntimeConfigValue.cpp
 )
 
-add_library(${PROJECT_NAME} SHARED
+add_library(${PROJECT_NAME} ${MC_BUILD_TYPE}
     ${PROJECT_HEADERS}
     ${PROJECT_SOURCES}
 )
