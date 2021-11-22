@@ -37,21 +37,20 @@ Q_DECLARE_LOGGING_CATEGORY(mcIoc)
 //! 如果你看到这行注释，则表示你可以不再需要使用这个宏，而是直接调用其函数
 //! 此宏保留以适配以前大规模使用的老代码
 #define MC_REGISTER_BEAN_FACTORY(Class, ...) mcRegisterMetaType<Class>();
-
-#define MC_REGISTER_CONTAINER_CONVERTER(Type) \
-    McPrivate::McContainerConverterRegisterHelper<Type>::registerConverter(#Type);
+#define MC_REGISTER_CONTAINER_CONVERTER(Type) mcRegisterContainerConverter<Type>();
 #define MC_REGISTER_LIST_CONVERTER MC_REGISTER_CONTAINER_CONVERTER
 #define MC_REGISTER_MAP_CONVERTER MC_REGISTER_CONTAINER_CONVERTER
 
 namespace McPrivate {
+void addMetaTypeBeanName(const McMetaType &type, const QByteArray &beanName) noexcept;
+void addMetaTypeBeanName(const QVector<McMetaType> &types, const QByteArray &beanName) noexcept;
+QSet<QByteArray> getBeanNameForMetaType(const McMetaType &type) noexcept;
 
 //! beanName应当用QByteArray
 //QString getBeanName(const QMetaObject *metaObj) noexcept;
-
 } // namespace McPrivate
 
 namespace Mc {
-
 ////! 获取所有被Component标记的bean
 //MC_IOC_EXPORT QList<QString> getAllComponent(IMcApplicationContextConstPtrRef appCtx) noexcept;
 ////! 获取所有组建类型为componentType的bean的名称
@@ -64,7 +63,6 @@ namespace Mc {
 //MC_IOC_EXPORT QObject *getObject(IMcApplicationContext *appCtx, const QString &beanName) noexcept;
 
 namespace Ioc {
-
 //MC_IOC_EXPORT void connect(const QString &beanName,
 //                          const QString &sender,
 //                          const QString &signal,
@@ -104,6 +102,5 @@ namespace Ioc {
 //                             const QString &signal,
 //                             QObject *receiver,
 //                             const QString &slot) noexcept;
-
 } // namespace Ioc
 } // namespace Mc

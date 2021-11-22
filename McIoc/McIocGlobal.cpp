@@ -23,4 +23,29 @@
  */
 #include "McIocGlobal.h"
 
+#include <QHash>
+
 Q_LOGGING_CATEGORY(mcIoc, "mc.ioc")
+
+MC_GLOBAL_STATIC_BEGIN(staticData)
+QHash<McMetaType, QSet<QByteArray>> metaTypeBeanNames;
+MC_GLOBAL_STATIC_END(staticData)
+
+namespace McPrivate {
+void addMetaTypeBeanName(const McMetaType &type, const QByteArray &beanName) noexcept
+{
+    addMetaTypeBeanName({type}, beanName);
+}
+
+void addMetaTypeBeanName(const QVector<McMetaType> &types, const QByteArray &beanName) noexcept
+{
+    for (auto &type : types) {
+        staticData->metaTypeBeanNames[type].insert(beanName);
+    }
+}
+
+QSet<QByteArray> getBeanNameForMetaType(const McMetaType &type) noexcept
+{
+    return staticData->metaTypeBeanNames.value(type);
+}
+} // namespace McPrivate

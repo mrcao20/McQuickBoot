@@ -74,6 +74,28 @@ McMetaType McMetaType::fromSQMetaType(const QMetaType &type) noexcept
     return *itr;
 }
 
+McMetaType McMetaType::fromWQMetaType(const QMetaType &type) noexcept
+{
+    auto itr = std::find_if(coreMetaTypeStaticData->metaTypes.constBegin(),
+                            coreMetaTypeStaticData->metaTypes.constEnd(),
+                            [&type](const McMetaType &t) { return type == t.d->wMetaType; });
+    if (itr == coreMetaTypeStaticData->metaTypes.constEnd()) {
+        return McMetaType();
+    }
+    return *itr;
+}
+
+McMetaType McMetaType::fromTQMetaType(const QMetaType &type) noexcept
+{
+    auto itr = std::find_if(coreMetaTypeStaticData->metaTypes.constBegin(),
+                            coreMetaTypeStaticData->metaTypes.constEnd(),
+                            [&type](const McMetaType &t) { return type == t.d->tMetaType; });
+    if (itr == coreMetaTypeStaticData->metaTypes.constEnd()) {
+        return McMetaType();
+    }
+    return *itr;
+}
+
 McMetaType McMetaType::fromTypeName(const QByteArray &typeName) noexcept
 {
     auto itr = std::find_if(coreMetaTypeStaticData->metaTypes.constBegin(),
@@ -107,33 +129,31 @@ McMetaType McMetaType::fromSTypeName(const QByteArray &typeName) noexcept
     return *itr;
 }
 
+McMetaType McMetaType::fromWTypeName(const QByteArray &typeName) noexcept
+{
+    auto itr = std::find_if(coreMetaTypeStaticData->metaTypes.constBegin(),
+                            coreMetaTypeStaticData->metaTypes.constEnd(),
+                            [&typeName](const McMetaType &t) { return typeName == t.d->wMetaType.name(); });
+    if (itr == coreMetaTypeStaticData->metaTypes.constEnd()) {
+        return McMetaType();
+    }
+    return *itr;
+}
+
+McMetaType McMetaType::fromTTypeName(const QByteArray &typeName) noexcept
+{
+    auto itr = std::find_if(coreMetaTypeStaticData->metaTypes.constBegin(),
+                            coreMetaTypeStaticData->metaTypes.constEnd(),
+                            [&typeName](const McMetaType &t) { return typeName == t.d->tMetaType.name(); });
+    if (itr == coreMetaTypeStaticData->metaTypes.constEnd()) {
+        return McMetaType();
+    }
+    return *itr;
+}
+
 QVector<McMetaType> McMetaType::metaTypes() noexcept
 {
     return coreMetaTypeStaticData->metaTypes;
-}
-
-QMetaType McMetaType::metaType() const noexcept
-{
-    if (!isValid()) {
-        return QMetaType();
-    }
-    return d->metaType;
-}
-
-QMetaType McMetaType::pMetaType() const noexcept
-{
-    if (!isValid()) {
-        return QMetaType();
-    }
-    return d->pMetaType;
-}
-
-QMetaType McMetaType::sMetaType() const noexcept
-{
-    if (!isValid()) {
-        return QMetaType();
-    }
-    return d->sMetaType;
 }
 
 void McMetaType::addParentMetaType(const McMetaType &type) const noexcept
@@ -183,22 +203,6 @@ QVector<McListMetaType> McListMetaType::metaTypes() noexcept
     return coreMetaTypeStaticData->listMetaTypes;
 }
 
-QMetaType McListMetaType::metaType() const noexcept
-{
-    if (!isValid()) {
-        return QMetaType();
-    }
-    return d->metaType;
-}
-
-QMetaType McListMetaType::valueMetaType() const noexcept
-{
-    if (!isValid()) {
-        return QMetaType();
-    }
-    return d->valueMetaType;
-}
-
 void McMapMetaType::registerMetaType(const McMapMetaType &type) noexcept
 {
     if (!type.isValid() || type.d->isRegistered.loadRelaxed()) {
@@ -225,28 +229,4 @@ McMapMetaType McMapMetaType::fromQMetaType(const QMetaType &type) noexcept
 QVector<McMapMetaType> McMapMetaType::metaTypes() noexcept
 {
     return coreMetaTypeStaticData->mapMetaTypes;
-}
-
-QMetaType McMapMetaType::metaType() const noexcept
-{
-    if (!isValid()) {
-        return QMetaType();
-    }
-    return d->metaType;
-}
-
-QMetaType McMapMetaType::keyMetaType() const noexcept
-{
-    if (!isValid()) {
-        return QMetaType();
-    }
-    return d->keyMetaType;
-}
-
-QMetaType McMapMetaType::valueMetaType() const noexcept
-{
-    if (!isValid()) {
-        return QMetaType();
-    }
-    return d->valueMetaType;
 }

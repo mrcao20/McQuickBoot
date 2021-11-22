@@ -24,7 +24,10 @@
 #pragma once
 
 #include <QtCore/QMetaType>
+#include <QtCore/QPointer>
+#include <QtCore/QSharedPointer>
 #include <QtCore/QVariant>
+#include <QtCore/QWeakPointer>
 #include <QtCore/QtGlobal>
 
 #include "McMacroGlobal.h"
@@ -57,6 +60,10 @@ public:
     QMetaType pMetaType;
     //! 智能指针类型
     QMetaType sMetaType;
+    //! 弱指针类型
+    QMetaType wMetaType;
+    //! QPointer类型
+    QMetaType tMetaType;
     //! 继承的父类的元数据
     mutable QVector<McMetaType> *parents;
 };
@@ -93,6 +100,10 @@ struct MetaTypeInterfaceWrapper
         /*.metaType=*/QMetaType::fromType<T>(),
         /*.pMetaType=*/QMetaType::fromType<T *>(),
         /*.sMetaType=*/QMetaType::fromType<QSharedPointer<T>>(),
+        /*.wMetaType=*/QMetaType::fromType<QWeakPointer<T>>(),
+        /*.tMetaType=*/
+        bool(QtPrivate::IsPointerToTypeDerivedFromQObject<T *>::Value) ? QMetaType::fromType<QPointer<T>>()
+                                                                       : QMetaType(),
         /*.parents=*/nullptr,
     };
 };
@@ -151,22 +162,44 @@ public:
     static McMetaType fromQMetaType(const QMetaType &type) noexcept;
     static McMetaType fromPQMetaType(const QMetaType &type) noexcept;
     static McMetaType fromSQMetaType(const QMetaType &type) noexcept;
+    static McMetaType fromWQMetaType(const QMetaType &type) noexcept;
+    static McMetaType fromTQMetaType(const QMetaType &type) noexcept;
     static McMetaType fromTypeName(const QByteArray &typeName) noexcept;
     static McMetaType fromPTypeName(const QByteArray &typeName) noexcept;
     static McMetaType fromSTypeName(const QByteArray &typeName) noexcept;
+    static McMetaType fromWTypeName(const QByteArray &typeName) noexcept;
+    static McMetaType fromTTypeName(const QByteArray &typeName) noexcept;
     static QVector<McMetaType> metaTypes() noexcept;
 
     //! 原始类型
-    QMetaType metaType() const noexcept;
+    constexpr QMetaType metaType() const noexcept
+    {
+        if (!isValid()) {
+            return QMetaType();
+        }
+        return d->metaType;
+    }
     //! 指针类型
-    QMetaType pMetaType() const noexcept;
+    constexpr QMetaType pMetaType() const noexcept
+    {
+        if (!isValid()) {
+            return QMetaType();
+        }
+        return d->pMetaType;
+    }
     //! 智能指针类型
-    QMetaType sMetaType() const noexcept;
+    constexpr QMetaType sMetaType() const noexcept
+    {
+        if (!isValid()) {
+            return QMetaType();
+        }
+        return d->sMetaType;
+    }
 
     void addParentMetaType(const McMetaType &type) const noexcept;
     QVector<McMetaType> parentMetaTypes() const noexcept;
 
-    bool isValid() const noexcept { return d != nullptr; }
+    constexpr bool isValid() const noexcept { return d != nullptr; }
 
     template<typename T>
     constexpr static McMetaType fromType()
@@ -180,9 +213,18 @@ public:
             return true;
         if (a.d == nullptr || b.d == nullptr)
             return false;
-        return a.d->metaType == b.d->metaType && a.d->pMetaType == b.d->pMetaType && a.d->sMetaType == b.d->sMetaType;
+        return a.d->metaType == b.d->metaType && a.d->pMetaType == b.d->pMetaType && a.d->sMetaType == b.d->sMetaType
+               && a.d->wMetaType == b.d->wMetaType && a.d->tMetaType == b.d->tMetaType;
     }
     friend bool operator!=(McMetaType a, McMetaType b) { return !(a == b); }
+    friend Q_DECL_CONST_FUNCTION size_t qHash(const McMetaType &key, size_t seed) noexcept
+    {
+        int id = 0;
+        if (key.isValid()) {
+            id = key.d->metaType.id();
+        }
+        return qHash(id, seed);
+    }
 
 private:
     const McPrivate::MetaTypeInterface *d{nullptr};
@@ -200,11 +242,23 @@ public:
     static QVector<McListMetaType> metaTypes() noexcept;
 
     ///! 列表自身类型
-    QMetaType metaType() const noexcept;
+    constexpr QMetaType metaType() const noexcept
+    {
+        if (!isValid()) {
+            return QMetaType();
+        }
+        return d->metaType;
+    }
     //! 容器内存储的数据类型
-    QMetaType valueMetaType() const noexcept;
+    constexpr QMetaType valueMetaType() const noexcept
+    {
+        if (!isValid()) {
+            return QMetaType();
+        }
+        return d->valueMetaType;
+    }
 
-    bool isValid() const noexcept { return d != nullptr; }
+    constexpr bool isValid() const noexcept { return d != nullptr; }
 
     template<typename T>
     constexpr static McListMetaType fromType()
@@ -238,13 +292,31 @@ public:
     static QVector<McMapMetaType> metaTypes() noexcept;
 
     //! 映射自身类型
-    QMetaType metaType() const noexcept;
+    constexpr QMetaType metaType() const noexcept
+    {
+        if (!isValid()) {
+            return QMetaType();
+        }
+        return d->metaType;
+    }
     //! 容器内键的数据类型
-    QMetaType keyMetaType() const noexcept;
+    constexpr QMetaType keyMetaType() const noexcept
+    {
+        if (!isValid()) {
+            return QMetaType();
+        }
+        return d->keyMetaType;
+    }
     //! 容器内值的数据类型
-    QMetaType valueMetaType() const noexcept;
+    constexpr QMetaType valueMetaType() const noexcept
+    {
+        if (!isValid()) {
+            return QMetaType();
+        }
+        return d->valueMetaType;
+    }
 
-    bool isValid() const noexcept { return d != nullptr; }
+    constexpr bool isValid() const noexcept { return d != nullptr; }
 
     template<typename T>
     constexpr static McMapMetaType fromType()
