@@ -7,6 +7,7 @@ set(PROJECT_HEADERS
     McIocMacroGlobal.h
     McIocConstantGlobal.h
     McIocGlobal.h
+    McGlobal.h
 )
 
 set(PROJECT_SOURCES

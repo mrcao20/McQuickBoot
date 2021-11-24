@@ -92,7 +92,7 @@ public:
     QMetaType valueMetaType;
 };
 
-template<typename T>
+template<typename T, int = QtPrivate::IsPointerToTypeDerivedFromQObject<T *>::Value ? QMetaType::PointerToQObject : 0>
 struct MetaTypeInterfaceWrapper
 {
     static inline constexpr const MetaTypeInterface metaType = {
@@ -101,9 +101,21 @@ struct MetaTypeInterfaceWrapper
         /*.pMetaType=*/QMetaType::fromType<T *>(),
         /*.sMetaType=*/QMetaType::fromType<QSharedPointer<T>>(),
         /*.wMetaType=*/QMetaType::fromType<QWeakPointer<T>>(),
-        /*.tMetaType=*/
-        bool(QtPrivate::IsPointerToTypeDerivedFromQObject<T *>::Value) ? QMetaType::fromType<QPointer<T>>()
-                                                                       : QMetaType(),
+        /*.tMetaType=*/QMetaType(),
+        /*.parents=*/nullptr,
+    };
+};
+
+template<typename T>
+struct MetaTypeInterfaceWrapper<T, QMetaType::PointerToQObject>
+{
+    static inline constexpr const MetaTypeInterface metaType = {
+        /*.isRegistered=*/false,
+        /*.metaType=*/QMetaType::fromType<T>(),
+        /*.pMetaType=*/QMetaType::fromType<T *>(),
+        /*.sMetaType=*/QMetaType::fromType<QSharedPointer<T>>(),
+        /*.wMetaType=*/QMetaType::fromType<QWeakPointer<T>>(),
+        /*.tMetaType=*/QMetaType::fromType<QPointer<T>>(),
         /*.parents=*/nullptr,
     };
 };
@@ -220,7 +232,7 @@ public:
     friend Q_DECL_CONST_FUNCTION size_t qHash(const McMetaType &key, size_t seed) noexcept
     {
         int id = 0;
-        if (key.isValid()) {
+        if (key.d != nullptr) {
             id = key.d->metaType.id();
         }
         return qHash(id, seed);

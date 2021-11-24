@@ -34,7 +34,7 @@ MC_GLOBAL_STATIC_END(staticData)
 namespace McPrivate {
 void addMetaTypeBeanName(const McMetaType &type, const QByteArray &beanName) noexcept
 {
-    addMetaTypeBeanName({type}, beanName);
+    addMetaTypeBeanName(QVector<McMetaType>{type}, beanName);
 }
 
 void addMetaTypeBeanName(const QVector<McMetaType> &types, const QByteArray &beanName) noexcept
