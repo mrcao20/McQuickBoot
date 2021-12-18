@@ -34,6 +34,8 @@
 
 Q_DECLARE_LOGGING_CATEGORY(mcCore)
 
+MC_DECL_POINTER(QObject)
+
 namespace McPrivate {
 
 template<typename T>

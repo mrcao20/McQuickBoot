@@ -124,13 +124,15 @@ private: \
         ClassType *_ = nullptr; \
         Q_UNUSED(_); \
     } \
-    Mc::addPreRoutine(McPrivate::extractRoutinePriority(__VA_ARGS__), [](){
+    constexpr auto __prePriority__ = McPrivate::extractRoutinePriority(__VA_ARGS__); \
+    Mc::addPreRoutine(__prePriority__, [](){
 #define MC_AUTO_INIT(Class, ...) \
     MC_INIT(Class, __VA_ARGS__) \
     mcRegisterMetaType<Class>();
 #define MC_DESTROY(...) \
     }); \
-    Mc::addPostRoutine(McPrivate::extractRoutinePriority(__VA_ARGS__), [](){
+    constexpr auto __postPriority__ = McPrivate::extractRoutinePriority(__VA_ARGS__); \
+    Mc::addPostRoutine(__postPriority__, [](){
 #define MC_INIT_END \
     }); \
     return 0; \
@@ -140,7 +142,8 @@ private: \
 #define MC_STATIC(...) \
     namespace { \
     static const int __Static_Code_Block__ = []() -> int { \
-        Mc::addPreRoutine(McPrivate::extractRoutinePriority(__VA_ARGS__), [](){
+        constexpr auto __prePriority__ = McPrivate::extractRoutinePriority(__VA_ARGS__); \
+        Mc::addPreRoutine(__prePriority__, [](){
 #define MC_STATIC_END \
     }); \
     return 0; \

@@ -21,15 +21,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "RegisterTest.h"
+#pragma once
 
-#include <QDebug>
-#include <QList>
-#include <QMap>
+#include "../McIocGlobal.h"
 
-MC_AUTO_INIT(RegisterTest)
-mcRegisterContainerConverter<QList<RegisterTestPtr>>();
-mcRegisterContainerConverter<QMap<int, RegisterTestPtr>>();
-MC_DESTROY()
-qDebug() << "RegisterTest destroy";
-MC_INIT_END
+QT_BEGIN_NAMESPACE
+class QThread;
+QT_END_NAMESPACE
+
+class IMcBeanFactory
+{
+public:
+    virtual ~IMcBeanFactory() = default;
+
+    template<typename T>
+    QSharedPointer<T> getBean(const QString &name, QThread *thread = nullptr) noexcept
+    {
+        QVariant var = getBeanToVariant(name, thread);
+        return var.value<QSharedPointer<T>>();
+    }
+
+    template<typename T>
+    T *getBeanPointer(const QString &name, QThread *thread = nullptr) noexcept
+    {
+        QVariant var = getBeanToVariant(name, thread);
+        return var.value<T *>();
+    }
+
+    virtual QObjectPtr getBean(const QString &name, QThread *thread = nullptr) noexcept = 0;
+    virtual QObject *getBeanPointer(const QString &name, QThread *thread = nullptr) noexcept = 0;
+    virtual QVariant getBeanToVariant(const QString &name, QThread *thread = nullptr) noexcept = 0;
+
+    virtual bool containsBean(const QString &name) const noexcept = 0;
+    virtual bool isSingleton(const QString &name) noexcept = 0;
+    virtual bool isPointer(const QString &name) noexcept = 0;
+};
+
+MC_DECL_POINTER(IMcBeanFactory)

@@ -8,6 +8,7 @@ set(PROJECT_HEADERS
     McIocConstantGlobal.h
     McIocGlobal.h
     McGlobal.h
+    BeanFactory/IMcBeanFactory.h
 )
 
 set(PROJECT_SOURCES
