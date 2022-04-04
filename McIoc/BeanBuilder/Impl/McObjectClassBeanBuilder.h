@@ -21,44 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "McIocGlobal.h"
+#pragma once
 
-#include <QHash>
+#include "McObjectBeanBuilder.h"
 
-Q_LOGGING_CATEGORY(mcIoc, "mc.ioc")
+MC_FORWARD_DECL_PRIVATE_DATA(McObjectClassBeanBuilder)
 
-MC_GLOBAL_STATIC_BEGIN(staticData)
-QHash<McMetaType, QSet<QString>> metaTypeBeanNames;
-MC_GLOBAL_STATIC_END(staticData)
-
-namespace McPrivate {
-void addMetaTypeBeanName(const McMetaType &type, const QString &beanName) noexcept
+class MC_IOC_EXPORT McObjectClassBeanBuilder : public McObjectBeanBuilder
 {
-    addMetaTypeBeanName(QVector<McMetaType>{type}, beanName);
-}
+public:
+    McObjectClassBeanBuilder() noexcept;
+    ~McObjectClassBeanBuilder();
 
-void addMetaTypeBeanName(const QVector<McMetaType> &types, const QString &beanName) noexcept
-{
-    for (auto &type : types) {
-        staticData->metaTypeBeanNames[type].insert(beanName);
-    }
-}
+    McMetaType metaType() const noexcept;
+    void setMetaType(const McMetaType &type) noexcept;
+    void setClassName(const QByteArray &className) noexcept;
 
-QSet<QString> getBeanNameForMetaType(const McMetaType &type) noexcept
-{
-    return staticData->metaTypeBeanNames.value(type);
-}
-} // namespace McPrivate
+    bool isPointer() const noexcept override;
 
-namespace Mc {
-bool isContainedTag(const QByteArray &tags, const QByteArray &tag) noexcept
-{
-    auto tagList = tags.split(' ');
-    for (auto &t : qAsConst(tagList)) {
-        if (t == tag) {
-            return true;
-        }
-    }
-    return false;
-}
-} // namespace Mc
+protected:
+    QVariant create() noexcept override;
+
+private:
+    MC_DECL_PRIVATE(McObjectClassBeanBuilder)
+};

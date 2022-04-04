@@ -21,44 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "McIocGlobal.h"
+#pragma once
 
-#include <QHash>
+#include "../McIocGlobal.h"
 
-Q_LOGGING_CATEGORY(mcIoc, "mc.ioc")
+class IMcBeanReferenceResolver;
 
-MC_GLOBAL_STATIC_BEGIN(staticData)
-QHash<McMetaType, QSet<QString>> metaTypeBeanNames;
-MC_GLOBAL_STATIC_END(staticData)
-
-namespace McPrivate {
-void addMetaTypeBeanName(const McMetaType &type, const QString &beanName) noexcept
+class IMcBeanBuilder
 {
-    addMetaTypeBeanName(QVector<McMetaType>{type}, beanName);
-}
+public:
+    MC_BASE_DESTRUCTOR(IMcBeanBuilder)
 
-void addMetaTypeBeanName(const QVector<McMetaType> &types, const QString &beanName) noexcept
-{
-    for (auto &type : types) {
-        staticData->metaTypeBeanNames[type].insert(beanName);
-    }
-}
+    virtual QVariant build(QThread *thread) noexcept = 0;
 
-QSet<QString> getBeanNameForMetaType(const McMetaType &type) noexcept
-{
-    return staticData->metaTypeBeanNames.value(type);
-}
-} // namespace McPrivate
+    virtual bool isSingleton() const noexcept = 0;
+    virtual bool isPointer() const noexcept = 0;
 
-namespace Mc {
-bool isContainedTag(const QByteArray &tags, const QByteArray &tag) noexcept
-{
-    auto tagList = tags.split(' ');
-    for (auto &t : qAsConst(tagList)) {
-        if (t == tag) {
-            return true;
-        }
-    }
-    return false;
-}
-} // namespace Mc
+    virtual void setReferenceResolver(IMcBeanReferenceResolver *resolver) noexcept = 0;
+};
+
+MC_DECL_POINTER(IMcBeanBuilder)

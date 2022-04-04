@@ -11,6 +11,19 @@ project(McQuickBoot
     HOMEPAGE_URL "https://github.com/mrcao20/McQuickBoot"
     LANGUAGES CXX)
 
+if(MSVC)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /utf-8")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /utf-8")
+endif()
+
+if(!CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Release")
+endif()
+
+if(NOT (CMAKE_BUILD_TYPE STREQUAL "Debug"))
+    add_definitions(-DQT_MESSAGELOGCONTEXT)
+endif()
+
 option(BUILD_EXAMPLES "Build examples" ON)
 option(BUILD_STATIC "Build static" OFF)
 option(INSTALL_TO_QT "Install output to qt location" OFF)

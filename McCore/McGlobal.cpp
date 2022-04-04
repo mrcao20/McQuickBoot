@@ -24,6 +24,7 @@
 #include "McGlobal.h"
 
 #include <QCoreApplication>
+#include <QPluginLoader>
 #include <QStandardPaths>
 #include <QTimer>
 #include <QUrl>
@@ -31,7 +32,6 @@
 Q_LOGGING_CATEGORY(mcCore, "mc.core")
 
 namespace McPrivate {
-
 using StartUpFuncs = QMap<int, QVector<Mc::StartUpFunction>>;
 Q_GLOBAL_STATIC(StartUpFuncs, preFuncs)
 using CleanUpFuncs = QMap<int, QVector<Mc::CleanUpFunction>>;
@@ -72,7 +72,6 @@ __declspec(allocate(SECNAME)) _PIFV dummy[] = {__coreStaticInit__};
 #else
 Q_CONSTRUCTOR_FUNCTION(coreStaticInit)
 #endif
-
 } // namespace McPrivate
 
 McCustomEvent::~McCustomEvent() noexcept {}
@@ -243,5 +242,47 @@ void addPostRoutine(int priority, const CleanUpFunction &func) noexcept
         return;
     }
     (*funcs)[priority].prepend(func);
+}
+
+void loadLibrary(const QString &path, const QLatin1String &checkSymbol) noexcept
+{
+    auto libPath = Mc::toAbsolutePath(path);
+    if (!QLibrary::isLibrary(libPath)) {
+        return;
+    }
+    QLibrary library(libPath);
+    if (!library.load()) {
+        qCWarning(mcCore(), "%s cannot load!! error string: %s", qPrintable(libPath), qPrintable(library.errorString()));
+        return;
+    }
+    auto cleanup = qScopeGuard([]() { Mc::callPreRoutine(); });
+    if (checkSymbol.isNull() || checkSymbol.isEmpty()) {
+        return;
+    }
+    auto func = library.resolve(checkSymbol.data());
+    if (func != nullptr) {
+        return;
+    }
+    cleanup.dismiss();
+    Mc::cleanPreRoutine();
+    library.unload();
+}
+
+QObject *loadPlugin(const QString &pluginPath, const std::function<bool(const QJsonObject &)> &checker) noexcept
+{
+    if (pluginPath.isEmpty()) {
+        return nullptr;
+    }
+    auto path = Mc::toAbsolutePath(pluginPath);
+    QPluginLoader loader(path);
+    if (checker != nullptr && !checker(loader.metaData())) {
+        return nullptr;
+    }
+    if (!loader.load()) {
+        qCWarning(mcCore(), "%s cannot load!! error string: %s", qPrintable(path), qPrintable(loader.errorString()));
+        return nullptr;
+    }
+    Mc::callPreRoutine();
+    return loader.instance();
 }
 } // namespace Mc

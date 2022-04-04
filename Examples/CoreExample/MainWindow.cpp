@@ -6,6 +6,8 @@
 #include <McCore/Event/McEventDispatcher.h>
 #include <McCore/McGlobal.h>
 
+#include "RegisterTest.h"
+
 MC_STATIC()
 Mc::registerPathPlaceholder("{custom}/bin", []() { return QCoreApplication::applicationDirPath(); });
 qDebug() << "core example init: " << Mc::toAbsolutePath("{custom}/bin");
@@ -25,6 +27,13 @@ MainWindow::MainWindow(QWidget *parent)
         static int i = 1;
         mcEvt().submitEvent("button.click", i++);
     });
+    auto type = McMetaType::fromTypeName("RegisterTest");
+    auto star = type.metaType().create();
+    QVariant var(type.pMetaType(), &star);
+    auto regTest = var.value<RegisterTest *>();
+    qDebug() << regTest->test();
+    regTest->moveToThread(new QThread());
+    regTest->setProperty("text", QVariant());
 }
 
 MainWindow::~MainWindow()

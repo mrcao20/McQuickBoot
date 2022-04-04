@@ -21,44 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "McIocGlobal.h"
+#include "McSharedObjectPluginBeanBuilder.h"
 
-#include <QHash>
+#include "Utils/Impl/McNormalDestroyer.h"
 
-Q_LOGGING_CATEGORY(mcIoc, "mc.ioc")
-
-MC_GLOBAL_STATIC_BEGIN(staticData)
-QHash<McMetaType, QSet<QString>> metaTypeBeanNames;
-MC_GLOBAL_STATIC_END(staticData)
-
-namespace McPrivate {
-void addMetaTypeBeanName(const McMetaType &type, const QString &beanName) noexcept
+bool McSharedObjectPluginBeanBuilder::isPointer() const noexcept
 {
-    addMetaTypeBeanName(QVector<McMetaType>{type}, beanName);
-}
-
-void addMetaTypeBeanName(const QVector<McMetaType> &types, const QString &beanName) noexcept
-{
-    for (auto &type : types) {
-        staticData->metaTypeBeanNames[type].insert(beanName);
-    }
-}
-
-QSet<QString> getBeanNameForMetaType(const McMetaType &type) noexcept
-{
-    return staticData->metaTypeBeanNames.value(type);
-}
-} // namespace McPrivate
-
-namespace Mc {
-bool isContainedTag(const QByteArray &tags, const QByteArray &tag) noexcept
-{
-    auto tagList = tags.split(' ');
-    for (auto &t : qAsConst(tagList)) {
-        if (t == tag) {
-            return true;
-        }
-    }
     return false;
 }
-} // namespace Mc
+
+QVariant McSharedObjectPluginBeanBuilder::create() noexcept
+{
+    auto bean = super::create();
+    auto obj = bean.value<QObject *>();
+    if (obj == nullptr) {
+        return QVariant();
+    }
+    QObjectPtr objPtr(obj, Mc::McCustomDeleter());
+    bean.setValue(objPtr);
+    auto metaType = McMetaType::fromTypeName(obj->metaObject()->className());
+    if (!bean.convert(metaType.sMetaType())) {
+        qCCritical(mcIoc(), "failed convert QObjectPtr to '%s'", metaType.sMetaType().name());
+        return QVariant();
+    }
+    return bean;
+}

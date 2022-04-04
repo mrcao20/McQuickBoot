@@ -27,9 +27,10 @@ namespace Mc {
 namespace Constant {
 namespace Tag {
 namespace Xml {
-
 [[maybe_unused]] constexpr const char *beans = "beans";
 [[maybe_unused]] constexpr const char *flag = "flag";
+[[maybe_unused]] constexpr const char *isSingleton = "isSingleton";
+[[maybe_unused]] constexpr const char *isPointer = "isPointer";
 [[maybe_unused]] constexpr const char *bean = "bean";
 [[maybe_unused]] constexpr const char *property = "property";
 [[maybe_unused]] constexpr const char *connect = "connect";
@@ -39,7 +40,6 @@ namespace Xml {
 [[maybe_unused]] constexpr const char *receiver = "receiver";
 [[maybe_unused]] constexpr const char *slot = "slot";
 [[maybe_unused]] constexpr const char *type = "type";
-
 } // namespace Xml
 } // namespace Tag
 } // namespace Constant

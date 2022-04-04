@@ -37,7 +37,6 @@ Q_DECLARE_LOGGING_CATEGORY(mcCore)
 MC_DECL_POINTER(QObject)
 
 namespace McPrivate {
-
 template<typename T>
 struct IsQVariantHelper
 {
@@ -123,7 +122,6 @@ struct LambdaType<R (C::*)(Args...)> : LambdaDetail::Types<R, C, std::true_type,
 template<class R, class C, class... Args>
 struct LambdaType<R (C::*)(Args...) const> : LambdaDetail::Types<R, C, std::false_type, Args...>
 {};
-
 } // namespace McPrivate
 
 class MC_CORE_EXPORT McCustomEvent : public QEvent
@@ -140,7 +138,6 @@ private:
 };
 
 namespace Mc {
-
 enum RoutinePriority : int {
     Min = -10,
     Normal = 0,
@@ -148,7 +145,7 @@ enum RoutinePriority : int {
 };
 
 template<typename Container>
-bool isContains(int index, const Container &container) noexcept
+inline bool isContains(int index, const Container &container) noexcept
 {
     if (index >= 0 && index < container.size())
         return true;
@@ -182,13 +179,21 @@ MC_CORE_EXPORT void callPreRoutine() noexcept;
 MC_CORE_EXPORT void cleanPreRoutine() noexcept;
 MC_CORE_EXPORT void addPostRoutine(int priority, const CleanUpFunction &func) noexcept;
 
+MC_CORE_EXPORT void loadLibrary(const QString &path, const QLatin1String &checkSymbol) noexcept;
+MC_CORE_EXPORT QObject *loadPlugin(const QString &pluginPath,
+                                   const std::function<bool(const QJsonObject &)> &checker = nullptr) noexcept;
+
+template<typename T>
+T *loadPlugin(const QString &pluginPath, const std::function<bool(const QJsonObject &)> &checker = nullptr) noexcept
+{
+    QObject *obj = loadPlugin(pluginPath, checker);
+    return qobject_cast<T *>(obj);
+}
 } // namespace Mc
 
 namespace McPrivate {
-
-inline constexpr auto extractRoutinePriority(const int &val = Mc::RoutinePriority::Normal)
+inline constexpr auto extractRoutinePriority(const int &val = Mc::RoutinePriority::Normal) noexcept
 {
     return val;
 }
-
 } // namespace McPrivate

@@ -21,44 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "McIocGlobal.h"
+#pragma once
 
-#include <QHash>
+#include "../McIocGlobal.h"
 
-Q_LOGGING_CATEGORY(mcIoc, "mc.ioc")
+MC_FORWARD_DECL_CLASS(McBeanReference)
 
-MC_GLOBAL_STATIC_BEGIN(staticData)
-QHash<McMetaType, QSet<QString>> metaTypeBeanNames;
-MC_GLOBAL_STATIC_END(staticData)
-
-namespace McPrivate {
-void addMetaTypeBeanName(const McMetaType &type, const QString &beanName) noexcept
+class IMcBeanReferenceResolver
 {
-    addMetaTypeBeanName(QVector<McMetaType>{type}, beanName);
-}
+public:
+    MC_BASE_DESTRUCTOR(IMcBeanReferenceResolver)
 
-void addMetaTypeBeanName(const QVector<McMetaType> &types, const QString &beanName) noexcept
-{
-    for (auto &type : types) {
-        staticData->metaTypeBeanNames[type].insert(beanName);
-    }
-}
+    virtual QObjectPtr resolveBeanReference(const McBeanReferencePtr &beanRef) noexcept = 0;
+    virtual QObject *resolveBeanReferencePointer(const McBeanReferencePtr &beanRef) noexcept = 0;
 
-QSet<QString> getBeanNameForMetaType(const McMetaType &type) noexcept
-{
-    return staticData->metaTypeBeanNames.value(type);
-}
-} // namespace McPrivate
+    virtual QVariant resolveBeanReferenceToQVariant(const McBeanReferencePtr &beanRef) noexcept = 0;
+};
 
-namespace Mc {
-bool isContainedTag(const QByteArray &tags, const QByteArray &tag) noexcept
-{
-    auto tagList = tags.split(' ');
-    for (auto &t : qAsConst(tagList)) {
-        if (t == tag) {
-            return true;
-        }
-    }
-    return false;
-}
-} // namespace Mc
+MC_DECL_POINTER(IMcBeanReferenceResolver)

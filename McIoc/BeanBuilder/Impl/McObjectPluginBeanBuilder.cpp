@@ -21,44 +21,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "McIocGlobal.h"
+#include "McObjectPluginBeanBuilder.h"
 
-#include <QHash>
+MC_DECL_PRIVATE_DATA(McObjectPluginBeanBuilder)
+QString pluginPath;
+MC_DECL_PRIVATE_DATA_END
 
-Q_LOGGING_CATEGORY(mcIoc, "mc.ioc")
-
-MC_GLOBAL_STATIC_BEGIN(staticData)
-QHash<McMetaType, QSet<QString>> metaTypeBeanNames;
-MC_GLOBAL_STATIC_END(staticData)
-
-namespace McPrivate {
-void addMetaTypeBeanName(const McMetaType &type, const QString &beanName) noexcept
+McObjectPluginBeanBuilder::McObjectPluginBeanBuilder() noexcept
 {
-    addMetaTypeBeanName(QVector<McMetaType>{type}, beanName);
+    MC_NEW_PRIVATE_DATA(McObjectPluginBeanBuilder);
 }
 
-void addMetaTypeBeanName(const QVector<McMetaType> &types, const QString &beanName) noexcept
+McObjectPluginBeanBuilder::~McObjectPluginBeanBuilder() {}
+
+void McObjectPluginBeanBuilder::setPluginPath(const QString &path) noexcept
 {
-    for (auto &type : types) {
-        staticData->metaTypeBeanNames[type].insert(beanName);
+    d->pluginPath = path;
+}
+
+bool McObjectPluginBeanBuilder::isPointer() const noexcept
+{
+    return true;
+}
+
+QVariant McObjectPluginBeanBuilder::create() noexcept
+{
+    auto obj = Mc::loadPlugin(d->pluginPath);
+    if (obj == nullptr) {
+        return QVariant();
     }
-}
-
-QSet<QString> getBeanNameForMetaType(const McMetaType &type) noexcept
-{
-    return staticData->metaTypeBeanNames.value(type);
-}
-} // namespace McPrivate
-
-namespace Mc {
-bool isContainedTag(const QByteArray &tags, const QByteArray &tag) noexcept
-{
-    auto tagList = tags.split(' ');
-    for (auto &t : qAsConst(tagList)) {
-        if (t == tag) {
-            return true;
-        }
+    auto metaType = McMetaType::fromTypeName(obj->metaObject()->className());
+    QVariant beanVar = QVariant::fromValue(obj);
+    if (!beanVar.convert(metaType.pMetaType())) {
+        return QVariant();
     }
-    return false;
+    return beanVar;
 }
-} // namespace Mc

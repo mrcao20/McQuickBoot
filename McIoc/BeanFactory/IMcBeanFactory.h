@@ -32,29 +32,27 @@ QT_END_NAMESPACE
 class IMcBeanFactory
 {
 public:
-    virtual ~IMcBeanFactory() = default;
+    MC_BASE_DESTRUCTOR(IMcBeanFactory)
 
-    template<typename T>
+    template<typename T = QObject>
     QSharedPointer<T> getBean(const QString &name, QThread *thread = nullptr) noexcept
     {
         QVariant var = getBeanToVariant(name, thread);
         return var.value<QSharedPointer<T>>();
     }
 
-    template<typename T>
+    template<typename T = QObject>
     T *getBeanPointer(const QString &name, QThread *thread = nullptr) noexcept
     {
         QVariant var = getBeanToVariant(name, thread);
         return var.value<T *>();
     }
 
-    virtual QObjectPtr getBean(const QString &name, QThread *thread = nullptr) noexcept = 0;
-    virtual QObject *getBeanPointer(const QString &name, QThread *thread = nullptr) noexcept = 0;
     virtual QVariant getBeanToVariant(const QString &name, QThread *thread = nullptr) noexcept = 0;
 
     virtual bool containsBean(const QString &name) const noexcept = 0;
-    virtual bool isSingleton(const QString &name) noexcept = 0;
-    virtual bool isPointer(const QString &name) noexcept = 0;
+    virtual bool isSingleton(const QString &name) const noexcept = 0;
+    virtual bool isPointer(const QString &name) const noexcept = 0;
 };
 
 MC_DECL_POINTER(IMcBeanFactory)

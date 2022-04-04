@@ -36,7 +36,12 @@ class RegisterTest : public QObject, public IRegisterTest
     Q_OBJECT
     MC_DECL_INIT(RegisterTest)
     MC_INTERFACES(IRegisterTest)
+    Q_PROPERTY(QString text MEMBER m_text)
 public:
+    QString test() { return m_text; }
+
+private:
+    QString m_text{"registerTest"};
 };
 
 MC_DECL_POINTER(RegisterTest)

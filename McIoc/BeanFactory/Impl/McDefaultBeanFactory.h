@@ -21,44 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "McIocGlobal.h"
+#pragma once
 
-#include <QHash>
+#include "McAbstractBeanFactory.h"
 
-Q_LOGGING_CATEGORY(mcIoc, "mc.ioc")
-
-MC_GLOBAL_STATIC_BEGIN(staticData)
-QHash<McMetaType, QSet<QString>> metaTypeBeanNames;
-MC_GLOBAL_STATIC_END(staticData)
-
-namespace McPrivate {
-void addMetaTypeBeanName(const McMetaType &type, const QString &beanName) noexcept
+class McDefaultBeanFactory : public McAbstractBeanFactory
 {
-    addMetaTypeBeanName(QVector<McMetaType>{type}, beanName);
-}
+    Q_OBJECT
+public:
+    explicit McDefaultBeanFactory(QObject *parent = nullptr) noexcept;
+    ~McDefaultBeanFactory() override;
 
-void addMetaTypeBeanName(const QVector<McMetaType> &types, const QString &beanName) noexcept
-{
-    for (auto &type : types) {
-        staticData->metaTypeBeanNames[type].insert(beanName);
-    }
-}
-
-QSet<QString> getBeanNameForMetaType(const McMetaType &type) noexcept
-{
-    return staticData->metaTypeBeanNames.value(type);
-}
-} // namespace McPrivate
-
-namespace Mc {
-bool isContainedTag(const QByteArray &tags, const QByteArray &tag) noexcept
-{
-    auto tagList = tags.split(' ');
-    for (auto &t : qAsConst(tagList)) {
-        if (t == tag) {
-            return true;
-        }
-    }
-    return false;
-}
-} // namespace Mc
+protected:
+    void afterBuildBean(const QVariant &bean) noexcept override;
+};

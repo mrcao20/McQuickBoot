@@ -41,15 +41,11 @@
 
 #ifndef Q_MOC_RUN //!< 这行语句必须加，只有包围在这行语句之中的宏才能被识别为tag
 
-#define MC_BEAN_START      //!< 丢弃，同MC_STARTED
 #define MC_STARTED         //!< 当bean被构造，但还未注入属性时调用
-#define MC_BEAN_FINISHED   //!< 丢弃，同MC_FINISHED
 #define MC_FINISHED        //!< 当bean完全被构造完成之后调用
-#define MC_THREAD_FINISHED //!< 丢弃，同MC_THREAD_MOVED
 #define MC_THREAD_MOVED    //!< 当bean的线程被移动之后调用
 //!< 注意：以上三个tag标记的函数调用线程为getBean时的线程
-#define MC_ALL_FINISHED //!< 丢弃，同MC_COMPLETE
-#define MC_COMPLETE //!< 当bean完全被构造之后，且线程移动之后调用，使用队列方式，调用线程回归到对象的生存线程
+#define MC_COMPLETED //!< 当bean完全被构造之后，且线程移动之后调用，使用队列方式，调用线程回归到对象的生存线程
 
 #endif //! !Q_MOC_RUN
 

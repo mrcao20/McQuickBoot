@@ -42,11 +42,10 @@ Q_DECLARE_LOGGING_CATEGORY(mcIoc)
 #define MC_REGISTER_MAP_CONVERTER MC_REGISTER_CONTAINER_CONVERTER
 
 namespace McPrivate {
-void addMetaTypeBeanName(const McMetaType &type, const QByteArray &beanName) noexcept;
-void addMetaTypeBeanName(const QVector<McMetaType> &types, const QByteArray &beanName) noexcept;
-QSet<QByteArray> getBeanNameForMetaType(const McMetaType &type) noexcept;
+void addMetaTypeBeanName(const McMetaType &type, const QString &beanName) noexcept;
+void addMetaTypeBeanName(const QVector<McMetaType> &types, const QString &beanName) noexcept;
+QSet<QString> getBeanNameForMetaType(const McMetaType &type) noexcept;
 
-//! beanName应当用QByteArray
 //QString getBeanName(const QMetaObject *metaObj) noexcept;
 } // namespace McPrivate
 
@@ -59,7 +58,7 @@ namespace Mc {
 //MC_IOC_EXPORT bool isComponent(const QMetaObject *metaObj) noexcept;
 ////! 传入的元对象的组件类型是否为type
 //MC_IOC_EXPORT bool isComponentType(const QMetaObject *metaObj, const QString &type) noexcept;
-//MC_IOC_EXPORT bool isContainedTag(const QString &tags, const QString &tag) noexcept;
+MC_IOC_EXPORT bool isContainedTag(const QByteArray &tags, const QByteArray &tag) noexcept;
 //MC_IOC_EXPORT QObject *getObject(IMcApplicationContext *appCtx, const QString &beanName) noexcept;
 
 namespace Ioc {
