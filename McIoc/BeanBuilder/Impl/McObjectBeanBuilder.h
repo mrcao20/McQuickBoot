@@ -43,6 +43,7 @@ public:
 
 protected:
     void complete(QVariant &bean, QThread *thread) noexcept override;
+    void doMoveToThread(const QVariant &bean, QThread *thread, const QVariantHash &properties) noexcept override;
 
     virtual void setParent(QObject *bean, QObject *parent) noexcept;
 
@@ -59,3 +60,5 @@ protected:
 private:
     MC_DECL_PRIVATE(McObjectBeanBuilder)
 };
+
+MC_DECL_POINTER(McObjectBeanBuilder)

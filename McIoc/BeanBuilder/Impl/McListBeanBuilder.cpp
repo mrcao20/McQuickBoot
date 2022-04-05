@@ -21,23 +21,49 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include "McListBeanBuilder.h"
 
-#include "../McIocGlobal.h"
+MC_DECL_PRIVATE_DATA(McListBeanBuilder)
+QVariantList values;
+MC_DECL_PRIVATE_DATA_END
 
-class IMcBeanReferenceResolver;
-
-class IMcBeanBuilder
+McListBeanBuilder::McListBeanBuilder() noexcept
 {
-public:
-    MC_BASE_DESTRUCTOR(IMcBeanBuilder)
+    MC_NEW_PRIVATE_DATA(McListBeanBuilder);
+}
 
-    virtual QVariant build(QThread *thread) noexcept = 0;
-    virtual void moveToThread(QThread *thread) noexcept = 0;
-    virtual bool isSingleton() const noexcept = 0;
-    virtual bool isPointer() const noexcept = 0;
+McListBeanBuilder::~McListBeanBuilder() {}
 
-    virtual void setReferenceResolver(IMcBeanReferenceResolver *resolver) noexcept = 0;
-};
+void McListBeanBuilder::addValue(const QVariant &var) noexcept
+{
+    d->values.append(var);
+}
 
-MC_DECL_POINTER(IMcBeanBuilder)
+void McListBeanBuilder::setValues(const QVariantList &vars) noexcept
+{
+    d->values = vars;
+}
+
+bool McListBeanBuilder::isPointer() const noexcept
+{
+    return false;
+}
+
+QVariant McListBeanBuilder::create() noexcept
+{
+    auto bean = QVariant(QVariantList());
+    return bean;
+}
+
+void McListBeanBuilder::complete(QVariant &bean, QThread *thread) noexcept
+{
+    Q_UNUSED(thread)
+    bean.setValue(convert(QVariant(d->values), QVariant()));
+}
+
+void McListBeanBuilder::doMoveToThread(const QVariant &bean, QThread *thread, const QVariantHash &properties) noexcept
+{
+    Q_UNUSED(bean)
+    Q_UNUSED(thread)
+    Q_UNUSED(properties)
+}

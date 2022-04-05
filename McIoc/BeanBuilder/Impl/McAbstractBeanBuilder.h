@@ -38,12 +38,14 @@ public:
     IMcBeanReferenceResolver *resolver() const noexcept;
 
     QVariant build(QThread *thread) noexcept override;
+    void moveToThread(QThread *thread) noexcept override;
     bool isSingleton() const noexcept override;
     void setReferenceResolver(IMcBeanReferenceResolver *resolver) noexcept override;
 
 protected:
     virtual QVariant create() noexcept = 0;
     virtual void complete(QVariant &bean, QThread *thread) noexcept = 0;
+    virtual void doMoveToThread(const QVariant &bean, QThread *thread, const QVariantHash &properties) noexcept = 0;
 
     virtual QVariant convert(const QVariant &value, const QVariant &extra) const noexcept;
     virtual QVariant convertRef(const QVariant &value, const QVariant &extra) const noexcept;
@@ -56,3 +58,5 @@ protected:
 private:
     MC_DECL_PRIVATE(McAbstractBeanBuilder)
 };
+
+MC_DECL_POINTER(McAbstractBeanBuilder)

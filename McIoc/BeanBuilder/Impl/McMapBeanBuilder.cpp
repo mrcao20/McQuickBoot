@@ -21,23 +21,49 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include "McMapBeanBuilder.h"
 
-#include "../McIocGlobal.h"
+MC_DECL_PRIVATE_DATA(McMapBeanBuilder)
+QMap<QVariant, QVariant> values;
+MC_DECL_PRIVATE_DATA_END
 
-class IMcBeanReferenceResolver;
-
-class IMcBeanBuilder
+McMapBeanBuilder::McMapBeanBuilder() noexcept
 {
-public:
-    MC_BASE_DESTRUCTOR(IMcBeanBuilder)
+    MC_NEW_PRIVATE_DATA(McMapBeanBuilder);
+}
 
-    virtual QVariant build(QThread *thread) noexcept = 0;
-    virtual void moveToThread(QThread *thread) noexcept = 0;
-    virtual bool isSingleton() const noexcept = 0;
-    virtual bool isPointer() const noexcept = 0;
+McMapBeanBuilder::~McMapBeanBuilder() {}
 
-    virtual void setReferenceResolver(IMcBeanReferenceResolver *resolver) noexcept = 0;
-};
+void McMapBeanBuilder::addValue(const QVariant &key, const QVariant &value) noexcept
+{
+    d->values.insert(key, value);
+}
 
-MC_DECL_POINTER(IMcBeanBuilder)
+void McMapBeanBuilder::setValues(const QMap<QVariant, QVariant> &values) noexcept
+{
+    d->values = values;
+}
+
+bool McMapBeanBuilder::isPointer() const noexcept
+{
+    return false;
+}
+
+QVariant McMapBeanBuilder::create() noexcept
+{
+    auto bean = QVariant::fromValue(QMap<QVariant, QVariant>());
+    return bean;
+}
+
+void McMapBeanBuilder::complete(QVariant &bean, QThread *thread) noexcept
+{
+    Q_UNUSED(thread)
+    bean.setValue(convert(QVariant::fromValue(d->values), QVariant()));
+}
+
+void McMapBeanBuilder::doMoveToThread(const QVariant &bean, QThread *thread, const QVariantHash &properties) noexcept
+{
+    Q_UNUSED(bean)
+    Q_UNUSED(thread)
+    Q_UNUSED(properties)
+}

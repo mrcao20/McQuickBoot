@@ -35,3 +35,5 @@ public:
 protected:
     void afterBuildBean(const QVariant &bean) noexcept override;
 };
+
+MC_DECL_POINTER(McDefaultBeanFactory)

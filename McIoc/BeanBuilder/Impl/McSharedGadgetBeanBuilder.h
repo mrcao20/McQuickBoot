@@ -34,3 +34,5 @@ public:
 protected:
     QVariant create() noexcept override;
 };
+
+MC_DECL_POINTER(McSharedGadgetBeanBuilder)

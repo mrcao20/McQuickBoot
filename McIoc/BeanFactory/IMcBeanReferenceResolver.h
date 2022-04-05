@@ -36,6 +36,7 @@ public:
     virtual QObject *resolveBeanReferencePointer(const McBeanReferencePtr &beanRef) noexcept = 0;
 
     virtual QVariant resolveBeanReferenceToQVariant(const McBeanReferencePtr &beanRef) noexcept = 0;
+    virtual void beanReferenceMoveToThread(const McBeanReferencePtr &beanRef, QThread *thread) noexcept = 0;
 };
 
 MC_DECL_POINTER(IMcBeanReferenceResolver)

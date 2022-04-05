@@ -70,6 +70,9 @@ QVariant McAbstractBeanBuilder::build(QThread *thread) noexcept
         return d->bean;
     }
     auto bean = create();
+    if (!bean.isValid()) {
+        return QVariant();
+    }
     d->earlyBean = bean;
     complete(bean, thread);
     if (isSingleton()) {
@@ -77,6 +80,14 @@ QVariant McAbstractBeanBuilder::build(QThread *thread) noexcept
     }
     d->earlyBean.clear();
     return bean;
+}
+
+void McAbstractBeanBuilder::moveToThread(QThread *thread) noexcept
+{
+    if (Q_UNLIKELY(!d->bean.isValid())) {
+        return;
+    }
+    doMoveToThread(d->bean, thread, d->properties);
 }
 
 bool McAbstractBeanBuilder::isSingleton() const noexcept

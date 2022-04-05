@@ -38,6 +38,8 @@ class RegisterTest : public QObject, public IRegisterTest
     MC_INTERFACES(IRegisterTest)
     Q_PROPERTY(QString text MEMBER m_text)
 public:
+    Q_INVOKABLE RegisterTest() {}
+
     QString test() { return m_text; }
 
 private:

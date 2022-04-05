@@ -16,9 +16,7 @@ MC_DESTROY()
 qDebug() << "core example destroy";
 MC_STATIC_END
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-      , ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 

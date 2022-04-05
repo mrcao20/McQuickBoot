@@ -41,6 +41,7 @@ public:
     ~McAbstractBeanFactory() override;
 
     QVariant getBeanToVariant(const QString &name, QThread *thread = nullptr) noexcept override;
+    void moveToThread(const QString &name, QThread *thread) noexcept override;
     bool containsBean(const QString &name) const noexcept override;
     bool isSingleton(const QString &name) const noexcept override;
     bool isPointer(const QString &name) const noexcept override;
@@ -54,6 +55,7 @@ public:
     QObjectPtr resolveBeanReference(const McBeanReferencePtr &beanRef) noexcept override;
     QObject *resolveBeanReferencePointer(const McBeanReferencePtr &beanRef) noexcept override;
     QVariant resolveBeanReferenceToQVariant(const McBeanReferencePtr &beanRef) noexcept override;
+    void beanReferenceMoveToThread(const McBeanReferencePtr &beanRef, QThread *thread) noexcept override;
 
 protected:
     virtual void afterBuildBean(const QVariant &bean) noexcept = 0;

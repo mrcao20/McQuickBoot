@@ -30,12 +30,21 @@ MC_FORWARD_DECL_PRIVATE_DATA(McObjectClassBeanBuilder)
 class MC_IOC_EXPORT McObjectClassBeanBuilder : public McObjectBeanBuilder
 {
 public:
+    struct ConstructorArg
+    {
+        int index{-1};
+        QByteArray name;
+        QVariant value;
+    };
+
     McObjectClassBeanBuilder() noexcept;
     ~McObjectClassBeanBuilder();
 
     McMetaType metaType() const noexcept;
     void setMetaType(const McMetaType &type) noexcept;
     void setClassName(const QByteArray &className) noexcept;
+    void addConstructorArg(int index, const QVariant &val) noexcept;
+    void addConstructorArg(const QByteArray &name, const QVariant &val) noexcept;
 
     bool isPointer() const noexcept override;
 
@@ -43,5 +52,11 @@ protected:
     QVariant create() noexcept override;
 
 private:
+    QVariant createByMetaType() noexcept;
+    QVariant createByMetaObject() noexcept;
+
+private:
     MC_DECL_PRIVATE(McObjectClassBeanBuilder)
 };
+
+MC_DECL_POINTER(McObjectClassBeanBuilder)

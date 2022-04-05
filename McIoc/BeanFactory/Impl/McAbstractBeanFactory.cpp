@@ -51,8 +51,22 @@ QVariant McAbstractBeanFactory::getBeanToVariant(const QString &name, QThread *t
         return QVariant();
     }
     QVariant bean = beanBuilder->build(thread);
+    if (!bean.isValid()) {
+        qCCritical(mcIoc(), "'%s' build failed.", qPrintable(name));
+        return QVariant();
+    }
     afterBuildBean(bean);
     return bean;
+}
+
+void McAbstractBeanFactory::moveToThread(const QString &name, QThread *thread) noexcept
+{
+    QMutexLocker locker(&d->mtx);
+    IMcBeanBuilderPtr beanBuilder = d->hash.value(name);
+    if (beanBuilder.isNull()) {
+        return;
+    }
+    beanBuilder->moveToThread(thread);
 }
 
 bool McAbstractBeanFactory::containsBean(const QString &name) const noexcept
@@ -84,7 +98,9 @@ bool McAbstractBeanFactory::isPointer(const QString &name) const noexcept
 bool McAbstractBeanFactory::registerBeanBuilder(const QString &name, const IMcBeanBuilderPtr &beanBuilder) noexcept
 {
     QMutexLocker locker(&d->mtx);
-    //! 如果存在则替换
+    if (d->hash.contains(name)) {
+        qCWarning(mcIoc(), "'%s' is already registered. replaced", qPrintable(name));
+    }
     d->hash.insert(name, beanBuilder);
     return true;
 }
@@ -135,4 +151,12 @@ QVariant McAbstractBeanFactory::resolveBeanReferenceToQVariant(const McBeanRefer
         return QVariant();
     }
     return getBeanToVariant(beanRef->name(), d->targetThread);
+}
+
+void McAbstractBeanFactory::beanReferenceMoveToThread(const McBeanReferencePtr &beanRef, QThread *thread) noexcept
+{
+    if (beanRef.isNull()) {
+        return;
+    }
+    moveToThread(beanRef->name(), thread);
 }

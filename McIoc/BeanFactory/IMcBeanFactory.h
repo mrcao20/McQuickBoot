@@ -49,6 +49,7 @@ public:
     }
 
     virtual QVariant getBeanToVariant(const QString &name, QThread *thread = nullptr) noexcept = 0;
+    virtual void moveToThread(const QString &name, QThread *thread) noexcept = 0;
 
     virtual bool containsBean(const QString &name) const noexcept = 0;
     virtual bool isSingleton(const QString &name) const noexcept = 0;

@@ -31,6 +31,8 @@ set(PROJECT_HEADERS
     BeanBuilder/Impl/McSharedObjectPluginBeanBuilder.h
     BeanBuilder/Impl/McGadgetBeanBuilder.h
     BeanBuilder/Impl/McSharedGadgetBeanBuilder.h
+    BeanBuilder/Impl/McListBeanBuilder.h
+    BeanBuilder/Impl/McMapBeanBuilder.h
 )
 
 set(PROJECT_SOURCES
@@ -45,6 +47,8 @@ set(PROJECT_SOURCES
     BeanBuilder/Impl/McSharedObjectPluginBeanBuilder.cpp
     BeanBuilder/Impl/McGadgetBeanBuilder.cpp
     BeanBuilder/Impl/McSharedGadgetBeanBuilder.cpp
+    BeanBuilder/Impl/McListBeanBuilder.cpp
+    BeanBuilder/Impl/McMapBeanBuilder.cpp
 )
 
 add_library(${PROJECT_NAME} ${MC_BUILD_TYPE}

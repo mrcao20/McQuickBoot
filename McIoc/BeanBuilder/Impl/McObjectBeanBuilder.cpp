@@ -88,6 +88,27 @@ void McObjectBeanBuilder::complete(QVariant &bean, QThread *thread) noexcept
     }
 }
 
+void McObjectBeanBuilder::doMoveToThread(const QVariant &bean, QThread *thread, const QVariantHash &properties) noexcept
+{
+    if (Q_UNLIKELY(resolver() == nullptr)) {
+        return;
+    }
+    auto obj = bean.value<QObject *>();
+    if (Q_UNLIKELY(obj == nullptr)) {
+        return;
+    }
+    if (obj->thread() != thread) {
+        obj->moveToThread(thread);
+    }
+    for (auto &value : properties) {
+        if (!value.canConvert<McBeanReferencePtr>()) {
+            continue;
+        }
+        auto ref = value.value<McBeanReferencePtr>();
+        resolver()->beanReferenceMoveToThread(ref, thread);
+    }
+}
+
 void McObjectBeanBuilder::setParent(QObject *bean, QObject *parent) noexcept
 {
     bean->setParent(parent);

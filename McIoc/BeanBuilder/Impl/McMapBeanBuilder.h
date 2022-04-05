@@ -23,21 +23,28 @@
  */
 #pragma once
 
-#include "../McIocGlobal.h"
+#include "McAbstractBeanBuilder.h"
 
-class IMcBeanReferenceResolver;
+MC_FORWARD_DECL_PRIVATE_DATA(McMapBeanBuilder)
 
-class IMcBeanBuilder
+class MC_IOC_EXPORT McMapBeanBuilder : public McAbstractBeanBuilder
 {
 public:
-    MC_BASE_DESTRUCTOR(IMcBeanBuilder)
+    McMapBeanBuilder() noexcept;
+    ~McMapBeanBuilder();
 
-    virtual QVariant build(QThread *thread) noexcept = 0;
-    virtual void moveToThread(QThread *thread) noexcept = 0;
-    virtual bool isSingleton() const noexcept = 0;
-    virtual bool isPointer() const noexcept = 0;
+    void addValue(const QVariant &key, const QVariant &value) noexcept;
+    void setValues(const QMap<QVariant, QVariant> &values) noexcept;
 
-    virtual void setReferenceResolver(IMcBeanReferenceResolver *resolver) noexcept = 0;
+    bool isPointer() const noexcept override;
+
+protected:
+    QVariant create() noexcept override;
+    void complete(QVariant &bean, QThread *thread) noexcept override;
+    void doMoveToThread(const QVariant &bean, QThread *thread, const QVariantHash &properties) noexcept override;
+
+private:
+    MC_DECL_PRIVATE(McMapBeanBuilder)
 };
 
-MC_DECL_POINTER(IMcBeanBuilder)
+MC_DECL_POINTER(McMapBeanBuilder)

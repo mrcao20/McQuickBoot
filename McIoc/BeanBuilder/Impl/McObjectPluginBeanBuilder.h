@@ -43,3 +43,5 @@ protected:
 private:
     MC_DECL_PRIVATE(McObjectPluginBeanBuilder)
 };
+
+MC_DECL_POINTER(McObjectPluginBeanBuilder)
