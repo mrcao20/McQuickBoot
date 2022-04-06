@@ -40,7 +40,7 @@ public:
     virtual void destroy() noexcept = 0;
 };
 
-MC_DECL_METATYPE(IMcDestroyer)
+MC_DECL_POINTER(IMcDestroyer)
 
 namespace Mc {
 struct McCustomDeleter

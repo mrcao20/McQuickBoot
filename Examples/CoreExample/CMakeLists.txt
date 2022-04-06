@@ -2,13 +2,13 @@ project(CoreExample)
 
 set(PROJECT_HEADERS
     MainWindow.h
-    RegisterTest.h
+    MetaTypeRegister.h
 )
 
 set(PROJECT_SOURCES
     main.cpp
     MainWindow.cpp
-    RegisterTest.cpp
+    MetaTypeRegister.cpp
 )
 
 set(PROJECT_FORMS

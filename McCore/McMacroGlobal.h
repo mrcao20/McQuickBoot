@@ -161,17 +161,15 @@ private: \
     Q_GLOBAL_STATIC(Mc_##NAME##_StaticData, NAME) \
     }
 
-#define MC_DECL_METATYPE_NONE(Class) \
-    Q_DECLARE_METATYPE(Class##Ptr) \
-    Q_DECLARE_METATYPE(Class *)
+#define MC_FULL_DEFINE_HELPER(...) , ##__VA_ARGS__
+#define MC_FULL_DEFINE(Class, Parent, ...) \
+    MC_DECL_INIT(Class) \
+    MC_INTERFACES(Parent MC_FULL_DEFINE_HELPER(__VA_ARGS__)) \
+    MC_DECL_SUPER(Parent)
 
-#define MC_DECL_METATYPE(Class) \
-    MC_DECL_POINTER(Class) \
-    MC_DECL_METATYPE_NONE(Class)
+#define MC_DECL_METATYPE(Class) MC_DECL_POINTER(Class)
 
-#define MC_DECL_METATYPE_NS(Class, NS) \
-    MC_DECL_POINTER_NS(Class, NS) \
-    MC_DECL_METATYPE_NONE(NS::Class)
+#define MC_DECL_METATYPE_NS(Class, NS) MC_DECL_POINTER_NS(Class, NS)
 
 #define MC_BASE_DESTRUCTOR(Class) virtual ~Class() = default;
 

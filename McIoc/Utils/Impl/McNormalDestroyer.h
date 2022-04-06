@@ -34,4 +34,4 @@ public:
     void destroy() noexcept override { delete this; }
 };
 
-MC_DECL_METATYPE(McNormalDestroyer)
+MC_DECL_POINTER(McNormalDestroyer)

@@ -351,8 +351,17 @@ private:
     const McPrivate::MapMetaTypeInterface *d{nullptr};
 };
 
-namespace McPrivate {
+template <typename T> inline McMetaType mcRegisterMetaTypeSimple() noexcept
+{
+    static_assert(!std::is_pointer<T>::value, "mcRegisterMetaTypeSimple's template type must not be a pointer type");
+    constexpr McMetaType metaType = McMetaType::fromType<T>();
+    metaType.metaType().id();
+    metaType.pMetaType().id();
+    metaType.sMetaType().id();
+    return metaType;
+}
 
+namespace McPrivate {
 template<typename...>
 struct TypeList;
 
@@ -454,11 +463,7 @@ struct MetaTypeRegister2
                     [](const QObjectPtr &from) { return from.template objectCast<T>(); });
             }
         }
-        constexpr McMetaType metaType = McMetaType::fromType<T>();
-        McMetaType::registerMetaType(metaType);
-        QByteArray typeName;
-        typeName.append("QSharedPointer<").append(metaType.metaType().name()).append('>');
-        qRegisterMetaType<TPtr>(typeName);
+        McMetaType::registerMetaType(mcRegisterMetaTypeSimple<T>());
     }
 };
 
@@ -478,7 +483,6 @@ struct MetaTypeRegister<T, typename T::McPrivateTypeListHelper>
         RegisterConverterHelper<T, To>::registerConverter();
     }
 };
-
 } // namespace McPrivate
 
 template<typename T>

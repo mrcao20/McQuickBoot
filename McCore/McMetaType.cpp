@@ -35,9 +35,6 @@ void McMetaType::registerMetaType(const McMetaType &type) noexcept
         return;
     }
     type.d->isRegistered.storeRelaxed(true);
-    type.d->metaType.id();
-    type.d->pMetaType.id();
-    type.d->sMetaType.id();
     coreMetaTypeStaticData->metaTypes.append(type);
 }
 
@@ -183,7 +180,6 @@ void McListMetaType::registerMetaType(const McListMetaType &type) noexcept
     }
     type.d->isRegistered.storeRelaxed(true);
     type.d->metaType.id();
-    type.d->valueMetaType.id();
     coreMetaTypeStaticData->listMetaTypes.append(type);
 }
 
@@ -210,8 +206,6 @@ void McMapMetaType::registerMetaType(const McMapMetaType &type) noexcept
     }
     type.d->isRegistered.storeRelaxed(true);
     type.d->metaType.id();
-    type.d->keyMetaType.id();
-    type.d->valueMetaType.id();
     coreMetaTypeStaticData->mapMetaTypes.append(type);
 }
 

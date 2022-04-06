@@ -23,16 +23,16 @@
  */
 #pragma once
 
-#include "../McIocGlobal.h"
-
 #include <QVariant>
+
+#include "../McIocGlobal.h"
 
 class IMcCustomPlaceholder
 {
 public:
-    virtual ~IMcCustomPlaceholder() = default;
+    MC_BASE_DESTRUCTOR(IMcCustomPlaceholder)
 
     virtual QVariant getKey() const noexcept = 0;
 };
 
-MC_DECL_METATYPE(IMcCustomPlaceholder)
+MC_DECL_POINTER(IMcCustomPlaceholder)

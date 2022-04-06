@@ -21,29 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include "MetaTypeRegister.h"
 
-#include <McCore/McGlobal.h>
+#include <QDebug>
+#include <QList>
+#include <QMap>
 
-class IRegisterTest
-{
-public:
-    virtual ~IRegisterTest() = default;
-};
-
-class RegisterTest : public QObject, public IRegisterTest
-{
-    Q_OBJECT
-    MC_DECL_INIT(RegisterTest)
-    MC_INTERFACES(IRegisterTest)
-    Q_PROPERTY(QString text MEMBER m_text)
-public:
-    Q_INVOKABLE RegisterTest() {}
-
-    QString test() { return m_text; }
-
-private:
-    QString m_text{"registerTest"};
-};
-
-MC_DECL_POINTER(RegisterTest)
+MC_AUTO_INIT(RegisterTest)
+mcRegisterContainerConverter<QList<RegisterTestPtr>>();
+mcRegisterContainerConverter<QMap<int, RegisterTestPtr>>();
+MC_DESTROY()
+qDebug() << "RegisterTest destroy";
+MC_INIT_END

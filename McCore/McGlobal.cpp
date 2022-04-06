@@ -24,6 +24,7 @@
 #include "McGlobal.h"
 
 #include <QCoreApplication>
+#include <QElapsedTimer>
 #include <QPluginLoader>
 #include <QStandardPaths>
 #include <QTimer>

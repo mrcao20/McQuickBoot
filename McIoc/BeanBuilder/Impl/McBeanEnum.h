@@ -43,4 +43,4 @@ private:
     QString m_value;
 };
 
-MC_DECL_METATYPE(McBeanEnum)
+MC_DECL_POINTER(McBeanEnum)

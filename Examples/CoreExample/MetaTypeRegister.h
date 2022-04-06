@@ -21,15 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "RegisterTest.h"
+#pragma once
 
-#include <QDebug>
-#include <QList>
-#include <QMap>
+#include <McCore/McGlobal.h>
 
-MC_AUTO_INIT(RegisterTest)
-mcRegisterContainerConverter<QList<RegisterTestPtr>>();
-mcRegisterContainerConverter<QMap<int, RegisterTestPtr>>();
-MC_DESTROY()
-qDebug() << "RegisterTest destroy";
-MC_INIT_END
+class IRegisterTest
+{
+public:
+    MC_BASE_DESTRUCTOR(IRegisterTest)
+};
+
+MC_DECL_POINTER(IRegisterTest)
+
+class RegisterTest : public QObject, public IRegisterTest
+{
+    Q_OBJECT
+    MC_FULL_DEFINE(RegisterTest, QObject, IRegisterTest)
+    Q_PROPERTY(QString text READ text WRITE setText)
+public:
+    QString text() { return m_text; }
+    void setText(const QString &val) { m_text = val; }
+
+private:
+    QString m_text{"registerTest"};
+};
+
+MC_DECL_POINTER(RegisterTest)
