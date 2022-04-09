@@ -153,6 +153,14 @@ QVector<McMetaType> McMetaType::metaTypes() noexcept
     return coreMetaTypeStaticData->metaTypes;
 }
 
+QVariant McMetaType::createSharedPointer(void *copy) noexcept
+{
+    if (!isValid() || d->createSharedPointer == nullptr) {
+        return QVariant();
+    }
+    return d->createSharedPointer(copy);
+}
+
 void McMetaType::addParentMetaType(const McMetaType &type) const noexcept
 {
     if (!isValid() || !type.isValid()) {

@@ -51,6 +51,8 @@ public:
 protected:
     QVariant create() noexcept override;
 
+    bool hasConstructorArg() const noexcept;
+
 private:
     QVariant createByMetaType() noexcept;
     QVariant createByMetaObject() noexcept;

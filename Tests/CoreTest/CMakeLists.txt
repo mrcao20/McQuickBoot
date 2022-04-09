@@ -1,9 +1,14 @@
 project(CoreTest)
 
 set(PROJECT_HEADERS
+    TestCore.h
+    MetaTypeTest.h
 )
 
 set(PROJECT_SOURCES
+    main.cpp
+    TestCore.cpp
+    MetaTypeTest.cpp
 )
 
 add_executable(${PROJECT_NAME}

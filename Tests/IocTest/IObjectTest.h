@@ -21,44 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "McObjectPluginBeanBuilder.h"
+#pragma once
 
-MC_DECL_PRIVATE_DATA(McObjectPluginBeanBuilder)
-McMetaType metaType;
-QString pluginPath;
-MC_DECL_PRIVATE_DATA_END
+#include <McCore/McGlobal.h>
 
-McObjectPluginBeanBuilder::McObjectPluginBeanBuilder() noexcept
+class IObjectTest
 {
-    MC_NEW_PRIVATE_DATA(McObjectPluginBeanBuilder);
-}
+public:
+    MC_BASE_DESTRUCTOR(IObjectTest)
 
-McObjectPluginBeanBuilder::~McObjectPluginBeanBuilder() {}
-
-McMetaType McObjectPluginBeanBuilder::metaType() const noexcept
-{
-    return d->metaType;
-}
-
-void McObjectPluginBeanBuilder::setPluginPath(const QString &path) noexcept
-{
-    d->pluginPath = path;
-}
-
-bool McObjectPluginBeanBuilder::isPointer() const noexcept
-{
-    return true;
-}
-
-QVariant McObjectPluginBeanBuilder::create() noexcept
-{
-    auto obj = Mc::loadPlugin(d->pluginPath);
-    if (obj == nullptr) {
-        return QVariant();
-    }
-    const char *className = obj->metaObject()->className();
-    d->metaType = McMetaType::fromTypeName(className);
-    auto beanStar = obj->qt_metacast(className);
-    QVariant beanVar(d->metaType.pMetaType(), &beanStar);
-    return beanVar;
-}
+    virtual QString test() = 0;
+};
+MC_DECL_POINTER(IObjectTest)

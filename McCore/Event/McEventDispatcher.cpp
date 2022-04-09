@@ -34,6 +34,8 @@ McEventDispatcher::McEventDispatcher() noexcept
     MC_NEW_PRIVATE_DATA(McEventDispatcher);
 }
 
+McEventDispatcher::~McEventDispatcher() {}
+
 McEventDispatcher *McEventDispatcher::instance() noexcept
 {
     static McEventDispatcher ins;

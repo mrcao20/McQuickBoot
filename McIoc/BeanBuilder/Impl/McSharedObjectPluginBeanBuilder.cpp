@@ -23,8 +23,6 @@
  */
 #include "McSharedObjectPluginBeanBuilder.h"
 
-#include "Utils/Impl/McNormalDestroyer.h"
-
 bool McSharedObjectPluginBeanBuilder::isPointer() const noexcept
 {
     return false;
@@ -33,16 +31,8 @@ bool McSharedObjectPluginBeanBuilder::isPointer() const noexcept
 QVariant McSharedObjectPluginBeanBuilder::create() noexcept
 {
     auto bean = super::create();
-    auto obj = bean.value<QObject *>();
-    if (obj == nullptr) {
+    if (!bean.isValid()) {
         return QVariant();
     }
-    QObjectPtr objPtr(obj, Mc::McCustomDeleter());
-    bean.setValue(objPtr);
-    auto metaType = McMetaType::fromTypeName(obj->metaObject()->className());
-    if (!bean.convert(metaType.sMetaType())) {
-        qCCritical(mcIoc(), "failed convert QObjectPtr to '%s'", metaType.sMetaType().name());
-        return QVariant();
-    }
-    return bean;
+    return metaType().createSharedPointer(*reinterpret_cast<void **>(const_cast<void *>(bean.constData())));
 }

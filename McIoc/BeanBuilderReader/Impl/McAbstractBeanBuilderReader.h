@@ -21,44 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "McObjectPluginBeanBuilder.h"
+#pragma once
 
-MC_DECL_PRIVATE_DATA(McObjectPluginBeanBuilder)
-McMetaType metaType;
-QString pluginPath;
-MC_DECL_PRIVATE_DATA_END
+#include "../IMcBeanBuilderReader.h"
 
-McObjectPluginBeanBuilder::McObjectPluginBeanBuilder() noexcept
+MC_FORWARD_DECL_PRIVATE_DATA(McAbstractBeanBuilderReader)
+
+class MC_IOC_EXPORT McAbstractBeanBuilderReader : public IMcBeanBuilderReader
 {
-    MC_NEW_PRIVATE_DATA(McObjectPluginBeanBuilder);
-}
+public:
+    McAbstractBeanBuilderReader() noexcept;
+    ~McAbstractBeanBuilderReader();
 
-McObjectPluginBeanBuilder::~McObjectPluginBeanBuilder() {}
+    IMcBeanBuilderRegistry *registry() const noexcept;
 
-McMetaType McObjectPluginBeanBuilder::metaType() const noexcept
-{
-    return d->metaType;
-}
+    void readBeanBuilder(IMcBeanBuilderRegistry *registry) noexcept override;
 
-void McObjectPluginBeanBuilder::setPluginPath(const QString &path) noexcept
-{
-    d->pluginPath = path;
-}
+protected:
+    virtual void doReadBeanBuilder() noexcept = 0;
 
-bool McObjectPluginBeanBuilder::isPointer() const noexcept
-{
-    return true;
-}
+private:
+    MC_DECL_PRIVATE(McAbstractBeanBuilderReader)
+};
 
-QVariant McObjectPluginBeanBuilder::create() noexcept
-{
-    auto obj = Mc::loadPlugin(d->pluginPath);
-    if (obj == nullptr) {
-        return QVariant();
-    }
-    const char *className = obj->metaObject()->className();
-    d->metaType = McMetaType::fromTypeName(className);
-    auto beanStar = obj->qt_metacast(className);
-    QVariant beanVar(d->metaType.pMetaType(), &beanStar);
-    return beanVar;
-}
+MC_DECL_POINTER(McAbstractBeanBuilderReader)

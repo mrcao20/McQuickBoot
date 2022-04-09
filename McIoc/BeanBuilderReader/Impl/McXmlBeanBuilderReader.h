@@ -21,44 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "McObjectPluginBeanBuilder.h"
+#pragma once
 
-MC_DECL_PRIVATE_DATA(McObjectPluginBeanBuilder)
-McMetaType metaType;
-QString pluginPath;
-MC_DECL_PRIVATE_DATA_END
+#include "McAbstractBeanBuilderReader.h"
 
-McObjectPluginBeanBuilder::McObjectPluginBeanBuilder() noexcept
+MC_FORWARD_DECL_CLASS(QIODevice)
+
+MC_FORWARD_DECL_PRIVATE_DATA(McXmlBeanBuilderReader)
+
+class MC_IOC_EXPORT McXmlBeanBuilderReader : public McAbstractBeanBuilderReader
 {
-    MC_NEW_PRIVATE_DATA(McObjectPluginBeanBuilder);
-}
+public:
+    McXmlBeanBuilderReader(const QIODevicePtr &device, const QString &flag = QString()) noexcept;
+    McXmlBeanBuilderReader(const QList<QIODevicePtr> &devices, const QString &flag = QString()) noexcept;
+    ~McXmlBeanBuilderReader();
 
-McObjectPluginBeanBuilder::~McObjectPluginBeanBuilder() {}
+protected:
+    void doReadBeanBuilder() noexcept override;
 
-McMetaType McObjectPluginBeanBuilder::metaType() const noexcept
-{
-    return d->metaType;
-}
+private:
+    MC_DECL_PRIVATE(McXmlBeanBuilderReader)
+};
 
-void McObjectPluginBeanBuilder::setPluginPath(const QString &path) noexcept
-{
-    d->pluginPath = path;
-}
-
-bool McObjectPluginBeanBuilder::isPointer() const noexcept
-{
-    return true;
-}
-
-QVariant McObjectPluginBeanBuilder::create() noexcept
-{
-    auto obj = Mc::loadPlugin(d->pluginPath);
-    if (obj == nullptr) {
-        return QVariant();
-    }
-    const char *className = obj->metaObject()->className();
-    d->metaType = McMetaType::fromTypeName(className);
-    auto beanStar = obj->qt_metacast(className);
-    QVariant beanVar(d->metaType.pMetaType(), &beanStar);
-    return beanVar;
-}
+MC_DECL_POINTER(McXmlBeanBuilderReader)

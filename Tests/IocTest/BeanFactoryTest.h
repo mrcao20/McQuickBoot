@@ -23,26 +23,60 @@
  */
 #pragma once
 
-#include "McObjectBeanBuilder.h"
+#include <QObject>
 
-MC_FORWARD_DECL_PRIVATE_DATA(McObjectPluginBeanBuilder)
+#include <McCore/McGlobal.h>
 
-class MC_IOC_EXPORT McObjectPluginBeanBuilder : public McObjectBeanBuilder
+#include "IObjectTest.h"
+
+struct PodTest
 {
+    QString text{"podTest"};
+};
+MC_DECL_POINTER(PodTest)
+
+struct GadgetTest : public IMcDestroyer
+{
+    Q_GADGET
+    Q_PROPERTY(QString text MEMBER text)
 public:
-    McObjectPluginBeanBuilder() noexcept;
-    ~McObjectPluginBeanBuilder();
+    GadgetTest() {}
+    Q_INVOKABLE GadgetTest(const QString &val) : text(val) {}
 
-    McMetaType metaType() const noexcept;
-    void setPluginPath(const QString &path) noexcept;
+    void destroy() override { delete this; }
 
-    bool isPointer() const noexcept override;
+    QString text{"gadgetTest"};
+};
+MC_DECL_POINTER(GadgetTest)
 
-protected:
-    QVariant create() noexcept override;
+class ObjectTest : public QObject, public IObjectTest, public IMcDestroyer
+{
+    Q_OBJECT
+    MC_FULL_DEFINE(ObjectTest, QObject, IObjectTest, IMcDestroyer)
+    Q_PROPERTY(QString text MEMBER m_text)
+public:
+    ObjectTest();
+    Q_INVOKABLE ObjectTest(const QString &val);
+
+    void destroy() override { deleteLater(); }
+
+    QString test() override;
 
 private:
-    MC_DECL_PRIVATE(McObjectPluginBeanBuilder)
+    QString m_text{"objectTest"};
 };
+MC_DECL_POINTER(ObjectTest)
 
-MC_DECL_POINTER(McObjectPluginBeanBuilder)
+class BeanFactoryTest : public QObject
+{
+    Q_OBJECT
+private slots:
+    void gadgetTestCase();
+    void sharedGadgetTestCase();
+    void objectTestCase();
+    void sharedObjectTestCase();
+    void pluginTestCase();
+    void sharedPluginTestCase();
+    void listTestCase();
+    void mapTestCase();
+};

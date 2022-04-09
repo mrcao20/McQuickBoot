@@ -8,23 +8,34 @@ set(PROJECT_HEADERS
     McMacroGlobal.h
     McGlobal.h
     McMetaType.h
-    Event/McEventDispatcher.h
-    Event/McEventRouter.h
-    Utils/McQVariantConverter.h
     Config/McRuntimeConfig.h
     Config/McRuntimeConfigObject.h
     Config/McRuntimeConfigValue.h
+    Event/McEventDispatcher.h
+    Event/McEventRouter.h
+    Utils/McQVariantConverter.h
+    Utils/IMcDestroyer.h
+    Utils/LibraryLoader/McLibraryLoader.h
 )
 
 set(PROJECT_SOURCES
     McGlobal.cpp
     McMetaType.cpp
-    Event/McEventDispatcher.cpp
-    Event/McEventRouter.cpp
     Config/McRuntimeConfig.cpp
     Config/McRuntimeConfigObject.cpp
     Config/McRuntimeConfigValue.cpp
+    Event/McEventDispatcher.cpp
+    Event/McEventRouter.cpp
+    Utils/LibraryLoader/McLibraryLoader.cpp
 )
+
+if(WIN32)
+    list(APPEND PROJECT_HEADERS Utils/LibraryLoader/MemoryModule.h)
+    list(APPEND PROJECT_SOURCES Utils/LibraryLoader/MemoryModule.c)
+else()
+    list(APPEND PROJECT_HEADERS Utils/LibraryLoader/memload.h)
+    list(APPEND PROJECT_SOURCES Utils/LibraryLoader/memload.cpp)
+endif()
 
 add_library(${PROJECT_NAME} ${MC_BUILD_TYPE}
     ${PROJECT_HEADERS}

@@ -30,6 +30,8 @@
 #include <QTimer>
 #include <QUrl>
 
+#include "Utils/LibraryLoader/McLibraryLoader.h"
+
 Q_LOGGING_CATEGORY(mcCore, "mc.core")
 
 namespace McPrivate {
@@ -85,6 +87,54 @@ QString getStandardPath(QStandardPaths::StandardLocation type)
         return QString();
     }
     return paths.first();
+}
+
+QSharedPointer<QLibrary> loadLibraryHelper(const QString &path, const QLatin1String &checkSymbol) noexcept
+{
+    auto libPath = Mc::toAbsolutePath(path);
+    if (!QLibrary::isLibrary(libPath)) {
+        return QSharedPointer<QLibrary>();
+    }
+    auto library = QSharedPointer<QLibrary>::create(libPath);
+    if (!library->load()) {
+        qCWarning(mcCore(),
+                  "%s cannot load!! error string: %s",
+                  qUtf8Printable(libPath),
+                  qUtf8Printable(library->errorString()));
+        return QSharedPointer<QLibrary>();
+    }
+    auto cleanup = qScopeGuard([]() { Mc::callPreRoutine(); });
+    if (checkSymbol.isNull() || checkSymbol.isEmpty()) {
+        return library;
+    }
+    auto func = library->resolve(checkSymbol.data());
+    if (func != nullptr) {
+        return library;
+    }
+    cleanup.dismiss();
+    Mc::cleanPreRoutine();
+    library->unload();
+    return QSharedPointer<QLibrary>();
+}
+
+McLibraryLoader loadMemoryLibraryHelper(const QByteArray &data, const QLatin1String &checkSymbol) noexcept
+{
+    McLibraryLoader library(data);
+    if (!library.load()) {
+        return McLibraryLoader();
+    }
+    auto cleanup = qScopeGuard([]() { Mc::callPreRoutine(); });
+    if (checkSymbol.isNull() || checkSymbol.isEmpty()) {
+        return library;
+    }
+    auto func = library.resolve(checkSymbol);
+    if (func != nullptr) {
+        return library;
+    }
+    cleanup.dismiss();
+    Mc::cleanPreRoutine();
+    library.unload();
+    return McLibraryLoader();
 }
 } // namespace
 
@@ -245,28 +295,34 @@ void addPostRoutine(int priority, const CleanUpFunction &func) noexcept
     (*funcs)[priority].prepend(func);
 }
 
+QFunctionPointer loadLibrary(const QString &path, const QLatin1String &symbol, const QLatin1String &checkSymbol) noexcept
+{
+    auto library = loadLibraryHelper(path, checkSymbol);
+    if (library.isNull()) {
+        return nullptr;
+    }
+    return library->resolve(symbol.data());
+}
+
 void loadLibrary(const QString &path, const QLatin1String &checkSymbol) noexcept
 {
-    auto libPath = Mc::toAbsolutePath(path);
-    if (!QLibrary::isLibrary(libPath)) {
-        return;
+    loadLibraryHelper(path, checkSymbol);
+}
+
+QFunctionPointer loadMemoryLibrary(const QByteArray &data,
+                                   const QLatin1String &symbol,
+                                   const QLatin1String &checkSymbol) noexcept
+{
+    auto library = loadMemoryLibraryHelper(data, checkSymbol);
+    if (!library.isLoaded()) {
+        return nullptr;
     }
-    QLibrary library(libPath);
-    if (!library.load()) {
-        qCWarning(mcCore(), "%s cannot load!! error string: %s", qPrintable(libPath), qPrintable(library.errorString()));
-        return;
-    }
-    auto cleanup = qScopeGuard([]() { Mc::callPreRoutine(); });
-    if (checkSymbol.isNull() || checkSymbol.isEmpty()) {
-        return;
-    }
-    auto func = library.resolve(checkSymbol.data());
-    if (func != nullptr) {
-        return;
-    }
-    cleanup.dismiss();
-    Mc::cleanPreRoutine();
-    library.unload();
+    return library.resolve(symbol);
+}
+
+void loadMemoryLibrary(const QByteArray &data, const QLatin1String &checkSymbol) noexcept
+{
+    loadMemoryLibraryHelper(data, checkSymbol);
 }
 
 QObject *loadPlugin(const QString &pluginPath, const std::function<bool(const QJsonObject &)> &checker) noexcept
@@ -280,7 +336,10 @@ QObject *loadPlugin(const QString &pluginPath, const std::function<bool(const QJ
         return nullptr;
     }
     if (!loader.load()) {
-        qCWarning(mcCore(), "%s cannot load!! error string: %s", qPrintable(path), qPrintable(loader.errorString()));
+        qCWarning(mcCore(),
+                  "%s cannot load!! error string: %s",
+                  qUtf8Printable(path),
+                  qUtf8Printable(loader.errorString()));
         return nullptr;
     }
     Mc::callPreRoutine();

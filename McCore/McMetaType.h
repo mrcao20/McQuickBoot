@@ -31,6 +31,7 @@
 #include <QtCore/QtGlobal>
 
 #include "McMacroGlobal.h"
+#include "Utils/IMcDestroyer.h"
 
 #define MC_TYPELIST(...) \
 public: \
@@ -64,6 +65,9 @@ public:
     QMetaType wMetaType;
     //! QPointer类型
     QMetaType tMetaType;
+    //! 构造QSharedPointer的函数指针
+    using CreateSharedPointerFn = QVariant (*)(void *);
+    CreateSharedPointerFn createSharedPointer;
     //! 继承的父类的元数据
     mutable QVector<McMetaType> *parents;
 };
@@ -92,6 +96,34 @@ public:
     QMetaType valueMetaType;
 };
 
+template<typename S>
+class MetaTypeForType
+{
+public:
+    static constexpr MetaTypeInterface::CreateSharedPointerFn getCreateSharedPointer() noexcept
+    {
+        if constexpr (std::is_default_constructible_v<S>) {
+            return [](void *copy) {
+                S *inPtr = static_cast<S *>(copy);
+                if constexpr (std::is_base_of_v<IMcDestroyer, S>) {
+                    if (inPtr == nullptr) {
+                        inPtr = new S();
+                    }
+                    return QVariant::fromValue(QSharedPointer<S>(inPtr, &IMcDestroyer::destroy));
+                } else {
+                    if (inPtr == nullptr) {
+                        return QVariant::fromValue(QSharedPointer<S>::create());
+                    } else {
+                        return QVariant::fromValue(QSharedPointer<S>(inPtr));
+                    }
+                }
+            };
+        } else {
+            return nullptr;
+        }
+    }
+};
+
 template<typename T, int = QtPrivate::IsPointerToTypeDerivedFromQObject<T *>::Value ? QMetaType::PointerToQObject : 0>
 struct MetaTypeInterfaceWrapper
 {
@@ -102,6 +134,7 @@ struct MetaTypeInterfaceWrapper
         /*.sMetaType=*/QMetaType::fromType<QSharedPointer<T>>(),
         /*.wMetaType=*/QMetaType::fromType<QWeakPointer<T>>(),
         /*.tMetaType=*/QMetaType(),
+        /*.createSharedPointer=*/MetaTypeForType<T>::getCreateSharedPointer(),
         /*.parents=*/nullptr,
     };
 };
@@ -116,6 +149,7 @@ struct MetaTypeInterfaceWrapper<T, QMetaType::PointerToQObject>
         /*.sMetaType=*/QMetaType::fromType<QSharedPointer<T>>(),
         /*.wMetaType=*/QMetaType::fromType<QWeakPointer<T>>(),
         /*.tMetaType=*/QMetaType::fromType<QPointer<T>>(),
+        /*.createSharedPointer=*/MetaTypeForType<T>::getCreateSharedPointer(),
         /*.parents=*/nullptr,
     };
 };
@@ -207,6 +241,8 @@ public:
         }
         return d->sMetaType;
     }
+
+    QVariant createSharedPointer(void *copy = nullptr) noexcept;
 
     void addParentMetaType(const McMetaType &type) const noexcept;
     QVector<McMetaType> parentMetaTypes() const noexcept;
@@ -351,16 +387,6 @@ private:
     const McPrivate::MapMetaTypeInterface *d{nullptr};
 };
 
-template <typename T> inline McMetaType mcRegisterMetaTypeSimple() noexcept
-{
-    static_assert(!std::is_pointer<T>::value, "mcRegisterMetaTypeSimple's template type must not be a pointer type");
-    constexpr McMetaType metaType = McMetaType::fromType<T>();
-    metaType.metaType().id();
-    metaType.pMetaType().id();
-    metaType.sMetaType().id();
-    return metaType;
-}
-
 namespace McPrivate {
 template<typename...>
 struct TypeList;
@@ -463,7 +489,6 @@ struct MetaTypeRegister2
                     [](const QObjectPtr &from) { return from.template objectCast<T>(); });
             }
         }
-        McMetaType::registerMetaType(mcRegisterMetaTypeSimple<T>());
     }
 };
 
@@ -486,9 +511,21 @@ struct MetaTypeRegister<T, typename T::McPrivateTypeListHelper>
 } // namespace McPrivate
 
 template<typename T>
+inline void mcRegisterMetaTypeSimple() noexcept
+{
+    static_assert(!std::is_pointer<T>::value, "mcRegisterMetaTypeSimple's template type must not be a pointer type");
+    constexpr McMetaType metaType = McMetaType::fromType<T>();
+    metaType.metaType().id();
+    metaType.pMetaType().id();
+    metaType.sMetaType().id();
+    McMetaType::registerMetaType(metaType);
+}
+
+template<typename T>
 inline void mcRegisterMetaType() noexcept
 {
     static_assert(!std::is_pointer<T>::value, "mcRegisterMetaType's template type must not be a pointer type");
+    mcRegisterMetaTypeSimple<T>();
     McPrivate::MetaTypeRegister<T>::registerMetaType();
 }
 

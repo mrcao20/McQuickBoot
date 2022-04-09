@@ -25,7 +25,7 @@
 
 #include "McAbstractBeanFactory.h"
 
-class McDefaultBeanFactory : public McAbstractBeanFactory
+class MC_IOC_EXPORT McDefaultBeanFactory : public McAbstractBeanFactory
 {
     Q_OBJECT
 public:

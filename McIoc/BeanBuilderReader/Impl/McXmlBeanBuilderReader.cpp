@@ -21,44 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "McObjectPluginBeanBuilder.h"
+#include "McXmlBeanBuilderReader.h"
 
-MC_DECL_PRIVATE_DATA(McObjectPluginBeanBuilder)
-McMetaType metaType;
-QString pluginPath;
+MC_DECL_PRIVATE_DATA(McXmlBeanBuilderReader)
+QList<QIODevicePtr> devices;
+QString flag;
 MC_DECL_PRIVATE_DATA_END
 
-McObjectPluginBeanBuilder::McObjectPluginBeanBuilder() noexcept
+McXmlBeanBuilderReader::McXmlBeanBuilderReader(const QIODevicePtr &device, const QString &flag) noexcept
+    : McXmlBeanBuilderReader(QList<QIODevicePtr>() << device, flag)
+{}
+
+McXmlBeanBuilderReader::McXmlBeanBuilderReader(const QList<QIODevicePtr> &devices, const QString &flag) noexcept
 {
-    MC_NEW_PRIVATE_DATA(McObjectPluginBeanBuilder);
+    MC_NEW_PRIVATE_DATA(McXmlBeanBuilderReader);
+
+    d->devices = devices;
+    d->flag = flag;
 }
 
-McObjectPluginBeanBuilder::~McObjectPluginBeanBuilder() {}
+McXmlBeanBuilderReader::~McXmlBeanBuilderReader() {}
 
-McMetaType McObjectPluginBeanBuilder::metaType() const noexcept
+void McXmlBeanBuilderReader::doReadBeanBuilder() noexcept
 {
-    return d->metaType;
-}
-
-void McObjectPluginBeanBuilder::setPluginPath(const QString &path) noexcept
-{
-    d->pluginPath = path;
-}
-
-bool McObjectPluginBeanBuilder::isPointer() const noexcept
-{
-    return true;
-}
-
-QVariant McObjectPluginBeanBuilder::create() noexcept
-{
-    auto obj = Mc::loadPlugin(d->pluginPath);
-    if (obj == nullptr) {
-        return QVariant();
+    for (auto device : qAsConst(d->devices)) {
+        device->seek(0);
     }
-    const char *className = obj->metaObject()->className();
-    d->metaType = McMetaType::fromTypeName(className);
-    auto beanStar = obj->qt_metacast(className);
-    QVariant beanVar(d->metaType.pMetaType(), &beanStar);
-    return beanVar;
 }

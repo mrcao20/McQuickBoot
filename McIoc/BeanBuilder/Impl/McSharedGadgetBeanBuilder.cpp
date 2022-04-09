@@ -30,10 +30,13 @@ bool McSharedGadgetBeanBuilder::isPointer() const noexcept
 
 QVariant McSharedGadgetBeanBuilder::create() noexcept
 {
-    auto bean = super::create();
-    if (!bean.convert(metaType().sMetaType())) {
-        qCCritical(mcIoc(), "failed convert VoidPtr to '%s'", metaType().sMetaType().name());
-        return QVariant();
+    void *obj = nullptr;
+    if (hasConstructorArg()) {
+        auto bean = super::create();
+        if (!bean.isValid()) {
+            return QVariant();
+        }
+        obj = *reinterpret_cast<void **>(const_cast<void *>(bean.constData()));
     }
-    return bean;
+    return metaType().createSharedPointer(obj);
 }

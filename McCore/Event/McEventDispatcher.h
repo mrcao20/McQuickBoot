@@ -30,12 +30,15 @@
 
 MC_FORWARD_DECL_PRIVATE_DATA(McEventDispatcher)
 
-class MC_CORE_EXPORT McEventDispatcher : protected McQVariantConverter
+class MC_CORE_EXPORT McEventDispatcher : public QObject, protected McQVariantConverter
 {
+    Q_OBJECT
     McEventDispatcher() noexcept;
     Q_DISABLE_COPY_MOVE(McEventDispatcher)
 
 public:
+    ~McEventDispatcher();
+
     static McEventDispatcher *instance() noexcept;
 
     QMetaObject::Connection connectToEvent(const QString &scxmlEventSpec,

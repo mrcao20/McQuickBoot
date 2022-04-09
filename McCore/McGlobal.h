@@ -95,7 +95,6 @@ struct QVariantSelector<QtPrivate::List<Args...>>
 };
 
 namespace LambdaDetail {
-
 template<typename R, typename C, typename M, typename... Args>
 struct Types
 {
@@ -106,7 +105,6 @@ struct Types
     using ReturnType = R;
     using Arguments = QtPrivate::List<Args...>;
 };
-
 } // namespace LambdaDetail
 
 template<class T>
@@ -179,7 +177,14 @@ MC_CORE_EXPORT void callPreRoutine() noexcept;
 MC_CORE_EXPORT void cleanPreRoutine() noexcept;
 MC_CORE_EXPORT void addPostRoutine(int priority, const CleanUpFunction &func) noexcept;
 
+MC_CORE_EXPORT QFunctionPointer loadLibrary(const QString &path,
+                                            const QLatin1String &symbol,
+                                            const QLatin1String &checkSymbol) noexcept;
 MC_CORE_EXPORT void loadLibrary(const QString &path, const QLatin1String &checkSymbol) noexcept;
+MC_CORE_EXPORT QFunctionPointer loadMemoryLibrary(const QByteArray &data,
+                                                  const QLatin1String &symbol,
+                                                  const QLatin1String &checkSymbol) noexcept;
+MC_CORE_EXPORT void loadMemoryLibrary(const QByteArray &data, const QLatin1String &checkSymbol) noexcept;
 MC_CORE_EXPORT QObject *loadPlugin(const QString &pluginPath,
                                    const std::function<bool(const QJsonObject &)> &checker = nullptr) noexcept;
 

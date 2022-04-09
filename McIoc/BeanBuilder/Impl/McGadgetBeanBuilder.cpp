@@ -79,10 +79,10 @@ QVariant McGadgetBeanBuilder::create() noexcept
     if (Q_UNLIKELY(!d->metaType.isValid())) {
         return QVariant();
     }
-    if (d->constructorArgs.isEmpty()) {
-        return createByMetaType();
-    } else {
+    if (hasConstructorArg()) {
         return createByMetaObject();
+    } else {
+        return createByMetaType();
     }
 }
 
@@ -93,7 +93,7 @@ void McGadgetBeanBuilder::complete(QVariant &bean, QThread *thread) noexcept
         return;
     }
     auto metaObject = d->metaType.metaType().metaObject();
-    auto beanStar = bean.data();
+    auto beanStar = *reinterpret_cast<void **>(bean.data());
     auto buildableObj = bean.value<IMcBeanBuildable *>();
     auto properties = buildProperties();
     callStartFunction(beanStar, metaObject, buildableObj);
@@ -108,69 +108,9 @@ void McGadgetBeanBuilder::doMoveToThread(const QVariant &bean, QThread *thread, 
     Q_UNUSED(properties)
 }
 
-void McGadgetBeanBuilder::addPropertyValue(void *bean, const QMetaObject *metaObject, const QVariantMap &pros)
+bool McGadgetBeanBuilder::hasConstructorArg() const noexcept
 {
-    if (bean == nullptr || metaObject == nullptr) {
-        return;
-    }
-    QMapIterator<QString, QVariant> itr(pros);
-    while (itr.hasNext()) {
-        auto item = itr.next();
-        auto key = itr.key();
-        auto value = itr.value();
-
-        auto index = metaObject->indexOfProperty(key.toLocal8Bit());
-        if (index == -1) {
-            qCDebug(mcIoc(),
-                    "bean '%s' cannot found property named for '%s'.",
-                    metaObject->className(),
-                    qPrintable(key));
-
-        } else {
-            auto metaProperty = metaObject->property(index);
-            if (Q_UNLIKELY(!metaProperty.writeOnGadget(bean, value))) {
-                qCCritical(mcIoc(),
-                           "bean '%s' write property named for '%s' failure",
-                           metaObject->className(),
-                           qPrintable(key));
-            }
-        }
-    }
-}
-
-void McGadgetBeanBuilder::callStartFunction(void *bean,
-                                            const QMetaObject *metaObject,
-                                            IMcBeanBuildable *buildableBean) noexcept
-{
-    callTagFunction(bean, metaObject, MC_STRINGIFY(MC_STARTED));
-    if (buildableBean != nullptr) {
-        buildableBean->buildStarted();
-    }
-}
-
-void McGadgetBeanBuilder::callFinishedFunction(void *bean,
-                                               const QMetaObject *metaObject,
-                                               IMcBeanBuildable *buildableBean) noexcept
-{
-    callTagFunction(bean, metaObject, MC_STRINGIFY(MC_FINISHED));
-    if (buildableBean != nullptr) {
-        buildableBean->buildFinished();
-    }
-}
-
-void McGadgetBeanBuilder::callTagFunction(void *bean, const QMetaObject *metaObject, const char *tag) noexcept
-{
-    if (metaObject == nullptr) {
-        return;
-    }
-    for (int i = 0; i < metaObject->methodCount(); ++i) {
-        auto method = metaObject->method(i);
-        if (!Mc::isContainedTag(method.tag(), tag)) {
-            continue;
-        }
-        //! 遍历当前对象的所有方法，调用所有被标记过的方法，从超基类开始到子类
-        method.invokeOnGadget(bean);
-    }
+    return !d->constructorArgs.isEmpty();
 }
 
 QVariant McGadgetBeanBuilder::createByMetaType() noexcept
@@ -247,10 +187,75 @@ QVariant McGadgetBeanBuilder::createByMetaObject() noexcept
                      arguments.at(8).data(),
                      arguments.at(9).data()};
     auto idx = metaObj->indexOfConstructor(constructor.methodSignature().constData());
-    if (metaObj->static_metacall(QMetaObject::CreateInstance, idx, param) < 0 || beanStar == nullptr) {
+    if (metaObj->static_metacall(QMetaObject::CreateInstance, idx, param) >= 0 || beanStar == nullptr) {
         qCCritical(mcIoc(), "cannot create object: '%s'", d->metaType.metaType().name());
         return QVariant();
     }
     QVariant beanVar(d->metaType.pMetaType(), &beanStar);
     return beanVar;
+}
+
+void McGadgetBeanBuilder::addPropertyValue(void *bean, const QMetaObject *metaObject, const QVariantMap &pros)
+{
+    if (bean == nullptr || metaObject == nullptr) {
+        return;
+    }
+    QMapIterator<QString, QVariant> itr(pros);
+    while (itr.hasNext()) {
+        auto item = itr.next();
+        auto key = itr.key();
+        auto value = itr.value();
+
+        auto index = metaObject->indexOfProperty(key.toLocal8Bit());
+        if (index == -1) {
+            qCDebug(mcIoc(),
+                    "bean '%s' cannot found property named for '%s'.",
+                    metaObject->className(),
+                    qPrintable(key));
+
+        } else {
+            auto metaProperty = metaObject->property(index);
+            if (Q_UNLIKELY(!metaProperty.writeOnGadget(bean, value))) {
+                qCCritical(mcIoc(),
+                           "bean '%s' write property named for '%s' failure",
+                           metaObject->className(),
+                           qPrintable(key));
+            }
+        }
+    }
+}
+
+void McGadgetBeanBuilder::callStartFunction(void *bean,
+                                            const QMetaObject *metaObject,
+                                            IMcBeanBuildable *buildableBean) noexcept
+{
+    callTagFunction(bean, metaObject, MC_STRINGIFY(MC_STARTED));
+    if (buildableBean != nullptr) {
+        buildableBean->buildStarted();
+    }
+}
+
+void McGadgetBeanBuilder::callFinishedFunction(void *bean,
+                                               const QMetaObject *metaObject,
+                                               IMcBeanBuildable *buildableBean) noexcept
+{
+    callTagFunction(bean, metaObject, MC_STRINGIFY(MC_FINISHED));
+    if (buildableBean != nullptr) {
+        buildableBean->buildFinished();
+    }
+}
+
+void McGadgetBeanBuilder::callTagFunction(void *bean, const QMetaObject *metaObject, const char *tag) noexcept
+{
+    if (bean == nullptr || metaObject == nullptr) {
+        return;
+    }
+    for (int i = 0; i < metaObject->methodCount(); ++i) {
+        auto method = metaObject->method(i);
+        if (!Mc::isContainedTag(method.tag(), tag)) {
+            continue;
+        }
+        //! 遍历当前对象的所有方法，调用所有被标记过的方法，从超基类开始到子类
+        method.invokeOnGadget(bean);
+    }
 }

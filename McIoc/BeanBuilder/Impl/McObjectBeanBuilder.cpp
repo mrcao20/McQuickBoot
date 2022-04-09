@@ -28,6 +28,7 @@
 
 #include "BeanFactory/IMcBeanReferenceResolver.h"
 #include "McBeanConnector.h"
+#include "McBeanEnum.h"
 #include "McBeanReference.h"
 #include "Utils/IMcBeanBuildable.h"
 
@@ -199,7 +200,7 @@ void McObjectBeanBuilder::addObjectConnect(QObject *bean, const QVariantMap &pro
         }
         QMetaMethod slot = slotMetaObj->method(slotIndex);
 
-        Qt::ConnectionType type = con->type();
+        Qt::ConnectionType type = convertEnum(QVariant::fromValue(con->type()), QVariant()).value<Qt::ConnectionType>();
 
         QObject::connect(sender, signal, receiver, slot, type);
     }

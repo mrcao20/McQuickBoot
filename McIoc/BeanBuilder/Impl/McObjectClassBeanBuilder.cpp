@@ -77,11 +77,16 @@ QVariant McObjectClassBeanBuilder::create() noexcept
     if (Q_UNLIKELY(!d->metaType.isValid())) {
         return QVariant();
     }
-    if (d->constructorArgs.isEmpty()) {
-        return createByMetaType();
-    } else {
+    if (hasConstructorArg()) {
         return createByMetaObject();
+    } else {
+        return createByMetaType();
     }
+}
+
+bool McObjectClassBeanBuilder::hasConstructorArg() const noexcept
+{
+    return !d->constructorArgs.isEmpty();
 }
 
 QVariant McObjectClassBeanBuilder::createByMetaType() noexcept
@@ -159,9 +164,7 @@ QVariant McObjectClassBeanBuilder::createByMetaObject() noexcept
         qCCritical(mcIoc(), "cannot create object: '%s'", d->metaType.metaType().name());
         return QVariant();
     }
-    QVariant beanVar = QVariant::fromValue(obj);
-    if (!beanVar.convert(d->metaType.pMetaType())) {
-        return QVariant();
-    }
+    auto beanStar = obj->qt_metacast(d->metaType.metaType().name());
+    QVariant beanVar(d->metaType.pMetaType(), &beanStar);
     return beanVar;
 }

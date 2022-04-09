@@ -55,15 +55,17 @@ protected:
     void complete(QVariant &bean, QThread *thread) noexcept override;
     void doMoveToThread(const QVariant &bean, QThread *thread, const QVariantHash &properties) noexcept override;
 
+    bool hasConstructorArg() const noexcept;
+
+private:
+    QVariant createByMetaType() noexcept;
+    QVariant createByMetaObject() noexcept;
+
     void addPropertyValue(void *bean, const QMetaObject *metaObject, const QVariantMap &pros);
 
     void callStartFunction(void *bean, const QMetaObject *metaObject, IMcBeanBuildable *buildableBean) noexcept;
     void callFinishedFunction(void *bean, const QMetaObject *metaObject, IMcBeanBuildable *buildableBean) noexcept;
     void callTagFunction(void *bean, const QMetaObject *metaObject, const char *tag) noexcept;
-
-private:
-    QVariant createByMetaType() noexcept;
-    QVariant createByMetaObject() noexcept;
 
 private:
     MC_DECL_PRIVATE(McGadgetBeanBuilder)

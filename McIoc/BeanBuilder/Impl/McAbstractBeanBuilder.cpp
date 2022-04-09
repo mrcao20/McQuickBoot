@@ -103,13 +103,14 @@ void McAbstractBeanBuilder::setReferenceResolver(IMcBeanReferenceResolver *resol
 QVariant McAbstractBeanBuilder::convert(const QVariant &value, const QVariant &extra) const noexcept
 {
     QVariant result;
-    if (value.canConvert<McBeanReferencePtr>()) {
+    auto type = value.metaType();
+    if (type == QMetaType::fromType<McBeanReferencePtr>()) {
         result = convertRef(value, extra);
-    } else if (value.canConvert<McBeanEnumPtr>()) {
+    } else if (type == QMetaType::fromType<McBeanEnumPtr>()) {
         result = convertEnum(value, extra);
-    } else if (value.canConvert<QVariantList>()) {
+    } else if (type == QMetaType::fromType<QVariantList>()) {
         result = convertList(value, extra);
-    } else if (value.canConvert<QMap<QVariant, QVariant>>()) {
+    } else if (type == QMetaType::fromType<QMap<QVariant, QVariant>>()) {
         result = convertMap(value, extra);
     } else {
         result = value;

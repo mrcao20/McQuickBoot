@@ -47,6 +47,7 @@ protected:
 
     virtual void setParent(QObject *bean, QObject *parent) noexcept;
 
+private:
     void addPropertyValue(QObject *bean, const QVariantMap &pros);
     void addObjectConnect(QObject *bean, const QVariantMap &pros);
     QObject *getPropertyObject(QObject *, const QString &proName, const QVariantMap &proValues) noexcept;

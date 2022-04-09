@@ -21,17 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include "McAbstractBeanBuilderReader.h"
 
-#include "../IMcDestroyer.h"
+MC_DECL_PRIVATE_DATA(McAbstractBeanBuilderReader)
+IMcBeanBuilderRegistry *registry{nullptr};
+MC_DECL_PRIVATE_DATA_END
 
-class McNormalDestroyer : public IMcDestroyer
+McAbstractBeanBuilderReader::McAbstractBeanBuilderReader() noexcept
 {
-    MC_INTERFACES(IMcDestroyer)
-public:
-    MC_BASE_DESTRUCTOR(McNormalDestroyer)
+    MC_NEW_PRIVATE_DATA(McAbstractBeanBuilderReader);
+}
 
-    void destroy() noexcept override { delete this; }
-};
+McAbstractBeanBuilderReader::~McAbstractBeanBuilderReader() {}
 
-MC_DECL_POINTER(McNormalDestroyer)
+IMcBeanBuilderRegistry *McAbstractBeanBuilderReader::registry() const noexcept
+{
+    return d->registry;
+}
+
+void McAbstractBeanBuilderReader::readBeanBuilder(IMcBeanBuilderRegistry *registry) noexcept
+{
+    d->registry = registry;
+    doReadBeanBuilder();
+}

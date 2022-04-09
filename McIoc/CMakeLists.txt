@@ -9,8 +9,6 @@ set(PROJECT_HEADERS
     McIocGlobal.h
     McGlobal.h
     Utils/IMcBeanBuildable.h
-    Utils/IMcDestroyer.h
-    Utils/Impl/McNormalDestroyer.h
     BeanFactory/IMcBeanFactory.h
     BeanFactory/IMcBeanBuilderRegistry.h
     BeanFactory/IMcBeanReferenceResolver.h
@@ -33,6 +31,9 @@ set(PROJECT_HEADERS
     BeanBuilder/Impl/McSharedGadgetBeanBuilder.h
     BeanBuilder/Impl/McListBeanBuilder.h
     BeanBuilder/Impl/McMapBeanBuilder.h
+    BeanBuilderReader/IMcBeanBuilderReader.h
+    BeanBuilderReader/Impl/McAbstractBeanBuilderReader.h
+    BeanBuilderReader/Impl/McXmlBeanBuilderReader.h
 )
 
 set(PROJECT_SOURCES
@@ -49,6 +50,8 @@ set(PROJECT_SOURCES
     BeanBuilder/Impl/McSharedGadgetBeanBuilder.cpp
     BeanBuilder/Impl/McListBeanBuilder.cpp
     BeanBuilder/Impl/McMapBeanBuilder.cpp
+    BeanBuilderReader/Impl/McAbstractBeanBuilderReader.cpp
+    BeanBuilderReader/Impl/McXmlBeanBuilderReader.cpp
 )
 
 add_library(${PROJECT_NAME} ${MC_BUILD_TYPE}
