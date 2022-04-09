@@ -74,13 +74,21 @@ void TestCore::loadLibraryCase()
     using TestLoadFunc = void (*)();
 #ifdef QT_DEBUG
 #ifdef Q_CC_GNU
+#ifdef Q_OS_UNIX
+    QString fileName = "../lib/libSimpleLibraryd.so";
+#else
     QString fileName = "./libSimpleLibraryd.dll";
+#endif
 #else
     QString fileName = "./SimpleLibraryd.dll";
 #endif
 #else
 #ifdef Q_CC_GNU
+#ifdef Q_OS_UNIX
+    QString fileName = "../lib/libSimpleLibrary.so";
+#else
     QString fileName = "./libSimpleLibrary.dll";
+#endif
 #else
     QString fileName = "./SimpleLibrary.dll";
 #endif
@@ -94,13 +102,21 @@ void TestCore::loadMemoryLibraryCase()
 {
 #ifdef QT_DEBUG
 #ifdef Q_CC_GNU
+#ifdef Q_OS_UNIX
+    QString fileName = "../lib/libSimpleLibraryd.so";
+#else
     QString fileName = "./libSimpleLibraryd.dll";
+#endif
 #else
     QString fileName = "./SimpleLibraryd.dll";
 #endif
 #else
 #ifdef Q_CC_GNU
+#ifdef Q_OS_UNIX
+    QString fileName = "../lib/libSimpleLibrary.so";
+#else
     QString fileName = "./libSimpleLibrary.dll";
+#endif
 #else
     QString fileName = "./SimpleLibrary.dll";
 #endif
