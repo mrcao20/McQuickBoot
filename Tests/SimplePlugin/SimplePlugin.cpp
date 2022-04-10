@@ -21,18 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include "SimplePlugin.h"
 
-#include <QObject>
+#include <QDebug>
 
-class TestCore : public QObject
+MC_STATIC()
+mcRegisterMetaType<SimplePlugin>();
+qDebug() << "SimplePlugin init";
+MC_DESTROY()
+qDebug() << "SimplePlugin destroy";
+MC_STATIC_END
+
+QString SimplePlugin::test()
 {
-    Q_OBJECT
-private slots:
-    void pathPlaceholderCase();
-    void eventDispatcherCase();
-    void metaTypeCase();
-    void loadPluginCase();
-    void loadLibraryCase();
-    void loadMemoryLibraryCase();
-};
+    return m_text;
+}

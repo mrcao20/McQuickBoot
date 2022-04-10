@@ -25,6 +25,8 @@
 
 #include <QTest>
 
+#include "McIoc/BeanBuilder/Impl/McSimpleBeanBuilder.h"
+#include <McCore/Utils/Impl/McNormalPluginChecker.h>
 #include <McIoc/BeanBuilder/Impl/McBeanReference.h>
 #include <McIoc/BeanBuilder/Impl/McListBeanBuilder.h>
 #include <McIoc/BeanBuilder/Impl/McMapBeanBuilder.h>
@@ -235,9 +237,95 @@ void BeanFactoryTest::sharedObjectTestCase()
     }
 }
 
-void BeanFactoryTest::pluginTestCase() {}
+void BeanFactoryTest::pluginTestCase()
+{
+    auto beanFactory = McDefaultBeanFactoryPtr::create();
+#ifdef QT_DEBUG
+    QString filePath("./SimplePlugind.dll");
+#else
+    QString filePath("./SimplePlugin.dll");
+#endif
+    {
+        QJsonObject json;
+        json.insert("IID", IObjectTest_IID);
+#ifdef QT_DEBUG
+        json.insert("debug", true);
+#endif
+        json.insert("className", "SimplePlugin");
+        QJsonObject metaJson;
+        metaJson.insert("checkKey", "simplePlugin");
+        json.insert("MetaData", metaJson);
+        auto checker = McNormalPluginCheckerPtr::create(json);
+        auto checkerBuilder = McSimpleBeanBuilderPtr::create(QVariant::fromValue(checker));
+        beanFactory->registerBeanBuilder("checkerTrue", checkerBuilder);
+        auto builder = McObjectPluginBeanBuilderPtr::create();
+        builder->setReferenceResolver(beanFactory.data());
+        builder->setPluginPath(filePath);
+        auto ref = McBeanReferencePtr::create();
+        ref->setName("checkerTrue");
+        builder->setPluginChecker(ref);
+        beanFactory->registerBeanBuilder("pluginTest", builder);
+    }
+    {
+        QJsonObject json;
+        json.insert("className", "SimplePlugin1");
+        auto checker = McNormalPluginCheckerPtr::create(json);
+        auto checkerBuilder = McSimpleBeanBuilderPtr::create(QVariant::fromValue(checker));
+        beanFactory->registerBeanBuilder("checkerFalse", checkerBuilder);
+        auto builder = McObjectPluginBeanBuilderPtr::create();
+        builder->setReferenceResolver(beanFactory.data());
+        builder->setPluginPath(filePath);
+        auto ref = McBeanReferencePtr::create();
+        ref->setName("checkerFalse");
+        builder->setPluginChecker(ref);
+        beanFactory->registerBeanBuilder("pluginTestFalse", builder);
+    }
+    {
+        auto builder = McObjectPluginBeanBuilderPtr::create();
+        builder->setPluginPath(filePath);
+        builder->addProperty("text", "pluginTestPro");
+        beanFactory->registerBeanBuilder("pluginTestPro", builder);
+    }
+    /********************************************************/
+    {
+        auto pluginTest = beanFactory->getBeanPointer<IObjectTest>("pluginTest");
+        QVERIFY(pluginTest != nullptr);
+        QVERIFY(pluginTest->test() == "SimplePlugin");
+    }
+    {
+        auto pluginTest = beanFactory->getBeanPointer<IObjectTest>("pluginTestFalse");
+        QVERIFY(pluginTest == nullptr);
+    }
+    {
+        auto pluginTest = beanFactory->getBeanPointer<IObjectTest>("pluginTestPro");
+        QVERIFY(pluginTest != nullptr);
+        QVERIFY(pluginTest->test() == "pluginTestPro");
+    }
+}
 
-void BeanFactoryTest::sharedPluginTestCase() {}
+void BeanFactoryTest::sharedPluginTestCase()
+{
+    //! 由于插件的特殊性，pluginTestCase和本用例使用的是同一个插件实例。
+    //! 所以Shared类型只能使用一次，否则会造成多次析构的错误。
+    auto beanFactory = McDefaultBeanFactoryPtr::create();
+#ifdef QT_DEBUG
+    QString filePath("./SimplePlugind.dll");
+#else
+    QString filePath("./SimplePlugin.dll");
+#endif
+    {
+        auto builder = McSharedObjectPluginBeanBuilderPtr::create();
+        builder->setPluginPath(filePath);
+        builder->addProperty("text", "pluginTestPro");
+        beanFactory->registerBeanBuilder("pluginTestPro", builder);
+    }
+    /********************************************************/
+    {
+        auto pluginTest = beanFactory->getBean<IObjectTest>("pluginTestPro");
+        QVERIFY(pluginTest != nullptr);
+        QVERIFY(pluginTest->test() == "pluginTestPro");
+    }
+}
 
 void BeanFactoryTest::listTestCase()
 {

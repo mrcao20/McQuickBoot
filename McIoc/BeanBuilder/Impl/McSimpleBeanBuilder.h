@@ -23,16 +23,26 @@
  */
 #pragma once
 
-#include <QObject>
+#include "../IMcBeanBuilder.h"
 
-class TestCore : public QObject
+MC_FORWARD_DECL_PRIVATE_DATA(McSimpleBeanBuilder)
+
+class MC_IOC_EXPORT McSimpleBeanBuilder : public IMcBeanBuilder
 {
-    Q_OBJECT
-private slots:
-    void pathPlaceholderCase();
-    void eventDispatcherCase();
-    void metaTypeCase();
-    void loadPluginCase();
-    void loadLibraryCase();
-    void loadMemoryLibraryCase();
+public:
+    McSimpleBeanBuilder(const QVariant &bean) noexcept;
+    ~McSimpleBeanBuilder();
+
+    void setPointer(bool val) noexcept;
+
+    QVariant build(QThread *thread) noexcept override;
+    void moveToThread(QThread *thread) noexcept override;
+    bool isSingleton() const noexcept override;
+    bool isPointer() const noexcept override;
+    void setReferenceResolver(IMcBeanReferenceResolver *resolver) noexcept override;
+
+private:
+    MC_DECL_PRIVATE(McSimpleBeanBuilder)
 };
+
+MC_DECL_POINTER(McSimpleBeanBuilder)

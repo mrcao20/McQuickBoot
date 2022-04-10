@@ -21,18 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include "McNormalPluginChecker.h"
 
-#include <QObject>
+MC_AUTO_INIT(McNormalPluginChecker)
+MC_INIT_END
 
-class TestCore : public QObject
+McNormalPluginChecker::McNormalPluginChecker(const QJsonObject &val) noexcept : m_checkJson(val) {}
+
+bool McNormalPluginChecker::check(const QJsonObject &json) noexcept
 {
-    Q_OBJECT
-private slots:
-    void pathPlaceholderCase();
-    void eventDispatcherCase();
-    void metaTypeCase();
-    void loadPluginCase();
-    void loadLibraryCase();
-    void loadMemoryLibraryCase();
-};
+    auto checkKeys = m_checkJson.keys();
+    for (auto &checkKey : qAsConst(checkKeys)) {
+        if (!json.contains(checkKey)) {
+            return false;
+        }
+        auto checkValue = m_checkJson.value(checkKey);
+        auto value = json.value(checkKey);
+        if (checkValue != value) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool McNormalPluginChecker::operator()(const QJsonObject &json)
+{
+    return check(json);
+}

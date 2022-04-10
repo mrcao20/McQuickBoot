@@ -23,16 +23,18 @@
  */
 #pragma once
 
-#include <QObject>
+#include "IObjectTest.h"
 
-class TestCore : public QObject
+class SimplePlugin : public QObject, public IObjectTest
 {
     Q_OBJECT
-private slots:
-    void pathPlaceholderCase();
-    void eventDispatcherCase();
-    void metaTypeCase();
-    void loadPluginCase();
-    void loadLibraryCase();
-    void loadMemoryLibraryCase();
+    Q_PLUGIN_METADATA(IID IObjectTest_IID FILE "SimplePluginData.json")
+    Q_INTERFACES(IObjectTest)
+    MC_INTERFACES(IObjectTest)
+    Q_PROPERTY(QString text MEMBER m_text)
+public:
+    QString test() override;
+
+private:
+    QString m_text{"SimplePlugin"};
 };

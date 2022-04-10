@@ -52,6 +52,7 @@ MC_DECL_POINTER(GadgetTest)
 class ObjectTest : public QObject, public IObjectTest, public IMcDestroyer
 {
     Q_OBJECT
+    Q_INTERFACES(IObjectTest)
     MC_FULL_DEFINE(ObjectTest, QObject, IObjectTest, IMcDestroyer)
     Q_PROPERTY(QString text MEMBER m_text)
 public:

@@ -15,6 +15,8 @@ set(PROJECT_HEADERS
     Event/McEventRouter.h
     Utils/McQVariantConverter.h
     Utils/IMcDestroyer.h
+    Utils/IMcPluginChecker.h
+    Utils/Impl/McNormalPluginChecker.h
     Utils/MemoryLibrary/McMemoryLibrary.h
 )
 
@@ -26,6 +28,7 @@ set(PROJECT_SOURCES
     Config/McRuntimeConfigValue.cpp
     Event/McEventDispatcher.cpp
     Event/McEventRouter.cpp
+    Utils/Impl/McNormalPluginChecker.cpp
     Utils/MemoryLibrary/McMemoryLibrary.cpp
 )
 

@@ -23,8 +23,13 @@
  */
 #include "McObjectPluginBeanBuilder.h"
 
+#include <McCore/Utils/IMcPluginChecker.h>
+
+#include "BeanFactory/IMcBeanReferenceResolver.h"
+
 MC_DECL_PRIVATE_DATA(McObjectPluginBeanBuilder)
 QString pluginPath;
+McBeanReferencePtr pluginChecker;
 MC_DECL_PRIVATE_DATA_END
 
 McObjectPluginBeanBuilder::McObjectPluginBeanBuilder() noexcept
@@ -39,6 +44,11 @@ void McObjectPluginBeanBuilder::setPluginPath(const QString &path) noexcept
     d->pluginPath = path;
 }
 
+void McObjectPluginBeanBuilder::setPluginChecker(const McBeanReferencePtr &ref) noexcept
+{
+    d->pluginChecker = ref;
+}
+
 bool McObjectPluginBeanBuilder::isPointer() const noexcept
 {
     return true;
@@ -46,7 +56,14 @@ bool McObjectPluginBeanBuilder::isPointer() const noexcept
 
 QVariant McObjectPluginBeanBuilder::create() noexcept
 {
-    auto obj = Mc::loadPlugin(d->pluginPath);
+    std::function<bool(const QJsonObject &)> checker = nullptr;
+    if (!d->pluginChecker.isNull()) {
+        auto c = resolver()->resolveBeanReferenceToQVariant(d->pluginChecker).value<IMcPluginCheckerPtr>();
+        if (!c.isNull()) {
+            checker = [c](const QJsonObject &json) { return c->check(json); };
+        }
+    }
+    auto obj = Mc::loadPlugin(d->pluginPath, checker);
     if (obj == nullptr) {
         return QVariant();
     }

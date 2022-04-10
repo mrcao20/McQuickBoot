@@ -25,10 +25,12 @@
 
 #include <QCoreApplication>
 #include <QFile>
+#include <QJsonObject>
 #include <QTest>
 
 #include <McCore/Event/McEventDispatcher.h>
 #include <McCore/McGlobal.h>
+#include <McCore/Utils/Impl/McNormalPluginChecker.h>
 
 #include "MetaTypeTest.h"
 
@@ -67,6 +69,25 @@ void TestCore::metaTypeCase()
     auto me = metaObj->method(index);
     QVERIFY(me.returnMetaType() == QMetaType::fromType<IMetaTypeTestPtr>());
     QVERIFY(me.parameterMetaType(0) == QMetaType::fromType<IMetaTypeTestPtr>());
+}
+
+void TestCore::loadPluginCase()
+{
+#ifdef QT_DEBUG
+    QString filePath("./SimplePlugind.dll");
+#else
+    QString filePath("./SimplePlugin.dll");
+#endif
+    QJsonObject json;
+    json.insert("IID", "org.quickboot.mc.test.IObjectTest");
+#ifdef QT_DEBUG
+    json.insert("debug", true);
+#endif
+    json.insert("className", "SimplePlugin");
+    QJsonObject metaJson;
+    metaJson.insert("checkKey", "simplePlugin");
+    json.insert("MetaData", metaJson);
+    QVERIFY(Mc::loadPlugin(filePath, McNormalPluginChecker(json)) != nullptr);
 }
 
 void TestCore::loadLibraryCase()

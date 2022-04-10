@@ -31,6 +31,7 @@ set(PROJECT_HEADERS
     BeanBuilder/Impl/McSharedGadgetBeanBuilder.h
     BeanBuilder/Impl/McListBeanBuilder.h
     BeanBuilder/Impl/McMapBeanBuilder.h
+    BeanBuilder/Impl/McSimpleBeanBuilder.h
     BeanBuilderReader/IMcBeanBuilderReader.h
     BeanBuilderReader/Impl/McAbstractBeanBuilderReader.h
     BeanBuilderReader/Impl/McXmlBeanBuilderReader.h
@@ -50,6 +51,7 @@ set(PROJECT_SOURCES
     BeanBuilder/Impl/McSharedGadgetBeanBuilder.cpp
     BeanBuilder/Impl/McListBeanBuilder.cpp
     BeanBuilder/Impl/McMapBeanBuilder.cpp
+    BeanBuilder/Impl/McSimpleBeanBuilder.cpp
     BeanBuilderReader/Impl/McAbstractBeanBuilderReader.cpp
     BeanBuilderReader/Impl/McXmlBeanBuilderReader.cpp
 )

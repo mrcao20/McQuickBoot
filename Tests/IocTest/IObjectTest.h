@@ -32,4 +32,7 @@ public:
 
     virtual QString test() = 0;
 };
+
 MC_DECL_POINTER(IObjectTest)
+#define IObjectTest_IID "org.quickboot.mc.test.IObjectTest"
+Q_DECLARE_INTERFACE(IObjectTest, IObjectTest_IID)

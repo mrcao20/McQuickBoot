@@ -34,6 +34,7 @@ public:
     ~McObjectPluginBeanBuilder();
 
     void setPluginPath(const QString &path) noexcept;
+    void setPluginChecker(const McBeanReferencePtr &ref) noexcept;
 
     bool isPointer() const noexcept override;
 

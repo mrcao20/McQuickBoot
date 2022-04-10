@@ -21,18 +21,49 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include "McSimpleBeanBuilder.h"
 
-#include <QObject>
+MC_DECL_PRIVATE_DATA(McSimpleBeanBuilder)
+QVariant bean;
+bool isPointer{false};
+MC_DECL_PRIVATE_DATA_END
 
-class TestCore : public QObject
+McSimpleBeanBuilder::McSimpleBeanBuilder(const QVariant &bean) noexcept
 {
-    Q_OBJECT
-private slots:
-    void pathPlaceholderCase();
-    void eventDispatcherCase();
-    void metaTypeCase();
-    void loadPluginCase();
-    void loadLibraryCase();
-    void loadMemoryLibraryCase();
-};
+    MC_NEW_PRIVATE_DATA(McSimpleBeanBuilder);
+
+    d->bean = bean;
+}
+
+McSimpleBeanBuilder::~McSimpleBeanBuilder() {}
+
+void McSimpleBeanBuilder::setPointer(bool val) noexcept
+{
+    d->isPointer = val;
+}
+
+QVariant McSimpleBeanBuilder::build(QThread *thread) noexcept
+{
+    Q_UNUSED(thread)
+    return d->bean;
+}
+
+void McSimpleBeanBuilder::moveToThread(QThread *thread) noexcept
+{
+    Q_UNUSED(thread)
+}
+
+bool McSimpleBeanBuilder::isSingleton() const noexcept
+{
+    return true;
+}
+
+bool McSimpleBeanBuilder::isPointer() const noexcept
+{
+    return d->isPointer;
+}
+
+void McSimpleBeanBuilder::setReferenceResolver(IMcBeanReferenceResolver *resolver) noexcept
+{
+    Q_UNUSED(resolver)
+}

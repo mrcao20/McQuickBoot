@@ -23,16 +23,16 @@
  */
 #pragma once
 
-#include <QObject>
+#include "../McGlobal.h"
 
-class TestCore : public QObject
+class QJsonObject;
+
+class IMcPluginChecker
 {
-    Q_OBJECT
-private slots:
-    void pathPlaceholderCase();
-    void eventDispatcherCase();
-    void metaTypeCase();
-    void loadPluginCase();
-    void loadLibraryCase();
-    void loadMemoryLibraryCase();
+public:
+    MC_BASE_DESTRUCTOR(IMcPluginChecker)
+
+    virtual bool check(const QJsonObject &json) noexcept = 0;
 };
+
+MC_DECL_POINTER(IMcPluginChecker)
