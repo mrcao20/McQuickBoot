@@ -373,38 +373,168 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
   This Source Code Form is "Incompatible With Secondary Licenses", as
   defined by the Mozilla Public License, v. 2.0.
 */
-#pragma once
+#include "McMemoryLibrary.h"
 
-#include "../../McGlobal.h"
+#include <QCryptographicHash>
+#include <QSharedData>
 
-struct McLibraryLoaderData;
+#ifdef Q_OS_WIN
+#include "MemoryModule.h"
+#else
+#include "memload.h"
+#endif
 
-/*!
- * \brief The McLibraryLoader class
- * 
- * Windows平台只能是MSVC，在MINGW下load时会崩溃
- */
-class McLibraryLoader
+struct McMemoryLibraryData : public QSharedData
 {
-public:
-    McLibraryLoader() noexcept;
-    McLibraryLoader(const QByteArray &data) noexcept;
-    ~McLibraryLoader();
-    McLibraryLoader(const McLibraryLoader &o) noexcept;
-    McLibraryLoader(McLibraryLoader &&o) noexcept;
-    McLibraryLoader &operator=(const McLibraryLoader &o) noexcept;
-    McLibraryLoader &operator=(McLibraryLoader &&o) noexcept;
+    QByteArray hashCode;
+    QString errorString;
+    QByteArray libraryData;
+    void *handle{nullptr};
 
-    void setData(const QByteArray &data) noexcept;
-
-    bool load() noexcept;
-    bool unload() noexcept;
-
-    bool isLoaded() const noexcept;
-    QString errorString() const noexcept;
-    QByteArray hashCode() const noexcept;
-    QFunctionPointer resolve(const QLatin1String &symbol) noexcept;
-
-private:
-    QExplicitlySharedDataPointer<McLibraryLoaderData> d;
+    ~McMemoryLibraryData()
+    {
+        if (handle != nullptr) {
+#ifdef Q_OS_WIN
+            MemoryFreeLibrary(handle);
+#else
+            memory_free_library(handle);
+#endif
+            handle = nullptr;
+        }
+    }
 };
+
+MC_GLOBAL_STATIC_BEGIN(staticData)
+QHash<QByteArray, QExplicitlySharedDataPointer<McMemoryLibraryData>> libraryLoaderDatas;
+MC_GLOBAL_STATIC_END(staticData)
+
+McMemoryLibrary::McMemoryLibrary() noexcept
+{
+    d.reset(new McMemoryLibraryData());
+}
+
+McMemoryLibrary::McMemoryLibrary(const QByteArray &data) noexcept
+{
+    setData(data);
+}
+
+McMemoryLibrary::~McMemoryLibrary() {}
+
+McMemoryLibrary::McMemoryLibrary(const McMemoryLibrary &o) noexcept : d(o.d) {}
+
+McMemoryLibrary::McMemoryLibrary(McMemoryLibrary &&o) noexcept
+    : d(qExchange(o.d, QExplicitlySharedDataPointer<McMemoryLibraryData>()))
+{}
+
+McMemoryLibrary &McMemoryLibrary::operator=(const McMemoryLibrary &o) noexcept
+{
+    d = o.d;
+    return *this;
+}
+
+McMemoryLibrary &McMemoryLibrary::operator=(McMemoryLibrary &&o) noexcept
+{
+    McMemoryLibrary moved(std::move(o));
+    qSwap(d, o.d);
+    return *this;
+}
+
+void McMemoryLibrary::setData(const QByteArray &data) noexcept
+{
+    QCryptographicHash hash(QCryptographicHash::Md5);
+    hash.addData(data);
+    auto result = hash.result();
+    d = staticData->libraryLoaderDatas.value(result);
+    if (!d) {
+        d.reset(new McMemoryLibraryData());
+        d->hashCode = result.toHex();
+        d->libraryData = data;
+        staticData->libraryLoaderDatas.insert(result, d);
+    }
+}
+
+bool McMemoryLibrary::load() noexcept
+{
+    if (isLoaded()) {
+        return true;
+    }
+    if (d->libraryData.isEmpty()) {
+        d->errorString = "请先调用setData设置内存数据";
+        return false;
+    }
+#ifdef Q_OS_WIN
+    d->handle = MemoryLoadLibrary(d->libraryData.constData(), d->libraryData.size());
+#else
+    d->handle = memory_load_library(d->libraryData.constData(), d->libraryData.size());
+#endif
+    if (d->handle == nullptr) {
+#ifdef Q_OS_WIN
+        auto errorCode = GetLastError();
+        LPTSTR lpBuffer = NULL;
+        if (0
+            == FormatMessage(
+                FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM
+                    | FORMAT_MESSAGE_IGNORE_INSERTS, //标志位，决定如何说明lpSource参数，dwFlags的低位指定如何处理换行功能在输出缓冲区，也决定最大宽度的格式化输出行,可选参数。
+                NULL,                                //根据dwFlags标志而定。
+                errorCode, //请求的消息的标识符。当dwFlags标志为FORMAT_MESSAGE_FROM_STRING时会被忽略。
+                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), //请求的消息的语言标识符。
+                (LPTSTR) &lpBuffer,                        //接收错误信息描述的缓冲区指针。
+                0, //如果FORMAT_MESSAGE_ALLOCATE_BUFFER标志没有被指定，这个参数必须指定为输出缓冲区的大小，如果指定值为0，这个参数指定为分配给输出缓冲区的最小数。
+                NULL //保存格式化信息中的插入值的一个数组。
+                )) { //失败
+            d->errorString = QString("未定义错误描述(%1)").arg(errorCode);
+        } else { //成功
+            d->errorString = QString::fromWCharArray(lpBuffer);
+            LocalFree(lpBuffer);
+        }
+#else
+        d->errorString = memory_get_errormsg();
+#endif
+    }
+    if (isLoaded()) {
+        d->libraryData.clear();
+    }
+    return isLoaded();
+}
+
+bool McMemoryLibrary::unload() noexcept
+{
+    if (!isLoaded()) {
+        return false;
+    }
+#ifdef Q_OS_WIN
+    MemoryFreeLibrary(d->handle);
+#else
+    memory_free_library(d->handle);
+#endif
+    d->handle = nullptr;
+    return true;
+}
+
+bool McMemoryLibrary::isLoaded() const noexcept
+{
+    return d->handle != nullptr;
+}
+
+QString McMemoryLibrary::errorString() const noexcept
+{
+    return d->errorString;
+}
+
+QByteArray McMemoryLibrary::hashCode() const noexcept
+{
+    return d->hashCode;
+}
+
+QFunctionPointer McMemoryLibrary::resolve(const QLatin1String &symbol) noexcept
+{
+    if (!isLoaded()) {
+        return nullptr;
+    }
+#ifdef Q_OS_WIN
+    auto func = MemoryGetProcAddress(d->handle, symbol.data());
+#else
+    auto func = memory_get_procaddr(d->handle, symbol.data());
+#endif
+    return (QFunctionPointer) func;
+}

@@ -33,7 +33,6 @@ public:
     McObjectPluginBeanBuilder() noexcept;
     ~McObjectPluginBeanBuilder();
 
-    McMetaType metaType() const noexcept;
     void setPluginPath(const QString &path) noexcept;
 
     bool isPointer() const noexcept override;

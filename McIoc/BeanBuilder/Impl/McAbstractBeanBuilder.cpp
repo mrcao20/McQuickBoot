@@ -33,7 +33,9 @@
 
 MC_DECL_PRIVATE_DATA(McAbstractBeanBuilder)
 bool isSingleton{true};
+McMetaType metaType;
 QVariantHash properties;
+QList<McAbstractBeanBuilder::ConstructorArg> constructorArgs;
 IMcBeanReferenceResolver *resolver{nullptr};
 QVariant bean;
 QVariant earlyBean;
@@ -51,9 +53,29 @@ void McAbstractBeanBuilder::setSingleton(bool val) noexcept
     d->isSingleton = val;
 }
 
+McMetaType McAbstractBeanBuilder::metaType() const noexcept
+{
+    return d->metaType;
+}
+
+void McAbstractBeanBuilder::setMetaType(const McMetaType &type) noexcept
+{
+    d->metaType = type;
+}
+
 void McAbstractBeanBuilder::addProperty(const QString &name, const QVariant &value) noexcept
 {
     d->properties.insert(name, value);
+}
+
+void McAbstractBeanBuilder::addConstructorArg(int index, const QVariant &val) noexcept
+{
+    d->constructorArgs.append({index, QByteArray(), val});
+}
+
+void McAbstractBeanBuilder::addConstructorArg(const QByteArray &name, const QVariant &val) noexcept
+{
+    d->constructorArgs.append({-1, name, val});
 }
 
 IMcBeanReferenceResolver *McAbstractBeanBuilder::resolver() const noexcept
@@ -98,6 +120,18 @@ bool McAbstractBeanBuilder::isSingleton() const noexcept
 void McAbstractBeanBuilder::setReferenceResolver(IMcBeanReferenceResolver *resolver) noexcept
 {
     d->resolver = resolver;
+}
+
+QVariant McAbstractBeanBuilder::create() noexcept
+{
+    if (Q_UNLIKELY(!d->metaType.isValid())) {
+        return QVariant();
+    }
+    if (hasConstructorArg()) {
+        return createByMetaObject();
+    } else {
+        return createByMetaType();
+    }
 }
 
 QVariant McAbstractBeanBuilder::convert(const QVariant &value, const QVariant &extra) const noexcept
@@ -215,6 +249,11 @@ QVariant McAbstractBeanBuilder::convertMap(const QVariant &value, const QVariant
     return QVariant::fromValue(result);
 }
 
+bool McAbstractBeanBuilder::hasConstructorArg() const noexcept
+{
+    return !d->constructorArgs.isEmpty();
+}
+
 QVariantMap McAbstractBeanBuilder::buildProperties(const QVariant &extra) const noexcept
 {
     QVariantMap pros;
@@ -224,4 +263,86 @@ QVariantMap McAbstractBeanBuilder::buildProperties(const QVariant &extra) const 
         pros.insert(item.key(), convert(item.value(), extra));
     }
     return pros;
+}
+
+QVariant McAbstractBeanBuilder::createByMetaType() noexcept
+{
+    auto beanStar = d->metaType.metaType().create();
+    if (Q_UNLIKELY(beanStar == nullptr)) {
+        qCCritical(mcIoc(), "cannot create object: '%s'", d->metaType.metaType().name());
+        return QVariant();
+    }
+    QVariant beanVar(d->metaType.pMetaType(), &beanStar);
+    return beanVar;
+}
+
+QVariant McAbstractBeanBuilder::createByMetaObject() noexcept
+{
+    if (d->constructorArgs.size() > Q_METAMETHOD_INVOKE_MAX_ARGS) {
+        qCCritical(mcIoc(), "the number of constructor parameters cannot more than %d", Q_METAMETHOD_INVOKE_MAX_ARGS);
+        return QVariant();
+    }
+    auto metaObj = d->metaType.pMetaType().metaObject();
+    if (Q_UNLIKELY(metaObj == nullptr)) {
+        return QVariant();
+    }
+    QMap<int, QVariant> argValues;
+    QMetaMethod constructor;
+    for (int i = 0; i < metaObj->constructorCount(); ++i) {
+        auto method = metaObj->constructor(i);
+        if (method.parameterCount() != d->constructorArgs.size()) {
+            continue;
+        }
+        bool isOk = true;
+        auto paramNames = method.parameterNames();
+        for (auto &arg : qAsConst(d->constructorArgs)) {
+            int index = -1;
+            if (arg.index >= 0 && arg.index < method.parameterCount()) {
+                index = arg.index;
+            } else {
+                index = paramNames.indexOf(arg.name);
+            }
+            if (index == -1) {
+                isOk = false;
+                break;
+            }
+            if (argValues.contains(index)) {
+                isOk = false;
+                break;
+            }
+            argValues.insert(index, convert(arg.value, QVariant()));
+        }
+        if (isOk) {
+            constructor = method;
+            break;
+        } else {
+            argValues.clear();
+        }
+    }
+    if (argValues.size() != d->constructorArgs.size()) {
+        return QVariant();
+    }
+    QVector<QGenericArgument> arguments(Q_METAMETHOD_INVOKE_MAX_ARGS);
+    for (int i = 0; i < argValues.size(); ++i) {
+        arguments.replace(i, QGenericArgument(constructor.parameterTypeName(i).constData(), argValues[i].constData()));
+    }
+    void *beanStar = nullptr;
+    void *param[] = {&beanStar,
+                     arguments.at(0).data(),
+                     arguments.at(1).data(),
+                     arguments.at(2).data(),
+                     arguments.at(3).data(),
+                     arguments.at(4).data(),
+                     arguments.at(5).data(),
+                     arguments.at(6).data(),
+                     arguments.at(7).data(),
+                     arguments.at(8).data(),
+                     arguments.at(9).data()};
+    auto idx = metaObj->indexOfConstructor(constructor.methodSignature().constData());
+    if (metaObj->static_metacall(QMetaObject::CreateInstance, idx, param) >= 0 || beanStar == nullptr) {
+        qCCritical(mcIoc(), "cannot create object: '%s'", d->metaType.metaType().name());
+        return QVariant();
+    }
+    QVariant beanVar(d->metaType.pMetaType(), &beanStar);
+    return beanVar;
 }

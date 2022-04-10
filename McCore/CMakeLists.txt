@@ -15,7 +15,7 @@ set(PROJECT_HEADERS
     Event/McEventRouter.h
     Utils/McQVariantConverter.h
     Utils/IMcDestroyer.h
-    Utils/LibraryLoader/McLibraryLoader.h
+    Utils/MemoryLibrary/McMemoryLibrary.h
 )
 
 set(PROJECT_SOURCES
@@ -26,15 +26,15 @@ set(PROJECT_SOURCES
     Config/McRuntimeConfigValue.cpp
     Event/McEventDispatcher.cpp
     Event/McEventRouter.cpp
-    Utils/LibraryLoader/McLibraryLoader.cpp
+    Utils/MemoryLibrary/McMemoryLibrary.cpp
 )
 
 if(WIN32)
-    list(APPEND PROJECT_HEADERS Utils/LibraryLoader/MemoryModule.h)
-    list(APPEND PROJECT_SOURCES Utils/LibraryLoader/MemoryModule.c)
+    list(APPEND PROJECT_HEADERS Utils/MemoryLibrary/MemoryModule.h)
+    list(APPEND PROJECT_SOURCES Utils/MemoryLibrary/MemoryModule.c)
 else()
-    list(APPEND PROJECT_HEADERS Utils/LibraryLoader/memload.h)
-    list(APPEND PROJECT_SOURCES Utils/LibraryLoader/memload.cpp)
+    list(APPEND PROJECT_HEADERS Utils/MemoryLibrary/memload.h)
+    list(APPEND PROJECT_SOURCES Utils/MemoryLibrary/memload.cpp)
 endif()
 
 add_library(${PROJECT_NAME} ${MC_BUILD_TYPE}

@@ -30,11 +30,21 @@ MC_FORWARD_DECL_PRIVATE_DATA(McAbstractBeanBuilder)
 class MC_IOC_EXPORT McAbstractBeanBuilder : public IMcBeanBuilder
 {
 public:
+    struct ConstructorArg
+    {
+        int index{-1};
+        QByteArray name;
+        QVariant value;
+    };
     McAbstractBeanBuilder() noexcept;
     ~McAbstractBeanBuilder() override;
 
     void setSingleton(bool val) noexcept;
+    McMetaType metaType() const noexcept;
+    void setMetaType(const McMetaType &type) noexcept;
     void addProperty(const QString &name, const QVariant &value) noexcept;
+    void addConstructorArg(int index, const QVariant &val) noexcept;
+    void addConstructorArg(const QByteArray &name, const QVariant &val) noexcept;
     IMcBeanReferenceResolver *resolver() const noexcept;
 
     QVariant build(QThread *thread) noexcept override;
@@ -43,9 +53,10 @@ public:
     void setReferenceResolver(IMcBeanReferenceResolver *resolver) noexcept override;
 
 protected:
-    virtual QVariant create() noexcept = 0;
     virtual void complete(QVariant &bean, QThread *thread) noexcept = 0;
     virtual void doMoveToThread(const QVariant &bean, QThread *thread, const QVariantHash &properties) noexcept = 0;
+
+    virtual QVariant create() noexcept;
 
     virtual QVariant convert(const QVariant &value, const QVariant &extra) const noexcept;
     virtual QVariant convertRef(const QVariant &value, const QVariant &extra) const noexcept;
@@ -53,7 +64,12 @@ protected:
     virtual QVariant convertList(const QVariant &value, const QVariant &extra) const noexcept;
     virtual QVariant convertMap(const QVariant &value, const QVariant &extra) const noexcept;
 
+    bool hasConstructorArg() const noexcept;
     QVariantMap buildProperties(const QVariant &extra = QVariant()) const noexcept;
+
+private:
+    QVariant createByMetaType() noexcept;
+    QVariant createByMetaObject() noexcept;
 
 private:
     MC_DECL_PRIVATE(McAbstractBeanBuilder)

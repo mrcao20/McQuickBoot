@@ -25,11 +25,18 @@
 
 #include <McCore/McGlobal.h>
 
+#ifdef Q_CC_MINGW
+static int i = []() {
+    qDebug() << "test load ioc";
+    return 1;
+}();
+#else
 MC_STATIC()
 qDebug() << "test load ioc";
 MC_DESTROY()
 qDebug() << "test load ioc destory";
 MC_STATIC_END
+#endif
 
 extern "C" Q_DECL_EXPORT void testLoadFunc()
 {

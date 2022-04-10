@@ -25,6 +25,7 @@
 
 #include <QTest>
 
+#include <McIoc/BeanBuilder/Impl/McBeanReference.h>
 #include <McIoc/BeanBuilder/Impl/McListBeanBuilder.h>
 #include <McIoc/BeanBuilder/Impl/McMapBeanBuilder.h>
 #include <McIoc/BeanBuilder/Impl/McSharedGadgetBeanBuilder.h>
@@ -168,20 +169,196 @@ void BeanFactoryTest::objectTestCase()
         builder->addProperty("text", "objectTestPro");
         beanFactory->registerBeanBuilder("objectTestPro", builder);
     }
+    {
+        auto builder = McObjectClassBeanBuilderPtr::create();
+        builder->setReferenceResolver(beanFactory.data());
+        builder->setClassName("ObjectTest");
+        builder->addConstructorArg(0, "objectTestConstructor");
+        beanFactory->registerBeanBuilder("objectTestConstructor", builder);
+    }
     /********************************************************/
     {
         auto objectTest = beanFactory->getBeanPointer<IObjectTest>("objectTest");
         QVERIFY(objectTest != nullptr);
         QVERIFY(objectTest->test() == "objectTest");
     }
+    {
+        auto objectTest = beanFactory->getBeanPointer<IObjectTest>("objectTestPro");
+        QVERIFY(objectTest != nullptr);
+        QVERIFY(objectTest->test() == "objectTestPro");
+    }
+    {
+        auto objectTest = beanFactory->getBeanPointer<IObjectTest>("objectTestConstructor");
+        QVERIFY(objectTest != nullptr);
+        QVERIFY(objectTest->test() == "objectTestConstructor");
+    }
 }
 
-void BeanFactoryTest::sharedObjectTestCase() {}
+void BeanFactoryTest::sharedObjectTestCase()
+{
+    auto beanFactory = McDefaultBeanFactoryPtr::create();
+    {
+        auto builder = McSharedObjectClassBeanBuilderPtr::create();
+        builder->setReferenceResolver(beanFactory.data());
+        builder->setClassName("ObjectTest");
+        beanFactory->registerBeanBuilder("objectTestShared", builder);
+    }
+    {
+        auto builder = McSharedObjectClassBeanBuilderPtr::create();
+        builder->setReferenceResolver(beanFactory.data());
+        builder->setClassName("ObjectTest");
+        builder->addProperty("text", "objectTestSharedPro");
+        beanFactory->registerBeanBuilder("objectTestSharedPro", builder);
+    }
+    {
+        auto builder = McSharedObjectClassBeanBuilderPtr::create();
+        builder->setReferenceResolver(beanFactory.data());
+        builder->setClassName("ObjectTest");
+        builder->addConstructorArg("val", "objectTestSharedConstructor");
+        beanFactory->registerBeanBuilder("objectTestSharedConstructor", builder);
+    }
+    /********************************************************/
+    {
+        auto objectTest = beanFactory->getBean<IObjectTest>("objectTestShared");
+        QVERIFY(objectTest != nullptr);
+        QVERIFY(objectTest->test() == "objectTest");
+    }
+    {
+        auto objectTest = beanFactory->getBean<IObjectTest>("objectTestSharedPro");
+        QVERIFY(objectTest != nullptr);
+        QVERIFY(objectTest->test() == "objectTestSharedPro");
+    }
+    {
+        auto objectTest = beanFactory->getBean<IObjectTest>("objectTestSharedConstructor");
+        QVERIFY(objectTest != nullptr);
+        QVERIFY(objectTest->test() == "objectTestSharedConstructor");
+    }
+}
 
 void BeanFactoryTest::pluginTestCase() {}
 
 void BeanFactoryTest::sharedPluginTestCase() {}
 
-void BeanFactoryTest::listTestCase() {}
+void BeanFactoryTest::listTestCase()
+{
+    auto beanFactory = McDefaultBeanFactoryPtr::create();
+    {
+        auto builder = McSharedGadgetBeanBuilderPtr::create();
+        builder->setReferenceResolver(beanFactory.data());
+        builder->setClassName("PodTest");
+        beanFactory->registerBeanBuilder("podTestShared", builder);
+    }
+    {
+        auto builder = McSharedObjectClassBeanBuilderPtr::create();
+        builder->setReferenceResolver(beanFactory.data());
+        builder->setClassName("ObjectTest");
+        beanFactory->registerBeanBuilder("objectTestShared", builder);
+    }
+    /********************************************************/
+    {
+        auto builder = McListBeanBuilderPtr::create();
+        builder->setReferenceResolver(beanFactory.data());
+        auto ref = McBeanReferencePtr::create();
+        ref->setName("podTestShared");
+        builder->addValue(QVariant::fromValue(ref));
+        beanFactory->registerBeanBuilder("podList", builder);
+    }
+    {
+        auto builder = McListBeanBuilderPtr::create();
+        builder->setReferenceResolver(beanFactory.data());
+        auto ref = McBeanReferencePtr::create();
+        ref->setName("objectTestShared");
+        builder->addValue(QVariant::fromValue(ref));
+        beanFactory->registerBeanBuilder("objectList", builder);
+    }
+    /********************************************************/
+    {
+        mcRegisterContainerConverter<QList<PodTestPtr>>();
+        auto podList = beanFactory->getBeanToVariant("podList").value<QList<PodTestPtr>>();
+        QVERIFY(podList.size() == 1);
+        auto debug = qDebug();
+        for (auto pod : podList) {
+            debug << pod->text << " ";
+        }
+    }
+    {
+        mcRegisterContainerConverter<QList<IObjectTestPtr>>();
+        auto podList = beanFactory->getBeanToVariant("objectList").value<QList<IObjectTestPtr>>();
+        QVERIFY(podList.size() == 1);
+        auto debug = qDebug();
+        for (auto pod : podList) {
+            debug << pod->test() << " ";
+        }
+    }
+}
 
-void BeanFactoryTest::mapTestCase() {}
+void BeanFactoryTest::mapTestCase()
+{
+    auto beanFactory = McDefaultBeanFactoryPtr::create();
+    {
+        auto builder = McSharedGadgetBeanBuilderPtr::create();
+        builder->setReferenceResolver(beanFactory.data());
+        builder->setClassName("PodTest");
+        beanFactory->registerBeanBuilder("podTestShared", builder);
+    }
+    {
+        auto builder = McSharedObjectClassBeanBuilderPtr::create();
+        builder->setReferenceResolver(beanFactory.data());
+        builder->setClassName("ObjectTest");
+        beanFactory->registerBeanBuilder("objectTestShared", builder);
+    }
+    /********************************************************/
+    {
+        auto builder = McMapBeanBuilderPtr::create();
+        builder->setReferenceResolver(beanFactory.data());
+        {
+            auto ref = McBeanReferencePtr::create();
+            ref->setName("podTestShared");
+            builder->addValue("pod1", QVariant::fromValue(ref));
+        }
+        {
+            auto ref = McBeanReferencePtr::create();
+            ref->setName("podTestShared");
+            builder->addValue("pod2", QVariant::fromValue(ref));
+        }
+        beanFactory->registerBeanBuilder("podMap", builder);
+    }
+    {
+        auto builder = McMapBeanBuilderPtr::create();
+        builder->setReferenceResolver(beanFactory.data());
+        {
+            auto ref = McBeanReferencePtr::create();
+            ref->setName("objectTestShared");
+            builder->addValue("obj1", QVariant::fromValue(ref));
+        }
+        {
+            auto ref = McBeanReferencePtr::create();
+            ref->setName("objectTestShared");
+            builder->addValue("obj2", QVariant::fromValue(ref));
+        }
+        beanFactory->registerBeanBuilder("objMap", builder);
+    }
+    /********************************************************/
+    {
+        mcRegisterContainerConverter<QMap<QString, PodTestPtr>>();
+        auto podMap = beanFactory->getBeanToVariant("podMap").value<QMap<QString, PodTestPtr>>();
+        QVERIFY(podMap.size() == 2);
+        auto debug = qDebug();
+        QMapIterator<QString, PodTestPtr> itr(podMap);
+        while (itr.hasNext()) {
+            itr.next();
+            debug << itr.key() << " " << itr.value().data() << "; ";
+        }
+    }
+    {
+        mcRegisterContainerConverter<QMap<QString, IObjectTestPtr>>();
+        auto objMap = beanFactory->getBeanToVariant("objMap").value<QMap<QString, IObjectTestPtr>>();
+        QVERIFY(objMap.size() == 2);
+        auto debug = qDebug();
+        QMapIterator<QString, IObjectTestPtr> itr(objMap);
+        while (itr.hasNext()) {
+            itr.next();
+            debug << itr.key() << " " << itr.value().data() << "; ";
+        }
+    }
+}

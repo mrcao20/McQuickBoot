@@ -30,7 +30,7 @@
 #include <QTimer>
 #include <QUrl>
 
-#include "Utils/LibraryLoader/McLibraryLoader.h"
+#include "Utils/MemoryLibrary/McMemoryLibrary.h"
 
 Q_LOGGING_CATEGORY(mcCore, "mc.core")
 
@@ -117,11 +117,11 @@ QSharedPointer<QLibrary> loadLibraryHelper(const QString &path, const QLatin1Str
     return QSharedPointer<QLibrary>();
 }
 
-McLibraryLoader loadMemoryLibraryHelper(const QByteArray &data, const QLatin1String &checkSymbol) noexcept
+McMemoryLibrary loadMemoryLibraryHelper(const QByteArray &data, const QLatin1String &checkSymbol) noexcept
 {
-    McLibraryLoader library(data);
+    McMemoryLibrary library(data);
     if (!library.load()) {
-        return McLibraryLoader();
+        return McMemoryLibrary();
     }
     auto cleanup = qScopeGuard([]() { Mc::callPreRoutine(); });
     if (checkSymbol.isNull() || checkSymbol.isEmpty()) {
@@ -134,7 +134,7 @@ McLibraryLoader loadMemoryLibraryHelper(const QByteArray &data, const QLatin1Str
     cleanup.dismiss();
     Mc::cleanPreRoutine();
     library.unload();
-    return McLibraryLoader();
+    return McMemoryLibrary();
 }
 } // namespace
 

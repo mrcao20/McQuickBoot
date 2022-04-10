@@ -24,7 +24,6 @@
 #include "McObjectPluginBeanBuilder.h"
 
 MC_DECL_PRIVATE_DATA(McObjectPluginBeanBuilder)
-McMetaType metaType;
 QString pluginPath;
 MC_DECL_PRIVATE_DATA_END
 
@@ -34,11 +33,6 @@ McObjectPluginBeanBuilder::McObjectPluginBeanBuilder() noexcept
 }
 
 McObjectPluginBeanBuilder::~McObjectPluginBeanBuilder() {}
-
-McMetaType McObjectPluginBeanBuilder::metaType() const noexcept
-{
-    return d->metaType;
-}
 
 void McObjectPluginBeanBuilder::setPluginPath(const QString &path) noexcept
 {
@@ -57,8 +51,8 @@ QVariant McObjectPluginBeanBuilder::create() noexcept
         return QVariant();
     }
     const char *className = obj->metaObject()->className();
-    d->metaType = McMetaType::fromTypeName(className);
+    setMetaType(McMetaType::fromTypeName(className));
     auto beanStar = obj->qt_metacast(className);
-    QVariant beanVar(d->metaType.pMetaType(), &beanStar);
+    QVariant beanVar(metaType().pMetaType(), &beanStar);
     return beanVar;
 }
