@@ -78,6 +78,10 @@ void TestCore::loadPluginCase()
 #else
     QString filePath("./SimplePlugin.dll");
 #endif
+#ifdef Q_OS_LINUX
+    filePath.prepend("../lib/");
+    filePath.replace(".dll", ".so");
+#endif
     QJsonObject json;
     json.insert("IID", "org.quickboot.mc.test.IObjectTest");
 #ifdef QT_DEBUG
@@ -98,6 +102,10 @@ void TestCore::loadLibraryCase()
 #else
     QString fileName("./SimpleLibrary.dll");
 #endif
+#ifdef Q_OS_LINUX
+    fileName.prepend("../lib/");
+    fileName.replace(".dll", ".so");
+#endif
     TestLoadFunc func = Mc::loadLibrary(Mc::toAbsolutePath(fileName), QLatin1String("testLoadFunc"), QLatin1String(""));
     QVERIFY(func != nullptr);
     func();
@@ -109,6 +117,10 @@ void TestCore::loadMemoryLibraryCase()
     QString fileName("./SimpleLibraryd.dll");
 #else
     QString fileName("./SimpleLibrary.dll");
+#endif
+#ifdef Q_OS_LINUX
+    fileName.prepend("../lib/");
+    fileName.replace(".dll", ".so");
 #endif
     QFile file(fileName);
     QVERIFY(file.open(QIODevice::ReadOnly));

@@ -245,6 +245,10 @@ void BeanFactoryTest::pluginTestCase()
 #else
     QString filePath("./SimplePlugin.dll");
 #endif
+#ifdef Q_OS_LINUX
+    filePath.prepend("../lib/");
+    filePath.replace(".dll", ".so");
+#endif
     {
         QJsonObject json;
         json.insert("IID", IObjectTest_IID);
@@ -312,6 +316,10 @@ void BeanFactoryTest::sharedPluginTestCase()
     QString filePath("./SimplePlugind.dll");
 #else
     QString filePath("./SimplePlugin.dll");
+#endif
+#ifdef Q_OS_LINUX
+    filePath.prepend("../lib/");
+    filePath.replace(".dll", ".so");
 #endif
     {
         auto builder = McSharedObjectPluginBeanBuilderPtr::create();

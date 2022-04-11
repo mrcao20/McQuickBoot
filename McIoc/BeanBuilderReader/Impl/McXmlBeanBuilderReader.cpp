@@ -60,7 +60,8 @@ void McXmlBeanBuilderReader::read(const QIODevicePtr &device) const noexcept
     }
     if (reader.hasError()) {
         qCCritical(mcIoc(),
-                   "read xml occured error. line: %d. column: %d. character offset: %d. error type: %d. error msg: %s",
+                   "read xml occured error. line: %lld. column: %lld. character offset: %lld. "
+                   "error type: %d. error msg: %s",
                    reader.lineNumber(),
                    reader.columnNumber(),
                    reader.characterOffset(),

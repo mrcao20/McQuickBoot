@@ -1,7 +1,7 @@
 #ifndef MEMLOAD_H
 #define MEMLOAD_H
 
-#include <stddef.h>
+#include <qglobal.h>
 
 #if defined (__cplusplus) || defined (c_plusplus)
 extern "C" {
