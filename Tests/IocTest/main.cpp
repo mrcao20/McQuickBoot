@@ -24,10 +24,15 @@
 #include <QTest>
 
 #include "BeanFactoryTest.h"
+#include "BeanReaderTest.h"
 
 int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
     BeanFactoryTest bft;
-    return QTest::qExec(&bft, argc, argv);
+    int code = 0;
+    code = QTest::qExec(&bft, argc, argv);
+    BeanReaderTest brt;
+    code |= QTest::qExec(&brt, argc, argv);
+    return code;
 }

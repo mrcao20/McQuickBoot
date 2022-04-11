@@ -23,27 +23,26 @@
  */
 #pragma once
 
-#include "McAbstractBeanBuilderReader.h"
+#include <QObject>
 
-MC_FORWARD_DECL_CLASS(QIODevice)
+#include <McIoc/BeanFactory/IMcBeanBuilderRegistry.h>
 
-MC_FORWARD_DECL_PRIVATE_DATA(McXmlBeanBuilderReader)
-
-class MC_IOC_EXPORT McXmlBeanBuilderReader : public McAbstractBeanBuilderReader
+class RegistryTest : public IMcBeanBuilderRegistry
 {
 public:
-    McXmlBeanBuilderReader(const QIODevicePtr &device, const QString &flag = QString()) noexcept;
-    McXmlBeanBuilderReader(const QList<QIODevicePtr> &devices, const QString &flag = QString()) noexcept;
-    ~McXmlBeanBuilderReader();
-
-protected:
-    void doReadBeanBuilder() noexcept override;
-
-private:
-    void read(const QIODevicePtr &device) const noexcept;
+    bool registerBeanBuilder(const QString &name, const IMcBeanBuilderPtr &beanBuilder) noexcept override;
+    bool registerBeanBuilder(const QHash<QString, IMcBeanBuilderPtr> &vals) noexcept override;
+    IMcBeanBuilderPtr unregisterBeanBuilder(const QString &name) noexcept override;
+    bool isContained(const QString &name) const noexcept override;
+    QHash<QString, IMcBeanBuilderPtr> getBeanBuilders() const noexcept override;
 
 private:
-    MC_DECL_PRIVATE(McXmlBeanBuilderReader)
+    QHash<QString, IMcBeanBuilderPtr> m_hash;
 };
 
-MC_DECL_POINTER(McXmlBeanBuilderReader)
+class BeanReaderTest : public QObject
+{
+    Q_OBJECT
+private slots:
+    void readerCase();
+};

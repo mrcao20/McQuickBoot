@@ -9,7 +9,9 @@
 #include <dlfcn.h>
 #include <fcntl.h>
 #include <unistd.h>
+#ifdef Q_OS_LINUX
 #include <linux/memfd.h>
+#endif
 #include <sys/syscall.h>
 #include <sys/mman.h>
 #include <sys/stat.h>

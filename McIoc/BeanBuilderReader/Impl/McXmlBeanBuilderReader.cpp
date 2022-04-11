@@ -23,6 +23,8 @@
  */
 #include "McXmlBeanBuilderReader.h"
 
+#include <QXmlStreamReader>
+
 MC_DECL_PRIVATE_DATA(McXmlBeanBuilderReader)
 QList<QIODevicePtr> devices;
 QString flag;
@@ -46,5 +48,23 @@ void McXmlBeanBuilderReader::doReadBeanBuilder() noexcept
 {
     for (auto device : qAsConst(d->devices)) {
         device->seek(0);
+        read(device);
+    }
+}
+
+void McXmlBeanBuilderReader::read(const QIODevicePtr &device) const noexcept
+{
+    QXmlStreamReader reader(device.data());
+    while (!reader.atEnd()) {
+        auto tokenType = reader.readNext();
+    }
+    if (reader.hasError()) {
+        qCCritical(mcIoc(),
+                   "read xml occured error. line: %d. column: %d. character offset: %d. error type: %d. error msg: %s",
+                   reader.lineNumber(),
+                   reader.columnNumber(),
+                   reader.characterOffset(),
+                   static_cast<int>(reader.error()),
+                   qUtf8Printable(reader.errorString()));
     }
 }
