@@ -26,10 +26,11 @@
 #include "IMcBeanBuilderRegistry.h"
 #include "IMcBeanFactory.h"
 
-class IMcConfigurableBeanFactory : public IMcBeanFactory, public IMcBeanBuilderRegistry
+class IMcConfigurableBeanFactory
+    : public IMcBeanFactory
+    , public IMcBeanBuilderRegistry
 {
-public:
-    MC_BASE_DESTRUCTOR(IMcConfigurableBeanFactory)
+    MC_DEFINE_INTERFACE(IMcConfigurableBeanFactory)
 };
 
 MC_DECL_POINTER(IMcConfigurableBeanFactory)

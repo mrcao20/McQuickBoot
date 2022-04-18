@@ -27,9 +27,8 @@
 
 class IMcBeanBuildable
 {
+    MC_DEFINE_INTERFACE(IMcBeanBuildable)
 public:
-    MC_BASE_DESTRUCTOR(IMcBeanBuildable)
-
     virtual void buildStarted() noexcept {};
     virtual void buildFinished() noexcept {};
     virtual void buildThreadMoved() noexcept {};

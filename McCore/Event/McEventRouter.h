@@ -30,21 +30,19 @@ class McEventRouter : public QObject
 {
     Q_OBJECT
 public:
-    explicit McEventRouter(QObject *parent = nullptr) noexcept : QObject(parent) {}
+    explicit McEventRouter(QObject *parent = nullptr) noexcept
+        : QObject(parent)
+    {
+    }
 
-    QMetaObject::Connection connectToEvent(const QStringList &segments,
-                                           const QObject *receiver,
-                                           const char *method,
-                                           Qt::ConnectionType type) noexcept;
-    QMetaObject::Connection connectToEvent(const QStringList &segments,
-                                           const QObject *receiver,
-                                           void **slot,
-                                           QtPrivate::QSlotObjectBase *method,
-                                           Qt::ConnectionType type) noexcept;
+    QMetaObject::Connection connectToEvent(
+        const QStringList &segments, const QObject *receiver, const char *method, Qt::ConnectionType type) noexcept;
+    QMetaObject::Connection connectToEvent(const QStringList &segments, const QObject *receiver, void **slot,
+        QtPrivate::QSlotObjectBase *method, Qt::ConnectionType type) noexcept;
 
     void route(const QStringList &segments, const QVariant &data) noexcept;
 
-signals:
+Q_SIGNALS:
     void eventOccurred(const QVariant &data);
 
 private:

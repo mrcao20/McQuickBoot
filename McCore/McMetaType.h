@@ -34,11 +34,11 @@
 #include "Utils/IMcDestroyer.h"
 
 #define MC_TYPELIST(...) \
-public: \
-    using McPrivateTypeList = McPrivate::TypeList<__VA_ARGS__>; \
-    using McPrivateTypeListHelper = void; \
+ public: \
+ using McPrivateTypeList = McPrivate::TypeList<__VA_ARGS__>; \
+ using McPrivateTypeListHelper = void; \
 \
-private:
+ private:
 
 #define MC_INTERFACES(...) MC_TYPELIST(__VA_ARGS__)
 
@@ -201,7 +201,10 @@ class MC_CORE_EXPORT McMetaType
 {
 public:
     constexpr McMetaType() noexcept = default;
-    constexpr McMetaType(const McPrivate::MetaTypeInterface *val) noexcept : d(val) {}
+    constexpr McMetaType(const McPrivate::MetaTypeInterface *val) noexcept
+        : d(val)
+    {
+    }
 
     static void registerMetaType(const McMetaType &type) noexcept;
 
@@ -241,6 +244,22 @@ public:
         }
         return d->sMetaType;
     }
+    //! 弱智能指针类型
+    constexpr QMetaType wMetaType() const noexcept
+    {
+        if (!isValid()) {
+            return QMetaType();
+        }
+        return d->wMetaType;
+    }
+    //! 跟踪指针类型
+    constexpr QMetaType tMetaType() const noexcept
+    {
+        if (!isValid()) {
+            return QMetaType();
+        }
+        return d->tMetaType;
+    }
 
     QVariant createSharedPointer(void *copy = nullptr) noexcept;
 
@@ -265,7 +284,7 @@ public:
                && a.d->wMetaType == b.d->wMetaType && a.d->tMetaType == b.d->tMetaType;
     }
     friend bool operator!=(McMetaType a, McMetaType b) { return !(a == b); }
-    friend Q_DECL_CONST_FUNCTION size_t qHash(const McMetaType &key, size_t seed) noexcept
+    friend Q_DECL_CONST_FUNCTION size_t qHash(McMetaType key, size_t seed) noexcept
     {
         int id = 0;
         if (key.d != nullptr) {
@@ -282,7 +301,10 @@ class MC_CORE_EXPORT McListMetaType
 {
 public:
     constexpr McListMetaType() noexcept = default;
-    constexpr McListMetaType(const McPrivate::ListMetaTypeInterface *val) noexcept : d(val) {}
+    constexpr McListMetaType(const McPrivate::ListMetaTypeInterface *val) noexcept
+        : d(val)
+    {
+    }
 
     static void registerMetaType(const McListMetaType &type) noexcept;
 
@@ -332,7 +354,10 @@ class MC_CORE_EXPORT McMapMetaType
 {
 public:
     constexpr McMapMetaType() noexcept = default;
-    constexpr McMapMetaType(const McPrivate::MapMetaTypeInterface *val) noexcept : d(val) {}
+    constexpr McMapMetaType(const McPrivate::MapMetaTypeInterface *val) noexcept
+        : d(val)
+    {
+    }
 
     static void registerMetaType(const McMapMetaType &type) noexcept;
 
@@ -401,7 +426,8 @@ struct TypeList<T, U...>
 // 针对空list的特化
 template<>
 struct TypeList<>
-{};
+{
+};
 
 template<typename From, typename To>
 struct RegisterConverterHelper2
@@ -544,7 +570,7 @@ inline void mcRegisterContainerConverter() noexcept
             if (!var.canConvert(metaType)) {
                 QMetaType::registerConverter<QVariantList, T>([](const QVariantList &from) {
                     T to;
-                    for (const auto &f : from) {
+                    for (const auto &f: from) {
                         to << f.template value<typename T::value_type>();
                     }
                     return to;
@@ -556,7 +582,7 @@ inline void mcRegisterContainerConverter() noexcept
             if (!var.canConvert(listMetaType)) {
                 QMetaType::registerConverter<T, QVariantList>([](const T &from) {
                     QVariantList to;
-                    for (const auto &f : from) {
+                    for (const auto &f: from) {
                         to << QVariant::fromValue(f);
                     }
                     return to;

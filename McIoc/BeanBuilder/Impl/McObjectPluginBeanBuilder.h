@@ -36,6 +36,7 @@ public:
     void setPluginPath(const QString &path) noexcept;
     void setPluginChecker(const McBeanReferencePtr &ref) noexcept;
 
+    bool isSingleton() const noexcept override final;
     bool isPointer() const noexcept override;
 
 protected:

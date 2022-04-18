@@ -26,12 +26,15 @@
 MC_AUTO_INIT(McNormalPluginChecker)
 MC_INIT_END
 
-McNormalPluginChecker::McNormalPluginChecker(const QJsonObject &val) noexcept : m_checkJson(val) {}
+McNormalPluginChecker::McNormalPluginChecker(const QJsonObject &val) noexcept
+    : m_checkJson(val)
+{
+}
 
 bool McNormalPluginChecker::check(const QJsonObject &json) noexcept
 {
     auto checkKeys = m_checkJson.keys();
-    for (auto &checkKey : qAsConst(checkKeys)) {
+    for (auto &checkKey: qAsConst(checkKeys)) {
         if (!json.contains(checkKey)) {
             return false;
         }

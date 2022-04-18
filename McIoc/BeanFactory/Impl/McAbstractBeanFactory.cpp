@@ -35,7 +35,8 @@ QRecursiveMutex mtx;
 QThread *targetThread{nullptr}; //!< 生成对象的目标线程
 MC_DECL_PRIVATE_DATA_END
 
-McAbstractBeanFactory::McAbstractBeanFactory(QObject *parent) noexcept : QObject(parent)
+McAbstractBeanFactory::McAbstractBeanFactory(QObject *parent) noexcept
+    : QObject(parent)
 {
     MC_NEW_PRIVATE_DATA(McAbstractBeanFactory);
 }

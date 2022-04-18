@@ -23,7 +23,10 @@
  */
 #include "McDefaultBeanFactory.h"
 
-McDefaultBeanFactory::McDefaultBeanFactory(QObject *parent) noexcept : McAbstractBeanFactory(parent) {}
+McDefaultBeanFactory::McDefaultBeanFactory(QObject *parent) noexcept
+    : McAbstractBeanFactory(parent)
+{
+}
 
 McDefaultBeanFactory::~McDefaultBeanFactory() {}
 

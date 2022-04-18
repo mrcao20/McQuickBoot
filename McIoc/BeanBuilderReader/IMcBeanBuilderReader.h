@@ -29,9 +29,8 @@ class IMcBeanBuilderRegistry;
 
 class IMcBeanBuilderReader
 {
+    MC_DEFINE_INTERFACE(IMcBeanBuilderReader)
 public:
-    MC_BASE_DESTRUCTOR(IMcBeanBuilderReader)
-
     virtual void readBeanBuilder(IMcBeanBuilderRegistry *registry) noexcept = 0;
 };
 

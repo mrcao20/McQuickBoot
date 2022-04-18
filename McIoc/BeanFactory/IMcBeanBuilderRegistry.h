@@ -31,9 +31,8 @@ MC_FORWARD_DECL_CLASS(IMcBeanBuilder)
 
 class IMcBeanBuilderRegistry
 {
+    MC_DEFINE_INTERFACE(IMcBeanBuilderRegistry)
 public:
-    MC_BASE_DESTRUCTOR(IMcBeanBuilderRegistry)
-
     virtual bool registerBeanBuilder(const QString &name, const IMcBeanBuilderPtr &beanBuilder) noexcept = 0;
     virtual bool registerBeanBuilder(const QHash<QString, IMcBeanBuilderPtr> &vals) noexcept = 0;
     virtual IMcBeanBuilderPtr unregisterBeanBuilder(const QString &name) noexcept = 0;

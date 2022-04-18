@@ -29,9 +29,8 @@
 
 class IMcCustomPlaceholder
 {
+    MC_DEFINE_INTERFACE(IMcCustomPlaceholder)
 public:
-    MC_BASE_DESTRUCTOR(IMcCustomPlaceholder)
-
     virtual QVariant getKey() const noexcept = 0;
 };
 

@@ -78,6 +78,11 @@ void McAbstractBeanBuilder::addConstructorArg(const QByteArray &name, const QVar
     d->constructorArgs.append({-1, name, val});
 }
 
+void McAbstractBeanBuilder::addConstructorArg(const ConstructorArg &arg) noexcept
+{
+    d->constructorArgs.append(arg);
+}
+
 IMcBeanReferenceResolver *McAbstractBeanBuilder::resolver() const noexcept
 {
     return d->resolver;
@@ -201,7 +206,7 @@ QVariant McAbstractBeanBuilder::convertList(const QVariant &value, const QVarian
 
     auto list = value.value<QVariantList>();
 
-    for (const auto &var : list) {
+    for (const auto &var: list) {
         result << convert(var, extra);
     }
 
@@ -295,7 +300,7 @@ QVariant McAbstractBeanBuilder::createByMetaObject() noexcept
         }
         bool isOk = true;
         auto paramNames = method.parameterNames();
-        for (auto &arg : qAsConst(d->constructorArgs)) {
+        for (auto &arg: qAsConst(d->constructorArgs)) {
             int index = -1;
             if (arg.index >= 0 && arg.index < method.parameterCount()) {
                 index = arg.index;
@@ -327,17 +332,9 @@ QVariant McAbstractBeanBuilder::createByMetaObject() noexcept
         arguments.replace(i, QGenericArgument(constructor.parameterTypeName(i).constData(), argValues[i].constData()));
     }
     void *beanStar = nullptr;
-    void *param[] = {&beanStar,
-                     arguments.at(0).data(),
-                     arguments.at(1).data(),
-                     arguments.at(2).data(),
-                     arguments.at(3).data(),
-                     arguments.at(4).data(),
-                     arguments.at(5).data(),
-                     arguments.at(6).data(),
-                     arguments.at(7).data(),
-                     arguments.at(8).data(),
-                     arguments.at(9).data()};
+    void *param[] = {&beanStar, arguments.at(0).data(), arguments.at(1).data(), arguments.at(2).data(),
+        arguments.at(3).data(), arguments.at(4).data(), arguments.at(5).data(), arguments.at(6).data(),
+        arguments.at(7).data(), arguments.at(8).data(), arguments.at(9).data()};
     auto idx = metaObj->indexOfConstructor(constructor.methodSignature().constData());
     if (metaObj->static_metacall(QMetaObject::CreateInstance, idx, param) >= 0 || beanStar == nullptr) {
         qCCritical(mcIoc(), "cannot create object: '%s'", d->metaType.metaType().name());

@@ -65,22 +65,16 @@ static QString nextSegment(const QStringList &segments) noexcept
 
 } // namespace
 
-QMetaObject::Connection McEventRouter::connectToEvent(const QStringList &segments,
-                                                      const QObject *receiver,
-                                                      const char *method,
-                                                      Qt::ConnectionType type) noexcept
+QMetaObject::Connection McEventRouter::connectToEvent(
+    const QStringList &segments, const QObject *receiver, const char *method, Qt::ConnectionType type) noexcept
 {
     QString segment = nextSegment(segments);
-    return segment.isEmpty()
-               ? connect(this, SIGNAL(eventOccurred(QVariant)), receiver, method, type)
-               : child(segment)->connectToEvent(segments.mid(1), receiver, method, type);
+    return segment.isEmpty() ? connect(this, SIGNAL(eventOccurred(QVariant)), receiver, method, type)
+                             : child(segment)->connectToEvent(segments.mid(1), receiver, method, type);
 }
 
-QMetaObject::Connection McEventRouter::connectToEvent(const QStringList &segments,
-                                                      const QObject *receiver,
-                                                      void **slot,
-                                                      QtPrivate::QSlotObjectBase *method,
-                                                      Qt::ConnectionType type) noexcept
+QMetaObject::Connection McEventRouter::connectToEvent(const QStringList &segments, const QObject *receiver, void **slot,
+    QtPrivate::QSlotObjectBase *method, Qt::ConnectionType type) noexcept
 {
     QString segment = nextSegment(segments);
     if (segment.isEmpty()) {
@@ -90,14 +84,7 @@ QMetaObject::Connection McEventRouter::connectToEvent(const QStringList &segment
 
         const QMetaObject *meta = metaObject();
         static const int eventOccurredIndex = signalIndex(meta, "eventOccurred(QVariant)");
-        return QObjectPrivate::connectImpl(this,
-                                           eventOccurredIndex,
-                                           receiver,
-                                           slot,
-                                           method,
-                                           type,
-                                           types,
-                                           meta);
+        return QObjectPrivate::connectImpl(this, eventOccurredIndex, receiver, slot, method, type, types, meta);
     } else {
         return child(segment)->connectToEvent(segments.mid(1), receiver, slot, method, type);
     }
@@ -105,7 +92,7 @@ QMetaObject::Connection McEventRouter::connectToEvent(const QStringList &segment
 
 void McEventRouter::route(const QStringList &segments, const QVariant &data) noexcept
 {
-    emit eventOccurred(data);
+    Q_EMIT eventOccurred(data);
     if (!segments.isEmpty()) {
         auto it = m_children.find(segments.first());
         if (it != m_children.end())

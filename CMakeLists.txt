@@ -16,6 +16,9 @@ if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /utf-8")
 endif()
 
+# 不需要小写的QT宏
+add_definitions(-DQT_NO_KEYWORDS)
+
 if(!CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release")
 endif()

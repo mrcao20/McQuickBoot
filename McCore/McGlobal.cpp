@@ -63,9 +63,9 @@ static void __attribute__((constructor)) __coreStaticInit__(void)
     coreStaticInit();
 }
 #elif Q_CC_MSVC
-#include <corecrt_startup.h>
-#define SECNAME ".CRT$XCY"
-#pragma section(SECNAME, long, read)
+# include <corecrt_startup.h>
+# define SECNAME ".CRT$XCY"
+# pragma section(SECNAME, long, read)
 int __coreStaticInit__()
 {
     coreStaticInit();
@@ -97,10 +97,8 @@ QSharedPointer<QLibrary> loadLibraryHelper(const QString &path, const QLatin1Str
     }
     auto library = QSharedPointer<QLibrary>::create(libPath);
     if (!library->load()) {
-        qCWarning(mcCore(),
-                  "%s cannot load!! error string: %s",
-                  qUtf8Printable(libPath),
-                  qUtf8Printable(library->errorString()));
+        qCWarning(mcCore(), "%s cannot load!! error string: %s", qUtf8Printable(libPath),
+            qUtf8Printable(library->errorString()));
         return QSharedPointer<QLibrary>();
     }
     auto cleanup = qScopeGuard([]() { Mc::callPreRoutine(); });
@@ -191,7 +189,7 @@ QString toAbsolutePath(const QString &inPath) noexcept
 {
     QStringList pathPlhKeys = coreGlobalStaticData->pathPlaceholders.keys();
     auto path = inPath;
-    for (const auto &key : pathPlhKeys) {
+    for (const auto &key: pathPlhKeys) {
         const auto &value = coreGlobalStaticData->pathPlaceholders.value(key);
         QString plhPath;
         if (path.contains(key) && !(plhPath = value()).isEmpty()) {
@@ -309,9 +307,8 @@ void loadLibrary(const QString &path, const QLatin1String &checkSymbol) noexcept
     loadLibraryHelper(path, checkSymbol);
 }
 
-QFunctionPointer loadMemoryLibrary(const QByteArray &data,
-                                   const QLatin1String &symbol,
-                                   const QLatin1String &checkSymbol) noexcept
+QFunctionPointer loadMemoryLibrary(
+    const QByteArray &data, const QLatin1String &symbol, const QLatin1String &checkSymbol) noexcept
 {
     auto library = loadMemoryLibraryHelper(data, checkSymbol);
     if (!library.isLoaded()) {
@@ -336,10 +333,8 @@ QObject *loadPlugin(const QString &pluginPath, const std::function<bool(const QJ
         return nullptr;
     }
     if (!loader.load()) {
-        qCWarning(mcCore(),
-                  "%s cannot load!! error string: %s",
-                  qUtf8Printable(path),
-                  qUtf8Printable(loader.errorString()));
+        qCWarning(
+            mcCore(), "%s cannot load!! error string: %s", qUtf8Printable(path), qUtf8Printable(loader.errorString()));
         return nullptr;
     }
     Mc::callPreRoutine();

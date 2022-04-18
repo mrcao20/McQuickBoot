@@ -28,83 +28,83 @@
 #include "McConfig.h"
 
 #define MC_QUICKBOOT_VERSION \
-    QT_VERSION_CHECK(MC_QUICKBOOT_VERSION_MAJOR, MC_QUICKBOOT_VERSION_MINOR, MC_QUICKBOOT_VERSION_PATCH)
+ QT_VERSION_CHECK(MC_QUICKBOOT_VERSION_MAJOR, MC_QUICKBOOT_VERSION_MINOR, MC_QUICKBOOT_VERSION_PATCH)
 
 #if defined(MC_BUILD_STATIC) && !defined(MC_EXPORT_DISABLE)
-#define MC_EXPORT_DISABLE
+# define MC_EXPORT_DISABLE
 #endif
 
 #ifndef MC_EXPORT_DISABLE
-#if defined(MC_CORE_LIBRARY)
-#define MC_CORE_EXPORT Q_DECL_EXPORT
+# if defined(MC_CORE_LIBRARY)
+#  define MC_CORE_EXPORT Q_DECL_EXPORT
+# else
+#  define MC_CORE_EXPORT Q_DECL_IMPORT
+# endif
 #else
-#define MC_CORE_EXPORT Q_DECL_IMPORT
-#endif
-#else
-#define MC_CORE_EXPORT
+# define MC_CORE_EXPORT
 #endif
 
 #define MC_STRINGIFY(x) #x
 
 #define MC_SAFETY_DELETE(p) \
-    { \
-        if (p != nullptr) { \
-            delete p; \
-            p = nullptr; \
-        } \
-    }
+ { \
+  if (p != nullptr) { \
+   delete p; \
+   p = nullptr; \
+  } \
+ }
 
 #define MC_SAFETY_DELETE2(p) \
-    { \
-        if (p != nullptr) { \
-            delete[] p; \
-            p = nullptr; \
-        } \
-    }
+ { \
+  if (p != nullptr) { \
+   delete[] p; \
+   p = nullptr; \
+  } \
+ }
 
 #define MC_DECL_POINTER(Class) using Class##Ptr = QSharedPointer<Class>;
 
 #define MC_DECL_POINTER_NS(Class, NS) \
-    namespace NS { \
-    MC_DECL_POINTER(Class) \
-    }
+ namespace NS { \
+ MC_DECL_POINTER(Class) \
+ }
 
 #define MC_FORWARD_DECL_CLASS(Class) \
-    class Class; \
-    MC_DECL_POINTER(Class)
+ class Class; \
+ MC_DECL_POINTER(Class)
 
 #define MC_FORWARD_DECL_CLASS_NS(Class, NS) \
-    namespace NS { \
-    MC_FORWARD_DECL_CLASS(Class) \
-    }
+ namespace NS { \
+ MC_FORWARD_DECL_CLASS(Class) \
+ }
 
 #define MC_FORWARD_DECL_STRUCT(Class) \
-    struct Class; \
-    MC_DECL_POINTER(Class)
+ struct Class; \
+ MC_DECL_POINTER(Class)
 
 #define MC_FORWARD_DECL_STRUCT_NS(Class, NS) \
-    namespace NS { \
-    MC_FORWARD_DECL_STRUCT(Class) \
-    }
+ namespace NS { \
+ MC_FORWARD_DECL_STRUCT(Class) \
+ }
 
 #define MC_PRIVATE_DATA_NAME(Class) __Mc_##Class##Data__
 
 #define MC_DECL_PRIVATE_DATA(Class) \
-    struct MC_PRIVATE_DATA_NAME(Class) \
-    {
+ struct MC_PRIVATE_DATA_NAME(Class) \
+ {
 #define MC_DECL_PRIVATE_DATA_END \
-    } \
-    ;
+ } \
+ ;
 
 #define MC_PRIVATE_DATA_DESTRUCTOR(Class) \
-    ~MC_PRIVATE_DATA_NAME(Class)() \
-    {
+ ~MC_PRIVATE_DATA_NAME(Class)() \
+ {
 //
 #define MC_PRIVATE_DATA_DESTRUCTOR_END }
 
 #define MC_DECL_PRIVATE(Class) \
-    QScopedPointer<MC_PRIVATE_DATA_NAME(Class)> d; \
-    friend struct MC_PRIVATE_DATA_NAME(Class);
+ QScopedPointer<MC_PRIVATE_DATA_NAME(Class)> d; \
+ friend struct MC_PRIVATE_DATA_NAME(Class);
 
 #define MC_NEW_PRIVATE_DATA(Class) d.reset(new MC_PRIVATE_DATA_NAME(Class)());
 
@@ -115,8 +115,8 @@
 #define MC_DECL_INIT(Class) static const int Class##_Static_Init;
 
 #define MC_DECL_SUPER(SUPER) \
-private: \
-    typedef SUPER super;
+ private: \
+ typedef SUPER super;
 
 #define MC_INIT(Class, ...) const int Class::Class##_Static_Init = []() -> int { \
     using ClassType = Class; \
@@ -127,54 +127,60 @@ private: \
     constexpr auto __prePriority__ = McPrivate::extractRoutinePriority(__VA_ARGS__); \
     Mc::addPreRoutine(__prePriority__, [](){
 #define MC_AUTO_INIT(Class, ...) \
-    MC_INIT(Class, __VA_ARGS__) \
-    mcRegisterMetaType<Class>();
+ MC_INIT(Class, __VA_ARGS__) \
+ mcRegisterMetaType<Class>();
 #define MC_DESTROY(...) \
-    }); \
-    constexpr auto __postPriority__ = McPrivate::extractRoutinePriority(__VA_ARGS__); \
+ }); \
+ constexpr auto __postPriority__ = McPrivate::extractRoutinePriority(__VA_ARGS__); \
     Mc::addPostRoutine(__postPriority__, [](){
 #define MC_INIT_END \
-    }); \
-    return 0; \
-    } \
-    ();
+ }); \
+ return 0; \
+ } \
+ ();
 
 #define MC_STATIC(...) \
-    namespace { \
-    static const int __Static_Code_Block__ = []() -> int { \
+ namespace { \
+ static const int __Static_Code_Block__ = []() -> int { \
         constexpr auto __prePriority__ = McPrivate::extractRoutinePriority(__VA_ARGS__); \
         Mc::addPreRoutine(__prePriority__, [](){
 #define MC_STATIC_END \
-    }); \
-    return 0; \
-    } \
-    (); \
-    }
+ }); \
+ return 0; \
+ } \
+ (); \
+ }
 
 #define MC_GLOBAL_STATIC_BEGIN(NAME) \
-    namespace { \
-    struct Mc_##NAME##_StaticData \
-    {
+ namespace { \
+ struct Mc_##NAME##_StaticData \
+ {
 #define MC_GLOBAL_STATIC_END(NAME) \
-    } \
-    ; \
-    Q_GLOBAL_STATIC(Mc_##NAME##_StaticData, NAME) \
-    }
+ } \
+ ; \
+ Q_GLOBAL_STATIC(Mc_##NAME##_StaticData, NAME) \
+ }
 
 #define MC_FULL_DEFINE_HELPER(...) , ##__VA_ARGS__
 #define MC_FULL_DEFINE(Class, Parent, ...) \
-    MC_DECL_INIT(Class) \
-    MC_INTERFACES(Parent MC_FULL_DEFINE_HELPER(__VA_ARGS__)) \
-    MC_DECL_SUPER(Parent)
+ MC_DECL_INIT(Class) \
+ MC_INTERFACES(Parent MC_FULL_DEFINE_HELPER(__VA_ARGS__)) \
+ MC_DECL_SUPER(Parent)
 
 #define MC_DECL_METATYPE(Class) MC_DECL_POINTER(Class)
 
 #define MC_DECL_METATYPE_NS(Class, NS) MC_DECL_POINTER_NS(Class, NS)
 
 #define MC_BASE_DESTRUCTOR(Class) virtual ~Class() = default;
+#define MC_DEFINE_INTERFACE(Class) \
+ public: \
+ Class() noexcept = default; \
+ MC_BASE_DESTRUCTOR(Class) \
+ private: \
+ Q_DISABLE_COPY_MOVE(Class)
 
 //! PROPERTY
 #define MC_POCO_PROPERTY(Type, name, ...) \
-    Q_PROPERTY(Type name MEMBER name) \
-    Type name __VA_ARGS__;
+ Q_PROPERTY(Type name MEMBER name) \
+ Type name __VA_ARGS__;
 //!< PROPERTY

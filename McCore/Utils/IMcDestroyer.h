@@ -29,16 +29,15 @@
 
 /*!
  * \brief The IMcDestroyer class
- * 
+ *
  * 对象销毁器，当对象实现至该接口时，会将destroy函数传入QSharedPointer
  * 即，当引用计数为0时，QSharedPointer的析构器会调用destroy函数。
  * 此接口用于自定义删除对象。
  */
 class IMcDestroyer
 {
+    MC_DEFINE_INTERFACE(IMcDestroyer)
 public:
-    MC_BASE_DESTRUCTOR(IMcDestroyer)
-
     virtual void destroy() = 0;
 };
 

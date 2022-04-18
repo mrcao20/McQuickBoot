@@ -32,7 +32,7 @@ public:
     void setName(const QString &name) noexcept { m_name = name; }
 
 private:
-    QString m_name;          //!< 被引用bean的名称
+    QString m_name; //!< 被引用bean的名称
 };
 
 MC_DECL_POINTER(McBeanReference)

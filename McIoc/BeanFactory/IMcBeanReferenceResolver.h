@@ -29,9 +29,8 @@ MC_FORWARD_DECL_CLASS(McBeanReference)
 
 class IMcBeanReferenceResolver
 {
+    MC_DEFINE_INTERFACE(IMcBeanReferenceResolver)
 public:
-    MC_BASE_DESTRUCTOR(IMcBeanReferenceResolver)
-
     virtual QObjectPtr resolveBeanReference(const McBeanReferencePtr &beanRef) noexcept = 0;
     virtual QObject *resolveBeanReferencePointer(const McBeanReferencePtr &beanRef) noexcept = 0;
 

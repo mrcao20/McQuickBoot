@@ -109,23 +109,31 @@ struct Types
 
 template<class T>
 struct LambdaType : LambdaType<decltype(&T::operator())>
-{};
+{
+};
 
 // 特化版本，函数为非const（对应的lambda表达式为mutable）
 template<class R, class C, class... Args>
 struct LambdaType<R (C::*)(Args...)> : LambdaDetail::Types<R, C, std::true_type, Args...>
-{};
+{
+};
 
 // 特化版本，函数为const
 template<class R, class C, class... Args>
 struct LambdaType<R (C::*)(Args...) const> : LambdaDetail::Types<R, C, std::false_type, Args...>
-{};
+{
+};
 } // namespace McPrivate
 
 class MC_CORE_EXPORT McCustomEvent : public QEvent
 {
+    Q_DISABLE_COPY_MOVE(McCustomEvent)
 public:
-    McCustomEvent(int type, const QVariant &data) noexcept : QEvent(static_cast<QEvent::Type>(type)), m_data(data) {}
+    McCustomEvent(int type, const QVariant &data) noexcept
+        : QEvent(static_cast<QEvent::Type>(type))
+        , m_data(data)
+    {
+    }
     ~McCustomEvent() noexcept;
 
     QVariant data() const noexcept { return m_data; }
@@ -152,7 +160,7 @@ inline bool isContains(int index, const Container &container) noexcept
 
 /*!
  * \brief waitForExecFunc，执行一个函数，当该函数返回true时或timeout超时时返回
- * 
+ *
  * 注意：如果当前线程本身处于退出状态，那么此函数会立即返回
  * 如果timeout设置为-1，则表示永不超时
  * 只有当func返回true时当前函数才会返回true，否则都返回false
@@ -177,16 +185,14 @@ MC_CORE_EXPORT void callPreRoutine() noexcept;
 MC_CORE_EXPORT void cleanPreRoutine() noexcept;
 MC_CORE_EXPORT void addPostRoutine(int priority, const CleanUpFunction &func) noexcept;
 
-MC_CORE_EXPORT QFunctionPointer loadLibrary(const QString &path,
-                                            const QLatin1String &symbol,
-                                            const QLatin1String &checkSymbol) noexcept;
+MC_CORE_EXPORT QFunctionPointer loadLibrary(
+    const QString &path, const QLatin1String &symbol, const QLatin1String &checkSymbol) noexcept;
 MC_CORE_EXPORT void loadLibrary(const QString &path, const QLatin1String &checkSymbol) noexcept;
-MC_CORE_EXPORT QFunctionPointer loadMemoryLibrary(const QByteArray &data,
-                                                  const QLatin1String &symbol,
-                                                  const QLatin1String &checkSymbol) noexcept;
+MC_CORE_EXPORT QFunctionPointer loadMemoryLibrary(
+    const QByteArray &data, const QLatin1String &symbol, const QLatin1String &checkSymbol) noexcept;
 MC_CORE_EXPORT void loadMemoryLibrary(const QByteArray &data, const QLatin1String &checkSymbol) noexcept;
-MC_CORE_EXPORT QObject *loadPlugin(const QString &pluginPath,
-                                   const std::function<bool(const QJsonObject &)> &checker = nullptr) noexcept;
+MC_CORE_EXPORT QObject *loadPlugin(
+    const QString &pluginPath, const std::function<bool(const QJsonObject &)> &checker = nullptr) noexcept;
 
 template<typename T>
 T *loadPlugin(const QString &pluginPath, const std::function<bool(const QJsonObject &)> &checker = nullptr) noexcept
@@ -197,7 +203,7 @@ T *loadPlugin(const QString &pluginPath, const std::function<bool(const QJsonObj
 } // namespace Mc
 
 namespace McPrivate {
-inline constexpr auto extractRoutinePriority(const int &val = Mc::RoutinePriority::Normal) noexcept
+inline constexpr auto extractRoutinePriority(int val = Mc::RoutinePriority::Normal) noexcept
 {
     return val;
 }

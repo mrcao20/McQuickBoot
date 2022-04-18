@@ -31,9 +31,8 @@ QT_END_NAMESPACE
 
 class IMcBeanFactory
 {
+    MC_DEFINE_INTERFACE(IMcBeanFactory)
 public:
-    MC_BASE_DESTRUCTOR(IMcBeanFactory)
-
     template<typename T = QObject>
     QSharedPointer<T> getBean(const QString &name, QThread *thread = nullptr) noexcept
     {

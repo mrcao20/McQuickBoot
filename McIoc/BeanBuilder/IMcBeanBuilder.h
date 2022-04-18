@@ -29,9 +29,8 @@ class IMcBeanReferenceResolver;
 
 class IMcBeanBuilder
 {
+    MC_DEFINE_INTERFACE(IMcBeanBuilder)
 public:
-    MC_BASE_DESTRUCTOR(IMcBeanBuilder)
-
     virtual QVariant build(QThread *thread) noexcept = 0;
     virtual void moveToThread(QThread *thread) noexcept = 0;
     virtual bool isSingleton() const noexcept = 0;

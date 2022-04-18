@@ -41,7 +41,10 @@ struct GadgetTest : public IMcDestroyer
     Q_PROPERTY(QString text MEMBER text)
 public:
     GadgetTest() {}
-    Q_INVOKABLE GadgetTest(const QString &val) : text(val) {}
+    Q_INVOKABLE GadgetTest(const QString &val)
+        : text(val)
+    {
+    }
 
     void destroy() override { delete this; }
 
@@ -49,12 +52,18 @@ public:
 };
 MC_DECL_POINTER(GadgetTest)
 
-class ObjectTest : public QObject, public IObjectTest, public IMcDestroyer
+class ObjectTest
+    : public QObject
+    , public IObjectTest
+    , public IMcDestroyer
 {
     Q_OBJECT
     Q_INTERFACES(IObjectTest)
     MC_FULL_DEFINE(ObjectTest, QObject, IObjectTest, IMcDestroyer)
     Q_PROPERTY(QString text MEMBER m_text)
+    Q_PROPERTY(ObjectTestPtr object MEMBER m_object)
+    Q_PROPERTY(QList<QString> list MEMBER m_list)
+    Q_PROPERTY(QMap<QString, QSharedPointer<ObjectTest>> map MEMBER m_map)
 public:
     ObjectTest();
     Q_INVOKABLE ObjectTest(const QString &val);
@@ -63,15 +72,24 @@ public:
 
     QString test() override;
 
+Q_SIGNALS:
+    void testSignal();
+
+private Q_SLOTS:
+    void testSlot();
+
 private:
     QString m_text{"objectTest"};
+    QSharedPointer<ObjectTest> m_object;
+    QList<QString> m_list;
+    QMap<QString, QSharedPointer<ObjectTest>> m_map;
 };
 MC_DECL_POINTER(ObjectTest)
 
 class BeanFactoryTest : public QObject
 {
     Q_OBJECT
-private slots:
+private Q_SLOTS:
     void gadgetTestCase();
     void sharedGadgetTestCase();
     void objectTestCase();

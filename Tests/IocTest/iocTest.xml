@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+	<bean name="podTest" class="PodTest" />
+    <bean name="podTestPointer" class="PodTest" isPointer="true" />
+    <bean name="gadgetTest" class="GadgetTest">
+        <property name="text" value="gadgetTest1" />
+    </bean>
+    <bean name="gadgetTestPointer" class="GadgetTest" isPointer="true">
+        <constructor-arg value="gadgetTest2" />
+    </bean>
+    <bean name="listTest" class="List">
+        <list>
+            <value>停封</value>
+            <value>薄纸</value>
+            <value>关系</value>
+        </list>
+    </bean>
+    <bean name="mapTest" class="Map">
+        <map>
+            <entry key="jack" value="杰克"></entry>
+            <entry>
+                <key><value>rose</value></key>
+                <value>肉丝</value>
+            </entry>
+        </map>
+    </bean>
+    <bean name="objectTest" class="ObjectTest" isSingleton="false" parent="objectTestPointer">
+        <constructor-arg index="0" value="objectTest1" />
+        <property name="object">
+            <!-- 内联式bean，该实例只被当前属性使用 -->
+            <!-- 未指定name，容器提供默认的唯一name。未指定isSingleton，继承上一级bean的isSingleton -->
+            <bean class="ObjectTest">
+                <property name="text" value="innerObjectTest" />
+            </bean>
+        </property>
+    </bean>
+    <bean name="objectTestPointer" class="ObjectTest" isPointer="true">
+        <constructor-arg name="val" value="objectTestPointer" />
+        <property name="object">
+            <ref bean="objectTest" />
+        </property>
+        <connect sender="this">
+            <signal name="testSignal()" />
+            <receiver>object</receiver>
+            <slot>testSlot()</slot>
+            <type>DirectConnection | UniqueConnection</type>
+        </connect>
+        <property name="list" ref="listTest" />
+        <property name="map">
+            <map>
+                <entry>
+                    <key><value>jack</value></key>
+                    <value><ref>objectTest</ref></value>
+                </entry>
+            </map>
+        </property>
+    </bean>
+    <bean name="pluginTest" plugin="./SimplePlugind.dll" flag="debug">
+        <property name="text" value="pluginTest" />
+        <plugin>
+            <metaData>{"IID": "org.quickboot.mc.test.IObjectTest", "debug": true, "className": "SimplePlugin", "MetaData": {"checkKey": "simplePlugin"}}</metaData>
+        </plugin>
+    </bean>
+    <bean name="pluginTestPointer" plugin="./SimplePlugind.dll" isPointer="true" flag="debug">
+        <property name="text" value="pluginTestPointer" />
+        <plugin>
+            <checker class="PluginCheckerTest" />
+        </plugin>
+    </bean>
+</beans>

@@ -26,4 +26,5 @@
 #include "McGlobal.h"
 
 class MC_CORE_EXPORT McRuntimeConfigValue
-{};
+{
+};

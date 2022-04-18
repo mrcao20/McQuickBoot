@@ -25,7 +25,17 @@
 
 #include <QObject>
 
+#include <McCore/Utils/IMcPluginChecker.h>
 #include <McIoc/BeanFactory/IMcBeanBuilderRegistry.h>
+
+class PluginCheckerTest : public IMcPluginChecker
+{
+    MC_FULL_DEFINE(PluginCheckerTest, IMcPluginChecker)
+public:
+    bool check(const QJsonObject &json) noexcept override;
+};
+
+MC_DECL_POINTER(PluginCheckerTest)
 
 class RegistryTest : public IMcBeanBuilderRegistry
 {
@@ -43,6 +53,6 @@ private:
 class BeanReaderTest : public QObject
 {
     Q_OBJECT
-private slots:
+private Q_SLOTS:
     void readerCase();
 };

@@ -45,6 +45,7 @@ public:
     void addProperty(const QString &name, const QVariant &value) noexcept;
     void addConstructorArg(int index, const QVariant &val) noexcept;
     void addConstructorArg(const QByteArray &name, const QVariant &val) noexcept;
+    void addConstructorArg(const ConstructorArg &arg) noexcept;
     IMcBeanReferenceResolver *resolver() const noexcept;
 
     QVariant build(QThread *thread) noexcept override;

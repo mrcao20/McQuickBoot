@@ -381,7 +381,7 @@ struct McMemoryLibraryData;
 
 /*!
  * \brief The McMemoryLibrary class
- * 
+ *
  * 加载Windows平台下使用MINGW编译的动态库时不能使用MC_STATIC等静态代码块
  */
 class McMemoryLibrary

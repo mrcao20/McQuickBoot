@@ -41,8 +41,7 @@ void McMetaType::registerMetaType(const McMetaType &type) noexcept
 McMetaType McMetaType::fromQMetaType(const QMetaType &type) noexcept
 {
     auto itr = std::find_if(coreMetaTypeStaticData->metaTypes.constBegin(),
-                            coreMetaTypeStaticData->metaTypes.constEnd(),
-                            [&type](const McMetaType &t) { return type == t.d->metaType; });
+        coreMetaTypeStaticData->metaTypes.constEnd(), [&type](const McMetaType &t) { return type == t.d->metaType; });
     if (itr == coreMetaTypeStaticData->metaTypes.constEnd()) {
         return McMetaType();
     }
@@ -52,8 +51,7 @@ McMetaType McMetaType::fromQMetaType(const QMetaType &type) noexcept
 McMetaType McMetaType::fromPQMetaType(const QMetaType &type) noexcept
 {
     auto itr = std::find_if(coreMetaTypeStaticData->metaTypes.constBegin(),
-                            coreMetaTypeStaticData->metaTypes.constEnd(),
-                            [&type](const McMetaType &t) { return type == t.d->pMetaType; });
+        coreMetaTypeStaticData->metaTypes.constEnd(), [&type](const McMetaType &t) { return type == t.d->pMetaType; });
     if (itr == coreMetaTypeStaticData->metaTypes.constEnd()) {
         return McMetaType();
     }
@@ -63,8 +61,7 @@ McMetaType McMetaType::fromPQMetaType(const QMetaType &type) noexcept
 McMetaType McMetaType::fromSQMetaType(const QMetaType &type) noexcept
 {
     auto itr = std::find_if(coreMetaTypeStaticData->metaTypes.constBegin(),
-                            coreMetaTypeStaticData->metaTypes.constEnd(),
-                            [&type](const McMetaType &t) { return type == t.d->sMetaType; });
+        coreMetaTypeStaticData->metaTypes.constEnd(), [&type](const McMetaType &t) { return type == t.d->sMetaType; });
     if (itr == coreMetaTypeStaticData->metaTypes.constEnd()) {
         return McMetaType();
     }
@@ -74,8 +71,7 @@ McMetaType McMetaType::fromSQMetaType(const QMetaType &type) noexcept
 McMetaType McMetaType::fromWQMetaType(const QMetaType &type) noexcept
 {
     auto itr = std::find_if(coreMetaTypeStaticData->metaTypes.constBegin(),
-                            coreMetaTypeStaticData->metaTypes.constEnd(),
-                            [&type](const McMetaType &t) { return type == t.d->wMetaType; });
+        coreMetaTypeStaticData->metaTypes.constEnd(), [&type](const McMetaType &t) { return type == t.d->wMetaType; });
     if (itr == coreMetaTypeStaticData->metaTypes.constEnd()) {
         return McMetaType();
     }
@@ -85,8 +81,7 @@ McMetaType McMetaType::fromWQMetaType(const QMetaType &type) noexcept
 McMetaType McMetaType::fromTQMetaType(const QMetaType &type) noexcept
 {
     auto itr = std::find_if(coreMetaTypeStaticData->metaTypes.constBegin(),
-                            coreMetaTypeStaticData->metaTypes.constEnd(),
-                            [&type](const McMetaType &t) { return type == t.d->tMetaType; });
+        coreMetaTypeStaticData->metaTypes.constEnd(), [&type](const McMetaType &t) { return type == t.d->tMetaType; });
     if (itr == coreMetaTypeStaticData->metaTypes.constEnd()) {
         return McMetaType();
     }
@@ -96,8 +91,8 @@ McMetaType McMetaType::fromTQMetaType(const QMetaType &type) noexcept
 McMetaType McMetaType::fromTypeName(const QByteArray &typeName) noexcept
 {
     auto itr = std::find_if(coreMetaTypeStaticData->metaTypes.constBegin(),
-                            coreMetaTypeStaticData->metaTypes.constEnd(),
-                            [&typeName](const McMetaType &t) { return typeName == t.d->metaType.name(); });
+        coreMetaTypeStaticData->metaTypes.constEnd(),
+        [&typeName](const McMetaType &t) { return typeName == t.d->metaType.name(); });
     if (itr == coreMetaTypeStaticData->metaTypes.constEnd()) {
         return McMetaType();
     }
@@ -107,8 +102,8 @@ McMetaType McMetaType::fromTypeName(const QByteArray &typeName) noexcept
 McMetaType McMetaType::fromPTypeName(const QByteArray &typeName) noexcept
 {
     auto itr = std::find_if(coreMetaTypeStaticData->metaTypes.constBegin(),
-                            coreMetaTypeStaticData->metaTypes.constEnd(),
-                            [&typeName](const McMetaType &t) { return typeName == t.d->pMetaType.name(); });
+        coreMetaTypeStaticData->metaTypes.constEnd(),
+        [&typeName](const McMetaType &t) { return typeName == t.d->pMetaType.name(); });
     if (itr == coreMetaTypeStaticData->metaTypes.constEnd()) {
         return McMetaType();
     }
@@ -118,8 +113,8 @@ McMetaType McMetaType::fromPTypeName(const QByteArray &typeName) noexcept
 McMetaType McMetaType::fromSTypeName(const QByteArray &typeName) noexcept
 {
     auto itr = std::find_if(coreMetaTypeStaticData->metaTypes.constBegin(),
-                            coreMetaTypeStaticData->metaTypes.constEnd(),
-                            [&typeName](const McMetaType &t) { return typeName == t.d->sMetaType.name(); });
+        coreMetaTypeStaticData->metaTypes.constEnd(),
+        [&typeName](const McMetaType &t) { return typeName == t.d->sMetaType.name(); });
     if (itr == coreMetaTypeStaticData->metaTypes.constEnd()) {
         return McMetaType();
     }
@@ -129,8 +124,8 @@ McMetaType McMetaType::fromSTypeName(const QByteArray &typeName) noexcept
 McMetaType McMetaType::fromWTypeName(const QByteArray &typeName) noexcept
 {
     auto itr = std::find_if(coreMetaTypeStaticData->metaTypes.constBegin(),
-                            coreMetaTypeStaticData->metaTypes.constEnd(),
-                            [&typeName](const McMetaType &t) { return typeName == t.d->wMetaType.name(); });
+        coreMetaTypeStaticData->metaTypes.constEnd(),
+        [&typeName](const McMetaType &t) { return typeName == t.d->wMetaType.name(); });
     if (itr == coreMetaTypeStaticData->metaTypes.constEnd()) {
         return McMetaType();
     }
@@ -140,8 +135,8 @@ McMetaType McMetaType::fromWTypeName(const QByteArray &typeName) noexcept
 McMetaType McMetaType::fromTTypeName(const QByteArray &typeName) noexcept
 {
     auto itr = std::find_if(coreMetaTypeStaticData->metaTypes.constBegin(),
-                            coreMetaTypeStaticData->metaTypes.constEnd(),
-                            [&typeName](const McMetaType &t) { return typeName == t.d->tMetaType.name(); });
+        coreMetaTypeStaticData->metaTypes.constEnd(),
+        [&typeName](const McMetaType &t) { return typeName == t.d->tMetaType.name(); });
     if (itr == coreMetaTypeStaticData->metaTypes.constEnd()) {
         return McMetaType();
     }
@@ -194,8 +189,8 @@ void McListMetaType::registerMetaType(const McListMetaType &type) noexcept
 McListMetaType McListMetaType::fromQMetaType(const QMetaType &type) noexcept
 {
     auto itr = std::find_if(coreMetaTypeStaticData->listMetaTypes.constBegin(),
-                            coreMetaTypeStaticData->listMetaTypes.constEnd(),
-                            [&type](const McListMetaType &t) { return type == t.d->metaType; });
+        coreMetaTypeStaticData->listMetaTypes.constEnd(),
+        [&type](const McListMetaType &t) { return type == t.d->metaType; });
     if (itr == coreMetaTypeStaticData->listMetaTypes.constEnd()) {
         return McListMetaType();
     }
@@ -220,8 +215,8 @@ void McMapMetaType::registerMetaType(const McMapMetaType &type) noexcept
 McMapMetaType McMapMetaType::fromQMetaType(const QMetaType &type) noexcept
 {
     auto itr = std::find_if(coreMetaTypeStaticData->mapMetaTypes.constBegin(),
-                            coreMetaTypeStaticData->mapMetaTypes.constEnd(),
-                            [&type](const McMapMetaType &t) { return type == t.d->metaType; });
+        coreMetaTypeStaticData->mapMetaTypes.constEnd(),
+        [&type](const McMapMetaType &t) { return type == t.d->metaType; });
     if (itr == coreMetaTypeStaticData->mapMetaTypes.constEnd()) {
         return McMapMetaType();
     }

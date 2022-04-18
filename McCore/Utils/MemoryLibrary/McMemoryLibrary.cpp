@@ -379,9 +379,9 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 #include <QSharedData>
 
 #ifdef Q_OS_WIN
-#include "MemoryModule.h"
+# include "MemoryModule.h"
 #else
-#include "memload.h"
+# include "memload.h"
 #endif
 
 struct McMemoryLibraryData : public QSharedData
@@ -420,11 +420,15 @@ McMemoryLibrary::McMemoryLibrary(const QByteArray &data) noexcept
 
 McMemoryLibrary::~McMemoryLibrary() {}
 
-McMemoryLibrary::McMemoryLibrary(const McMemoryLibrary &o) noexcept : d(o.d) {}
+McMemoryLibrary::McMemoryLibrary(const McMemoryLibrary &o) noexcept
+    : d(o.d)
+{
+}
 
 McMemoryLibrary::McMemoryLibrary(McMemoryLibrary &&o) noexcept
     : d(qExchange(o.d, QExplicitlySharedDataPointer<McMemoryLibraryData>()))
-{}
+{
+}
 
 McMemoryLibrary &McMemoryLibrary::operator=(const McMemoryLibrary &o) noexcept
 {
@@ -475,10 +479,10 @@ bool McMemoryLibrary::load() noexcept
             == FormatMessage(
                 FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM
                     | FORMAT_MESSAGE_IGNORE_INSERTS, //标志位，决定如何说明lpSource参数，dwFlags的低位指定如何处理换行功能在输出缓冲区，也决定最大宽度的格式化输出行,可选参数。
-                NULL,                                //根据dwFlags标志而定。
+                NULL, //根据dwFlags标志而定。
                 errorCode, //请求的消息的标识符。当dwFlags标志为FORMAT_MESSAGE_FROM_STRING时会被忽略。
                 MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), //请求的消息的语言标识符。
-                (LPTSTR) &lpBuffer,                        //接收错误信息描述的缓冲区指针。
+                (LPTSTR)&lpBuffer, //接收错误信息描述的缓冲区指针。
                 0, //如果FORMAT_MESSAGE_ALLOCATE_BUFFER标志没有被指定，这个参数必须指定为输出缓冲区的大小，如果指定值为0，这个参数指定为分配给输出缓冲区的最小数。
                 NULL //保存格式化信息中的插入值的一个数组。
                 )) { //失败
@@ -536,5 +540,5 @@ QFunctionPointer McMemoryLibrary::resolve(const QLatin1String &symbol) noexcept
 #else
     auto func = memory_get_procaddr(d->handle, symbol.data());
 #endif
-    return (QFunctionPointer) func;
+    return (QFunctionPointer)func;
 }

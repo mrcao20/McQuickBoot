@@ -49,6 +49,12 @@ void McObjectPluginBeanBuilder::setPluginChecker(const McBeanReferencePtr &ref) 
     d->pluginChecker = ref;
 }
 
+//! 插件必须是单例
+bool McObjectPluginBeanBuilder::isSingleton() const noexcept
+{
+    return true;
+}
+
 bool McObjectPluginBeanBuilder::isPointer() const noexcept
 {
     return true;

@@ -23,9 +23,33 @@
  */
 #include "BeanReaderTest.h"
 
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QTest>
 
 #include <McIoc/BeanBuilderReader/Impl/McXmlBeanBuilderReader.h>
+
+MC_AUTO_INIT(PluginCheckerTest)
+MC_INIT_END
+
+bool PluginCheckerTest::check(const QJsonObject &json) noexcept
+{
+    auto checkJson = QJsonDocument::fromJson(
+        R"({"IID": "org.quickboot.mc.test.IObjectTest", "className": "SimplePlugin", "MetaData": {"checkKey": "simplePlugin"}})")
+                         .object();
+    auto checkKeys = checkJson.keys();
+    for (auto &checkKey: qAsConst(checkKeys)) {
+        if (!json.contains(checkKey)) {
+            return false;
+        }
+        auto checkValue = checkJson.value(checkKey);
+        auto value = json.value(checkKey);
+        if (checkValue != value) {
+            return false;
+        }
+    }
+    return true;
+}
 
 bool RegistryTest::registerBeanBuilder(const QString &name, const IMcBeanBuilderPtr &beanBuilder) noexcept
 {

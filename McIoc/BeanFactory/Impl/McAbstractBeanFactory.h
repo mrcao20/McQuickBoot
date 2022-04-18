@@ -28,9 +28,10 @@
 
 MC_FORWARD_DECL_PRIVATE_DATA(McAbstractBeanFactory);
 
-class MC_IOC_EXPORT McAbstractBeanFactory : public QObject,
-                                            public IMcConfigurableBeanFactory,
-                                            public IMcBeanReferenceResolver
+class MC_IOC_EXPORT McAbstractBeanFactory
+    : public QObject
+    , public IMcConfigurableBeanFactory
+    , public IMcBeanReferenceResolver
 {
     Q_OBJECT
 public:

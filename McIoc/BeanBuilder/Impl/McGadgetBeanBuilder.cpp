@@ -77,26 +77,21 @@ void McGadgetBeanBuilder::addPropertyValue(void *bean, const QMetaObject *metaOb
 
         auto index = metaObject->indexOfProperty(key.toLocal8Bit());
         if (index == -1) {
-            qCDebug(mcIoc(),
-                    "bean '%s' cannot found property named for '%s'.",
-                    metaObject->className(),
-                    qPrintable(key));
+            qCDebug(
+                mcIoc(), "bean '%s' cannot found property named for '%s'.", metaObject->className(), qPrintable(key));
 
         } else {
             auto metaProperty = metaObject->property(index);
             if (Q_UNLIKELY(!metaProperty.writeOnGadget(bean, value))) {
-                qCCritical(mcIoc(),
-                           "bean '%s' write property named for '%s' failure",
-                           metaObject->className(),
-                           qPrintable(key));
+                qCCritical(mcIoc(), "bean '%s' write property named for '%s' failure", metaObject->className(),
+                    qPrintable(key));
             }
         }
     }
 }
 
-void McGadgetBeanBuilder::callStartFunction(void *bean,
-                                            const QMetaObject *metaObject,
-                                            IMcBeanBuildable *buildableBean) noexcept
+void McGadgetBeanBuilder::callStartFunction(
+    void *bean, const QMetaObject *metaObject, IMcBeanBuildable *buildableBean) noexcept
 {
     callTagFunction(bean, metaObject, MC_STRINGIFY(MC_STARTED));
     if (buildableBean != nullptr) {
@@ -104,9 +99,8 @@ void McGadgetBeanBuilder::callStartFunction(void *bean,
     }
 }
 
-void McGadgetBeanBuilder::callFinishedFunction(void *bean,
-                                               const QMetaObject *metaObject,
-                                               IMcBeanBuildable *buildableBean) noexcept
+void McGadgetBeanBuilder::callFinishedFunction(
+    void *bean, const QMetaObject *metaObject, IMcBeanBuildable *buildableBean) noexcept
 {
     callTagFunction(bean, metaObject, MC_STRINGIFY(MC_FINISHED));
     if (buildableBean != nullptr) {

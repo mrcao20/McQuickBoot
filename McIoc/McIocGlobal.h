@@ -32,7 +32,7 @@
 
 Q_DECLARE_LOGGING_CATEGORY(mcIoc)
 
-//MC_FORWARD_DECL_CLASS(IMcApplicationContext)
+// MC_FORWARD_DECL_CLASS(IMcApplicationContext)
 
 //! 如果你看到这行注释，则表示你可以不再需要使用这个宏，而是直接调用其函数
 //! 此宏保留以适配以前大规模使用的老代码
@@ -46,57 +46,58 @@ void addMetaTypeBeanName(const McMetaType &type, const QString &beanName) noexce
 void addMetaTypeBeanName(const QVector<McMetaType> &types, const QString &beanName) noexcept;
 QSet<QString> getBeanNameForMetaType(const McMetaType &type) noexcept;
 
-//QString getBeanName(const QMetaObject *metaObj) noexcept;
+// QString getBeanName(const QMetaObject *metaObj) noexcept;
 } // namespace McPrivate
 
 namespace Mc {
 ////! 获取所有被Component标记的bean
-//MC_IOC_EXPORT QList<QString> getAllComponent(IMcApplicationContextConstPtrRef appCtx) noexcept;
+// MC_IOC_EXPORT QList<QString> getAllComponent(IMcApplicationContextConstPtrRef appCtx) noexcept;
 ////! 获取所有组建类型为componentType的bean的名称
-//MC_IOC_EXPORT QList<QString> getComponents(IMcApplicationContextConstPtrRef appCtx, const QString &componentType) noexcept;
+// MC_IOC_EXPORT QList<QString> getComponents(IMcApplicationContextConstPtrRef appCtx, const QString &componentType)
+// noexcept;
 ////! 是否被Component标记
-//MC_IOC_EXPORT bool isComponent(const QMetaObject *metaObj) noexcept;
+// MC_IOC_EXPORT bool isComponent(const QMetaObject *metaObj) noexcept;
 ////! 传入的元对象的组件类型是否为type
-//MC_IOC_EXPORT bool isComponentType(const QMetaObject *metaObj, const QString &type) noexcept;
+// MC_IOC_EXPORT bool isComponentType(const QMetaObject *metaObj, const QString &type) noexcept;
 MC_IOC_EXPORT bool isContainedTag(const QByteArray &tags, const QByteArray &tag) noexcept;
-//MC_IOC_EXPORT QObject *getObject(IMcApplicationContext *appCtx, const QString &beanName) noexcept;
+// MC_IOC_EXPORT QObject *getObject(IMcApplicationContext *appCtx, const QString &beanName) noexcept;
 
 namespace Ioc {
-//MC_IOC_EXPORT void connect(const QString &beanName,
+// MC_IOC_EXPORT void connect(const QString &beanName,
 //                          const QString &sender,
 //                          const QString &signal,
 //                          const QString &receiver,
 //                          const QString &slot,
 //                          Qt::ConnectionType type = Qt::AutoConnection) noexcept;
 
-//MC_IOC_EXPORT void connect(const QMetaObject *metaObj,
+// MC_IOC_EXPORT void connect(const QMetaObject *metaObj,
 //                          const QString &sender,
 //                          const QString &signal,
 //                          const QString &receiver,
 //                          const QString &slot,
 //                          Qt::ConnectionType type = Qt::AutoConnection) noexcept;
 
-//MC_IOC_EXPORT QMetaObject::Connection connect(IMcApplicationContext *appCtx,
+// MC_IOC_EXPORT QMetaObject::Connection connect(IMcApplicationContext *appCtx,
 //                                             const QString &sender,
 //                                             const QString &signal,
 //                                             const QString &receiver,
 //                                             const QString &slot,
 //                                             Qt::ConnectionType type = Qt::AutoConnection) noexcept;
 
-//MC_IOC_EXPORT QMetaObject::Connection connect(IMcApplicationContext *appCtx,
+// MC_IOC_EXPORT QMetaObject::Connection connect(IMcApplicationContext *appCtx,
 //                                             const QString &sender,
 //                                             const QString &signal,
 //                                             QObject *receiver,
 //                                             const QString &slot,
 //                                             Qt::ConnectionType type = Qt::AutoConnection) noexcept;
 
-//MC_IOC_EXPORT bool disconnect(IMcApplicationContext *appCtx,
+// MC_IOC_EXPORT bool disconnect(IMcApplicationContext *appCtx,
 //                             const QString &sender,
 //                             const QString &signal,
 //                             const QString &receiver,
 //                             const QString &slot) noexcept;
 
-//MC_IOC_EXPORT bool disconnect(IMcApplicationContext *appCtx,
+// MC_IOC_EXPORT bool disconnect(IMcApplicationContext *appCtx,
 //                             const QString &sender,
 //                             const QString &signal,
 //                             QObject *receiver,

@@ -30,7 +30,9 @@
 
 MC_FORWARD_DECL_PRIVATE_DATA(McEventDispatcher)
 
-class MC_CORE_EXPORT McEventDispatcher : public QObject, protected McQVariantConverter
+class MC_CORE_EXPORT McEventDispatcher
+    : public QObject
+    , protected McQVariantConverter
 {
     Q_OBJECT
     McEventDispatcher() noexcept;
@@ -41,35 +43,27 @@ public:
 
     static McEventDispatcher *instance() noexcept;
 
-    QMetaObject::Connection connectToEvent(const QString &scxmlEventSpec,
-                                           const QObject *receiver,
-                                           const char *method,
-                                           Qt::ConnectionType type = Qt::AutoConnection) noexcept;
+    QMetaObject::Connection connectToEvent(const QString &scxmlEventSpec, const QObject *receiver, const char *method,
+        Qt::ConnectionType type = Qt::AutoConnection) noexcept;
 
     // connect state to a QObject slot
     template<typename PointerToMemberFunction>
-    inline QMetaObject::Connection connectToEvent(
-        const QString &scxmlEventSpec,
+    inline QMetaObject::Connection connectToEvent(const QString &scxmlEventSpec,
         const typename QtPrivate::FunctionPointer<PointerToMemberFunction>::Object *receiver,
-        PointerToMemberFunction method,
-        Qt::ConnectionType type = Qt::AutoConnection) noexcept
+        PointerToMemberFunction method, Qt::ConnectionType type = Qt::AutoConnection) noexcept
     {
         typedef QtPrivate::FunctionPointer<PointerToMemberFunction> SlotType;
-        return connectToEventImpl(
-            scxmlEventSpec,
-            receiver,
-            nullptr,
-            new QtPrivate::QSlotObject<PointerToMemberFunction, typename SlotType::Arguments, void>(
-                method),
-            type);
+        return connectToEventImpl(scxmlEventSpec, receiver, nullptr,
+            new QtPrivate::QSlotObject<PointerToMemberFunction, typename SlotType::Arguments, void>(method), type);
     }
 
     // connect state to a functor or function pointer (without context)
     template<typename Functor>
     inline typename std::enable_if<!QtPrivate::FunctionPointer<Functor>::IsPointerToMemberFunction
                                        && !std::is_same<const char *, Functor>::value,
-                                   QMetaObject::Connection>::type
-    connectToEvent(const QString &scxmlEventSpec, Functor functor, Qt::ConnectionType type = Qt::AutoConnection) noexcept
+        QMetaObject::Connection>::type
+        connectToEvent(
+            const QString &scxmlEventSpec, Functor functor, Qt::ConnectionType type = Qt::AutoConnection) noexcept
     {
         // Use this as context
         return connectToEvent(scxmlEventSpec, this, functor, type);
@@ -79,20 +73,13 @@ public:
     template<typename Functor>
     inline typename std::enable_if<!QtPrivate::FunctionPointer<Functor>::IsPointerToMemberFunction
                                        && !std::is_same<const char *, Functor>::value,
-                                   QMetaObject::Connection>::type
-    connectToEvent(const QString &scxmlEventSpec,
-                   const QObject *context,
-                   Functor functor,
-                   Qt::ConnectionType type = Qt::AutoConnection) noexcept
+        QMetaObject::Connection>::type
+        connectToEvent(const QString &scxmlEventSpec, const QObject *context, Functor functor,
+            Qt::ConnectionType type = Qt::AutoConnection) noexcept
     {
         QtPrivate::QSlotObjectBase *slotObj
-            = new QtPrivate::QFunctorSlotObject<Functor, 1, QtPrivate::List<QVariant>, void>(
-                functor);
-        return connectToEventImpl(scxmlEventSpec,
-                                  context,
-                                  reinterpret_cast<void **>(&functor),
-                                  slotObj,
-                                  type);
+            = new QtPrivate::QFunctorSlotObject<Functor, 1, QtPrivate::List<QVariant>, void>(functor);
+        return connectToEventImpl(scxmlEventSpec, context, reinterpret_cast<void **>(&functor), slotObj, type);
     }
 
     void submitEvent(const QString &eventName) noexcept;
@@ -104,11 +91,8 @@ public:
 
 private:
     void submitEvent_helper(const QString &eventName, const QVariant &data) noexcept;
-    QMetaObject::Connection connectToEventImpl(const QString &scxmlEventSpec,
-                                               const QObject *receiver,
-                                               void **slot,
-                                               QtPrivate::QSlotObjectBase *slotObj,
-                                               Qt::ConnectionType type = Qt::AutoConnection) noexcept;
+    QMetaObject::Connection connectToEventImpl(const QString &scxmlEventSpec, const QObject *receiver, void **slot,
+        QtPrivate::QSlotObjectBase *slotObj, Qt::ConnectionType type = Qt::AutoConnection) noexcept;
 
 private:
     MC_DECL_PRIVATE(McEventDispatcher)

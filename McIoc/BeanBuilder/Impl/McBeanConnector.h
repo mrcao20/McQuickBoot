@@ -49,11 +49,11 @@ public:
     void setType(const McBeanEnumPtr &type) noexcept { m_type = type; }
 
 private:
-    QString m_sender{Mc::Constant::Tag::Xml::self};   //!< 发送方beanName，默认为对象本身
-    QString m_signal;                                 //!< 信号名
-    QString m_receiver{Mc::Constant::Tag::Xml::self}; //!< 接收方beanName，默认为对象本身
-    QString m_slot;                                   //!< 槽名
-    McBeanEnumPtr m_type;                             //!< 连接方式，默认为自动连接
+    QString m_sender{Mc::Constant::Tag::Xml::THIS}; //!< 发送方beanName，默认为对象本身
+    QString m_signal; //!< 信号名
+    QString m_receiver{Mc::Constant::Tag::Xml::THIS}; //!< 接收方beanName，默认为对象本身
+    QString m_slot; //!< 槽名
+    McBeanEnumPtr m_type; //!< 连接方式，默认为自动连接
 };
 
 MC_DECL_POINTER(McBeanConnector)

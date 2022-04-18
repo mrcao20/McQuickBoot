@@ -39,7 +39,7 @@ void addMetaTypeBeanName(const McMetaType &type, const QString &beanName) noexce
 
 void addMetaTypeBeanName(const QVector<McMetaType> &types, const QString &beanName) noexcept
 {
-    for (auto &type : types) {
+    for (auto &type: types) {
         staticData->metaTypeBeanNames[type].insert(beanName);
     }
 }
@@ -54,7 +54,7 @@ namespace Mc {
 bool isContainedTag(const QByteArray &tags, const QByteArray &tag) noexcept
 {
     auto tagList = tags.split(' ');
-    for (auto &t : qAsConst(tagList)) {
+    for (auto &t: qAsConst(tagList)) {
         if (t == tag) {
             return true;
         }

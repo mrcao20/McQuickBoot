@@ -25,14 +25,15 @@
 
 #include <QTest>
 
-#include "McIoc/BeanBuilder/Impl/McSimpleBeanBuilder.h"
 #include <McCore/Utils/Impl/McNormalPluginChecker.h>
+#include <McIoc/BeanBuilder/Impl/McBeanConnector.h>
 #include <McIoc/BeanBuilder/Impl/McBeanReference.h>
 #include <McIoc/BeanBuilder/Impl/McListBeanBuilder.h>
 #include <McIoc/BeanBuilder/Impl/McMapBeanBuilder.h>
 #include <McIoc/BeanBuilder/Impl/McSharedGadgetBeanBuilder.h>
 #include <McIoc/BeanBuilder/Impl/McSharedObjectClassBeanBuilder.h>
 #include <McIoc/BeanBuilder/Impl/McSharedObjectPluginBeanBuilder.h>
+#include <McIoc/BeanBuilder/Impl/McSimpleBeanBuilder.h>
 #include <McIoc/BeanFactory/Impl/McDefaultBeanFactory.h>
 
 MC_AUTO_INIT(ObjectTest)
@@ -42,11 +43,36 @@ MC_INIT_END
 
 ObjectTest::ObjectTest() {}
 
-ObjectTest::ObjectTest(const QString &val) : m_text(val) {}
+ObjectTest::ObjectTest(const QString &val)
+    : m_text(val)
+{
+}
 
 QString ObjectTest::test()
 {
+    if (!m_list.isEmpty()) {
+        auto debug = qDebug();
+        for (auto &l: m_list) {
+            debug << l << " ";
+        }
+    }
+    auto debug = qDebug();
+    if (!m_map.isEmpty()) {
+        QMapIterator<QString, ObjectTestPtr> itr(m_map);
+        while (itr.hasNext()) {
+            auto item = itr.next();
+            debug << item.key() << "-" << item.value() << ";";
+        }
+    }
+    if (parent() != nullptr) {
+        qDebug() << m_text << parent();
+    }
     return m_text;
+}
+
+void ObjectTest::testSlot()
+{
+    qDebug() << "testSlot";
 }
 
 void BeanFactoryTest::gadgetTestCase()
@@ -161,14 +187,34 @@ void BeanFactoryTest::objectTestCase()
     mcRegisterMetaType<ObjectTest>();
     auto beanFactory = McDefaultBeanFactoryPtr::create();
     {
-        auto builder = McObjectClassBeanBuilderPtr::create();
+        auto builder = McSharedObjectClassBeanBuilderPtr::create();
+        builder->setReferenceResolver(beanFactory.data());
         builder->setClassName("ObjectTest");
+        beanFactory->registerBeanBuilder("object", builder);
+    }
+    {
+        auto builder = McObjectClassBeanBuilderPtr::create();
+        builder->setReferenceResolver(beanFactory.data());
+        builder->setClassName("ObjectTest");
+        auto con = McBeanConnectorPtr::create();
+        con->setSender("this");
+        con->setSignal("testSignal()");
+        con->setReceiver("object");
+        con->setSlot("testSlot()");
+        builder->addConnector(con);
+        auto ref = McBeanReferencePtr::create();
+        ref->setName("object");
+        builder->addProperty("object", QVariant::fromValue(ref));
         beanFactory->registerBeanBuilder("objectTest", builder);
     }
     {
         auto builder = McObjectClassBeanBuilderPtr::create();
+        builder->setReferenceResolver(beanFactory.data());
         builder->setClassName("ObjectTest");
         builder->addProperty("text", "objectTestPro");
+        auto ref = McBeanReferencePtr::create();
+        ref->setName("objectTest");
+        builder->setParentBeanReference(ref);
         beanFactory->registerBeanBuilder("objectTestPro", builder);
     }
     {
@@ -183,6 +229,7 @@ void BeanFactoryTest::objectTestCase()
         auto objectTest = beanFactory->getBeanPointer<IObjectTest>("objectTest");
         QVERIFY(objectTest != nullptr);
         QVERIFY(objectTest->test() == "objectTest");
+        static_cast<ObjectTest *>(objectTest)->testSignal();
     }
     {
         auto objectTest = beanFactory->getBeanPointer<IObjectTest>("objectTestPro");
@@ -373,7 +420,7 @@ void BeanFactoryTest::listTestCase()
         auto podList = beanFactory->getBeanToVariant("podList").value<QList<PodTestPtr>>();
         QVERIFY(podList.size() == 1);
         auto debug = qDebug();
-        for (auto pod : podList) {
+        for (auto pod: podList) {
             debug << pod->text << " ";
         }
     }
@@ -382,7 +429,7 @@ void BeanFactoryTest::listTestCase()
         auto podList = beanFactory->getBeanToVariant("objectList").value<QList<IObjectTestPtr>>();
         QVERIFY(podList.size() == 1);
         auto debug = qDebug();
-        for (auto pod : podList) {
+        for (auto pod: podList) {
             debug << pod->test() << " ";
         }
     }

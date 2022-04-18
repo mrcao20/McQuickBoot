@@ -101,7 +101,7 @@ void McObjectBeanBuilder::doMoveToThread(const QVariant &bean, QThread *thread, 
     if (obj->thread() != thread) {
         obj->moveToThread(thread);
     }
-    for (auto &value : properties) {
+    for (auto &value: properties) {
         if (!value.canConvert<McBeanReferencePtr>()) {
             continue;
         }
@@ -129,19 +129,15 @@ void McObjectBeanBuilder::addPropertyValue(QObject *bean, const QVariantMap &pro
         auto metaObj = bean->metaObject();
         auto index = metaObj->indexOfProperty(key.toLocal8Bit());
         if (index == -1) {
-            qCDebug(mcIoc(),
-                    "bean '%s' cannot found property named for '%s'. it will be a dynamic property",
-                    metaObj->className(),
-                    qPrintable(key));
+            qCDebug(mcIoc(), "bean '%s' cannot found property named for '%s'. it will be a dynamic property",
+                metaObj->className(), qPrintable(key));
             bean->setProperty(key.toLocal8Bit(), value);
 
         } else {
             auto metaProperty = metaObj->property(index);
             if (Q_UNLIKELY(!metaProperty.write(bean, value))) {
-                qCCritical(mcIoc(),
-                           "bean '%s' write property named for '%s' failure",
-                           metaObj->className(),
-                           qPrintable(key));
+                qCCritical(
+                    mcIoc(), "bean '%s' write property named for '%s' failure", metaObj->className(), qPrintable(key));
             }
         }
     }
@@ -149,7 +145,7 @@ void McObjectBeanBuilder::addPropertyValue(QObject *bean, const QVariantMap &pro
 
 void McObjectBeanBuilder::addObjectConnect(QObject *bean, const QVariantMap &pros)
 {
-    for (auto &con : qAsConst(d->connectors)) {
+    for (auto &con: qAsConst(d->connectors)) {
         QString senderProName = con->sender();
         QObject *sender = getPropertyObject(bean, senderProName, pros);
         if (sender == nullptr) {
@@ -167,10 +163,8 @@ void McObjectBeanBuilder::addObjectConnect(QObject *bean, const QVariantMap &pro
         }
         int signalIndex = signalMetaObj->indexOfSignal(signalStr.toLocal8Bit());
         if (signalIndex == -1) {
-            qCCritical(mcIoc(),
-                       "not exists signal named '%s' for bean '%s'",
-                       qPrintable(signalStr),
-                       signalMetaObj->className());
+            qCCritical(mcIoc(), "not exists signal named '%s' for bean '%s'", qPrintable(signalStr),
+                signalMetaObj->className());
             continue;
         }
         QMetaMethod signal = signalMetaObj->method(signalIndex);
@@ -192,36 +186,34 @@ void McObjectBeanBuilder::addObjectConnect(QObject *bean, const QVariantMap &pro
         }
         int slotIndex = slotMetaObj->indexOfMethod(slotStr.toLocal8Bit());
         if (slotIndex == -1) {
-            qCCritical(mcIoc(),
-                       "not exists slot named '%s' for bean '%s'",
-                       qPrintable(slotStr),
-                       slotMetaObj->className());
+            qCCritical(
+                mcIoc(), "not exists slot named '%s' for bean '%s'", qPrintable(slotStr), slotMetaObj->className());
             continue;
         }
         QMetaMethod slot = slotMetaObj->method(slotIndex);
 
-        Qt::ConnectionType type = convertEnum(QVariant::fromValue(con->type()), QVariant()).value<Qt::ConnectionType>();
+        Qt::ConnectionType type = Qt::AutoConnection;
+        if (!con->type().isNull()) {
+            type = convertEnum(QVariant::fromValue(con->type()), QVariant()).value<Qt::ConnectionType>();
+        }
 
         QObject::connect(sender, signal, receiver, slot, type);
     }
 }
 
-QObject *McObjectBeanBuilder::getPropertyObject(QObject *bean,
-                                                const QString &proName,
-                                                const QVariantMap &proValues) noexcept
+QObject *McObjectBeanBuilder::getPropertyObject(
+    QObject *bean, const QString &proName, const QVariantMap &proValues) noexcept
 {
     if (bean == nullptr) {
         return nullptr;
     }
     QObject *obj = nullptr;
-    if (proName == Mc::Constant::Tag::Xml::self) {
+    if (proName == Mc::Constant::Tag::Xml::THIS) {
         obj = bean;
     } else {
         if (!proValues.contains(proName)) {
-            qCCritical(mcIoc(),
-                       "not found property named '%s' for bean '%s'",
-                       bean->metaObject()->className(),
-                       qPrintable(proName));
+            qCCritical(mcIoc(), "not found property named '%s' for bean '%s'", bean->metaObject()->className(),
+                qPrintable(proName));
             return nullptr;
         }
         auto varPro = proValues[proName];
@@ -254,9 +246,8 @@ void McObjectBeanBuilder::callThreadMovedFunction(QObject *bean, IMcBeanBuildabl
     }
 }
 
-void McObjectBeanBuilder::callCompletedFunction(QObject *bean,
-                                                IMcBeanBuildable *buildableBean,
-                                                Qt::ConnectionType type) noexcept
+void McObjectBeanBuilder::callCompletedFunction(
+    QObject *bean, IMcBeanBuildable *buildableBean, Qt::ConnectionType type) noexcept
 {
     callTagFunction(bean, MC_STRINGIFY(MC_COMPLETED), type);
     if (buildableBean != nullptr) {
