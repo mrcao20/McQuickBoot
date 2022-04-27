@@ -157,17 +157,17 @@ void McAnnotationBeanDefinitionReader::parseProperty(
 }
 
 void McAnnotationBeanDefinitionReader::parsePropertyOnAutowired(
-    const McAbstractBeanBuilderPtr &builder, const QMetaObject *metaObj, const QByteArray &value) noexcept
+    const McAbstractBeanBuilderPtr &builder, const QMetaObject *metaObj, const QString &value) noexcept
 {
     if (builder.isNull() || metaObj == nullptr) {
         return;
     }
-    auto list = value.split('=');
+    auto list = value.split('=', Qt::SkipEmptyParts);
     if (list.isEmpty()) {
         return;
     }
-    QByteArray proName = list.first().simplified();
-    QByteArray beanName = list.last().simplified();
+    QByteArray proName = list.constFirst().simplified().toLatin1();
+    QByteArray beanName = list.constLast().simplified().toLatin1();
     if (metaObj->indexOfProperty(proName.constData()) == -1) {
         return;
     }

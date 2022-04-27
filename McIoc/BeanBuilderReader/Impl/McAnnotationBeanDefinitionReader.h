@@ -48,7 +48,7 @@ private:
     QMap<QString, McMetaType> parseComponent() noexcept;
     void parseProperty(const McAbstractBeanBuilderPtr &builder, const QMetaObject *metaObj) noexcept;
     void parsePropertyOnAutowired(
-        const McAbstractBeanBuilderPtr &builder, const QMetaObject *metaObj, const QByteArray &value) noexcept;
+        const McAbstractBeanBuilderPtr &builder, const QMetaObject *metaObj, const QString &value) noexcept;
     void parsePropertyOnResource(
         const McAbstractBeanBuilderPtr &builder, const QMetaObject *metaObj, const QByteArray &value) noexcept;
     McMetaType getMcMetaType(const QMetaType &qmetaType) const noexcept;
