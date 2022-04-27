@@ -34,7 +34,7 @@
 #include <McIoc/BeanBuilder/Impl/McSharedObjectClassBeanBuilder.h>
 #include <McIoc/BeanBuilder/Impl/McSharedObjectPluginBeanBuilder.h>
 #include <McIoc/BeanBuilder/Impl/McSimpleBeanBuilder.h>
-#include <McIoc/BeanFactory/Impl/McDefaultBeanFactory.h>
+#include <McIoc/BeanFactory/Impl/McResolverBeanFactory.h>
 
 MC_AUTO_INIT(ObjectTest)
 mcRegisterContainerConverter<QList<ObjectTestPtr>>();
@@ -52,7 +52,7 @@ QString ObjectTest::test()
 {
     if (!m_list.isEmpty()) {
         auto debug = qDebug();
-        for (auto &l: m_list) {
+        for (auto &l : m_list) {
             debug << l << " ";
         }
     }
@@ -79,52 +79,48 @@ void BeanFactoryTest::gadgetTestCase()
 {
     mcRegisterMetaTypeSimple<PodTest>();
     mcRegisterMetaTypeSimple<GadgetTest>();
-    auto beanFactory = McDefaultBeanFactoryPtr::create();
+    auto beanFactory = McResolverBeanFactoryPtr::create();
     {
         auto builder = McGadgetBeanBuilderPtr::create();
-        builder->setReferenceResolver(beanFactory.data());
         builder->setClassName("PodTest");
         beanFactory->registerBeanBuilder("podTest", builder);
     }
     {
         auto builder = McGadgetBeanBuilderPtr::create();
-        builder->setReferenceResolver(beanFactory.data());
         builder->setClassName("GadgetTest");
         beanFactory->registerBeanBuilder("gadgetTest", builder);
     }
     {
         auto builder = McGadgetBeanBuilderPtr::create();
-        builder->setReferenceResolver(beanFactory.data());
         builder->setClassName("GadgetTest");
         builder->addProperty("text", "gadgetTestPro");
         beanFactory->registerBeanBuilder("gadgetTestPro", builder);
     }
     {
         auto builder = McGadgetBeanBuilderPtr::create();
-        builder->setReferenceResolver(beanFactory.data());
         builder->setClassName("GadgetTest");
         builder->addConstructorArg(0, "gadgetTestConstructor");
         beanFactory->registerBeanBuilder("gadgetTestConstructor", builder);
     }
     /********************************************************/
     {
-        auto podTest = beanFactory->getBeanPointer<PodTest>("podTest");
+        auto podTest = beanFactory->getBean<PodTest *>("podTest");
         QVERIFY(podTest != nullptr);
         QVERIFY(podTest->text == "podTest");
     }
     {
-        auto gadgetTest = beanFactory->getBeanPointer<GadgetTest>("gadgetTest");
+        auto gadgetTest = beanFactory->getBean<GadgetTest *>("gadgetTest");
         QVERIFY(gadgetTest != nullptr);
         QVERIFY(gadgetTest->text == "gadgetTest");
     }
     {
-        auto gadgetTest = beanFactory->getBeanPointer<GadgetTest>("gadgetTestPro");
+        auto gadgetTest = beanFactory->getBean<GadgetTest *>("gadgetTestPro");
         QVERIFY(gadgetTest != nullptr);
         QVERIFY(gadgetTest->text == "gadgetTestPro");
     }
     {
         mcRegisterMetaType<GadgetTest>();
-        auto gadgetTest = beanFactory->getBeanPointer<GadgetTest>("gadgetTestConstructor");
+        auto gadgetTest = beanFactory->getBean<GadgetTest *>("gadgetTestConstructor");
         QVERIFY(gadgetTest != nullptr);
         QVERIFY(gadgetTest->text == "gadgetTestConstructor");
     }
@@ -132,51 +128,47 @@ void BeanFactoryTest::gadgetTestCase()
 
 void BeanFactoryTest::sharedGadgetTestCase()
 {
-    auto beanFactory = McDefaultBeanFactoryPtr::create();
+    auto beanFactory = McResolverBeanFactoryPtr::create();
     {
         auto builder = McSharedGadgetBeanBuilderPtr::create();
-        builder->setReferenceResolver(beanFactory.data());
         builder->setClassName("PodTest");
         beanFactory->registerBeanBuilder("podTestShared", builder);
     }
     {
         auto builder = McSharedGadgetBeanBuilderPtr::create();
-        builder->setReferenceResolver(beanFactory.data());
         builder->setClassName("GadgetTest");
         beanFactory->registerBeanBuilder("gadgetTestShared", builder);
     }
     {
         auto builder = McSharedGadgetBeanBuilderPtr::create();
-        builder->setReferenceResolver(beanFactory.data());
         builder->setClassName("GadgetTest");
         builder->addProperty("text", "gadgetTestSharedPro");
         beanFactory->registerBeanBuilder("gadgetTestSharedPro", builder);
     }
     {
         auto builder = McSharedGadgetBeanBuilderPtr::create();
-        builder->setReferenceResolver(beanFactory.data());
         builder->setClassName("GadgetTest");
         builder->addConstructorArg("val", "gadgetTestSharedConstructor");
         beanFactory->registerBeanBuilder("gadgetTestSharedConstructor", builder);
     }
     /********************************************************/
     {
-        auto podTest = beanFactory->getBean<PodTest>("podTestShared");
+        auto podTest = beanFactory->getBean<PodTestPtr>("podTestShared");
         QVERIFY(podTest != nullptr);
         QVERIFY(podTest->text == "podTest");
     }
     {
-        auto gadgetTest = beanFactory->getBean<GadgetTest>("gadgetTestShared");
+        auto gadgetTest = beanFactory->getBean<GadgetTestPtr>("gadgetTestShared");
         QVERIFY(gadgetTest != nullptr);
         QVERIFY(gadgetTest->text == "gadgetTest");
     }
     {
-        auto gadgetTest = beanFactory->getBean<GadgetTest>("gadgetTestSharedPro");
+        auto gadgetTest = beanFactory->getBean<GadgetTestPtr>("gadgetTestSharedPro");
         QVERIFY(gadgetTest != nullptr);
         QVERIFY(gadgetTest->text == "gadgetTestSharedPro");
     }
     {
-        auto gadgetTest = beanFactory->getBean<GadgetTest>("gadgetTestSharedConstructor");
+        auto gadgetTest = beanFactory->getBean<GadgetTestPtr>("gadgetTestSharedConstructor");
         QVERIFY(gadgetTest != nullptr);
         QVERIFY(gadgetTest->text == "gadgetTestSharedConstructor");
     }
@@ -185,16 +177,14 @@ void BeanFactoryTest::sharedGadgetTestCase()
 void BeanFactoryTest::objectTestCase()
 {
     mcRegisterMetaType<ObjectTest>();
-    auto beanFactory = McDefaultBeanFactoryPtr::create();
+    auto beanFactory = McResolverBeanFactoryPtr::create();
     {
         auto builder = McSharedObjectClassBeanBuilderPtr::create();
-        builder->setReferenceResolver(beanFactory.data());
         builder->setClassName("ObjectTest");
         beanFactory->registerBeanBuilder("object", builder);
     }
     {
         auto builder = McObjectClassBeanBuilderPtr::create();
-        builder->setReferenceResolver(beanFactory.data());
         builder->setClassName("ObjectTest");
         auto con = McBeanConnectorPtr::create();
         con->setSender("this");
@@ -209,7 +199,6 @@ void BeanFactoryTest::objectTestCase()
     }
     {
         auto builder = McObjectClassBeanBuilderPtr::create();
-        builder->setReferenceResolver(beanFactory.data());
         builder->setClassName("ObjectTest");
         builder->addProperty("text", "objectTestPro");
         auto ref = McBeanReferencePtr::create();
@@ -219,25 +208,24 @@ void BeanFactoryTest::objectTestCase()
     }
     {
         auto builder = McObjectClassBeanBuilderPtr::create();
-        builder->setReferenceResolver(beanFactory.data());
         builder->setClassName("ObjectTest");
         builder->addConstructorArg(0, "objectTestConstructor");
         beanFactory->registerBeanBuilder("objectTestConstructor", builder);
     }
     /********************************************************/
     {
-        auto objectTest = beanFactory->getBeanPointer<IObjectTest>("objectTest");
+        auto objectTest = beanFactory->getBean<IObjectTest *>("objectTest");
         QVERIFY(objectTest != nullptr);
         QVERIFY(objectTest->test() == "objectTest");
         static_cast<ObjectTest *>(objectTest)->testSignal();
     }
     {
-        auto objectTest = beanFactory->getBeanPointer<IObjectTest>("objectTestPro");
+        auto objectTest = beanFactory->getBean<IObjectTest *>("objectTestPro");
         QVERIFY(objectTest != nullptr);
         QVERIFY(objectTest->test() == "objectTestPro");
     }
     {
-        auto objectTest = beanFactory->getBeanPointer<IObjectTest>("objectTestConstructor");
+        auto objectTest = beanFactory->getBean<IObjectTest *>("objectTestConstructor");
         QVERIFY(objectTest != nullptr);
         QVERIFY(objectTest->test() == "objectTestConstructor");
     }
@@ -245,40 +233,37 @@ void BeanFactoryTest::objectTestCase()
 
 void BeanFactoryTest::sharedObjectTestCase()
 {
-    auto beanFactory = McDefaultBeanFactoryPtr::create();
+    auto beanFactory = McResolverBeanFactoryPtr::create();
     {
         auto builder = McSharedObjectClassBeanBuilderPtr::create();
-        builder->setReferenceResolver(beanFactory.data());
         builder->setClassName("ObjectTest");
         beanFactory->registerBeanBuilder("objectTestShared", builder);
     }
     {
         auto builder = McSharedObjectClassBeanBuilderPtr::create();
-        builder->setReferenceResolver(beanFactory.data());
         builder->setClassName("ObjectTest");
         builder->addProperty("text", "objectTestSharedPro");
         beanFactory->registerBeanBuilder("objectTestSharedPro", builder);
     }
     {
         auto builder = McSharedObjectClassBeanBuilderPtr::create();
-        builder->setReferenceResolver(beanFactory.data());
         builder->setClassName("ObjectTest");
         builder->addConstructorArg("val", "objectTestSharedConstructor");
         beanFactory->registerBeanBuilder("objectTestSharedConstructor", builder);
     }
     /********************************************************/
     {
-        auto objectTest = beanFactory->getBean<IObjectTest>("objectTestShared");
+        auto objectTest = beanFactory->getBean<IObjectTestPtr>("objectTestShared");
         QVERIFY(objectTest != nullptr);
         QVERIFY(objectTest->test() == "objectTest");
     }
     {
-        auto objectTest = beanFactory->getBean<IObjectTest>("objectTestSharedPro");
+        auto objectTest = beanFactory->getBean<IObjectTestPtr>("objectTestSharedPro");
         QVERIFY(objectTest != nullptr);
         QVERIFY(objectTest->test() == "objectTestSharedPro");
     }
     {
-        auto objectTest = beanFactory->getBean<IObjectTest>("objectTestSharedConstructor");
+        auto objectTest = beanFactory->getBean<IObjectTestPtr>("objectTestSharedConstructor");
         QVERIFY(objectTest != nullptr);
         QVERIFY(objectTest->test() == "objectTestSharedConstructor");
     }
@@ -286,7 +271,7 @@ void BeanFactoryTest::sharedObjectTestCase()
 
 void BeanFactoryTest::pluginTestCase()
 {
-    auto beanFactory = McDefaultBeanFactoryPtr::create();
+    auto beanFactory = McResolverBeanFactoryPtr::create();
 #ifdef QT_DEBUG
     QString filePath("./SimplePlugind.dll");
 #else
@@ -310,7 +295,6 @@ void BeanFactoryTest::pluginTestCase()
         auto checkerBuilder = McSimpleBeanBuilderPtr::create(QVariant::fromValue(checker));
         beanFactory->registerBeanBuilder("checkerTrue", checkerBuilder);
         auto builder = McObjectPluginBeanBuilderPtr::create();
-        builder->setReferenceResolver(beanFactory.data());
         builder->setPluginPath(filePath);
         auto ref = McBeanReferencePtr::create();
         ref->setName("checkerTrue");
@@ -324,7 +308,6 @@ void BeanFactoryTest::pluginTestCase()
         auto checkerBuilder = McSimpleBeanBuilderPtr::create(QVariant::fromValue(checker));
         beanFactory->registerBeanBuilder("checkerFalse", checkerBuilder);
         auto builder = McObjectPluginBeanBuilderPtr::create();
-        builder->setReferenceResolver(beanFactory.data());
         builder->setPluginPath(filePath);
         auto ref = McBeanReferencePtr::create();
         ref->setName("checkerFalse");
@@ -339,16 +322,16 @@ void BeanFactoryTest::pluginTestCase()
     }
     /********************************************************/
     {
-        auto pluginTest = beanFactory->getBeanPointer<IObjectTest>("pluginTest");
+        auto pluginTest = beanFactory->getBean<IObjectTest *>("pluginTest");
         QVERIFY(pluginTest != nullptr);
         QVERIFY(pluginTest->test() == "SimplePlugin");
     }
     {
-        auto pluginTest = beanFactory->getBeanPointer<IObjectTest>("pluginTestFalse");
+        auto pluginTest = beanFactory->getBean<IObjectTest *>("pluginTestFalse");
         QVERIFY(pluginTest == nullptr);
     }
     {
-        auto pluginTest = beanFactory->getBeanPointer<IObjectTest>("pluginTestPro");
+        auto pluginTest = beanFactory->getBean<IObjectTest *>("pluginTestPro");
         QVERIFY(pluginTest != nullptr);
         QVERIFY(pluginTest->test() == "pluginTestPro");
     }
@@ -358,7 +341,7 @@ void BeanFactoryTest::sharedPluginTestCase()
 {
     //! 由于插件的特殊性，pluginTestCase和本用例使用的是同一个插件实例。
     //! 所以Shared类型只能使用一次，否则会造成多次析构的错误。
-    auto beanFactory = McDefaultBeanFactoryPtr::create();
+    auto beanFactory = McResolverBeanFactoryPtr::create();
 #ifdef QT_DEBUG
     QString filePath("./SimplePlugind.dll");
 #else
@@ -376,7 +359,7 @@ void BeanFactoryTest::sharedPluginTestCase()
     }
     /********************************************************/
     {
-        auto pluginTest = beanFactory->getBean<IObjectTest>("pluginTestPro");
+        auto pluginTest = beanFactory->getBean<IObjectTestPtr>("pluginTestPro");
         QVERIFY(pluginTest != nullptr);
         QVERIFY(pluginTest->test() == "pluginTestPro");
     }
@@ -384,23 +367,20 @@ void BeanFactoryTest::sharedPluginTestCase()
 
 void BeanFactoryTest::listTestCase()
 {
-    auto beanFactory = McDefaultBeanFactoryPtr::create();
+    auto beanFactory = McResolverBeanFactoryPtr::create();
     {
         auto builder = McSharedGadgetBeanBuilderPtr::create();
-        builder->setReferenceResolver(beanFactory.data());
         builder->setClassName("PodTest");
         beanFactory->registerBeanBuilder("podTestShared", builder);
     }
     {
         auto builder = McSharedObjectClassBeanBuilderPtr::create();
-        builder->setReferenceResolver(beanFactory.data());
         builder->setClassName("ObjectTest");
         beanFactory->registerBeanBuilder("objectTestShared", builder);
     }
     /********************************************************/
     {
         auto builder = McListBeanBuilderPtr::create();
-        builder->setReferenceResolver(beanFactory.data());
         auto ref = McBeanReferencePtr::create();
         ref->setName("podTestShared");
         builder->addValue(QVariant::fromValue(ref));
@@ -408,7 +388,6 @@ void BeanFactoryTest::listTestCase()
     }
     {
         auto builder = McListBeanBuilderPtr::create();
-        builder->setReferenceResolver(beanFactory.data());
         auto ref = McBeanReferencePtr::create();
         ref->setName("objectTestShared");
         builder->addValue(QVariant::fromValue(ref));
@@ -417,19 +396,19 @@ void BeanFactoryTest::listTestCase()
     /********************************************************/
     {
         mcRegisterContainerConverter<QList<PodTestPtr>>();
-        auto podList = beanFactory->getBeanToVariant("podList").value<QList<PodTestPtr>>();
+        auto podList = beanFactory->getBean("podList").value<QList<PodTestPtr>>();
         QVERIFY(podList.size() == 1);
         auto debug = qDebug();
-        for (auto pod: podList) {
+        for (auto pod : podList) {
             debug << pod->text << " ";
         }
     }
     {
         mcRegisterContainerConverter<QList<IObjectTestPtr>>();
-        auto podList = beanFactory->getBeanToVariant("objectList").value<QList<IObjectTestPtr>>();
+        auto podList = beanFactory->getBean("objectList").value<QList<IObjectTestPtr>>();
         QVERIFY(podList.size() == 1);
         auto debug = qDebug();
-        for (auto pod: podList) {
+        for (auto pod : podList) {
             debug << pod->test() << " ";
         }
     }
@@ -437,23 +416,20 @@ void BeanFactoryTest::listTestCase()
 
 void BeanFactoryTest::mapTestCase()
 {
-    auto beanFactory = McDefaultBeanFactoryPtr::create();
+    auto beanFactory = McResolverBeanFactoryPtr::create();
     {
         auto builder = McSharedGadgetBeanBuilderPtr::create();
-        builder->setReferenceResolver(beanFactory.data());
         builder->setClassName("PodTest");
         beanFactory->registerBeanBuilder("podTestShared", builder);
     }
     {
         auto builder = McSharedObjectClassBeanBuilderPtr::create();
-        builder->setReferenceResolver(beanFactory.data());
         builder->setClassName("ObjectTest");
         beanFactory->registerBeanBuilder("objectTestShared", builder);
     }
     /********************************************************/
     {
         auto builder = McMapBeanBuilderPtr::create();
-        builder->setReferenceResolver(beanFactory.data());
         {
             auto ref = McBeanReferencePtr::create();
             ref->setName("podTestShared");
@@ -468,7 +444,6 @@ void BeanFactoryTest::mapTestCase()
     }
     {
         auto builder = McMapBeanBuilderPtr::create();
-        builder->setReferenceResolver(beanFactory.data());
         {
             auto ref = McBeanReferencePtr::create();
             ref->setName("objectTestShared");
@@ -484,7 +459,7 @@ void BeanFactoryTest::mapTestCase()
     /********************************************************/
     {
         mcRegisterContainerConverter<QMap<QString, PodTestPtr>>();
-        auto podMap = beanFactory->getBeanToVariant("podMap").value<QMap<QString, PodTestPtr>>();
+        auto podMap = beanFactory->getBean("podMap").value<QMap<QString, PodTestPtr>>();
         QVERIFY(podMap.size() == 2);
         auto debug = qDebug();
         QMapIterator<QString, PodTestPtr> itr(podMap);
@@ -495,7 +470,7 @@ void BeanFactoryTest::mapTestCase()
     }
     {
         mcRegisterContainerConverter<QMap<QString, IObjectTestPtr>>();
-        auto objMap = beanFactory->getBeanToVariant("objMap").value<QMap<QString, IObjectTestPtr>>();
+        auto objMap = beanFactory->getBean("objMap").value<QMap<QString, IObjectTestPtr>>();
         QVERIFY(objMap.size() == 2);
         auto debug = qDebug();
         QMapIterator<QString, IObjectTestPtr> itr(objMap);

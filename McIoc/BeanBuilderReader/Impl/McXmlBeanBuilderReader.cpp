@@ -64,7 +64,7 @@ McXmlBeanBuilderReader::~McXmlBeanBuilderReader() {}
 
 void McXmlBeanBuilderReader::doReadBeanBuilder() noexcept
 {
-    for (auto &device: qAsConst(d->devices)) {
+    for (auto &device : qAsConst(d->devices)) {
         device->seek(0);
         QXmlStreamReader reader(device.data());
         read(reader);
@@ -267,15 +267,10 @@ void McXmlBeanBuilderReader::readProperty(
     auto proName = attrs.value(Mc::Constant::Tag::Xml::NAME).toString();
     if (attrs.hasAttribute(Mc::Constant::Tag::Xml::VALUE)) {
         builder->addProperty(proName, attrs.value(Mc::Constant::Tag::Xml::VALUE).toString());
-        reader.skipCurrentElement();
-        return;
-    }
-    if (attrs.hasAttribute(Mc::Constant::Tag::Xml::REF)) {
+    } else if (attrs.hasAttribute(Mc::Constant::Tag::Xml::REF)) {
         auto ref = McBeanReferencePtr::create();
         ref->setName(attrs.value(Mc::Constant::Tag::Xml::REF).toString());
         builder->addProperty(proName, QVariant::fromValue(ref));
-        reader.skipCurrentElement();
-        return;
     }
     while (!reader.atEnd()) {
         auto token = reader.readNext();
@@ -301,6 +296,13 @@ void McXmlBeanBuilderReader::readConstructor(
         arg.name = attrs.value(Mc::Constant::Tag::Xml::NAME).toLatin1();
     } else {
         arg.index = autoArgIndex;
+    }
+    if (attrs.hasAttribute(Mc::Constant::Tag::Xml::VALUE)) {
+        arg.value = attrs.value(Mc::Constant::Tag::Xml::VALUE).toString();
+    } else if (attrs.hasAttribute(Mc::Constant::Tag::Xml::REF)) {
+        auto ref = McBeanReferencePtr::create();
+        ref->setName(attrs.value(Mc::Constant::Tag::Xml::REF).toString());
+        arg.value = QVariant::fromValue(ref);
     }
     while (!reader.atEnd()) {
         auto token = reader.readNext();
@@ -495,7 +497,7 @@ QMap<QVariant, QVariant> McXmlBeanBuilderReader::readMapValue(QXmlStreamReader &
                 break;
             } else if (token == QXmlStreamReader::StartElement && reader.name() == Mc::Constant::Tag::Xml::LIST) {
                 auto list = readListValue(reader);
-                for (auto value: list) {
+                for (auto value : list) {
                     if (value.metaType() != QMetaType::fromType<McBeanReferencePtr>()) {
                         qCCritical(mcIoc())
                             << "if you want to used plh in map tag. please make sure the value be ref tag.";
@@ -682,7 +684,7 @@ QVariantList McXmlBeanBuilderReader::getList(const QString &dirPath, bool isPoin
         return list;
     }
     QFileInfoList fileInfoList = dir.entryInfoList(QDir::Files);
-    for (auto &fileInfo: qAsConst(fileInfoList)) {
+    for (auto &fileInfo : qAsConst(fileInfoList)) {
         QString pluginPath = fileInfo.absoluteFilePath();
         if (!QLibrary::isLibrary(pluginPath)) {
             qCCritical(mcIoc()) << pluginPath << "not a plugin";

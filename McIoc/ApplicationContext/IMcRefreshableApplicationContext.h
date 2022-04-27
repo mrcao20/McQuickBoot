@@ -25,27 +25,11 @@
 
 #include "../McIocGlobal.h"
 
-QT_BEGIN_NAMESPACE
-class QThread;
-QT_END_NAMESPACE
-
-class IMcBeanFactory
+class IMcRefreshableApplicationContext
 {
-    MC_DEFINE_INTERFACE(IMcBeanFactory)
+    MC_DEFINE_INTERFACE(IMcRefreshableApplicationContext)
 public:
-    template<typename T>
-    T getBean(const QString &name, QThread *thread = nullptr) noexcept
-    {
-        QVariant var = getBean(name, thread);
-        return var.value<T>();
-    }
-
-    virtual QVariant getBean(const QString &name, QThread *thread = nullptr) noexcept = 0;
-    virtual void moveToThread(const QString &name, QThread *thread) noexcept = 0;
-
-    virtual bool containsBean(const QString &name) const noexcept = 0;
-    virtual bool isSingleton(const QString &name) const noexcept = 0;
-    virtual bool isPointer(const QString &name) const noexcept = 0;
+    virtual void refresh(QThread *thread = nullptr) noexcept = 0;
 };
 
-MC_DECL_POINTER(IMcBeanFactory)
+MC_DECL_POINTER(IMcRefreshableApplicationContext)

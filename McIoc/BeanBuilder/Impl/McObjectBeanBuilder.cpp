@@ -26,7 +26,7 @@
 #include <QMetaMethod>
 #include <QThread>
 
-#include "BeanFactory/IMcBeanReferenceResolver.h"
+#include "../IMcBeanReferenceResolver.h"
 #include "McBeanConnector.h"
 #include "McBeanEnum.h"
 #include "McBeanReference.h"
@@ -84,7 +84,7 @@ void McObjectBeanBuilder::complete(QVariant &bean, QThread *thread) noexcept
     }
     callCompletedFunction(obj, buildableObj, conType);
     if (!d->parentBeanReference.isNull()) {
-        auto parentVar = resolver()->resolveBeanReferencePointer(d->parentBeanReference);
+        auto parentVar = resolver()->resolveBeanReference<QObject *>(d->parentBeanReference);
         setParent(obj, parentVar);
     }
 }
@@ -101,7 +101,7 @@ void McObjectBeanBuilder::doMoveToThread(const QVariant &bean, QThread *thread, 
     if (obj->thread() != thread) {
         obj->moveToThread(thread);
     }
-    for (auto &value: properties) {
+    for (auto &value : properties) {
         if (!value.canConvert<McBeanReferencePtr>()) {
             continue;
         }
@@ -145,7 +145,7 @@ void McObjectBeanBuilder::addPropertyValue(QObject *bean, const QVariantMap &pro
 
 void McObjectBeanBuilder::addObjectConnect(QObject *bean, const QVariantMap &pros)
 {
-    for (auto &con: qAsConst(d->connectors)) {
+    for (auto &con : qAsConst(d->connectors)) {
         QString senderProName = con->sender();
         QObject *sender = getPropertyObject(bean, senderProName, pros);
         if (sender == nullptr) {

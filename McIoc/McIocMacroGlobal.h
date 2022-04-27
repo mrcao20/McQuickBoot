@@ -63,8 +63,7 @@
 #define MC_POINTER(arg) Q_CLASSINFO(MC_POINTER_TAG, MC_STRINGIFY(arg))
 #define MC_BEANNAME(name) Q_CLASSINFO(MC_BEANNAME_TAG, name)
 #define MC_AUTOWIRED(v, ...) Q_CLASSINFO(MC_AUTOWIRED_TAG, v MC_AUTOWIRED_SPLIT_SYMBOL __VA_ARGS__)
-//! 使用此宏注入容器类型时，Value只能是QSharedPointer类型。注入普通类型时既可以是原始指针，也可以是动态指针。
-//! 且注入映射容器时，Key只能是QString，表示beanName
+//! 注入映射容器时，Key只能是QString，表示beanName
 #define MC_RESOURCE(name) Q_CLASSINFO(MC_RESOURCE_TAG, name)
 #define MC_COMPONENT(...) \
  MC_BEANNAME("" __VA_ARGS__) \

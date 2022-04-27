@@ -42,5 +42,8 @@ IMcBeanBuilderRegistry *McAbstractBeanBuilderReader::registry() const noexcept
 void McAbstractBeanBuilderReader::readBeanBuilder(IMcBeanBuilderRegistry *registry) noexcept
 {
     d->registry = registry;
+    if (registry == nullptr) {
+        return;
+    }
     doReadBeanBuilder();
 }

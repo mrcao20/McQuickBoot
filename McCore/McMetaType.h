@@ -33,14 +33,12 @@
 #include "McMacroGlobal.h"
 #include "Utils/IMcDestroyer.h"
 
-#define MC_TYPELIST(...) \
+#define MC_INTERFACES(...) \
  public: \
  using McPrivateTypeList = McPrivate::TypeList<__VA_ARGS__>; \
  using McPrivateTypeListHelper = void; \
 \
  private:
-
-#define MC_INTERFACES(...) MC_TYPELIST(__VA_ARGS__)
 
 inline bool operator<(const QVariant &left, const QVariant &right)
 {
@@ -570,7 +568,7 @@ inline void mcRegisterContainerConverter() noexcept
             if (!var.canConvert(metaType)) {
                 QMetaType::registerConverter<QVariantList, T>([](const QVariantList &from) {
                     T to;
-                    for (const auto &f: from) {
+                    for (const auto &f : from) {
                         to << f.template value<typename T::value_type>();
                     }
                     return to;
@@ -582,7 +580,7 @@ inline void mcRegisterContainerConverter() noexcept
             if (!var.canConvert(listMetaType)) {
                 QMetaType::registerConverter<T, QVariantList>([](const T &from) {
                     QVariantList to;
-                    for (const auto &f: from) {
+                    for (const auto &f : from) {
                         to << QVariant::fromValue(f);
                     }
                     return to;

@@ -23,8 +23,10 @@
  */
 #include <QTest>
 
+#include "AnnotationApplicationContextTest.h"
 #include "BeanFactoryTest.h"
 #include "BeanReaderTest.h"
+#include "XmlApplicationContextTest.h"
 
 int main(int argc, char *argv[])
 {
@@ -34,5 +36,9 @@ int main(int argc, char *argv[])
     code = QTest::qExec(&bft, argc, argv);
     BeanReaderTest brt;
     code |= QTest::qExec(&brt, argc, argv);
+    XmlApplicationContextTest xact;
+    code |= QTest::qExec(&xact, argc, argv);
+    AnnotationApplicationContextTest aact;
+    code |= QTest::qExec(&aact, argc, argv);
     return code;
 }

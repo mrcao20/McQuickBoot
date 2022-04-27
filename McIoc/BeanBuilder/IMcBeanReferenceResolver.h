@@ -25,27 +25,21 @@
 
 #include "../McIocGlobal.h"
 
-QT_BEGIN_NAMESPACE
-class QThread;
-QT_END_NAMESPACE
+MC_FORWARD_DECL_CLASS(McBeanReference)
 
-class IMcBeanFactory
+class IMcBeanReferenceResolver
 {
-    MC_DEFINE_INTERFACE(IMcBeanFactory)
+    MC_DEFINE_INTERFACE(IMcBeanReferenceResolver)
 public:
     template<typename T>
-    T getBean(const QString &name, QThread *thread = nullptr) noexcept
+    T resolveBeanReference(const McBeanReferencePtr &beanRef) noexcept
     {
-        QVariant var = getBean(name, thread);
+        QVariant var = resolveBeanReference(beanRef);
         return var.value<T>();
     }
 
-    virtual QVariant getBean(const QString &name, QThread *thread = nullptr) noexcept = 0;
-    virtual void moveToThread(const QString &name, QThread *thread) noexcept = 0;
-
-    virtual bool containsBean(const QString &name) const noexcept = 0;
-    virtual bool isSingleton(const QString &name) const noexcept = 0;
-    virtual bool isPointer(const QString &name) const noexcept = 0;
+    virtual QVariant resolveBeanReference(const McBeanReferencePtr &beanRef) noexcept = 0;
+    virtual void beanReferenceMoveToThread(const McBeanReferencePtr &beanRef, QThread *thread) noexcept = 0;
 };
 
-MC_DECL_POINTER(IMcBeanFactory)
+MC_DECL_POINTER(IMcBeanReferenceResolver)

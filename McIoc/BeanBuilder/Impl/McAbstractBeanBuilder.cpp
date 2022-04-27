@@ -25,8 +25,8 @@
 
 #include <QMetaEnum>
 
+#include "../IMcBeanReferenceResolver.h"
 #include "../IMcCustomPlaceholder.h"
-#include "BeanFactory/IMcBeanReferenceResolver.h"
 #include "McBeanEnum.h"
 #include "McBeanPlaceholder.h"
 #include "McBeanReference.h"
@@ -165,7 +165,7 @@ QVariant McAbstractBeanBuilder::convertRef(const QVariant &value, const QVariant
         qCCritical(mcIoc(), "cannot inject beanReference");
         return QVariant();
     }
-    QVariant objVar = d->resolver->resolveBeanReferenceToQVariant(ref);
+    QVariant objVar = d->resolver->resolveBeanReference(ref);
     if (Q_UNLIKELY(!objVar.isValid())) {
         qCCritical(mcIoc(), "cannot get bean from beanReference. for bean name: %s.", qPrintable(ref->name()));
         return QVariant();
@@ -206,7 +206,7 @@ QVariant McAbstractBeanBuilder::convertList(const QVariant &value, const QVarian
 
     auto list = value.value<QVariantList>();
 
-    for (const auto &var: list) {
+    for (const auto &var : list) {
         result << convert(var, extra);
     }
 
@@ -300,7 +300,7 @@ QVariant McAbstractBeanBuilder::createByMetaObject() noexcept
         }
         bool isOk = true;
         auto paramNames = method.parameterNames();
-        for (auto &arg: qAsConst(d->constructorArgs)) {
+        for (auto &arg : qAsConst(d->constructorArgs)) {
             int index = -1;
             if (arg.index >= 0 && arg.index < method.parameterCount()) {
                 index = arg.index;

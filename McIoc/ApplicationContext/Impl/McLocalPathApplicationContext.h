@@ -23,29 +23,14 @@
  */
 #pragma once
 
-#include "../McIocGlobal.h"
+#include "McXmlApplicationContext.h"
 
-QT_BEGIN_NAMESPACE
-class QThread;
-QT_END_NAMESPACE
-
-class IMcBeanFactory
+class MC_IOC_EXPORT McLocalPathApplicationContext : public McXmlApplicationContext
 {
-    MC_DEFINE_INTERFACE(IMcBeanFactory)
 public:
-    template<typename T>
-    T getBean(const QString &name, QThread *thread = nullptr) noexcept
-    {
-        QVariant var = getBean(name, thread);
-        return var.value<T>();
-    }
-
-    virtual QVariant getBean(const QString &name, QThread *thread = nullptr) noexcept = 0;
-    virtual void moveToThread(const QString &name, QThread *thread) noexcept = 0;
-
-    virtual bool containsBean(const QString &name) const noexcept = 0;
-    virtual bool isSingleton(const QString &name) const noexcept = 0;
-    virtual bool isPointer(const QString &name) const noexcept = 0;
+    McLocalPathApplicationContext() noexcept;
+    explicit McLocalPathApplicationContext(const QString &location, const QString &flag = QString()) noexcept;
+    explicit McLocalPathApplicationContext(const QStringList &locations, const QString &flag = QString()) noexcept;
 };
 
-MC_DECL_POINTER(IMcBeanFactory)
+MC_DECL_POINTER(McLocalPathApplicationContext)

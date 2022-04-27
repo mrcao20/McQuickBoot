@@ -189,7 +189,7 @@ QString toAbsolutePath(const QString &inPath) noexcept
 {
     QStringList pathPlhKeys = coreGlobalStaticData->pathPlaceholders.keys();
     auto path = inPath;
-    for (const auto &key: pathPlhKeys) {
+    for (const auto &key : pathPlhKeys) {
         const auto &value = coreGlobalStaticData->pathPlaceholders.value(key);
         QString plhPath;
         if (path.contains(key) && !(plhPath = value()).isEmpty()) {

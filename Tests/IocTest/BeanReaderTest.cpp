@@ -38,7 +38,7 @@ bool PluginCheckerTest::check(const QJsonObject &json) noexcept
         R"({"IID": "org.quickboot.mc.test.IObjectTest", "className": "SimplePlugin", "MetaData": {"checkKey": "simplePlugin"}})")
                          .object();
     auto checkKeys = checkJson.keys();
-    for (auto &checkKey: qAsConst(checkKeys)) {
+    for (auto &checkKey : qAsConst(checkKeys)) {
         if (!json.contains(checkKey)) {
             return false;
         }
@@ -53,6 +53,7 @@ bool PluginCheckerTest::check(const QJsonObject &json) noexcept
 
 bool RegistryTest::registerBeanBuilder(const QString &name, const IMcBeanBuilderPtr &beanBuilder) noexcept
 {
+    m_registerBeanNames.removeAll(name);
     if (m_hash.contains(name)) {
         qWarning("'%s' is already registered. replaced", qPrintable(name));
     }
@@ -92,7 +93,20 @@ void BeanReaderTest::readerCase()
 {
     auto file = QSharedPointer<QFile>::create((":/iocTest.xml"));
     QVERIFY(file->open(QIODevice::ReadOnly));
-    auto reader = McXmlBeanBuilderReaderPtr::create(file);
-    RegistryTest registry;
-    reader->readBeanBuilder(&registry);
+    {
+        QList<QString> beanNames{"podTest", "podTestPointer", "gadgetTest", "gadgetTestPointer", "listTest", "mapTest",
+            "objectTest", "objectTestPointer"};
+        auto reader = McXmlBeanBuilderReaderPtr::create(file);
+        RegistryTest registry(beanNames);
+        reader->readBeanBuilder(&registry);
+        QVERIFY(beanNames.isEmpty());
+    }
+    {
+        QList<QString> beanNames{"podTest", "podTestPointer", "gadgetTest", "gadgetTestPointer", "listTest", "mapTest",
+            "objectTest", "objectTestPointer", "pluginTest", "pluginTestPointer"};
+        auto reader = McXmlBeanBuilderReaderPtr::create(file, "debug");
+        RegistryTest registry(beanNames);
+        reader->readBeanBuilder(&registry);
+        QVERIFY(beanNames.isEmpty());
+    }
 }

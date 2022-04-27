@@ -23,17 +23,23 @@
  */
 #pragma once
 
-#include "../IMcConfigurableBeanFactory.h"
+#include "../../BeanBuilder/IMcBeanReferenceResolver.h"
+#include "../IMcApplicationContext.h"
 
-MC_FORWARD_DECL_PRIVATE_DATA(McAbstractBeanFactory)
+MC_FORWARD_DECL_CLASS(IMcConfigurableBeanFactory)
 
-class MC_IOC_EXPORT McAbstractBeanFactory : public IMcConfigurableBeanFactory
+MC_FORWARD_DECL_PRIVATE_DATA(McAbstractApplicationContext)
+
+class MC_IOC_EXPORT McAbstractApplicationContext
+    : public IMcApplicationContext
+    , public IMcBeanReferenceResolver
 {
 public:
     using IMcBeanFactory::getBean;
+    using IMcBeanReferenceResolver::resolveBeanReference;
 
-    McAbstractBeanFactory() noexcept;
-    ~McAbstractBeanFactory() override;
+    explicit McAbstractApplicationContext(const IMcConfigurableBeanFactoryPtr &factory) noexcept;
+    ~McAbstractApplicationContext() override;
 
     QVariant getBean(const QString &name, QThread *thread = nullptr) noexcept override;
     void moveToThread(const QString &name, QThread *thread) noexcept override;
@@ -47,11 +53,13 @@ public:
     bool isContained(const QString &name) const noexcept override;
     QHash<QString, IMcBeanBuilderPtr> getBeanBuilders() const noexcept override;
 
-protected:
-    virtual void afterBuildBean(const QVariant &bean) noexcept = 0;
+    void refresh(QThread *thread = nullptr) noexcept override;
+
+    QVariant resolveBeanReference(const McBeanReferencePtr &beanRef) noexcept override;
+    void beanReferenceMoveToThread(const McBeanReferencePtr &beanRef, QThread *thread) noexcept override;
 
 private:
-    MC_DECL_PRIVATE(McAbstractBeanFactory)
+    MC_DECL_PRIVATE(McAbstractApplicationContext)
 };
 
-MC_DECL_POINTER(McAbstractBeanFactory)
+MC_DECL_POINTER(McAbstractApplicationContext)

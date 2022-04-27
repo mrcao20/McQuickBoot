@@ -171,6 +171,22 @@ inline bool isContains(int index, const Container &container) noexcept
 MC_CORE_EXPORT bool waitForExecFunc(const std::function<bool()> &func, qint64 timeout = -1) noexcept;
 
 MC_CORE_EXPORT void registerPathPlaceholder(const QString &placeholder, const std::function<QString()> &func) noexcept;
+
+/*!
+ * \brief 将传入的路径转换为绝对路径，支持占位符，自带的占位符及其对应关系如下:
+ * {desktop} = QStandardPaths::DesktopLocation
+ * {documents} = QStandardPaths::DocumentsLocation
+ * {temp} = QStandardPaths::TempLocation
+ * {home} = QStandardPaths::HomeLocation
+ * {data}/{appLocalData} = QStandardPaths::DataLocation第一个路径
+ * {cache} = QStandardPaths::CacheLocation
+ * {config} = QStandardPaths::GenericConfigLocation第一个路径
+ * {appData} = QStandardPaths::AppDataLocation第一个路径
+ *
+ * 支持自定义占位符，参考registerPathPlaceholder
+ *
+ * \see registerPathPlaceholder
+ */
 MC_CORE_EXPORT QString toAbsolutePath(const QString &path) noexcept;
 MC_CORE_EXPORT QString applicationDirPath() noexcept;
 MC_CORE_EXPORT QDir applicationDir() noexcept;

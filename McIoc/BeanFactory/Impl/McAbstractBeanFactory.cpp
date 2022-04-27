@@ -27,26 +27,22 @@
 #include <QMutex>
 
 #include "BeanBuilder/IMcBeanBuilder.h"
-#include "BeanBuilder/Impl/McBeanReference.h"
 
 MC_DECL_PRIVATE_DATA(McAbstractBeanFactory)
 QHash<QString, IMcBeanBuilderPtr> hash;
 QRecursiveMutex mtx;
-QThread *targetThread{nullptr}; //!< 生成对象的目标线程
 MC_DECL_PRIVATE_DATA_END
 
-McAbstractBeanFactory::McAbstractBeanFactory(QObject *parent) noexcept
-    : QObject(parent)
+McAbstractBeanFactory::McAbstractBeanFactory() noexcept
 {
     MC_NEW_PRIVATE_DATA(McAbstractBeanFactory);
 }
 
 McAbstractBeanFactory::~McAbstractBeanFactory() {}
 
-QVariant McAbstractBeanFactory::getBeanToVariant(const QString &name, QThread *thread) noexcept
+QVariant McAbstractBeanFactory::getBean(const QString &name, QThread *thread) noexcept
 {
     QMutexLocker locker(&d->mtx);
-    d->targetThread = thread;
     IMcBeanBuilderPtr beanBuilder = d->hash.value(name);
     if (beanBuilder.isNull()) {
         return QVariant();
@@ -98,6 +94,9 @@ bool McAbstractBeanFactory::isPointer(const QString &name) const noexcept
 
 bool McAbstractBeanFactory::registerBeanBuilder(const QString &name, const IMcBeanBuilderPtr &beanBuilder) noexcept
 {
+    if (beanBuilder.isNull()) {
+        return false;
+    }
     QMutexLocker locker(&d->mtx);
     if (d->hash.contains(name)) {
         qCWarning(mcIoc(), "'%s' is already registered. replaced", qPrintable(name));
@@ -134,30 +133,4 @@ QHash<QString, IMcBeanBuilderPtr> McAbstractBeanFactory::getBeanBuilders() const
 {
     QMutexLocker locker(&d->mtx);
     return d->hash;
-}
-
-QObjectPtr McAbstractBeanFactory::resolveBeanReference(const McBeanReferencePtr &beanRef) noexcept
-{
-    return resolveBeanReferenceToQVariant(beanRef).value<QObjectPtr>();
-}
-
-QObject *McAbstractBeanFactory::resolveBeanReferencePointer(const McBeanReferencePtr &beanRef) noexcept
-{
-    return resolveBeanReferenceToQVariant(beanRef).value<QObject *>();
-}
-
-QVariant McAbstractBeanFactory::resolveBeanReferenceToQVariant(const McBeanReferencePtr &beanRef) noexcept
-{
-    if (beanRef.isNull()) {
-        return QVariant();
-    }
-    return getBeanToVariant(beanRef->name(), d->targetThread);
-}
-
-void McAbstractBeanFactory::beanReferenceMoveToThread(const McBeanReferencePtr &beanRef, QThread *thread) noexcept
-{
-    if (beanRef.isNull()) {
-        return;
-    }
-    moveToThread(beanRef->name(), thread);
 }

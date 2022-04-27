@@ -55,6 +55,7 @@
             </map>
         </property>
     </bean>
+    <!-- 由于插件的唯一性，isSingleton永远为true -->
     <bean name="pluginTest" plugin="./SimplePlugind.dll" flag="debug">
         <property name="text" value="pluginTest" />
         <plugin>

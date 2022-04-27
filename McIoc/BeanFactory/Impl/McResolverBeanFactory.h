@@ -23,29 +23,35 @@
  */
 #pragma once
 
-#include "../McIocGlobal.h"
+#include "../../BeanBuilder/IMcBeanReferenceResolver.h"
+#include "McAbstractBeanFactory.h"
 
-QT_BEGIN_NAMESPACE
-class QThread;
-QT_END_NAMESPACE
+MC_FORWARD_DECL_PRIVATE_DATA(McResolverBeanFactory)
 
-class IMcBeanFactory
+class MC_IOC_EXPORT McResolverBeanFactory
+    : public McAbstractBeanFactory
+    , public IMcBeanReferenceResolver
 {
-    MC_DEFINE_INTERFACE(IMcBeanFactory)
+    MC_DECL_SUPER(McAbstractBeanFactory)
 public:
-    template<typename T>
-    T getBean(const QString &name, QThread *thread = nullptr) noexcept
-    {
-        QVariant var = getBean(name, thread);
-        return var.value<T>();
-    }
+    using IMcBeanFactory::getBean;
+    using IMcBeanReferenceResolver::resolveBeanReference;
 
-    virtual QVariant getBean(const QString &name, QThread *thread = nullptr) noexcept = 0;
-    virtual void moveToThread(const QString &name, QThread *thread) noexcept = 0;
+    McResolverBeanFactory() noexcept;
+    ~McResolverBeanFactory();
 
-    virtual bool containsBean(const QString &name) const noexcept = 0;
-    virtual bool isSingleton(const QString &name) const noexcept = 0;
-    virtual bool isPointer(const QString &name) const noexcept = 0;
+    QVariant getBean(const QString &name, QThread *thread = nullptr) noexcept override;
+
+    bool registerBeanBuilder(const QString &name, const IMcBeanBuilderPtr &beanBuilder) noexcept override;
+
+    QVariant resolveBeanReference(const McBeanReferencePtr &beanRef) noexcept override;
+    void beanReferenceMoveToThread(const McBeanReferencePtr &beanRef, QThread *thread) noexcept override;
+
+protected:
+    void afterBuildBean(const QVariant &bean) noexcept override;
+
+private:
+    MC_DECL_PRIVATE(McResolverBeanFactory)
 };
 
-MC_DECL_POINTER(IMcBeanFactory)
+MC_DECL_POINTER(McResolverBeanFactory)

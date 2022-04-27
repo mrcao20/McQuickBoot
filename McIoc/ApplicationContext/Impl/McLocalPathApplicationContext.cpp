@@ -21,33 +21,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "McNormalPluginChecker.h"
+#include "McLocalPathApplicationContext.h"
 
-MC_AUTO_INIT(McNormalPluginChecker)
-MC_INIT_END
+#include <QDebug>
+#include <QFile>
 
-McNormalPluginChecker::McNormalPluginChecker(const QJsonObject &val) noexcept
-    : m_checkJson(val)
+McLocalPathApplicationContext::McLocalPathApplicationContext() noexcept {}
+
+McLocalPathApplicationContext::McLocalPathApplicationContext(const QString &location, const QString &flag) noexcept
+    : McLocalPathApplicationContext(QStringList() << location, flag)
 {
 }
 
-bool McNormalPluginChecker::check(const QJsonObject &json) noexcept
+McLocalPathApplicationContext::McLocalPathApplicationContext(const QStringList &locations, const QString &flag) noexcept
 {
-    auto checkKeys = m_checkJson.keys();
-    for (auto &checkKey : qAsConst(checkKeys)) {
-        if (!json.contains(checkKey)) {
-            return false;
+    QList<QIODevicePtr> devices;
+    for (auto &location : locations) {
+        auto filePath = Mc::toAbsolutePath(location);
+        if (!QFile::exists(filePath)) {
+            qCCritical(mcIoc(), "file '%s' not exists", qUtf8Printable(filePath));
+            continue;
         }
-        auto checkValue = m_checkJson.value(checkKey);
-        auto value = json.value(checkKey);
-        if (checkValue != value) {
-            return false;
+        auto device = QSharedPointer<QFile>::create(filePath);
+        if (!device->open(QIODevice::ReadOnly | QIODevice::Text)) {
+            qCCritical(mcIoc()) << "open file '" << filePath << "' failure."
+                                << "error code:" << device->error() << "error msg:" << device->errorString();
+            continue;
         }
+        devices.append(device);
     }
-    return true;
-}
-
-bool McNormalPluginChecker::operator()(const QJsonObject &json)
-{
-    return check(json);
+    setDevices(devices, flag);
 }

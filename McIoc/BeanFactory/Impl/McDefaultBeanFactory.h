@@ -27,11 +27,6 @@
 
 class MC_IOC_EXPORT McDefaultBeanFactory : public McAbstractBeanFactory
 {
-    Q_OBJECT
-public:
-    explicit McDefaultBeanFactory(QObject *parent = nullptr) noexcept;
-    ~McDefaultBeanFactory() override;
-
 protected:
     void afterBuildBean(const QVariant &bean) noexcept override;
 };

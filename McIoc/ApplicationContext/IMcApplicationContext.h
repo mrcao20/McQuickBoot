@@ -23,19 +23,15 @@
  */
 #pragma once
 
-#include "../McIocGlobal.h"
+#include "../BeanFactory/IMcConfigurableBeanFactory.h"
+#include "IMcRefreshableApplicationContext.h"
 
-MC_FORWARD_DECL_CLASS(McBeanReference)
-
-class IMcBeanReferenceResolver
+class IMcApplicationContext
+    : public IMcConfigurableBeanFactory
+    , public IMcRefreshableApplicationContext
 {
-    MC_DEFINE_INTERFACE(IMcBeanReferenceResolver)
 public:
-    virtual QObjectPtr resolveBeanReference(const McBeanReferencePtr &beanRef) noexcept = 0;
-    virtual QObject *resolveBeanReferencePointer(const McBeanReferencePtr &beanRef) noexcept = 0;
-
-    virtual QVariant resolveBeanReferenceToQVariant(const McBeanReferencePtr &beanRef) noexcept = 0;
-    virtual void beanReferenceMoveToThread(const McBeanReferencePtr &beanRef, QThread *thread) noexcept = 0;
+    MC_BASE_DESTRUCTOR(IMcApplicationContext)
 };
 
-MC_DECL_POINTER(IMcBeanReferenceResolver)
+MC_DECL_POINTER(IMcApplicationContext)

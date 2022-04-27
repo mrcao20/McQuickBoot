@@ -23,29 +23,18 @@
  */
 #pragma once
 
-#include "../McIocGlobal.h"
+#include "McReadableApplicationContext.h"
 
-QT_BEGIN_NAMESPACE
-class QThread;
-QT_END_NAMESPACE
-
-class IMcBeanFactory
+class MC_IOC_EXPORT McAnnotationApplicationContext : public McReadableApplicationContext
 {
-    MC_DEFINE_INTERFACE(IMcBeanFactory)
 public:
-    template<typename T>
-    T getBean(const QString &name, QThread *thread = nullptr) noexcept
-    {
-        QVariant var = getBean(name, thread);
-        return var.value<T>();
-    }
+    McAnnotationApplicationContext() noexcept;
+    McAnnotationApplicationContext(
+        const IMcConfigurableBeanFactoryPtr &factory, const IMcBeanBuilderReaderPtr &reader) noexcept;
+    explicit McAnnotationApplicationContext(const IMcBeanBuilderReaderPtr &reader) noexcept;
 
-    virtual QVariant getBean(const QString &name, QThread *thread = nullptr) noexcept = 0;
-    virtual void moveToThread(const QString &name, QThread *thread) noexcept = 0;
-
-    virtual bool containsBean(const QString &name) const noexcept = 0;
-    virtual bool isSingleton(const QString &name) const noexcept = 0;
-    virtual bool isPointer(const QString &name) const noexcept = 0;
+    static void addConnect(const QString &beanName, const QString &sender, const QString &signal,
+        const QString &receiver, const QString &slot, Qt::ConnectionType type) noexcept;
 };
 
-MC_DECL_POINTER(IMcBeanFactory)
+MC_DECL_POINTER(McAnnotationApplicationContext)

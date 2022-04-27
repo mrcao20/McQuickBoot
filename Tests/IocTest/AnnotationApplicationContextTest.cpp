@@ -21,31 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include "AnnotationApplicationContextTest.h"
 
-#include "../McIocGlobal.h"
+#include <QtTest>
 
-QT_BEGIN_NAMESPACE
-class QThread;
-QT_END_NAMESPACE
+#include <McIoc/ApplicationContext/Impl/McAnnotationApplicationContext.h>
 
-class IMcBeanFactory
+void AnnotationApplicationContextTest::initTestCase()
 {
-    MC_DEFINE_INTERFACE(IMcBeanFactory)
-public:
-    template<typename T>
-    T getBean(const QString &name, QThread *thread = nullptr) noexcept
+    mcRegisterMetaTypeSimple<SimpleGadget>();
+    mcRegisterMetaTypeSimple<SimpleGadgetPointer>();
+
+    m_appCtx = McAnnotationApplicationContextPtr::create();
+    m_appCtx->refresh();
+}
+
+void AnnotationApplicationContextTest::gadgetCase()
+{
     {
-        QVariant var = getBean(name, thread);
-        return var.value<T>();
+        QVERIFY(!m_appCtx->isSingleton("simpleGadget"));
+        QVERIFY(!m_appCtx->isPointer("simpleGadget"));
+        auto bean = m_appCtx->getBean<SimpleGadgetPtr>("simpleGadget");
+        QVERIFY(!bean.isNull());
+        QVERIFY(bean->text == "simpleGadget");
     }
+}
 
-    virtual QVariant getBean(const QString &name, QThread *thread = nullptr) noexcept = 0;
-    virtual void moveToThread(const QString &name, QThread *thread) noexcept = 0;
-
-    virtual bool containsBean(const QString &name) const noexcept = 0;
-    virtual bool isSingleton(const QString &name) const noexcept = 0;
-    virtual bool isPointer(const QString &name) const noexcept = 0;
-};
-
-MC_DECL_POINTER(IMcBeanFactory)
+void AnnotationApplicationContextTest::objectCase() {}

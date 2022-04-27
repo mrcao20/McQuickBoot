@@ -23,13 +23,6 @@
  */
 #include "McDefaultBeanFactory.h"
 
-McDefaultBeanFactory::McDefaultBeanFactory(QObject *parent) noexcept
-    : McAbstractBeanFactory(parent)
-{
-}
-
-McDefaultBeanFactory::~McDefaultBeanFactory() {}
-
 void McDefaultBeanFactory::afterBuildBean(const QVariant &bean) noexcept
 {
     Q_UNUSED(bean)

@@ -25,7 +25,7 @@
 
 #include <McCore/Utils/IMcPluginChecker.h>
 
-#include "BeanFactory/IMcBeanReferenceResolver.h"
+#include "../IMcBeanReferenceResolver.h"
 
 MC_DECL_PRIVATE_DATA(McObjectPluginBeanBuilder)
 QString pluginPath;
@@ -64,7 +64,7 @@ QVariant McObjectPluginBeanBuilder::create() noexcept
 {
     std::function<bool(const QJsonObject &)> checker = nullptr;
     if (!d->pluginChecker.isNull()) {
-        auto c = resolver()->resolveBeanReferenceToQVariant(d->pluginChecker).value<IMcPluginCheckerPtr>();
+        auto c = resolver()->resolveBeanReference(d->pluginChecker).value<IMcPluginCheckerPtr>();
         if (!c.isNull()) {
             checker = [c](const QJsonObject &json) { return c->check(json); };
         }
