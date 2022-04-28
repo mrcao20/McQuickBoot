@@ -8,6 +8,24 @@ set(PROJECT_HEADERS
     McIocConstantGlobal.h
     McIocGlobal.h
     Utils/IMcBeanBuildable.h
+    Utils/XmlBuilder/IMcXml.h
+    Utils/XmlBuilder/IMcBeanContent.h
+    Utils/XmlBuilder/IMcPropertyContent.h
+    Utils/XmlBuilder/IMcBean.h
+    Utils/XmlBuilder/Impl/McBeanCollection.h
+    Utils/XmlBuilder/Impl/McBean.h
+    Utils/XmlBuilder/Impl/McClassBean.h
+    Utils/XmlBuilder/Impl/McPluginBean.h
+    Utils/XmlBuilder/Impl/McConnect.h
+    Utils/XmlBuilder/Impl/McEnum.h
+    Utils/XmlBuilder/Impl/McList.h
+    Utils/XmlBuilder/Impl/McMap.h
+    Utils/XmlBuilder/Impl/McPlaceholder.h
+    Utils/XmlBuilder/Impl/McProperty.h
+    Utils/XmlBuilder/Impl/McRef.h
+    Utils/XmlBuilder/Impl/McValue.h
+    Utils/XmlBuilder/Impl/McConstructorArg.h
+    Utils/XmlBuilder/Impl/McPluginChecker.h
     BeanFactory/IMcBeanFactory.h
     BeanFactory/IMcBeanBuilderRegistry.h
     BeanFactory/IMcConfigurableBeanFactory.h
@@ -48,6 +66,20 @@ set(PROJECT_HEADERS
 
 set(PROJECT_SOURCES
     McIocGlobal.cpp
+    Utils/XmlBuilder/Impl/McBeanCollection.cpp
+    Utils/XmlBuilder/Impl/McBean.cpp
+    Utils/XmlBuilder/Impl/McClassBean.cpp
+    Utils/XmlBuilder/Impl/McPluginBean.cpp
+    Utils/XmlBuilder/Impl/McConnect.cpp
+    Utils/XmlBuilder/Impl/McEnum.cpp
+    Utils/XmlBuilder/Impl/McList.cpp
+    Utils/XmlBuilder/Impl/McMap.cpp
+    Utils/XmlBuilder/Impl/McPlaceholder.cpp
+    Utils/XmlBuilder/Impl/McProperty.cpp
+    Utils/XmlBuilder/Impl/McRef.cpp
+    Utils/XmlBuilder/Impl/McValue.cpp
+    Utils/XmlBuilder/Impl/McConstructorArg.cpp
+    Utils/XmlBuilder/Impl/McPluginChecker.cpp
     BeanFactory/Impl/McAbstractBeanFactory.cpp
     BeanFactory/Impl/McDefaultBeanFactory.cpp
     BeanFactory/Impl/McResolverBeanFactory.cpp

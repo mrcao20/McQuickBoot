@@ -50,3 +50,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core)
 target_compile_definitions(${PROJECT_NAME} PRIVATE MC_CORE_LIBRARY)
 
 include(${CMAKE_SOURCE_DIR}/cmake/Install.cmake)
+foreach(hds IN ZIP_LISTS MC_QUICKBOOT_INSTALL_HEADERS)
+    install(FILES
+        ${PROJECT_BINARY_DIR}/McConfig.h
+        DESTINATION ${hds}/${PROJECT_NAME}
+    )
+endforeach()

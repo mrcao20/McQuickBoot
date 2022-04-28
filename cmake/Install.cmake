@@ -12,11 +12,6 @@ foreach(hds lbs bns IN ZIP_LISTS MC_QUICKBOOT_INSTALL_HEADERS MC_QUICKBOOT_INSTA
         ${CMAKE_BINARY_DIR}/${PROJECT_NAME}Config.cmake
         INSTALL_DESTINATION ${lbs}/cmake/${PROJECT_NAME})
 
-    install(FILES
-        ${PROJECT_BINARY_DIR}/McConfig.h
-        DESTINATION ${hds}/${PROJECT_NAME}
-    )
-
     install(DIRECTORY
         ./
         DESTINATION ${hds}/${PROJECT_NAME}
@@ -31,6 +26,8 @@ foreach(hds lbs bns IN ZIP_LISTS MC_QUICKBOOT_INSTALL_HEADERS MC_QUICKBOOT_INSTA
         ARCHIVE DESTINATION ${lbs}
         FRAMEWORK DESTINATION ${lbs}
     )
+
+    install(FILES $<TARGET_PDB_FILE:${PROJECT_NAME}> DESTINATION ${bns} OPTIONAL)
 
     install(EXPORT ${PROJECT_NAME}Targets
         DESTINATION ${lbs}/cmake/${PROJECT_NAME})

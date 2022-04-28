@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
-	<bean name="podTest" class="PodTest" />
+    <bean name="podTest" class="PodTest" />
     <bean name="podTestPointer" class="PodTest" isPointer="true" />
     <bean name="gadgetTest" class="GadgetTest">
         <property name="text" value="gadgetTest1" />
