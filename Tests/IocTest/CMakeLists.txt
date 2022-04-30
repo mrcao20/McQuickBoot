@@ -5,6 +5,7 @@ set(PROJECT_HEADERS
     BeanReaderTest.h
     XmlApplicationContextTest.h
     AnnotationApplicationContextTest.h
+    XmlBuilder.h
     IObjectTest.h
 )
 
@@ -14,6 +15,7 @@ set(PROJECT_SOURCES
     BeanReaderTest.cpp
     XmlApplicationContextTest.cpp
     AnnotationApplicationContextTest.cpp
+    XmlBuilder.cpp
 )
 
 set(PROJECT_RESOURCES

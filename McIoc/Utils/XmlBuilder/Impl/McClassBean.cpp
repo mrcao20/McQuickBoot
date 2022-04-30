@@ -38,7 +38,13 @@ ClassBean::ClassBean() noexcept
 ClassBean::ClassBean(const QString &name) noexcept
     : ClassBean()
 {
-    d->className = name;
+    setClassName(name);
+}
+
+ClassBean::ClassBean(const QString &className, const QString &beanName) noexcept
+    : ClassBean(className)
+{
+    setBeanName(beanName);
 }
 
 ClassBean::~ClassBean() {}

@@ -33,6 +33,7 @@ class MC_IOC_EXPORT ClassBean : public Bean
 public:
     ClassBean() noexcept;
     explicit ClassBean(const QString &name) noexcept;
+    ClassBean(const QString &className, const QString &beanName) noexcept;
     ~ClassBean();
 
     void setClassName(const QString &name) noexcept;
@@ -43,4 +44,6 @@ protected:
 private:
     MC_DECL_PRIVATE(ClassBean)
 };
+
+MC_DECL_POINTER(ClassBean)
 } // namespace Mc::XmlBuilder

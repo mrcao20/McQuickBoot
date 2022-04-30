@@ -104,7 +104,11 @@ void BeanReaderTest::readerCase()
     {
         QList<QString> beanNames{"podTest", "podTestPointer", "gadgetTest", "gadgetTestPointer", "listTest", "mapTest",
             "objectTest", "objectTestPointer", "pluginTest", "pluginTestPointer"};
+#ifdef Q_OS_WIN
         auto reader = McXmlBeanBuilderReaderPtr::create(file, "debug");
+#else
+        auto reader = McXmlBeanBuilderReaderPtr::create(file, "linuxDebug");
+#endif
         RegistryTest registry(beanNames);
         reader->readBeanBuilder(&registry);
         QVERIFY(beanNames.isEmpty());

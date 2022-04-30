@@ -33,12 +33,19 @@ QString beanName;
 QString isSingleton;
 QString isPointer;
 QString parent;
+QString flag;
 QVector<IBeanContentPtr> contents;
 MC_DECL_PRIVATE_DATA_END
 
 Bean::Bean() noexcept
 {
     MC_NEW_PRIVATE_DATA(Bean);
+}
+
+Bean::Bean(const QString &beanName) noexcept
+    : Bean()
+{
+    setBeanName(beanName);
 }
 
 Bean::~Bean() {}
@@ -71,6 +78,11 @@ void Bean::setParent(const QString &name) noexcept
     d->parent = name;
 }
 
+void Bean::setFlag(const QString &val) noexcept
+{
+    d->flag = val;
+}
+
 void Bean::addContent(const IBeanContentPtr &content) noexcept
 {
     d->contents.append(content);
@@ -90,6 +102,9 @@ void Bean::write(QXmlStreamWriter &writer) const noexcept
     }
     if (!d->parent.isEmpty()) {
         writer.writeAttribute(Mc::Constant::Tag::Xml::PARENT, d->parent);
+    }
+    if (!d->flag.isEmpty()) {
+        writer.writeAttribute(Mc::Constant::Tag::Xml::FLAG, d->flag);
     }
     completeAttribute(writer);
     for (auto &content : qAsConst(d->contents)) {

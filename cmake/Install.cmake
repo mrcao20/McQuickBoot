@@ -27,7 +27,9 @@ foreach(hds lbs bns IN ZIP_LISTS MC_QUICKBOOT_INSTALL_HEADERS MC_QUICKBOOT_INSTA
         FRAMEWORK DESTINATION ${lbs}
     )
 
+if(MSVC)
     install(FILES $<TARGET_PDB_FILE:${PROJECT_NAME}> DESTINATION ${bns} OPTIONAL)
+endif()
 
     install(EXPORT ${PROJECT_NAME}Targets
         DESTINATION ${lbs}/cmake/${PROJECT_NAME})

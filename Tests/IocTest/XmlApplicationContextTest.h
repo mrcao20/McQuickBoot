@@ -30,8 +30,10 @@ MC_FORWARD_DECL_CLASS(IMcApplicationContext)
 class XmlApplicationContextTest : public QObject
 {
     Q_OBJECT
+public:
+    XmlApplicationContextTest(const IMcApplicationContextPtr &appCtx, bool flag);
+
 private Q_SLOTS:
-    void initTestCase();
     void podCase();
     void gadgetCase();
     void containerCase();
@@ -40,4 +42,5 @@ private Q_SLOTS:
 
 private:
     IMcApplicationContextPtr m_appCtx;
+    bool m_flag{true};
 };

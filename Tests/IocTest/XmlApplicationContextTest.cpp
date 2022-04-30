@@ -30,10 +30,11 @@
 #include "BeanFactoryTest.h"
 #include "BeanReaderTest.h"
 
-void XmlApplicationContextTest::initTestCase()
+XmlApplicationContextTest::XmlApplicationContextTest(const IMcApplicationContextPtr &appCtx, bool flag)
 {
-    m_appCtx = McLocalPathApplicationContextPtr::create(":/iocTest.xml");
+    m_appCtx = appCtx;
     m_appCtx->refresh();
+    m_flag = flag;
 }
 
 void XmlApplicationContextTest::podCase()
@@ -132,22 +133,32 @@ void XmlApplicationContextTest::objectCase()
 
 void XmlApplicationContextTest::pluginCase()
 {
+#ifndef QT_DEBUG
+    return;
+#endif
+    if (!m_flag) {
+        return;
+    }
     {
         QVERIFY(!m_appCtx->isContained("pluginTest"));
         QVERIFY(!m_appCtx->isContained("pluginTestPointer"));
     }
-    auto appCtx = McLocalPathApplicationContextPtr::create(":/iocTest.xml", "debug");
+#ifdef Q_OS_WIN
+    m_appCtx = McLocalPathApplicationContextPtr::create(":/iocTest.xml", "debug");
+#else
+    m_appCtx = McLocalPathApplicationContextPtr::create(":/iocTest.xml", "linuxDebug");
+#endif
     //! 由于插件的唯一性问题，多次加载同一个插件，实例为同一个，如果提前刷新容器，那么插件数据会不准确
-    //    appCtx->refresh();
+    //    m_appCtx->refresh();
     {
-        QVERIFY(!appCtx->isPointer("pluginTest"));
-        auto bean = appCtx->getBean<IObjectTestPtr>("pluginTest");
+        QVERIFY(!m_appCtx->isPointer("pluginTest"));
+        auto bean = m_appCtx->getBean<IObjectTestPtr>("pluginTest");
         QVERIFY(!bean.isNull());
         QVERIFY(bean->test() == "pluginTest");
     }
     {
-        QVERIFY(appCtx->isPointer("pluginTestPointer"));
-        auto bean = appCtx->getBean<IObjectTest *>("pluginTestPointer");
+        QVERIFY(m_appCtx->isPointer("pluginTestPointer"));
+        auto bean = m_appCtx->getBean<IObjectTest *>("pluginTestPointer");
         QVERIFY(bean != nullptr);
         QVERIFY(bean->test() == "pluginTestPointer");
     }

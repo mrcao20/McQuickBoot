@@ -68,4 +68,16 @@
             <checker class="PluginCheckerTest" />
         </plugin>
     </bean>
+    <bean name="pluginTest" plugin="../lib/SimplePlugind.so" flag="linuxDebug">
+        <property name="text" value="pluginTest" />
+        <plugin>
+            <metaData>{"IID": "org.quickboot.mc.test.IObjectTest", "debug": true, "className": "SimplePlugin", "MetaData": {"checkKey": "simplePlugin"}}</metaData>
+        </plugin>
+    </bean>
+    <bean name="pluginTestPointer" plugin="../lib/SimplePlugind.so" isPointer="true" flag="linuxDebug">
+        <property name="text" value="pluginTestPointer" />
+        <plugin>
+            <checker class="PluginCheckerTest" />
+        </plugin>
+    </bean>
 </beans>

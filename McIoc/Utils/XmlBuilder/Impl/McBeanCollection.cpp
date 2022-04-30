@@ -44,6 +44,11 @@ void BeanCollection::addBean(const IBeanPtr &bean) noexcept
     d->beans.append(bean);
 }
 
+void BeanCollection::addBeans(const QList<IBeanPtr> &beans) noexcept
+{
+    d->beans.append(beans);
+}
+
 void BeanCollection::writeToDevice(QIODevice *dev, int indent) const noexcept
 {
     QXmlStreamWriter writer(dev);

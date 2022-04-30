@@ -41,6 +41,12 @@ PluginBean::PluginBean(const QString &path) noexcept
     d->pluginPath = path;
 }
 
+PluginBean::PluginBean(const QString &path, const QString &beanName) noexcept
+    : PluginBean(path)
+{
+    setBeanName(beanName);
+}
+
 PluginBean::~PluginBean() {}
 
 void PluginBean::setPluginPath(const QString &path) noexcept

@@ -33,6 +33,7 @@ class MC_IOC_EXPORT PluginBean : public Bean
 public:
     PluginBean() noexcept;
     explicit PluginBean(const QString &path) noexcept;
+    PluginBean(const QString &path, const QString &beanName) noexcept;
     ~PluginBean();
 
     void setPluginPath(const QString &path) noexcept;
@@ -43,4 +44,6 @@ protected:
 private:
     MC_DECL_PRIVATE(PluginBean)
 };
+
+MC_DECL_POINTER(PluginBean)
 } // namespace Mc::XmlBuilder

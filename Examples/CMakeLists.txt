@@ -6,3 +6,4 @@ include_directories(${CMAKE_SOURCE_DIR})
 include_directories(${CMAKE_BINARY_DIR}/McCore)
 
 add_subdirectory(CoreExample)
+add_subdirectory(IocExample)

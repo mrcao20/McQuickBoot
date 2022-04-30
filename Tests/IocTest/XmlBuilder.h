@@ -23,13 +23,18 @@
  */
 #pragma once
 
-#include "IMcXml.h"
+#include <McIoc/ApplicationContext/IMcApplicationContext.h>
 
-namespace Mc::XmlBuilder {
-class IBean : public IXml
+MC_FORWARD_DECL_CLASS_NS(IBean, Mc::XmlBuilder)
+
+class XmlBuilder
 {
-    MC_DEFINE_INTERFACE(IBean)
-};
+public:
+    IMcApplicationContextPtr build();
 
-MC_DECL_POINTER(IBean)
-} // namespace Mc::XmlBuilder
+private:
+    QList<Mc::XmlBuilder::IBeanPtr> buildPod();
+    QList<Mc::XmlBuilder::IBeanPtr> buildGadget();
+    QList<Mc::XmlBuilder::IBeanPtr> buildContainer();
+    QList<Mc::XmlBuilder::IBeanPtr> buildObject();
+};

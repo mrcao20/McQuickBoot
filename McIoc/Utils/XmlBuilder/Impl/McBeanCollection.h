@@ -37,6 +37,7 @@ public:
     ~BeanCollection();
 
     void addBean(const IBeanPtr &bean) noexcept;
+    void addBeans(const QList<IBeanPtr> &beans) noexcept;
 
     void writeToDevice(QIODevice *dev, int indent = 4) const noexcept;
 

@@ -23,10 +23,13 @@
  */
 #include <QTest>
 
+#include <McIoc/ApplicationContext/Impl/McLocalPathApplicationContext.h>
+
 #include "AnnotationApplicationContextTest.h"
 #include "BeanFactoryTest.h"
 #include "BeanReaderTest.h"
 #include "XmlApplicationContextTest.h"
+#include "XmlBuilder.h"
 
 int main(int argc, char *argv[])
 {
@@ -36,9 +39,11 @@ int main(int argc, char *argv[])
     code = QTest::qExec(&bft, argc, argv);
     BeanReaderTest brt;
     code |= QTest::qExec(&brt, argc, argv);
-    XmlApplicationContextTest xact;
+    XmlApplicationContextTest xact(McLocalPathApplicationContextPtr::create(":/iocTest.xml"), true);
     code |= QTest::qExec(&xact, argc, argv);
     AnnotationApplicationContextTest aact;
     code |= QTest::qExec(&aact, argc, argv);
+    XmlApplicationContextTest xact2(XmlBuilder().build(), false);
+    code |= QTest::qExec(&xact2, argc, argv);
     return code;
 }

@@ -39,6 +39,8 @@ public:
 
     void addContent(const IPropertyContentPtr &key, const IPropertyContentPtr &value) noexcept;
     void addContent(const QString &key, const IPropertyContentPtr &value) noexcept;
+    void addContent(const IPropertyContentPtr &key, const QString &value) noexcept;
+    void addContent(const QString &key, const QString &value) noexcept;
 
     void write(QXmlStreamWriter &writer) const noexcept override;
 

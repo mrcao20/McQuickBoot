@@ -51,6 +51,16 @@ void Map::addContent(const QString &key, const IPropertyContentPtr &value) noexc
     addContent(v, value);
 }
 
+void Map::addContent(const IPropertyContentPtr &key, const QString &value) noexcept
+{
+    addContent(key, ValuePtr::create(value));
+}
+
+void Map::addContent(const QString &key, const QString &value) noexcept
+{
+    addContent(ValuePtr::create(key), ValuePtr::create(value));
+}
+
 void Map::write(QXmlStreamWriter &writer) const noexcept
 {
     writer.writeStartElement(Mc::Constant::Tag::Xml::MAP);
