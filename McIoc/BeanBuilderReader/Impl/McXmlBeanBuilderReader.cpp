@@ -554,6 +554,7 @@ QPair<QVariant, QVariant> McXmlBeanBuilderReader::readMapEntry(QXmlStreamReader 
 QVariant McXmlBeanBuilderReader::readMapEntryKey(QXmlStreamReader &reader) const noexcept
 {
     QVariant key;
+    bool flag = false;
     while (!reader.atEnd()) {
         auto token = reader.readNext();
         if (token == QXmlStreamReader::EndElement && reader.name() == Mc::Constant::Tag::Xml::KEY) {
@@ -566,7 +567,8 @@ QVariant McXmlBeanBuilderReader::readMapEntryKey(QXmlStreamReader &reader) const
             } else {
                 key = readValue(reader);
             }
-        } else if (token == QXmlStreamReader::Characters) {
+            flag = true;
+        } else if (token == QXmlStreamReader::Characters && !flag) {
             key = reader.text().toString();
         }
     }
@@ -576,13 +578,15 @@ QVariant McXmlBeanBuilderReader::readMapEntryKey(QXmlStreamReader &reader) const
 QVariant McXmlBeanBuilderReader::readMapEntryValue(QXmlStreamReader &reader) const noexcept
 {
     QVariant value;
+    bool flag = false;
     while (!reader.atEnd()) {
         auto token = reader.readNext();
         if (token == QXmlStreamReader::EndElement && reader.name() == Mc::Constant::Tag::Xml::VALUE) {
             break;
         } else if (token == QXmlStreamReader::StartElement) {
             value = readValue(reader);
-        } else if (token == QXmlStreamReader::Characters) {
+            flag = true;
+        } else if (token == QXmlStreamReader::Characters && !flag) {
             value = reader.text().toString();
         }
     }

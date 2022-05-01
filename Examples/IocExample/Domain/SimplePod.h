@@ -25,13 +25,9 @@
 
 #include <McCore/McGlobal.h>
 
-class SimpleInterface
+struct SimplePod
 {
-    MC_DEFINE_INTERFACE(SimpleInterface)
-public:
-    virtual void simpleFunc() = 0;
+    QString text{"simplePod"};
 };
 
-MC_DECL_POINTER(SimpleInterface)
-#define SimpleInterfaceIID "org.quickboot.mc.iocexample.SimpleInterface"
-Q_DECLARE_INTERFACE(SimpleInterface, SimpleInterfaceIID)
+MC_DECL_POINTER(SimplePod)

@@ -23,15 +23,26 @@
  */
 #pragma once
 
-#include <McCore/McGlobal.h>
+#include <McIoc/McIocGlobal.h>
+#include <McIoc/Utils/IMcBeanBuildable.h>
 
-class SimpleInterface
+struct SimpleGadget : public IMcBeanBuildable
 {
-    MC_DEFINE_INTERFACE(SimpleInterface)
+    Q_GADGET
 public:
-    virtual void simpleFunc() = 0;
+    Q_INVOKABLE SimpleGadget(const QString &text);
+
+    void buildStarted() noexcept override;
+
+    QString text;
+    MC_POCO_PROPERTY(QString, text2);
 };
 
-MC_DECL_POINTER(SimpleInterface)
-#define SimpleInterfaceIID "org.quickboot.mc.iocexample.SimpleInterface"
-Q_DECLARE_INTERFACE(SimpleInterface, SimpleInterfaceIID)
+MC_DECL_POINTER(SimpleGadget)
+
+struct SimpleGadgetPointer
+{
+    Q_GADGET
+public:
+    QString text{"simpleGadgetPointer"};
+};

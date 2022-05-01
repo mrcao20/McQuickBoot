@@ -23,15 +23,13 @@
  */
 #pragma once
 
-#include <McCore/McGlobal.h>
+#include <McCore/Utils/IMcPluginChecker.h>
 
-class SimpleInterface
+class PluginChecker : public IMcPluginChecker
 {
-    MC_DEFINE_INTERFACE(SimpleInterface)
+    MC_FULL_DEFINE(PluginChecker, IMcPluginChecker)
 public:
-    virtual void simpleFunc() = 0;
+    bool check(const QJsonObject &json) noexcept override;
 };
 
-MC_DECL_POINTER(SimpleInterface)
-#define SimpleInterfaceIID "org.quickboot.mc.iocexample.SimpleInterface"
-Q_DECLARE_INTERFACE(SimpleInterface, SimpleInterfaceIID)
+MC_DECL_POINTER(PluginChecker)

@@ -1,9 +1,11 @@
 project(PluginExample2)
 
 set(PROJECT_HEADERS
+    SimplePlugin2.h
 )
 
 set(PROJECT_SOURCES
+    SimplePlugin2.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED

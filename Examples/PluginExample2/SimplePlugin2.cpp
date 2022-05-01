@@ -21,17 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include "SimplePlugin2.h"
 
-#include <McIoc/McIocGlobal.h>
+#include <QDebug>
 
-#include "../CoreExample/SimpleInterface.h"
+MC_AUTO_INIT(SimplePlugin2)
+MC_INIT_END
 
-class SimplePod : public SimpleInterface
+void SimplePlugin2::simpleFunc()
 {
-    MC_FULL_DEFINE(SimplePod, SimpleInterface)
-public:
-    void simpleFunc() override;
-};
+    qDebug() << "SimplePlugin2::simpleFunc";
+}
 
-MC_DECL_POINTER(SimplePod)
+QVariant SimplePlugin2::getKey() const noexcept
+{
+    return "SimplePlugin2Key";
+}

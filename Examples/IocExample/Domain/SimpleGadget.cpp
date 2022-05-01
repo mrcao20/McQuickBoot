@@ -21,15 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include "SimpleGadget.h"
 
-#include <McCore/McGlobal.h>
+#include <QDebug>
 
-class SimpleInterface2
+MC_STATIC()
+mcRegisterMetaTypeSimple<SimpleGadget>();
+mcRegisterMetaTypeSimple<SimpleGadgetPointer>();
+MC_STATIC_END
+
+SimpleGadget::SimpleGadget(const QString &val)
+    : text(val)
 {
-    MC_DEFINE_INTERFACE(SimpleInterface2)
-public:
-    virtual void simpleFunc2() = 0;
-};
+}
 
-MC_DECL_POINTER(SimpleInterface2)
+void SimpleGadget::buildStarted() noexcept
+{
+    qDebug() << "SimpleGadget::buildStarted";
+}

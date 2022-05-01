@@ -21,17 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include "SimplePlugin.h"
 
-#include <McCore/McGlobal.h>
+#include <QDebug>
 
-class SimpleInterface
+MC_AUTO_INIT(SimplePlugin)
+MC_INIT_END
+
+void SimplePlugin::simpleFunc()
 {
-    MC_DEFINE_INTERFACE(SimpleInterface)
-public:
-    virtual void simpleFunc() = 0;
-};
+    qDebug() << "SimplePlugin::simpleFunc";
+}
 
-MC_DECL_POINTER(SimpleInterface)
-#define SimpleInterfaceIID "org.quickboot.mc.iocexample.SimpleInterface"
-Q_DECLARE_INTERFACE(SimpleInterface, SimpleInterfaceIID)
+QVariant SimplePlugin::getKey() const noexcept
+{
+    return "SimplePluginKey";
+}

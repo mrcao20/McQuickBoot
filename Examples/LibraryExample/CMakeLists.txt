@@ -1,12 +1,12 @@
 project(LibraryExample)
 
 set(PROJECT_HEADERS
-    SimplePod.h
+    SimpleObject.h
 )
 
 set(PROJECT_SOURCES
     LibraryExample.cpp
-    SimplePod.cpp
+    SimpleObject.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED

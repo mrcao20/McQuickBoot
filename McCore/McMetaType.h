@@ -117,7 +117,17 @@ public:
                 }
             };
         } else {
-            return nullptr;
+            return [](void *copy) {
+                S *inPtr = static_cast<S *>(copy);
+                if (inPtr == nullptr) {
+                    return QVariant();
+                }
+                if constexpr (std::is_base_of_v<IMcDestroyer, S>) {
+                    return QVariant::fromValue(QSharedPointer<S>(inPtr, &IMcDestroyer::destroy));
+                } else {
+                    return QVariant::fromValue(QSharedPointer<S>(inPtr));
+                }
+            };
         }
     }
 };

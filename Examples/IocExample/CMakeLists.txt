@@ -2,11 +2,19 @@ project(IocExample)
 
 set(PROJECT_HEADERS
     MainWindow.h
+    Domain/SimplePod.h
+    Domain/SimpleGadget.h
+    Domain/ExampleObject.h
+    PluginChecker.h
 )
 
 set(PROJECT_SOURCES
     main.cpp
     MainWindow.cpp
+    Domain/SimplePod.cpp
+    Domain/SimpleGadget.cpp
+    Domain/ExampleObject.cpp
+    PluginChecker.cpp
 )
 
 set(PROJECT_FORMS

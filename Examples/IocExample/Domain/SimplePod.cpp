@@ -21,17 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include "SimplePod.h"
 
-#include <McCore/McGlobal.h>
-
-class SimpleInterface
-{
-    MC_DEFINE_INTERFACE(SimpleInterface)
-public:
-    virtual void simpleFunc() = 0;
-};
-
-MC_DECL_POINTER(SimpleInterface)
-#define SimpleInterfaceIID "org.quickboot.mc.iocexample.SimpleInterface"
-Q_DECLARE_INTERFACE(SimpleInterface, SimpleInterfaceIID)
+MC_STATIC()
+mcRegisterMetaTypeSimple<SimplePod>();
+MC_STATIC_END

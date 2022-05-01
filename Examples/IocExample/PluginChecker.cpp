@@ -21,17 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include "PluginChecker.h"
 
-#include <McCore/McGlobal.h>
+#include <QJsonObject>
+#include <QJsonValue>
 
-class SimpleInterface
+MC_AUTO_INIT(PluginChecker)
+MC_INIT_END
+
+bool PluginChecker::check(const QJsonObject &json) noexcept
 {
-    MC_DEFINE_INTERFACE(SimpleInterface)
-public:
-    virtual void simpleFunc() = 0;
-};
-
-MC_DECL_POINTER(SimpleInterface)
-#define SimpleInterfaceIID "org.quickboot.mc.iocexample.SimpleInterface"
-Q_DECLARE_INTERFACE(SimpleInterface, SimpleInterfaceIID)
+    if (!json.contains("MetaData")) {
+        return false;
+    }
+    return json.value("MetaData").toObject().value("checkKey") == "examplePlugin";
+}

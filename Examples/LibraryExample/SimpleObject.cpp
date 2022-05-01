@@ -21,14 +21,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "SimplePod.h"
+#include "SimpleObject.h"
 
 #include <QDebug>
 
-MC_AUTO_INIT(SimplePod)
+MC_AUTO_INIT(SimpleObject)
 MC_INIT_END
 
-void SimplePod::simpleFunc()
+void SimpleObject::simpleFunc()
 {
-    qDebug() << "SimplePod::simpleFunc";
+    qDebug() << "SimpleObject::simpleFunc";
+}
+
+void SimpleObject::buildStarted() noexcept
+{
+    qDebug() << "SimpleObject::buildStarted";
+}
+
+void SimpleObject::buildFinished() noexcept
+{
+    qDebug() << "SimpleObject::buildFinished";
+}
+
+void SimpleObject::buildThreadMoved() noexcept
+{
+    qDebug() << "SimpleObject::buildThreadMoved";
+}
+
+void SimpleObject::buildCompleted() noexcept
+{
+    qDebug() << "SimpleObject::buildCompleted";
+}
+
+QVariant SimpleObject::getKey() const noexcept
+{
+    return "SimpleObjectKey";
 }

@@ -23,15 +23,30 @@
  */
 #pragma once
 
-#include <McCore/McGlobal.h>
+#include <McIoc/BeanBuilder/IMcCustomPlaceholder.h>
+#include <McIoc/McIocGlobal.h>
+#include <McIoc/Utils/IMcBeanBuildable.h>
 
-class SimpleInterface
+#include "../CoreExample/SimpleInterface.h"
+
+class SimpleObject
+    : public QObject
+    , public SimpleInterface
+    , public IMcBeanBuildable
+    , public IMcCustomPlaceholder
 {
-    MC_DEFINE_INTERFACE(SimpleInterface)
+    Q_OBJECT
+    Q_INTERFACES(SimpleInterface)
+    MC_FULL_DEFINE(SimpleObject, QObject, SimpleInterface, IMcCustomPlaceholder)
 public:
-    virtual void simpleFunc() = 0;
+    void simpleFunc() override;
+
+    void buildStarted() noexcept override;
+    void buildFinished() noexcept override;
+    void buildThreadMoved() noexcept override;
+    void buildCompleted() noexcept override;
+
+    QVariant getKey() const noexcept override;
 };
 
-MC_DECL_POINTER(SimpleInterface)
-#define SimpleInterfaceIID "org.quickboot.mc.iocexample.SimpleInterface"
-Q_DECLARE_INTERFACE(SimpleInterface, SimpleInterfaceIID)
+MC_DECL_POINTER(SimpleObject)

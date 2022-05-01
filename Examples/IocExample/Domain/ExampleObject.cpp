@@ -21,17 +21,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include "ExampleObject.h"
 
-#include <McCore/McGlobal.h>
+#include <QDebug>
 
-class SimpleInterface
+MC_AUTO_INIT(ExampleObject)
+mcRegisterContainerConverter<QList<SimpleInterfacePtr>>();
+mcRegisterContainerConverter<QMap<QString, QString>>();
+mcRegisterContainerConverter<QMap<QString, SimpleInterfacePtr>>();
+MC_INIT_END
+
+void ExampleObject::simpleFunc()
 {
-    MC_DEFINE_INTERFACE(SimpleInterface)
-public:
-    virtual void simpleFunc() = 0;
-};
+    qDebug() << "ExampleObject::simpleFunc ==============================================================";
+    qDebug() << "text:" << m_text;
+    qDebug() << "pod:" << m_pod << m_pod->text;
+    qDebug() << "gadget:" << m_gadget << m_gadget->text << m_gadget->text2;
+    qDebug() << "gadgetPointer:" << m_gadgetPointer << m_gadgetPointer->text;
+    for (auto v : m_list) {
+        qDebug() << v;
+        v->simpleFunc();
+    }
+    QMapIterator<QString, QString> itr(m_map);
+    while (itr.hasNext()) {
+        auto item = itr.next();
+        qDebug() << item.key() << item.value();
+    }
+    qDebug() << "==============================================================";
+}
 
-MC_DECL_POINTER(SimpleInterface)
-#define SimpleInterfaceIID "org.quickboot.mc.iocexample.SimpleInterface"
-Q_DECLARE_INTERFACE(SimpleInterface, SimpleInterfaceIID)
+QVariant ExampleObject::getKey() const noexcept
+{
+    return "ExampleObjectKey";
+}

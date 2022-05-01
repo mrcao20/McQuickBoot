@@ -23,15 +23,38 @@
  */
 #pragma once
 
-#include <McCore/McGlobal.h>
+#include <McIoc/BeanBuilder/IMcCustomPlaceholder.h>
+#include <McIoc/McIocGlobal.h>
 
-class SimpleInterface
+#include "../CoreExample/SimpleInterface.h"
+#include "SimpleGadget.h"
+#include "SimplePod.h"
+
+class ExampleObject
+    : public QObject
+    , public SimpleInterface
+    , public IMcCustomPlaceholder
 {
-    MC_DEFINE_INTERFACE(SimpleInterface)
+    Q_OBJECT
+    Q_INTERFACES(SimpleInterface)
+    MC_FULL_DEFINE(ExampleObject, QObject, SimpleInterface, IMcCustomPlaceholder)
+    Q_PROPERTY(QString text MEMBER m_text)
+    Q_PROPERTY(SimplePodPtr pod MEMBER m_pod)
+    Q_PROPERTY(SimpleGadgetPtr gadget MEMBER m_gadget)
+    Q_PROPERTY(SimpleGadgetPointer *gadgetPointer MEMBER m_gadgetPointer)
+    Q_PROPERTY(QList<SimpleInterfacePtr> list MEMBER m_list)
+    Q_PROPERTY(QMap<QString, QString> map MEMBER m_map)
 public:
-    virtual void simpleFunc() = 0;
+    void simpleFunc() override;
+    QVariant getKey() const noexcept override;
+
+private:
+    QString m_text;
+    SimplePodPtr m_pod;
+    SimpleGadgetPtr m_gadget;
+    SimpleGadgetPointer *m_gadgetPointer{nullptr};
+    QList<SimpleInterfacePtr> m_list;
+    QMap<QString, QString> m_map;
 };
 
-MC_DECL_POINTER(SimpleInterface)
-#define SimpleInterfaceIID "org.quickboot.mc.iocexample.SimpleInterface"
-Q_DECLARE_INTERFACE(SimpleInterface, SimpleInterfaceIID)
+MC_DECL_POINTER(ExampleObject)
