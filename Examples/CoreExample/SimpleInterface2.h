@@ -21,16 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "MetaTypeRegister.h"
+#pragma once
 
-#include <QDebug>
-#include <QList>
-#include <QMap>
+#include <McCore/McGlobal.h>
 
-MC_AUTO_INIT(RegisterTest, Mc::RoutinePriority::Normal - 1)
-qDebug() << "static block low level";
-mcRegisterContainerConverter<QList<RegisterTestPtr>>();
-mcRegisterContainerConverter<QMap<int, RegisterTestPtr>>();
-MC_DESTROY()
-qDebug() << "RegisterTest destroy";
-MC_INIT_END
+class SimpleInterface2
+{
+    MC_DEFINE_INTERFACE(SimpleInterface2)
+public:
+    virtual void simpleFunc2() = 0;
+};
+
+MC_DECL_POINTER(SimpleInterface2)

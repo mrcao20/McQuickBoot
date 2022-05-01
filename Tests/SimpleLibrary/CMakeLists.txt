@@ -14,6 +14,6 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core McCore)
 
-if (NOT MSVC)
+if (MINGW)
     set_target_properties (${PROJECT_NAME} PROPERTIES PREFIX "")
 endif ()

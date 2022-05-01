@@ -6,6 +6,7 @@
 
 //! 模拟静态代码块
 MC_STATIC()
+qDebug() << "static block normal level";
 //! 路径占位符注册和使用
 Mc::registerPathPlaceholder("{custom}/bin", []() { return QCoreApplication::applicationDirPath(); });
 qDebug() << "core example init: " << Mc::toAbsolutePath("{custom}/bin");
@@ -16,7 +17,9 @@ qDebug() << "core example destroy";
 MC_STATIC_END
 //!<
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent)
+    , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 

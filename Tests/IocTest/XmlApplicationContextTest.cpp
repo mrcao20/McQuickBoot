@@ -133,9 +133,6 @@ void XmlApplicationContextTest::objectCase()
 
 void XmlApplicationContextTest::pluginCase()
 {
-#ifndef QT_DEBUG
-    return;
-#endif
     if (!m_flag) {
         return;
     }

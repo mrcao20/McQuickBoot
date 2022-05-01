@@ -30,11 +30,8 @@
 
 MC_FORWARD_DECL_PRIVATE_DATA(McEventDispatcher)
 
-class MC_CORE_EXPORT McEventDispatcher
-    : public QObject
-    , protected McQVariantConverter
+class MC_CORE_EXPORT McEventDispatcher : protected McQVariantConverter
 {
-    Q_OBJECT
     McEventDispatcher() noexcept;
     Q_DISABLE_COPY_MOVE(McEventDispatcher)
 
@@ -66,7 +63,7 @@ public:
             const QString &scxmlEventSpec, Functor functor, Qt::ConnectionType type = Qt::AutoConnection) noexcept
     {
         // Use this as context
-        return connectToEvent(scxmlEventSpec, this, functor, type);
+        return connectToEvent(scxmlEventSpec, nullptr, functor, type);
     }
 
     // connectToEvent to a functor or function pointer (with context)

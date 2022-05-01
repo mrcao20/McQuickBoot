@@ -1,13 +1,12 @@
-project(SimplePlugin)
-
-include_directories(../IocTest)
+project(LibraryExample)
 
 set(PROJECT_HEADERS
-    SimplePlugin.h
+    SimplePod.h
 )
 
 set(PROJECT_SOURCES
-    SimplePlugin.cpp
+    LibraryExample.cpp
+    SimplePod.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED
@@ -15,7 +14,7 @@ add_library(${PROJECT_NAME} SHARED
     ${PROJECT_SOURCES}
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core McCore)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core McCore McIoc)
 
 if (MINGW)
     set_target_properties (${PROJECT_NAME} PROPERTIES PREFIX "")

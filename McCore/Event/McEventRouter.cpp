@@ -84,6 +84,9 @@ QMetaObject::Connection McEventRouter::connectToEvent(const QStringList &segment
 
         const QMetaObject *meta = metaObject();
         static const int eventOccurredIndex = signalIndex(meta, "eventOccurred(QVariant)");
+        if (receiver == nullptr) {
+            receiver = this;
+        }
         return QObjectPrivate::connectImpl(this, eventOccurredIndex, receiver, slot, method, type, types, meta);
     } else {
         return child(segment)->connectToEvent(segments.mid(1), receiver, slot, method, type);

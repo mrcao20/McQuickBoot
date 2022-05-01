@@ -21,16 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include "MetaTypeRegister.h"
+#include "SimplePod.h"
 
 #include <QDebug>
-#include <QList>
-#include <QMap>
 
-MC_AUTO_INIT(RegisterTest, Mc::RoutinePriority::Normal - 1)
-qDebug() << "static block low level";
-mcRegisterContainerConverter<QList<RegisterTestPtr>>();
-mcRegisterContainerConverter<QMap<int, RegisterTestPtr>>();
-MC_DESTROY()
-qDebug() << "RegisterTest destroy";
+MC_AUTO_INIT(SimplePod)
 MC_INIT_END
+
+void SimplePod::simpleFunc()
+{
+    qDebug() << "SimplePod::simpleFunc";
+}

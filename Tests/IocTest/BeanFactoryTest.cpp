@@ -272,14 +272,10 @@ void BeanFactoryTest::sharedObjectTestCase()
 void BeanFactoryTest::pluginTestCase()
 {
     auto beanFactory = McResolverBeanFactoryPtr::create();
-#ifdef QT_DEBUG
-    QString filePath("./SimplePlugind.dll");
-#else
+#ifdef Q_OS_WIN
     QString filePath("./SimplePlugin.dll");
-#endif
-#ifdef Q_OS_LINUX
-    filePath.prepend("../lib/");
-    filePath.replace(".dll", ".so");
+#else
+    QString filePath("../lib/libSimplePlugin.so");
 #endif
     {
         QJsonObject json;
@@ -342,14 +338,10 @@ void BeanFactoryTest::sharedPluginTestCase()
     //! 由于插件的特殊性，pluginTestCase和本用例使用的是同一个插件实例。
     //! 所以Shared类型只能使用一次，否则会造成多次析构的错误。
     auto beanFactory = McResolverBeanFactoryPtr::create();
-#ifdef QT_DEBUG
-    QString filePath("./SimplePlugind.dll");
-#else
+#ifdef Q_OS_WIN
     QString filePath("./SimplePlugin.dll");
-#endif
-#ifdef Q_OS_LINUX
-    filePath.prepend("../lib/");
-    filePath.replace(".dll", ".so");
+#else
+    QString filePath("../lib/libSimplePlugin.so");
 #endif
     {
         auto builder = McSharedObjectPluginBeanBuilderPtr::create();

@@ -3,6 +3,8 @@ project(CoreExample)
 set(PROJECT_HEADERS
     MainWindow.h
     MetaTypeRegister.h
+    SimpleInterface.h
+    SimpleInterface2.h
 )
 
 set(PROJECT_SOURCES

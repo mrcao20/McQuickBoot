@@ -73,14 +73,10 @@ void TestCore::metaTypeCase()
 
 void TestCore::loadPluginCase()
 {
-#ifdef QT_DEBUG
-    QString filePath("./SimplePlugind.dll");
-#else
+#ifdef Q_OS_WIN
     QString filePath("./SimplePlugin.dll");
-#endif
-#ifdef Q_OS_LINUX
-    filePath.prepend("../lib/");
-    filePath.replace(".dll", ".so");
+#else
+    QString filePath("../lib/libSimplePlugin.so");
 #endif
     QJsonObject json;
     json.insert("IID", "org.quickboot.mc.test.IObjectTest");
@@ -97,32 +93,24 @@ void TestCore::loadPluginCase()
 void TestCore::loadLibraryCase()
 {
     using TestLoadFunc = void (*)();
-#ifdef QT_DEBUG
-    QString fileName("./SimpleLibraryd.dll");
+#ifdef Q_OS_WIN
+    QString filePath("./SimpleLibrary.dll");
 #else
-    QString fileName("./SimpleLibrary.dll");
+    QString filePath("../lib/libSimpleLibrary.so");
 #endif
-#ifdef Q_OS_LINUX
-    fileName.prepend("../lib/");
-    fileName.replace(".dll", ".so");
-#endif
-    TestLoadFunc func = Mc::loadLibrary(Mc::toAbsolutePath(fileName), QLatin1String("testLoadFunc"), QLatin1String(""));
+    TestLoadFunc func = Mc::loadLibrary(Mc::toAbsolutePath(filePath), QLatin1String("testLoadFunc"), QLatin1String(""));
     QVERIFY(func != nullptr);
     func();
 }
 
 void TestCore::loadMemoryLibraryCase()
 {
-#ifdef QT_DEBUG
-    QString fileName("./SimpleLibraryd.dll");
+#ifdef Q_OS_WIN
+    QString filePath("./SimpleLibrary.dll");
 #else
-    QString fileName("./SimpleLibrary.dll");
+    QString filePath("../lib/libSimpleLibrary.so");
 #endif
-#ifdef Q_OS_LINUX
-    fileName.prepend("../lib/");
-    fileName.replace(".dll", ".so");
-#endif
-    QFile file(fileName);
+    QFile file(filePath);
     QVERIFY(file.open(QIODevice::ReadOnly));
     auto data = file.readAll();
     using TestLoadFunc = void (*)();
