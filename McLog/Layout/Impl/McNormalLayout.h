@@ -23,20 +23,14 @@
  */
 #pragma once
 
-#include "../McGlobal.h"
+#include "McPatternLayout.h"
 
-class McQVariantConverter
+class MC_LOG_EXPORT McNormalLayout : public McPatternLayout
 {
+    Q_OBJECT
+    MC_FULL_DEFINE(McNormalLayout, McPatternLayout)
 public:
-    template<typename T>
-    typename std::enable_if<McPrivate::IsQVariantHelper<T>::Value, QVariant>::type toQVariant(T &&t) noexcept
-    {
-        return QVariant::fromValue(t);
-    }
-    QVariant toQVariant(const QVariant &t) { return t; }
-    template<typename T>
-    typename std::enable_if<McPrivate::IsQVariantHelper<T>::Value2, QVariant>::type toQVariant(const T &t) noexcept
-    {
-        return QVariant(t);
-    }
+    void buildFinished() noexcept override;
 };
+
+MC_DECL_POINTER(McNormalLayout)

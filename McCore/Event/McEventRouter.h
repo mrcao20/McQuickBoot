@@ -26,6 +26,8 @@
 #include <QHash>
 #include <QObject>
 
+#include "../Utils/McSlotObjectWrapper.h"
+
 class McEventRouter : public QObject
 {
     Q_OBJECT
@@ -37,8 +39,8 @@ public:
 
     QMetaObject::Connection connectToEvent(
         const QStringList &segments, const QObject *receiver, const char *method, Qt::ConnectionType type) noexcept;
-    QMetaObject::Connection connectToEvent(const QStringList &segments, const QObject *receiver, void **slot,
-        QtPrivate::QSlotObjectBase *method, Qt::ConnectionType type) noexcept;
+    QMetaObject::Connection connectToEvent(
+        const QStringList &segments, const McSlotObjectWrapper &slotObject, Qt::ConnectionType type) noexcept;
 
     void route(const QStringList &segments, const QVariant &data) noexcept;
 

@@ -37,7 +37,7 @@ class ExampleObject
 {
     Q_OBJECT
     Q_INTERFACES(SimpleInterface)
-    MC_FULL_DEFINE(ExampleObject, QObject, SimpleInterface, IMcCustomPlaceholder)
+    MC_FULL_DEFINE(ExampleObject, QObject, SimpleInterface)
     Q_PROPERTY(QString text MEMBER m_text)
     Q_PROPERTY(SimplePodPtr pod MEMBER m_pod)
     Q_PROPERTY(SimpleGadgetPtr gadget MEMBER m_gadget)

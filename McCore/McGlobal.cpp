@@ -30,7 +30,7 @@
 #include <QTimer>
 #include <QUrl>
 
-#include "Utils/MemoryLibrary/McMemoryLibrary.h"
+#include "MemoryLibrary/McMemoryLibrary.h"
 
 Q_LOGGING_CATEGORY(mcCore, "mc.core")
 

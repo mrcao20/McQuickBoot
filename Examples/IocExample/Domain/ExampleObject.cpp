@@ -26,9 +26,9 @@
 #include <QDebug>
 
 MC_AUTO_INIT(ExampleObject)
-mcRegisterContainerConverter<QList<SimpleInterfacePtr>>();
-mcRegisterContainerConverter<QMap<QString, QString>>();
-mcRegisterContainerConverter<QMap<QString, SimpleInterfacePtr>>();
+mcRegisterContainer<QList<SimpleInterfacePtr>>();
+mcRegisterContainer<QMap<QString, QString>>();
+mcRegisterContainer<QMap<QString, SimpleInterfacePtr>>();
 MC_INIT_END
 
 void ExampleObject::simpleFunc()

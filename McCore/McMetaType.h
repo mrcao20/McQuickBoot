@@ -67,7 +67,7 @@ public:
     using CreateSharedPointerFn = QVariant (*)(void *);
     CreateSharedPointerFn createSharedPointer;
     //! 继承的父类的元数据
-    mutable QVector<McMetaType> *parents;
+    mutable QSet<McMetaType> *parents;
 };
 
 class ListMetaTypeInterface
@@ -221,6 +221,7 @@ public:
     static McMetaType fromSQMetaType(const QMetaType &type) noexcept;
     static McMetaType fromWQMetaType(const QMetaType &type) noexcept;
     static McMetaType fromTQMetaType(const QMetaType &type) noexcept;
+    static McMetaType fromFuzzyQMetaType(const QMetaType &type) noexcept;
     static McMetaType fromTypeName(const QByteArray &typeName) noexcept;
     static McMetaType fromPTypeName(const QByteArray &typeName) noexcept;
     static McMetaType fromSTypeName(const QByteArray &typeName) noexcept;
@@ -269,10 +270,10 @@ public:
         return d->tMetaType;
     }
 
-    QVariant createSharedPointer(void *copy = nullptr) noexcept;
+    QVariant createSharedPointer(void *copy = nullptr) const noexcept;
 
     void addParentMetaType(const McMetaType &type) const noexcept;
-    QVector<McMetaType> parentMetaTypes() const noexcept;
+    QSet<McMetaType> parentMetaTypes() const noexcept;
 
     constexpr bool isValid() const noexcept { return d != nullptr; }
 
@@ -294,15 +295,16 @@ public:
     friend bool operator!=(McMetaType a, McMetaType b) { return !(a == b); }
     friend Q_DECL_CONST_FUNCTION size_t qHash(McMetaType key, size_t seed) noexcept
     {
-        int id = 0;
-        if (key.d != nullptr) {
-            id = key.d->metaType.id();
-        }
-        return qHash(id, seed);
+        return qHash(key.metaType().id(), seed);
     }
 
 private:
     const McPrivate::MetaTypeInterface *d{nullptr};
+
+    template<typename T>
+    friend inline void mcRegisterMetaTypeSimple() noexcept;
+    template<typename T>
+    friend inline void mcRegisterMetaType() noexcept;
 };
 
 class MC_CORE_EXPORT McListMetaType
@@ -356,6 +358,9 @@ public:
 
 private:
     const McPrivate::ListMetaTypeInterface *d{nullptr};
+
+    template<typename T>
+    friend inline void mcRegisterContainer() noexcept;
 };
 
 class MC_CORE_EXPORT McMapMetaType
@@ -418,6 +423,9 @@ public:
 
 private:
     const McPrivate::MapMetaTypeInterface *d{nullptr};
+
+    template<typename T>
+    friend inline void mcRegisterContainer() noexcept;
 };
 
 namespace McPrivate {
@@ -549,9 +557,9 @@ inline void mcRegisterMetaTypeSimple() noexcept
 {
     static_assert(!std::is_pointer<T>::value, "mcRegisterMetaTypeSimple's template type must not be a pointer type");
     constexpr McMetaType metaType = McMetaType::fromType<T>();
-    metaType.metaType().id();
-    metaType.pMetaType().id();
-    metaType.sMetaType().id();
+    if (metaType.d->isRegistered.loadRelaxed()) {
+        return;
+    }
     McMetaType::registerMetaType(metaType);
 }
 
@@ -559,18 +567,25 @@ template<typename T>
 inline void mcRegisterMetaType() noexcept
 {
     static_assert(!std::is_pointer<T>::value, "mcRegisterMetaType's template type must not be a pointer type");
+    constexpr McMetaType metaType = McMetaType::fromType<T>();
+    if (metaType.d->isRegistered.loadRelaxed()) {
+        return;
+    }
     mcRegisterMetaTypeSimple<T>();
     McPrivate::MetaTypeRegister<T>::registerMetaType();
 }
 
 template<typename T>
-inline void mcRegisterContainerConverter() noexcept
+inline void mcRegisterContainer() noexcept
 {
     constexpr QMetaType metaType = QMetaType::fromType<T>();
     if constexpr (bool(QtPrivate::IsSequentialContainer<T>::Value)) {
-        using ValueType = typename T::value_type;
-        mcRegisterContainerConverter<ValueType>();
         constexpr McListMetaType customMetaType = McListMetaType::fromType<T>();
+        if (customMetaType.d->isRegistered.loadRelaxed()) {
+            return;
+        }
+        using ValueType = typename T::value_type;
+        mcRegisterContainer<ValueType>();
         McListMetaType::registerMetaType(customMetaType);
         constexpr QMetaType listMetaType = QMetaType::fromType<QVariantList>();
         if (!QMetaType::hasRegisteredConverterFunction(listMetaType, metaType)) {
@@ -598,11 +613,14 @@ inline void mcRegisterContainerConverter() noexcept
             }
         }
     } else if constexpr (bool(QtPrivate::IsAssociativeContainer<T>::Value)) {
+        constexpr McMapMetaType customMetaType = McMapMetaType::fromType<T>();
+        if (customMetaType.d->isRegistered.loadRelaxed()) {
+            return;
+        }
         using KeyType = typename T::key_type;
         using ValueType = typename T::mapped_type;
-        mcRegisterContainerConverter<KeyType>();
-        mcRegisterContainerConverter<ValueType>();
-        constexpr McMapMetaType customMetaType = McMapMetaType::fromType<T>();
+        mcRegisterContainer<KeyType>();
+        mcRegisterContainer<ValueType>();
         McMapMetaType::registerMetaType(customMetaType);
         constexpr QMetaType mapMetaType = QMetaType::fromType<QMap<QVariant, QVariant>>();
         if (!QMetaType::hasRegisteredConverterFunction(mapMetaType, metaType)) {

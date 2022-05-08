@@ -31,8 +31,69 @@
 #include <McCore/Event/McEventDispatcher.h>
 #include <McCore/McGlobal.h>
 #include <McCore/Utils/Impl/McNormalPluginChecker.h>
+#include <McCore/Utils/McJsonUtils.h>
 
 #include "MetaTypeTest.h"
+
+MC_STATIC()
+mcRegisterMetaTypeSimple<GadgetData>();
+mcRegisterMetaType<ObjectData>();
+mcRegisterContainer<QList<GadgetDataPtr>>();
+MC_STATIC_END
+
+void TestCore::jsonCase()
+{
+    auto gadget = GadgetDataPtr::create();
+    auto childGadget = GadgetDataPtr::create();
+    childGadget->text = "childGadget";
+    gadget->child = childGadget;
+    auto object = ObjectDataPtr::create();
+    object->gadgets.append(gadget);
+    object->gadgets.append(childGadget);
+    {
+        auto var = McJsonUtils::serialize(QVariant::fromValue(gadget));
+        QVERIFY(var.metaType() == QMetaType::fromType<GadgetDataPtr>());
+        auto tmp = var.value<GadgetDataPtr>();
+        QVERIFY(!tmp.isNull());
+        QVERIFY(tmp->text == QLatin1String("gadgetData"));
+        QVERIFY(!tmp->child.isNull());
+        QVERIFY(tmp->child->text == QLatin1String("childGadget"));
+    }
+    {
+        auto json = McJsonUtils::toJson(gadget);
+        QVERIFY(!json.isEmpty());
+        QVERIFY(json.value("text") == QLatin1String("gadgetData"));
+        QVERIFY(json.value("child").toObject().value("text") == QLatin1String("childGadget"));
+        auto tmp = McJsonUtils::fromJson<GadgetDataPtr>(json);
+        QVERIFY(!tmp.isNull());
+        QVERIFY(tmp->text == QLatin1String("gadgetData"));
+        QVERIFY(!tmp->child.isNull());
+        QVERIFY(tmp->child->text == QLatin1String("childGadget"));
+    }
+    {
+        auto var = McJsonUtils::serialize(QVariant::fromValue(object));
+        QVERIFY(var.metaType() == QMetaType::fromType<QJsonObject>());
+        QVERIFY(var.toJsonObject().value("text") == QLatin1String("objectData"));
+        QVERIFY(var.toJsonObject().value("gadgets").toArray().size() == 2);
+        QVERIFY(var.toJsonObject().value("gadgets").toArray().at(0).toObject().value("text")
+                == QLatin1String("gadgetData"));
+        QVERIFY(var.toJsonObject().value("gadgets").toArray().at(0).toObject().value("child").toObject().value("text")
+                == QLatin1String("childGadget"));
+        QVERIFY(var.toJsonObject().value("gadgets").toArray().at(1).toObject().value("text")
+                == QLatin1String("childGadget"));
+        QVERIFY(var.toJsonObject().value("gadgets").toArray().at(1).toObject().value("child").toObject().isEmpty());
+        auto tmp = McJsonUtils::deserialize(var, QMetaType::fromType<ObjectDataPtr>()).value<ObjectDataPtr>();
+        QVERIFY(!tmp.isNull());
+        QVERIFY(tmp->text == QLatin1String("objectData"));
+        QVERIFY(tmp->gadgets.size() == 2);
+        QVERIFY(!tmp->gadgets.at(0).isNull());
+        QVERIFY(tmp->gadgets.at(0)->text == QLatin1String("gadgetData"));
+        QVERIFY(!tmp->gadgets.at(0)->child.isNull());
+        QVERIFY(tmp->gadgets.at(0)->child->text == QLatin1String("childGadget"));
+        QVERIFY(!tmp->gadgets.at(1).isNull());
+        QVERIFY(tmp->gadgets.at(1)->text == QLatin1String("childGadget"));
+    }
+}
 
 void TestCore::pathPlaceholderCase()
 {

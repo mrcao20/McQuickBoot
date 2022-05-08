@@ -37,8 +37,8 @@
 #include <McIoc/BeanFactory/Impl/McResolverBeanFactory.h>
 
 MC_AUTO_INIT(ObjectTest)
-mcRegisterContainerConverter<QList<ObjectTestPtr>>();
-mcRegisterContainerConverter<QMap<QString, ObjectTestPtr>>();
+mcRegisterContainer<QList<ObjectTestPtr>>();
+mcRegisterContainer<QMap<QString, ObjectTestPtr>>();
 MC_INIT_END
 
 ObjectTest::ObjectTest() {}
@@ -387,7 +387,7 @@ void BeanFactoryTest::listTestCase()
     }
     /********************************************************/
     {
-        mcRegisterContainerConverter<QList<PodTestPtr>>();
+        mcRegisterContainer<QList<PodTestPtr>>();
         auto podList = beanFactory->getBean("podList").value<QList<PodTestPtr>>();
         QVERIFY(podList.size() == 1);
         auto debug = qDebug();
@@ -396,7 +396,7 @@ void BeanFactoryTest::listTestCase()
         }
     }
     {
-        mcRegisterContainerConverter<QList<IObjectTestPtr>>();
+        mcRegisterContainer<QList<IObjectTestPtr>>();
         auto podList = beanFactory->getBean("objectList").value<QList<IObjectTestPtr>>();
         QVERIFY(podList.size() == 1);
         auto debug = qDebug();
@@ -450,7 +450,7 @@ void BeanFactoryTest::mapTestCase()
     }
     /********************************************************/
     {
-        mcRegisterContainerConverter<QMap<QString, PodTestPtr>>();
+        mcRegisterContainer<QMap<QString, PodTestPtr>>();
         auto podMap = beanFactory->getBean("podMap").value<QMap<QString, PodTestPtr>>();
         QVERIFY(podMap.size() == 2);
         auto debug = qDebug();
@@ -461,7 +461,7 @@ void BeanFactoryTest::mapTestCase()
         }
     }
     {
-        mcRegisterContainerConverter<QMap<QString, IObjectTestPtr>>();
+        mcRegisterContainer<QMap<QString, IObjectTestPtr>>();
         auto objMap = beanFactory->getBean("objMap").value<QMap<QString, IObjectTestPtr>>();
         QVERIFY(objMap.size() == 2);
         auto debug = qDebug();

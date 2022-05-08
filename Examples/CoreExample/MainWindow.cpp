@@ -25,6 +25,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     //! 公共事件分发器
     Mc::eventDispatcher().connectToEvent("button.click", this, [](const QVariant &var) { qDebug() << var; });
+    Mc::eventDispatcher().connectToEvent("button.click", this, [](int var) { qDebug() << var; });
+    Mc::eventDispatcher().connectToEvent("button.click", []() { qDebug() << "button.click not receive arg"; });
+    Mc::eventDispatcher().connectToEvent("button.click", this, &MainWindow::eventProcess);
     connect(ui->pushButton, &QPushButton::clicked, this, []() {
         static int i = 1;
         mcEvt().submitEvent("button.click", i++);
@@ -35,4 +38,9 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::eventProcess(int val)
+{
+    qDebug() << "eventProcess" << val;
 }

@@ -81,7 +81,7 @@ void XmlApplicationContextTest::containerCase()
         }
     }
     {
-        mcRegisterContainerConverter<QMap<QString, QString>>();
+        mcRegisterContainer<QMap<QString, QString>>();
         QVERIFY(!m_appCtx->isPointer("mapTest"));
         auto bean = m_appCtx->getBean("mapTest").value<QMap<QString, QString>>();
         QVERIFY(bean.size() == 2);

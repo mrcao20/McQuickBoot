@@ -24,15 +24,16 @@
 #pragma once
 
 #include <McIoc/McIocGlobal.h>
-#include <McIoc/Utils/IMcBeanBuildable.h>
 
-struct SimpleGadget : public IMcBeanBuildable
+struct SimpleGadget
 {
     Q_GADGET
 public:
     Q_INVOKABLE SimpleGadget(const QString &text);
 
-    void buildStarted() noexcept override;
+    Q_INVOKABLE
+    MC_STARTED
+    void buildStarted() noexcept;
 
     QString text;
     MC_POCO_PROPERTY(QString, text2);

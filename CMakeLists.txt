@@ -93,6 +93,7 @@ endif()
 
 add_subdirectory(McCore)
 add_subdirectory(McIoc)
+add_subdirectory(McLog)
 if(BUILD_EXAMPLES)
     add_subdirectory(Examples)
 endif()

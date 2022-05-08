@@ -104,11 +104,11 @@ void McAnnotationBeanDefinitionReader::doReadBeanBuilder() noexcept
 
 void McAnnotationBeanDefinitionReader::addMetaTypeBeanName(McMetaType type, const QString &beanName) noexcept
 {
-    addMetaTypeBeanName(QVector<McMetaType>{type}, beanName);
+    addMetaTypeBeanName(QSet<McMetaType>{type}, beanName);
 }
 
 void McAnnotationBeanDefinitionReader::addMetaTypeBeanName(
-    const QVector<McMetaType> &types, const QString &beanName) noexcept
+    const QSet<McMetaType> &types, const QString &beanName) noexcept
 {
     for (auto &type : types) {
         d->metaTypeBeanNames[type].insert(beanName);
@@ -192,7 +192,7 @@ void McAnnotationBeanDefinitionReader::parsePropertyOnResource(
     auto qmetaType = pro.metaType();
     auto listMetaType = McListMetaType::fromQMetaType(qmetaType);
     if (listMetaType.isValid()) {
-        auto metaType = getMcMetaType(listMetaType.valueMetaType());
+        auto metaType = McMetaType::fromFuzzyQMetaType(listMetaType.valueMetaType());
         if (!metaType.isValid()) {
             return;
         }
@@ -213,7 +213,7 @@ void McAnnotationBeanDefinitionReader::parsePropertyOnResource(
                 mcIoc(), "Key must be QString. property: %s. class: %s", proName.constData(), metaObj->className());
         } else {
             QMap<QVariant, QVariant> map;
-            auto metaType = getMcMetaType(mapMetaType.valueMetaType());
+            auto metaType = McMetaType::fromFuzzyQMetaType(mapMetaType.valueMetaType());
             if (!metaType.isValid()) {
                 return;
             }
@@ -227,7 +227,7 @@ void McAnnotationBeanDefinitionReader::parsePropertyOnResource(
         }
         return;
     }
-    auto metaType = getMcMetaType(qmetaType);
+    auto metaType = McMetaType::fromFuzzyQMetaType(qmetaType);
     if (!metaType.isValid()) {
         return;
     }
@@ -243,15 +243,4 @@ void McAnnotationBeanDefinitionReader::parsePropertyOnResource(
     McBeanReferencePtr beanRef = McBeanReferencePtr::create();
     beanRef->setName(beanName);
     builder->addProperty(proName, QVariant::fromValue(beanRef));
-}
-
-McMetaType McAnnotationBeanDefinitionReader::getMcMetaType(const QMetaType &qmetaType) const noexcept
-{
-    McMetaType metaType;
-    if (qmetaType.flags().testFlag(QMetaType::IsPointer)) {
-        metaType = McMetaType::fromPQMetaType(qmetaType);
-    } else {
-        metaType = McMetaType::fromSQMetaType(qmetaType);
-    }
-    return metaType;
 }

@@ -23,36 +23,7 @@
  */
 #include "McEventRouter.h"
 
-#include <private/qmetaobject_p.h>
-#include <private/qobject_p.h>
-
 namespace {
-
-static int signalIndex(const QMetaObject *meta, const QByteArray &signalName) noexcept
-{
-    Q_ASSERT(meta);
-
-    int signalIndex = meta->indexOfSignal(signalName.constData());
-
-    // If signal doesn't exist, return negative value
-    if (signalIndex < 0)
-        return signalIndex;
-
-    // signal belongs to class whose meta object was passed, not some derived class.
-    Q_ASSERT(meta->methodOffset() <= signalIndex);
-
-    // Duplicate of computeOffsets in qobject.cpp
-    const QMetaObject *m = meta->d.superdata;
-    while (m) {
-        const QMetaObjectPrivate *d = QMetaObjectPrivate::get(m);
-        signalIndex = signalIndex - d->methodCount + d->signalCount;
-        m = m->d.superdata;
-    }
-
-    // Asserting about the signal not being cloned would be nice, too, but not practical.
-
-    return signalIndex;
-}
 
 static QString nextSegment(const QStringList &segments) noexcept
 {
@@ -73,23 +44,20 @@ QMetaObject::Connection McEventRouter::connectToEvent(
                              : child(segment)->connectToEvent(segments.mid(1), receiver, method, type);
 }
 
-QMetaObject::Connection McEventRouter::connectToEvent(const QStringList &segments, const QObject *receiver, void **slot,
-    QtPrivate::QSlotObjectBase *method, Qt::ConnectionType type) noexcept
+QMetaObject::Connection McEventRouter::connectToEvent(
+    const QStringList &segments, const McSlotObjectWrapper &slotObject, Qt::ConnectionType type) noexcept
 {
     QString segment = nextSegment(segments);
     if (segment.isEmpty()) {
-        const int *types = nullptr;
-        if (type == Qt::QueuedConnection || type == Qt::BlockingQueuedConnection)
-            types = QtPrivate::ConnectionTypes<QtPrivate::List<QVariant>>::types();
-
-        const QMetaObject *meta = metaObject();
-        static const int eventOccurredIndex = signalIndex(meta, "eventOccurred(QVariant)");
+        auto receiver = slotObject.recever();
         if (receiver == nullptr) {
             receiver = this;
         }
-        return QObjectPrivate::connectImpl(this, eventOccurredIndex, receiver, slot, method, type, types, meta);
+        return connect(
+            this, &McEventRouter::eventOccurred, receiver,
+            [slotObject = std::move(slotObject)](const QVariant &data) { slotObject.call(data); }, type);
     } else {
-        return child(segment)->connectToEvent(segments.mid(1), receiver, slot, method, type);
+        return child(segment)->connectToEvent(segments.mid(1), slotObject, type);
     }
 }
 

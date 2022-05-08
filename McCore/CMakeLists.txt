@@ -2,7 +2,7 @@ project(McCore)
 
 configure_file(McConfig.h.in McConfig.h)
 
-include_directories(${Qt6Core_PRIVATE_INCLUDE_DIRS})
+#include_directories(${Qt6Core_PRIVATE_INCLUDE_DIRS})
 
 set(PROJECT_HEADERS
     McMacroGlobal.h
@@ -13,11 +13,12 @@ set(PROJECT_HEADERS
     Config/McRuntimeConfigValue.h
     Event/McEventDispatcher.h
     Event/McEventRouter.h
-    Utils/McQVariantConverter.h
+    Utils/McSlotObjectWrapper.h
     Utils/IMcDestroyer.h
     Utils/IMcPluginChecker.h
+    Utils/McJsonUtils.h
     Utils/Impl/McNormalPluginChecker.h
-    Utils/MemoryLibrary/McMemoryLibrary.h
+    MemoryLibrary/McMemoryLibrary.h
 )
 
 set(PROJECT_SOURCES
@@ -28,16 +29,18 @@ set(PROJECT_SOURCES
     Config/McRuntimeConfigValue.cpp
     Event/McEventDispatcher.cpp
     Event/McEventRouter.cpp
+    Utils/McSlotObjectWrapper.cpp
+    Utils/McJsonUtils.cpp
     Utils/Impl/McNormalPluginChecker.cpp
-    Utils/MemoryLibrary/McMemoryLibrary.cpp
+    MemoryLibrary/McMemoryLibrary.cpp
 )
 
 if(WIN32)
-    list(APPEND PROJECT_HEADERS Utils/MemoryLibrary/MemoryModule.h)
-    list(APPEND PROJECT_SOURCES Utils/MemoryLibrary/MemoryModule.c)
+    list(APPEND PROJECT_HEADERS MemoryLibrary/MemoryModule.h)
+    list(APPEND PROJECT_SOURCES MemoryLibrary/MemoryModule.c)
 else()
-    list(APPEND PROJECT_HEADERS Utils/MemoryLibrary/memload.h)
-    list(APPEND PROJECT_SOURCES Utils/MemoryLibrary/memload.cpp)
+    list(APPEND PROJECT_HEADERS MemoryLibrary/memload.h)
+    list(APPEND PROJECT_SOURCES MemoryLibrary/memload.cpp)
 endif()
 
 add_library(${PROJECT_NAME} ${MC_BUILD_TYPE}

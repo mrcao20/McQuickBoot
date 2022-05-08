@@ -37,7 +37,7 @@ class SimpleObject
 {
     Q_OBJECT
     Q_INTERFACES(SimpleInterface)
-    MC_FULL_DEFINE(SimpleObject, QObject, SimpleInterface, IMcCustomPlaceholder)
+    MC_FULL_DEFINE(SimpleObject, QObject, SimpleInterface)
 public:
     void simpleFunc() override;
 

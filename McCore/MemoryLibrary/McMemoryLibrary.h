@@ -375,7 +375,7 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 */
 #pragma once
 
-#include "../../McGlobal.h"
+#include "../McGlobal.h"
 
 struct McMemoryLibraryData;
 

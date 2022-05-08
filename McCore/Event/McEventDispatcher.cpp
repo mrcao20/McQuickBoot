@@ -58,10 +58,10 @@ void McEventDispatcher::submitEvent_helper(const QString &eventName, const QVari
     d->router.route(eventName.split(QLatin1Char('.')), data);
 }
 
-QMetaObject::Connection McEventDispatcher::connectToEventImpl(const QString &scxmlEventSpec, const QObject *receiver,
-    void **slot, QtPrivate::QSlotObjectBase *slotObj, Qt::ConnectionType type) noexcept
+QMetaObject::Connection McEventDispatcher::connectToEventImpl(
+    const QString &scxmlEventSpec, const McSlotObjectWrapper &slotObject, Qt::ConnectionType type) noexcept
 {
-    return d->router.connectToEvent(scxmlEventSpec.split(QLatin1Char('.')), receiver, slot, slotObj, type);
+    return d->router.connectToEvent(scxmlEventSpec.split(QLatin1Char('.')), slotObject, type);
 }
 
 namespace Mc {

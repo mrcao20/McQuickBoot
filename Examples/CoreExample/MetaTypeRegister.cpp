@@ -29,8 +29,8 @@
 
 MC_AUTO_INIT(RegisterTest, Mc::RoutinePriority::Normal - 1)
 qDebug() << "static block low level";
-mcRegisterContainerConverter<QList<RegisterTestPtr>>();
-mcRegisterContainerConverter<QMap<int, RegisterTestPtr>>();
+mcRegisterContainer<QList<RegisterTestPtr>>();
+mcRegisterContainer<QMap<int, RegisterTestPtr>>();
 MC_DESTROY()
 qDebug() << "RegisterTest destroy";
 MC_INIT_END

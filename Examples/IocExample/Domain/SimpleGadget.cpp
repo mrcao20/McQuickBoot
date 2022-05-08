@@ -26,7 +26,7 @@
 #include <QDebug>
 
 MC_STATIC()
-mcRegisterMetaTypeSimple<SimpleGadget>();
+mcRegisterMetaType<SimpleGadget>();
 mcRegisterMetaTypeSimple<SimpleGadgetPointer>();
 MC_STATIC_END
 

@@ -40,10 +40,10 @@ void AnnotationApplicationContextTest::initTestCase()
     mcRegisterMetaTypeSimple<ComplexObject>();
     mcRegisterMetaTypeSimple<ObjectInterface>();
     mcRegisterMetaTypeSimple<ObjectPointerInterface>();
-    mcRegisterContainerConverter<QList<ObjectInterfacePtr>>();
-    mcRegisterContainerConverter<QMap<QString, ObjectInterfacePtr>>();
-    mcRegisterContainerConverter<QList<ObjectPointerInterface *>>();
-    mcRegisterContainerConverter<QMap<QString, ObjectPointerInterface *>>();
+    mcRegisterContainer<QList<ObjectInterfacePtr>>();
+    mcRegisterContainer<QMap<QString, ObjectInterfacePtr>>();
+    mcRegisterContainer<QList<ObjectPointerInterface *>>();
+    mcRegisterContainer<QMap<QString, ObjectPointerInterface *>>();
 
     m_appCtx = McAnnotationApplicationContextPtr::create();
     m_appCtx->refresh();

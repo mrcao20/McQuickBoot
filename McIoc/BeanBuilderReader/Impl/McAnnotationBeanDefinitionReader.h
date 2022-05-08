@@ -42,7 +42,7 @@ protected:
 
 private:
     void addMetaTypeBeanName(McMetaType type, const QString &beanName) noexcept;
-    void addMetaTypeBeanName(const QVector<McMetaType> &types, const QString &beanName) noexcept;
+    void addMetaTypeBeanName(const QSet<McMetaType> &types, const QString &beanName) noexcept;
     QSet<QString> getBeanNameForMetaType(McMetaType type) noexcept;
 
     QMap<QString, McMetaType> parseComponent() noexcept;
@@ -51,7 +51,6 @@ private:
         const McAbstractBeanBuilderPtr &builder, const QMetaObject *metaObj, const QString &value) noexcept;
     void parsePropertyOnResource(
         const McAbstractBeanBuilderPtr &builder, const QMetaObject *metaObj, const QByteArray &value) noexcept;
-    McMetaType getMcMetaType(const QMetaType &qmetaType) const noexcept;
 
 private:
     MC_DECL_PRIVATE(McAnnotationBeanDefinitionReader)

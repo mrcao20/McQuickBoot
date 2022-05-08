@@ -23,11 +23,7 @@
  */
 #pragma once
 
-#include <QtCore/qglobal.h>
-
-#if defined(MC_BUILD_STATIC) && !defined(MC_EXPORT_DISABLE)
-# define MC_EXPORT_DISABLE
-#endif
+#include <McCore/McMacroGlobal.h>
 
 #ifndef MC_EXPORT_DISABLE
 # if defined(MC_IOC_LIBRARY)

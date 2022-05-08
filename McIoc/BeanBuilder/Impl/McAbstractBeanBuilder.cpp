@@ -237,7 +237,14 @@ QVariant McAbstractBeanBuilder::convertMap(const QVariant &value, const QVariant
             } else if (plh == "objectName") {
                 resultKey = valueObj == nullptr ? "" : valueObj->objectName();
             } else if (plh == "custom") {
-                auto customPlh = resultValue.value<IMcCustomPlaceholder *>();
+                IMcCustomPlaceholder *customPlh = nullptr;
+                QObject *plhObj = resultValue.value<QObject *>();
+                if (plhObj != nullptr) {
+                    customPlh = static_cast<IMcCustomPlaceholder *>(plhObj->qt_metacast("IMcCustomPlaceholder"));
+                }
+                if (customPlh == nullptr) {
+                    customPlh = resultValue.value<IMcCustomPlaceholder *>();
+                }
                 resultKey = customPlh == nullptr ? "" : customPlh->getKey();
             } else {
                 qCCritical(mcIoc(), "the plh must be one of className/objectName/custom");

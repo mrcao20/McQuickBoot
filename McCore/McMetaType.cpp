@@ -34,6 +34,9 @@ void McMetaType::registerMetaType(const McMetaType &type) noexcept
     if (!type.isValid() || type.d->isRegistered.loadRelaxed()) {
         return;
     }
+    type.d->metaType.id();
+    type.d->pMetaType.id();
+    type.d->sMetaType.id();
     type.d->isRegistered.storeRelaxed(true);
     coreMetaTypeStaticData->metaTypes.append(type);
 }
@@ -86,6 +89,22 @@ McMetaType McMetaType::fromTQMetaType(const QMetaType &type) noexcept
         return McMetaType();
     }
     return *itr;
+}
+
+McMetaType McMetaType::fromFuzzyQMetaType(const QMetaType &type) noexcept
+{
+    McMetaType metaType;
+    auto flags = type.flags();
+    if (flags.testFlag(QMetaType::IsPointer)) {
+        metaType = McMetaType::fromPQMetaType(type);
+    } else if (flags.testFlag(QMetaType::WeakPointerToQObject)) {
+        metaType = McMetaType::fromWQMetaType(type);
+    } else if (flags.testFlag(QMetaType::TrackingPointerToQObject)) {
+        metaType = McMetaType::fromTQMetaType(type);
+    } else {
+        metaType = McMetaType::fromSQMetaType(type);
+    }
+    return metaType;
 }
 
 McMetaType McMetaType::fromTypeName(const QByteArray &typeName) noexcept
@@ -148,7 +167,7 @@ QVector<McMetaType> McMetaType::metaTypes() noexcept
     return coreMetaTypeStaticData->metaTypes;
 }
 
-QVariant McMetaType::createSharedPointer(void *copy) noexcept
+QVariant McMetaType::createSharedPointer(void *copy) const noexcept
 {
     if (!isValid() || d->createSharedPointer == nullptr) {
         return QVariant();
@@ -163,15 +182,15 @@ void McMetaType::addParentMetaType(const McMetaType &type) const noexcept
     }
     if (d->parents == nullptr) {
         //! 由于d为编译期静态变量，全局唯一且整个程序生命周期均存在，此处可不析构
-        d->parents = new QVector<McMetaType>();
+        d->parents = new QSet<McMetaType>();
     }
-    d->parents->append(type);
+    d->parents->insert(type);
 }
 
-QVector<McMetaType> McMetaType::parentMetaTypes() const noexcept
+QSet<McMetaType> McMetaType::parentMetaTypes() const noexcept
 {
     if (!isValid() || d->parents == nullptr) {
-        return QVector<McMetaType>();
+        return QSet<McMetaType>();
     }
     return *d->parents;
 }

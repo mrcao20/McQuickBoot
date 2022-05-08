@@ -38,60 +38,15 @@ MC_DECL_POINTER(QObject)
 
 namespace McPrivate {
 template<typename T>
-struct IsQVariantHelper
+struct MetaTypeHelper
 {
-    enum { Value = true, Value2 = false };
-};
-template<>
-struct IsQVariantHelper<const char *>
-{
-    enum { Value = false, Value2 = true };
-};
-template<>
-struct IsQVariantHelper<char *>
-{
-    enum { Value = false, Value2 = true };
-};
-template<int N>
-struct IsQVariantHelper<char[N]>
-{
-    enum { Value = false, Value2 = true };
+    static QMetaType metaType() { return QMetaType::fromType<typename T::Car>(); }
 };
 
-template<typename T>
-struct QVariantSelector
-{
-    enum { Value = false };
-};
 template<>
-struct QVariantSelector<QVariant>
+struct MetaTypeHelper<QtPrivate::List<>>
 {
-    enum { Value = true };
-};
-template<>
-struct QVariantSelector<const QVariant>
-{
-    enum { Value = true };
-};
-template<>
-struct QVariantSelector<QVariant &>
-{
-    enum { Value = true };
-};
-template<>
-struct QVariantSelector<const QVariant &>
-{
-    enum { Value = true };
-};
-template<>
-struct QVariantSelector<QtPrivate::List<>>
-{
-    enum { Value = false };
-};
-template<typename... Args>
-struct QVariantSelector<QtPrivate::List<Args...>>
-{
-    enum { Value = QVariantSelector<typename QtPrivate::List<Args...>::Car>::Value };
+    static QMetaType metaType() { return QMetaType(); }
 };
 
 namespace LambdaDetail {
