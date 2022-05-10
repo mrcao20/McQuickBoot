@@ -62,11 +62,11 @@ public:
 
     void append(QtMsgType type, const QMessageLogContext &context, const QString &str) noexcept override;
 
-protected:
     void buildFinished() noexcept override;
     void buildThreadMoved() noexcept override;
     void buildCompleted() noexcept override;
 
+protected:
     void customEvent(QEvent *event) override;
 
     virtual void writeBefore() noexcept = 0;

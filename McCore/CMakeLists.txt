@@ -19,6 +19,11 @@ set(PROJECT_HEADERS
     Utils/McJsonUtils.h
     Utils/Impl/McNormalPluginChecker.h
     MemoryLibrary/McMemoryLibrary.h
+    Zip/McCompressor.h
+    Zip/zip.h
+    Zip/unzip.h
+    Zip/ioapi.h
+    Zip/crypt.h
 )
 
 set(PROJECT_SOURCES
@@ -33,6 +38,10 @@ set(PROJECT_SOURCES
     Utils/McJsonUtils.cpp
     Utils/Impl/McNormalPluginChecker.cpp
     MemoryLibrary/McMemoryLibrary.cpp
+    Zip/McCompressor.cpp
+    Zip/zip.c
+    Zip/unzip.c
+    Zip/ioapi.c
 )
 
 if(WIN32)

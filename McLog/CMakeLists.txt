@@ -8,6 +8,8 @@ set(PROJECT_HEADERS
     McLogGlobal.h
     Utils/McMessagePattern.h
     Utils/McFileUtils.h
+    Utils/McLogDeleter.h
+    Utils/McLogPackager.h
     Appender/IMcAppender.h
     Appender/IMcConfigurableAppender.h
     Appender/IMcCodecableAppender.h
@@ -24,17 +26,30 @@ set(PROJECT_HEADERS
     Appender/Impl/McBySizeDayRollingFileAppender.h
     Appender/Impl/McBySizeDailyRollingFileAppender.h
     Appender/Impl/McDailyRollingFileAppender.h
+    Appender/Impl/McAppenderSeparator.h
+    Appender/Impl/McAbstractAppenderDecorator.h
+    Appender/Impl/McAppenderFrontDecorator.h
+    Appender/Impl/McAppenderPostDecorator.h
     Layout/IMcLayout.h
     Layout/Impl/McPatternLayout.h
     Layout/Impl/McSimpleLayout.h
     Layout/Impl/McNormalLayout.h
     Layout/Impl/McTTCCLayout.h
+    Logger/IMcLogger.h
+    Logger/Impl/McLogger.h
+    Repository/IMcAdditionalTask.h
+    Repository/IMcLoggerRepository.h
+    Repository/Impl/McLoggerRepository.h
+    Configurator/McXMLConfigurator.h
+    McLogManager.h
 )
 
 set(PROJECT_SOURCES
     McLogGlobal.cpp
     Utils/McMessagePattern.cpp
     Utils/McFileUtils.cpp
+    Utils/McLogDeleter.cpp
+    Utils/McLogPackager.cpp
     Appender/Impl/McAbstractAppender.cpp
     Appender/Impl/McAbstractIODeviceAppender.cpp
     Appender/Impl/McAbstractFormatAppender.cpp
@@ -46,11 +61,17 @@ set(PROJECT_SOURCES
     Appender/Impl/McBySizeDayRollingFileAppender.cpp
     Appender/Impl/McBySizeDailyRollingFileAppender.cpp
     Appender/Impl/McDailyRollingFileAppender.cpp
+    Appender/Impl/McAbstractAppenderDecorator.cpp
+    Appender/Impl/McAppenderFrontDecorator.cpp
+    Appender/Impl/McAppenderPostDecorator.cpp
     Layout/Impl/McPatternLayout.cpp
     Layout/Impl/McSimpleLayout.cpp
     Layout/Impl/McNormalLayout.cpp
     Layout/Impl/McTTCCLayout.cpp
-    Appender/Impl/McVSDebugAppender.h
+    Logger/Impl/McLogger.cpp
+    Repository/Impl/McLoggerRepository.cpp
+    Configurator/McXMLConfigurator.cpp
+    McLogManager.cpp
 )
 
 if(WIN32)
