@@ -25,20 +25,23 @@
 
 #include "../McLogMacroGlobal.h"
 
+class QThread;
+
 MC_FORWARD_DECL_CLASS(IMcApplicationContext)
 
 class MC_LOG_EXPORT McXMLConfigurator
 {
 public:
     static IMcApplicationContextPtr configure(const QString &path, const QString &flag = QString(),
-        const QString &beanName = "defaultLoggerRepository") noexcept;
+        const QString &beanName = "defaultLoggerRepository", QThread *thread = nullptr) noexcept;
     static IMcApplicationContextPtr configure(const QStringList &paths, const QString &flag = QString(),
-        const QString &beanName = "defaultLoggerRepository") noexcept;
-    static void configure(
-        const IMcApplicationContextPtr &appCtx, const QString &beanName = "defaultLoggerRepository") noexcept;
+        const QString &beanName = "defaultLoggerRepository", QThread *thread = nullptr) noexcept;
+    static void configure(const IMcApplicationContextPtr &appCtx, const QString &beanName = "defaultLoggerRepository",
+        QThread *thread = nullptr) noexcept;
 
 private:
     IMcApplicationContextPtr doConfigure(
-        const QStringList &paths, const QString &flag, const QString &beanName) noexcept;
-    void doConfigure(const IMcApplicationContextPtr &appCtx, const QString &beanName) noexcept;
+        const QStringList &paths, const QString &flag, const QString &beanName, QThread *thread = nullptr) noexcept;
+    void doConfigure(
+        const IMcApplicationContextPtr &appCtx, const QString &beanName, QThread *thread = nullptr) noexcept;
 };

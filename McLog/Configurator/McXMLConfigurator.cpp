@@ -34,38 +34,42 @@
 #include "Repository/IMcLoggerRepository.h"
 
 IMcApplicationContextPtr McXMLConfigurator::configure(
-    const QString &path, const QString &flag, const QString &beanName) noexcept
+    const QString &path, const QString &flag, const QString &beanName, QThread *thread) noexcept
 {
-    return McXMLConfigurator::configure(QStringList() << path, flag, beanName);
+    return McXMLConfigurator::configure(QStringList() << path, flag, beanName, thread);
 }
 
 IMcApplicationContextPtr McXMLConfigurator::configure(
-    const QStringList &paths, const QString &flag, const QString &beanName) noexcept
+    const QStringList &paths, const QString &flag, const QString &beanName, QThread *thread) noexcept
 {
     McXMLConfigurator configurator;
-    return configurator.doConfigure(paths, flag, beanName);
+    return configurator.doConfigure(paths, flag, beanName, thread);
 }
 
-void McXMLConfigurator::configure(const IMcApplicationContextPtr &appCtx, const QString &beanName) noexcept
+void McXMLConfigurator::configure(
+    const IMcApplicationContextPtr &appCtx, const QString &beanName, QThread *thread) noexcept
 {
     McXMLConfigurator configurator;
-    configurator.doConfigure(appCtx, beanName);
+    configurator.doConfigure(appCtx, beanName, thread);
 }
 
 IMcApplicationContextPtr McXMLConfigurator::doConfigure(
-    const QStringList &paths, const QString &flag, const QString &beanName) noexcept
+    const QStringList &paths, const QString &flag, const QString &beanName, QThread *thread) noexcept
 {
     McLocalPathApplicationContextPtr appContext = McLocalPathApplicationContextPtr::create(paths, flag);
 
-    doConfigure(appContext, beanName);
+    doConfigure(appContext, beanName, thread);
 
     return appContext;
 }
 
-void McXMLConfigurator::doConfigure(const IMcApplicationContextPtr &appCtx, const QString &beanName) noexcept
+void McXMLConfigurator::doConfigure(
+    const IMcApplicationContextPtr &appCtx, const QString &beanName, QThread *thread) noexcept
 {
-    QThread *thread = new QThread(); //!< 此线程将在LoggerRepository被析构时退出和销毁
-    thread->start();
+    if (thread == nullptr) {
+        thread = new QThread(); //!< 此线程将在LoggerRepository被析构时退出和销毁
+        thread->start();
+    }
 
     auto rep = appCtx->getBean<IMcLoggerRepositoryPtr>(beanName, thread);
     McLogManager::instance()->setLoggerRepository(rep);

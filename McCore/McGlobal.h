@@ -133,7 +133,7 @@ MC_CORE_EXPORT void registerPathPlaceholder(const QString &placeholder, const st
  * {documents} = QStandardPaths::DocumentsLocation
  * {temp} = QStandardPaths::TempLocation
  * {home} = QStandardPaths::HomeLocation
- * {data}/{appLocalData} = QStandardPaths::DataLocation第一个路径
+ * {data}/{appLocalData} = QStandardPaths::AppLocalDataLocation第一个路径
  * {cache} = QStandardPaths::CacheLocation
  * {config} = QStandardPaths::GenericConfigLocation第一个路径
  * {appData} = QStandardPaths::AppDataLocation第一个路径

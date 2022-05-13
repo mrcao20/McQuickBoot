@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+    <bean name="ttccLayout" class="McTTCCLayout"></bean>
+    <!-- 常用配置 [%{time yyyy-MM-dd hh:mm:ss,zzz}][%{category}][%{type}]: %{message}  [File:%{file}] [Line:%{line}] [Function:%{function}] -->
+    <bean name="normalLayout" class="McNormalLayout"></bean>
+    <bean name="patternLayout" class="McPatternLayout">
+        <!-- 参考qSetMessagePattern -->
+        <property name="pattern">
+            <value>[%{time yyyy-MM-dd hh:mm:ss,zzz}][%{category}][%{type}]: %{message}  [File:%{file}] [Line:%{line}] [Function:%{function}]</value>
+        </property>
+    </bean>
+
+    <bean name="console" class="McConsoleAppender">
+        <!-- 如果此属性不设置为stdout，它将默认为stderr -->
+        <!-- <property name="console" value="stdout"></property> -->
+        <property name="immediateFlush" value="true"></property>
+        <property name="layout" ref="ttccLayout"></property>
+    </bean>
+    <!-- 专门针对vs调试器输出窗口的日志打印 -->
+    <bean name="vsDebug" class="McVSDebugAppender">
+        <property name="immediateFlush" value="true"></property>
+        <property name="layout" ref="normalLayout"></property>
+    </bean>
+    <bean name="dailyRollingFile" class="McDailyRollingFileAppender">
+        <!-- 后面加debug-表示debug等级及以上 -->
+        <property name="threshold" value="debug-"></property>
+        <property name="immediateFlush" value="true"></property>
+        <property name="backupDirPath" value="./log/backup/dailyRollingFile/"></property>
+        <property name="backupDirPattern" value="%{time yyyy-MM-dd}"></property>
+        <property name="dirPath" value="./log/"></property>
+        <property name="fileNamePattern" value="dailyRollingFile_%{time yyyy-MM-dd_hh-mm-ss}.log"></property>
+        <property name="layout" ref="normalLayout"></property>
+    </bean>
+    <bean name="sizeRollingFile" class="McSizeRollingFileAppender">
+        <property name="threshold" value="debug-"></property>
+        <property name="immediateFlush" value="true"></property>
+        <!-- 单位可以是B，KB，MB，GB -->
+        <property name="maxFileSize" value="40KB"></property>
+        <property name="backupDirPath" value="./log/backup/sizeRollingFile/"></property>
+        <property name="backupDirPattern" value="%{time yyyy-MM-dd}"></property>
+        <property name="dirPath" value="./log/"></property>
+        <property name="fileNamePattern" value="sizeRollingFile_%{time yyyy-MM-dd_hh-mm-ss}.log"></property>
+        <!-- 如果你很明确的知道你的进程同时只会运行一个，那么你应该将此标志置为false，因为使用进程间同步的文件锁会消耗额外的时间 -->
+        <!-- 同时请注意，如果你的进程会同时运行多个，那么请在你的进程退出时打印一条退出消息或者将McLoggerRepository的flushWhenQuit置为true，以此确保日志文件能正常滚动 -->
+        <property name="useLockFile" value="true"></property>
+        <!-- 不设置路径，默认为./.mcLog/~.lockFile -->
+        <!-- <property name="lockFilePath" value="./lockFile"></property> -->
+        <!-- 未设置layout，默认使用McNormalLayout -->
+    </bean>
+    <bean name="fileAppender" class="McFileAppender">
+        <property name="threshold" value="fatal-"></property>
+        <property name="immediateFlush" value="true"></property>
+        <property name="dirPath" value="./log/"></property>
+        <property name="fileNamePattern" value="fileAppender.log"></property>
+        <!-- 每次程序启动都将清空文件内容 -->
+        <property name="append" value="false"></property>
+        <property name="layout" ref="patternLayout"></property>
+    </bean>
+
+    <bean name="customAppender" class="McSizeRollingFileAppender">
+        <property name="maxFileSize" value="30KB"></property>
+        <property name="immediateFlush" value="true"></property>
+        <property name="backupDirPath" value="./backup/customAppender"></property>
+        <property name="backupDirPattern" value="%{time yyyy-MM-dd}"></property>
+        <!-- 可用配置：{desktop} = QStandardPaths::DesktopLocation -->
+        <!-- 可用配置：{documents} = QStandardPaths::DocumentsLocation -->
+        <!-- 可用配置：{temp} = QStandardPaths::TempLocation -->
+        <!-- 可用配置：{home} = QStandardPaths::HomeLocation -->
+        <!-- 可用配置：{appLocalData} = QStandardPaths::AppLocalDataLocation第一个路径 -->
+        <!-- 可用配置：{cache} = QStandardPaths::CacheLocation -->
+        <!-- 可用配置：{config} = QStandardPaths::GenericConfigLocation第一个路径 -->
+        <!-- 可用配置：{appData} = QStandardPaths::AppDataLocation第一个路径 -->
+        <property name="dirPath" value="{cache}/customAppender/"></property>
+        <property name="fileNamePattern" value="log_%{time yyyy-MM-dd_hh-mm-ss}.log"></property>
+        <property name="layout" ref="patternLayout"></property>
+    </bean>
+
+    <bean name="appenderDecorator" class="McAppenderPostDecorator">
+        <property name="separator">
+            <bean class="McAppenderSeparator">
+                <property name="separator" value="----------------------------------"></property>
+                <!-- <property name="autoSeparateInterval" value="1000"></property> -->
+            </bean>
+        </property>
+        <property name="appenders" flag="win">
+            <list>
+                <ref bean="console" />
+                <ref bean="vsDebug" />
+                <ref bean="dailyRollingFile" />
+                <ref bean="sizeRollingFile" />
+                <ref bean="fileAppender" />
+            </list>
+        </property>
+        <property name="appenders" flag="unix">
+            <list>
+                <ref bean="console" />
+                <ref bean="dailyRollingFile" />
+                <ref bean="sizeRollingFile" />
+                <ref bean="fileAppender" />
+            </list>
+        </property>
+    </bean>
+
+    <bean name="defaultLogger" class="McLogger">
+        <!-- 指定一个全局的threshold，优先级低于Appender中的threshold -->
+        <property name="threshold" value="debug-"></property>
+        <property name="appenders">
+            <list>
+                <ref bean="appenderDecorator" />
+            </list>
+        </property>
+    </bean>
+
+    <bean name="notCapturedRollingFile" class="McSizeRollingFileAppender">
+        <property name="threshold" value="debug-"></property>
+        <property name="immediateFlush" value="true"></property>
+        <!-- 单位可以是B，KB，MB，GB -->
+        <property name="maxFileSize" value="1KB"></property>
+        <property name="backupDirPath" value="./log/backup/notCapturedRollingFile/"></property>
+        <property name="backupDirPattern" value="%{time yyyy-MM-dd}"></property>
+        <property name="dirPath" value="./log/"></property>
+        <property name="fileNamePattern" value="notCapturedRollingFile_%{time yyyy-MM-dd_hh-mm-ss}.log"></property>
+        <!-- 未设置layout，默认使用McNormalLayout -->
+    </bean>
+    <bean name="notCapturedLogger" class="McLogger">
+        <property name="threshold" value="debug-"></property>
+        <property name="appenders">
+            <list>
+                <ref bean="console" />
+                <ref bean="notCapturedRollingFile" />
+            </list>
+        </property>
+    </bean>
+    <bean name="customLogger" class="McLogger">
+        <property name="threshold" value="debug-"></property>
+        <property name="appenders">
+            <list>
+                <ref bean="customAppender" />
+            </list>
+        </property>
+    </bean>
+
+    <bean name="packager" class="McLogPackager">
+        <property name="scanPaths">
+            <list>
+                <value>./log/backup/</value>
+            </list>
+        </property>
+        <property name="maxDepth" value="3" />
+        <property name="age" value="5D" />
+        <property name="filters">
+            <list>
+                <value>.*.log</value>
+            </list>
+        </property>
+        <property name="dstPath" value="./log/backup/" />
+        <property name="fileNamePattern" value="%{time yyyy-MM-dd_hh-mm-ss}.zip"></property>
+    </bean>
+
+    <bean name="deleter" class="McLogDeleter">
+        <property name="basePaths">
+            <list>
+                <value>./log/backup/</value>
+            </list>
+        </property>
+        <property name="maxDepth" value="3" />
+        <property name="age" value="14D" />
+        <property name="filters">
+            <list>
+                <value>.*.log</value>
+                <value>.*.zip</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 必须有一个名为defaultLoggerRepository的bean -->
+    <bean name="defaultLoggerRepository" class="McLoggerRepository">
+        <property name="flushWhenQuit" value="true" />
+        <property name="notCapturedLogger" ref="notCapturedLogger" />
+        <!-- 任务执行的间隔时间，单位：ms -->
+        <!-- <property name="taskTimeout" value="5000" /> -->
+        <!-- 顺序任务执行器，执行顺序为list的顺序 -->
+        <property name="sequentialTasks">
+            <list>
+                <ref>packager</ref>
+                <ref>deleter</ref>
+            </list>
+        </property>
+        <property name="loggers">
+            <map>
+                <entry>
+                    <key>default</key>
+                    <value><ref bean="defaultLogger" /></value>
+                </entry>
+                <entry>
+                    <key>custom</key>
+                    <value><ref bean="customLogger" /></value>
+                </entry>
+            </map>
+        </property>
+    </bean>
+</beans>
