@@ -1,7 +1,5 @@
 project(Examples)
 
-find_package(Qt6 COMPONENTS Widgets Concurrent REQUIRED)
-
 set(CMAKE_DEBUG_POSTFIX "")
 
 include_directories(${CMAKE_SOURCE_DIR})

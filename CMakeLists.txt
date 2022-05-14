@@ -41,7 +41,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 COMPONENTS Core REQUIRED)
+find_package(Qt6 COMPONENTS Core Widgets Concurrent REQUIRED)
 
 set(CMAKE_DEBUG_POSTFIX "d")
 
@@ -94,6 +94,7 @@ endif()
 add_subdirectory(McCore)
 add_subdirectory(McIoc)
 add_subdirectory(McLog)
+add_subdirectory(McWidget)
 if(BUILD_EXAMPLES)
     add_subdirectory(Examples)
 endif()

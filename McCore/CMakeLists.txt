@@ -19,11 +19,6 @@ set(PROJECT_HEADERS
     Utils/McJsonUtils.h
     Utils/Impl/McNormalPluginChecker.h
     MemoryLibrary/McMemoryLibrary.h
-    Zip/McCompressor.h
-    Zip/zip.h
-    Zip/unzip.h
-    Zip/ioapi.h
-    Zip/crypt.h
 )
 
 set(PROJECT_SOURCES
@@ -38,15 +33,25 @@ set(PROJECT_SOURCES
     Utils/McJsonUtils.cpp
     Utils/Impl/McNormalPluginChecker.cpp
     MemoryLibrary/McMemoryLibrary.cpp
-    Zip/McCompressor.cpp
-    Zip/zip.c
-    Zip/unzip.c
-    Zip/ioapi.c
 )
 
 if(WIN32)
-    list(APPEND PROJECT_HEADERS MemoryLibrary/MemoryModule.h)
-    list(APPEND PROJECT_SOURCES MemoryLibrary/MemoryModule.c)
+    list(APPEND PROJECT_HEADERS
+        MemoryLibrary/MemoryModule.h
+        Zip/McCompressor.h
+        Zip/zip.h
+        Zip/unzip.h
+        Zip/ioapi.h
+        Zip/crypt.h
+    )
+
+    list(APPEND PROJECT_SOURCES
+        MemoryLibrary/MemoryModule.c
+        Zip/McCompressor.cpp
+        Zip/zip.c
+        Zip/unzip.c
+        Zip/ioapi.c
+    )
 else()
     list(APPEND PROJECT_HEADERS MemoryLibrary/memload.h)
     list(APPEND PROJECT_SOURCES MemoryLibrary/memload.cpp)

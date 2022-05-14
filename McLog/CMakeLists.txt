@@ -9,7 +9,6 @@ set(PROJECT_HEADERS
     Utils/McMessagePattern.h
     Utils/McFileUtils.h
     Utils/McLogDeleter.h
-    Utils/McLogPackager.h
     Appender/IMcAppender.h
     Appender/IMcConfigurableAppender.h
     Appender/IMcCodecableAppender.h
@@ -49,7 +48,6 @@ set(PROJECT_SOURCES
     Utils/McMessagePattern.cpp
     Utils/McFileUtils.cpp
     Utils/McLogDeleter.cpp
-    Utils/McLogPackager.cpp
     Appender/Impl/McAbstractAppender.cpp
     Appender/Impl/McAbstractIODeviceAppender.cpp
     Appender/Impl/McAbstractFormatAppender.cpp
@@ -75,10 +73,17 @@ set(PROJECT_SOURCES
 )
 
 if(WIN32)
-    list(APPEND PROJECT_HEADERS Device/McVSDebugDevice.h)
-    list(APPEND PROJECT_HEADERS Appender/Impl/McVSDebugAppender.h)
-    list(APPEND PROJECT_SOURCES Device/McVSDebugDevice.cpp)
-    list(APPEND PROJECT_SOURCES Appender/Impl/McVSDebugAppender.cpp)
+    list(APPEND PROJECT_HEADERS
+        Device/McVSDebugDevice.h
+        Appender/Impl/McVSDebugAppender.h
+        Utils/McLogPackager.h
+    )
+
+    list(APPEND PROJECT_SOURCES
+        Device/McVSDebugDevice.cpp
+        Appender/Impl/McVSDebugAppender.cpp
+        Utils/McLogPackager.cpp
+    )
 endif()
 
 add_library(${PROJECT_NAME} ${MC_BUILD_TYPE}
