@@ -21,27 +21,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include "McWidgetBeanBuilder.h"
 
-#include <McCore/McGlobal.h>
+#include <QWidget>
 
-MC_FORWARD_DECL_CLASS(IMcApplicationContext)
-
-class XmlApplicationContextTest : public QObject
+void McWidgetBeanBuilder::complete(QVariant &bean, QThread *thread) noexcept
 {
-    Q_OBJECT
-public:
-    XmlApplicationContextTest(const IMcApplicationContextPtr &appCtx, bool flag);
+    //! Widget控件不能移动线程
+    Q_UNUSED(thread)
+    super::complete(bean, nullptr);
+}
 
-private Q_SLOTS:
-    void customCase();
-    void podCase();
-    void gadgetCase();
-    void containerCase();
-    void objectCase();
-    void pluginCase();
+void McWidgetBeanBuilder::setParent(QObject *bean, QObject *parent) noexcept
+{
+    auto widgetBean = qobject_cast<QWidget *>(bean);
+    auto widgetParent = qobject_cast<QWidget *>(parent);
+    if (widgetBean == nullptr || widgetParent == nullptr) {
+        super::setParent(bean, parent);
+    } else {
+        widgetBean->setParent(widgetParent);
+    }
+}
 
-private:
-    IMcApplicationContextPtr m_appCtx;
-    bool m_flag{true};
-};
+QVariant McWidgetBeanBuilder::convertRef(const QVariant &value, const QVariant &extra) const noexcept
+{
+    auto target = super::convertRef(value, extra);
+    auto targetWidget = target.value<QWidget *>();
+    if (targetWidget == nullptr || targetWidget->parentWidget() != nullptr) {
+        return target;
+    }
+    auto parentWidget = extra.value<QWidget *>();
+    if (parentWidget == nullptr) {
+        return target;
+    }
+    targetWidget->setParent(parentWidget);
+    return target;
+}

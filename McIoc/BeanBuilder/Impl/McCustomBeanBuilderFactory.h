@@ -23,25 +23,29 @@
  */
 #pragma once
 
-#include <McCore/McGlobal.h>
+#include "../IMcCustomBeanBuilderFactory.h"
 
-MC_FORWARD_DECL_CLASS(IMcApplicationContext)
+#include "McCustomBeanBuilder.h"
 
-class XmlApplicationContextTest : public QObject
+template<typename T, typename BUILDER>
+class McCustomBeanBuilderFactory : public IMcCustomBeanBuilderFactory
 {
-    Q_OBJECT
-public:
-    XmlApplicationContextTest(const IMcApplicationContextPtr &appCtx, bool flag);
+    using Type = T;
+    using BuildFuncType = typename McCustomBeanBuilder<Type>::BuildFuncType;
 
-private Q_SLOTS:
-    void customCase();
-    void podCase();
-    void gadgetCase();
-    void containerCase();
-    void objectCase();
-    void pluginCase();
+public:
+    McCustomBeanBuilderFactory(const BuildFuncType &func, bool isShared = false)
+        : m_func(func)
+        , m_isShared(isShared)
+    {
+    }
+
+    McAbstractBeanBuilderPtr create() noexcept override { return QSharedPointer<BUILDER>::create(m_func, m_isShared); }
 
 private:
-    IMcApplicationContextPtr m_appCtx;
-    bool m_flag{true};
+    bool m_isShared{false};
+    BuildFuncType m_func;
 };
+
+template<typename T, typename BUILDER>
+using McCustomBeanBuilderFactoryPtr = QSharedPointer<McCustomBeanBuilderFactory<T, BUILDER>>;

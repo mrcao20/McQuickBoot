@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+    <bean name="widget1" class="QWidget">
+        <property name="windowTitle" value="widget1" />
+    </bean>
+    <bean name="label" class="QLabel" parent="widget1">
+        <property name="windowTitle" value="label" />
+        <property name="text" value="label" />
+    </bean>
+    <bean name="customWidget" class="CustomWidget">
+        <property name="windowTitle" value="customWidget" />
+        <property name="childs">
+            <list>
+                <ref>widget1</ref>
+                <ref>label</ref>
+            </list>
+        </property>
+    </bean>
+    <bean name="widget2" class="QWidget">
+        <property name="windowTitle" value="widget2" />
+    </bean>
+    <bean name="stackWidget" class="QStackedWidget">
+        <property name="windowTitle" value="stackWidget" />
+        <property name="lineWidth" value="2" />
+        <property name="widgets">
+            <list>
+                <ref>customWidget</ref>
+                <ref>widget2</ref>
+            </list>
+        </property>
+    </bean>
+</beans>

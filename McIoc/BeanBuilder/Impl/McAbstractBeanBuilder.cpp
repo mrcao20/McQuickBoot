@@ -58,7 +58,7 @@ McMetaType McAbstractBeanBuilder::metaType() const noexcept
     return d->metaType;
 }
 
-void McAbstractBeanBuilder::setMetaType(const McMetaType &type) noexcept
+void McAbstractBeanBuilder::setMetaType(McMetaType type) noexcept
 {
     d->metaType = type;
 }
@@ -206,6 +206,7 @@ QVariant McAbstractBeanBuilder::convertList(const QVariant &value, const QVarian
 
     auto list = value.value<QVariantList>();
 
+    result.reserve(list.size());
     for (const auto &var : list) {
         result << convert(var, extra);
     }

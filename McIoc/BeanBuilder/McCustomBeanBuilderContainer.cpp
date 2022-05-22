@@ -21,27 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include "McCustomBeanBuilderContainer.h"
 
-#include <McCore/McGlobal.h>
+namespace {
+using BuilderFactoryType = QHash<QString, IMcCustomBeanBuilderFactoryPtr>;
+Q_GLOBAL_STATIC(BuilderFactoryType, staticBeanBuilderFactories)
+} // namespace
 
-MC_FORWARD_DECL_CLASS(IMcApplicationContext)
-
-class XmlApplicationContextTest : public QObject
+void McCustomBeanBuilderContainer::addBuilderFactory(
+    const QString &className, const IMcCustomBeanBuilderFactoryPtr &factory) noexcept
 {
-    Q_OBJECT
-public:
-    XmlApplicationContextTest(const IMcApplicationContextPtr &appCtx, bool flag);
+    staticBeanBuilderFactories->insert(className, factory);
+}
 
-private Q_SLOTS:
-    void customCase();
-    void podCase();
-    void gadgetCase();
-    void containerCase();
-    void objectCase();
-    void pluginCase();
+McAbstractBeanBuilderPtr McCustomBeanBuilderContainer::getBuilder(const QString &className) noexcept
+{
+    auto factory = staticBeanBuilderFactories->value(className);
+    if (factory.isNull()) {
+        return McAbstractBeanBuilderPtr();
+    }
+    return factory->create();
+}
 
-private:
-    IMcApplicationContextPtr m_appCtx;
-    bool m_flag{true};
-};
+bool McCustomBeanBuilderContainer::containsBuilder(const QString &className) noexcept
+{
+    return staticBeanBuilderFactories->contains(className);
+}

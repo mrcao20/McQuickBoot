@@ -23,25 +23,22 @@
  */
 #pragma once
 
-#include <McCore/McGlobal.h>
+#include "Impl/McCustomBeanBuilderFactory.h"
 
-MC_FORWARD_DECL_CLASS(IMcApplicationContext)
-
-class XmlApplicationContextTest : public QObject
+class MC_IOC_EXPORT McCustomBeanBuilderContainer
 {
-    Q_OBJECT
 public:
-    XmlApplicationContextTest(const IMcApplicationContextPtr &appCtx, bool flag);
-
-private Q_SLOTS:
-    void customCase();
-    void podCase();
-    void gadgetCase();
-    void containerCase();
-    void objectCase();
-    void pluginCase();
-
-private:
-    IMcApplicationContextPtr m_appCtx;
-    bool m_flag{true};
+    static void addBuilderFactory(const QString &className, const IMcCustomBeanBuilderFactoryPtr &factory) noexcept;
+    static McAbstractBeanBuilderPtr getBuilder(const QString &className) noexcept;
+    static bool containsBuilder(const QString &className) noexcept;
 };
+
+template<typename T, typename BUILDER = McCustomBeanBuilder<T>>
+void mcAddCustomBuilderFactory(
+    const typename McCustomBeanBuilder<T>::BuildFuncType &func = nullptr, bool isShared = false)
+{
+    constexpr QMetaType qmetaType = QMetaType::fromType<T>();
+    constexpr const char *className = qmetaType.name();
+    McCustomBeanBuilderContainer::addBuilderFactory(
+        QLatin1String(className), McCustomBeanBuilderFactoryPtr<T, BUILDER>::create(func, isShared));
+}

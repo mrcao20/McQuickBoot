@@ -21,27 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include "McXmlWidgetBeanBuilderReader.h"
 
-#include <McCore/McGlobal.h>
+#include <QWidget>
 
-MC_FORWARD_DECL_CLASS(IMcApplicationContext)
+#include "BeanBuilder/Impl/McWidgetBeanBuilder.h"
 
-class XmlApplicationContextTest : public QObject
+McXmlWidgetBeanBuilderReader::McXmlWidgetBeanBuilderReader(const QIODevicePtr &device, const QString &flag) noexcept
+    : McXmlWidgetBeanBuilderReader(QList<QIODevicePtr>() << device, flag)
 {
-    Q_OBJECT
-public:
-    XmlApplicationContextTest(const IMcApplicationContextPtr &appCtx, bool flag);
+}
 
-private Q_SLOTS:
-    void customCase();
-    void podCase();
-    void gadgetCase();
-    void containerCase();
-    void objectCase();
-    void pluginCase();
+McXmlWidgetBeanBuilderReader::McXmlWidgetBeanBuilderReader(
+    const QList<QIODevicePtr> &devices, const QString &flag) noexcept
+    : McXmlBeanBuilderReader(devices, flag)
+{
+}
 
-private:
-    IMcApplicationContextPtr m_appCtx;
-    bool m_flag{true};
-};
+McObjectClassBeanBuilderPtr McXmlWidgetBeanBuilderReader::createObjectBeanBuilder(
+    McMetaType metaType, bool isPointer) const noexcept
+{
+    auto metaObj = metaType.pMetaType().metaObject();
+    if (metaObj == nullptr || !metaObj->inherits(&QWidget::staticMetaObject)) {
+        return super::createObjectBeanBuilder(metaType, isPointer);
+    }
+    return McWidgetBeanBuilderPtr::create();
+}

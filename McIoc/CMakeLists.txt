@@ -35,6 +35,8 @@ set(PROJECT_HEADERS
     BeanBuilder/IMcBeanBuilder.h
     BeanBuilder/IMcBeanReferenceResolver.h
     BeanBuilder/IMcCustomPlaceholder.h
+    BeanBuilder/IMcCustomBeanBuilderFactory.h
+    BeanBuilder/McCustomBeanBuilderContainer.h
     BeanBuilder/Impl/McBeanReference.h
     BeanBuilder/Impl/McBeanPlaceholder.h
     BeanBuilder/Impl/McBeanEnum.h
@@ -50,6 +52,8 @@ set(PROJECT_HEADERS
     BeanBuilder/Impl/McListBeanBuilder.h
     BeanBuilder/Impl/McMapBeanBuilder.h
     BeanBuilder/Impl/McSimpleBeanBuilder.h
+    BeanBuilder/Impl/McCustomBeanBuilder.h
+    BeanBuilder/Impl/McCustomBeanBuilderFactory.h
     BeanBuilderReader/IMcBeanBuilderReader.h
     BeanBuilderReader/Impl/McAbstractBeanBuilderReader.h
     BeanBuilderReader/Impl/McXmlBeanBuilderReader.h
@@ -83,6 +87,7 @@ set(PROJECT_SOURCES
     BeanFactory/Impl/McAbstractBeanFactory.cpp
     BeanFactory/Impl/McDefaultBeanFactory.cpp
     BeanFactory/Impl/McResolverBeanFactory.cpp
+    BeanBuilder/McCustomBeanBuilderContainer.cpp
     BeanBuilder/Impl/McAbstractBeanBuilder.cpp
     BeanBuilder/Impl/McObjectBeanBuilder.cpp
     BeanBuilder/Impl/McObjectClassBeanBuilder.cpp

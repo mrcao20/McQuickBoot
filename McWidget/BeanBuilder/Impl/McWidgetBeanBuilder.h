@@ -23,25 +23,17 @@
  */
 #pragma once
 
-#include <McCore/McGlobal.h>
+#include <McIoc/BeanBuilder/Impl/McObjectClassBeanBuilder.h>
 
-MC_FORWARD_DECL_CLASS(IMcApplicationContext)
+#include "../../McWidgetGlobal.h"
 
-class XmlApplicationContextTest : public QObject
+class MC_WIDGET_EXPORT McWidgetBeanBuilder : public McObjectClassBeanBuilder
 {
-    Q_OBJECT
-public:
-    XmlApplicationContextTest(const IMcApplicationContextPtr &appCtx, bool flag);
-
-private Q_SLOTS:
-    void customCase();
-    void podCase();
-    void gadgetCase();
-    void containerCase();
-    void objectCase();
-    void pluginCase();
-
-private:
-    IMcApplicationContextPtr m_appCtx;
-    bool m_flag{true};
+    MC_DECL_SUPER(McObjectClassBeanBuilder)
+protected:
+    void complete(QVariant &bean, QThread *thread) noexcept override;
+    void setParent(QObject *bean, QObject *parent) noexcept override;
+    QVariant convertRef(const QVariant &value, const QVariant &extra) const noexcept override;
 };
+
+MC_DECL_POINTER(McWidgetBeanBuilder)

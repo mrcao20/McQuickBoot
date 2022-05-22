@@ -47,6 +47,8 @@ public:
 protected:
     void doReadBeanBuilder() noexcept override;
 
+    virtual McObjectClassBeanBuilderPtr createObjectBeanBuilder(McMetaType metaType, bool isPointer) const noexcept;
+
 private:
     void read(QXmlStreamReader &reader) const noexcept;
     QString readBean(QXmlStreamReader &reader) const noexcept;

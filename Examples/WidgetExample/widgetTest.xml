@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+    <bean name="label" class="QLabel">
+        <property name="text" value="label" />
+    </bean>
+    <bean name="customWidget" class="CustomWidget" />
+    <bean name="stackWidget" class="QStackedWidget">
+        <property name="widgets">
+            <list>
+                <ref>customWidget</ref>
+                <ref>label</ref>
+            </list>
+        </property>
+    </bean>
+</beans>

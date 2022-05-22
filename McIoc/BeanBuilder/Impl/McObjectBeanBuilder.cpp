@@ -123,8 +123,8 @@ void McObjectBeanBuilder::addPropertyValue(QObject *bean, const QVariantMap &pro
     QMapIterator<QString, QVariant> itr(pros);
     while (itr.hasNext()) {
         auto item = itr.next();
-        auto key = itr.key();
-        auto value = itr.value();
+        auto key = item.key();
+        auto value = item.value();
 
         auto metaObj = bean->metaObject();
         auto index = metaObj->indexOfProperty(key.toLocal8Bit());

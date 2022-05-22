@@ -23,25 +23,41 @@
  */
 #pragma once
 
-#include <McCore/McGlobal.h>
+#include <McIoc/BeanBuilder/Impl/McCustomBeanBuilder.h>
 
-MC_FORWARD_DECL_CLASS(IMcApplicationContext)
-
-class XmlApplicationContextTest : public QObject
+template<typename T>
+class McCustomWidgetBeanBuilder : public McCustomBeanBuilder<T>
 {
-    Q_OBJECT
+    MC_DECL_SUPER(McCustomBeanBuilder<T>)
+
 public:
-    XmlApplicationContextTest(const IMcApplicationContextPtr &appCtx, bool flag);
+    McCustomWidgetBeanBuilder(const typename super::BuildFuncType &func, bool)
+        : super(func, false)
+    {
+    }
 
-private Q_SLOTS:
-    void customCase();
-    void podCase();
-    void gadgetCase();
-    void containerCase();
-    void objectCase();
-    void pluginCase();
+protected:
+    void complete(QVariant &bean, QThread *thread) noexcept override
+    {
+        Q_UNUSED(thread)
+        super::complete(bean, nullptr);
+    }
 
-private:
-    IMcApplicationContextPtr m_appCtx;
-    bool m_flag{true};
+    QVariant convertRef(const QVariant &value, const QVariant &extra) const noexcept override
+    {
+        auto target = super::convertRef(value, extra);
+        auto targetWidget = target.template value<QWidget *>();
+        if (targetWidget == nullptr || targetWidget->parentWidget() != nullptr) {
+            return target;
+        }
+        auto parentWidget = extra.value<QWidget *>();
+        if (parentWidget == nullptr) {
+            return target;
+        }
+        targetWidget->setParent(parentWidget);
+        return target;
+    }
 };
+
+template<typename T>
+using McCustomWidgetBeanBuilderPtr = QSharedPointer<McCustomWidgetBeanBuilder<T>>;

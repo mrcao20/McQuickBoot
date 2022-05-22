@@ -21,27 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include <QTest>
 
-#include <McCore/McGlobal.h>
+#include "TestWidget.h"
 
-MC_FORWARD_DECL_CLASS(IMcApplicationContext)
-
-class XmlApplicationContextTest : public QObject
-{
-    Q_OBJECT
-public:
-    XmlApplicationContextTest(const IMcApplicationContextPtr &appCtx, bool flag);
-
-private Q_SLOTS:
-    void customCase();
-    void podCase();
-    void gadgetCase();
-    void containerCase();
-    void objectCase();
-    void pluginCase();
-
-private:
-    IMcApplicationContextPtr m_appCtx;
-    bool m_flag{true};
-};
+QTEST_MAIN(TestWidget)

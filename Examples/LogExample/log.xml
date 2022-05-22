@@ -17,7 +17,7 @@
         <property name="layout" ref="ttccLayout"></property>
     </bean>
     <!-- 专门针对vs调试器输出窗口的日志打印 -->
-    <bean name="vsDebug" class="McVSDebugAppender">
+    <bean name="vsDebug" class="McVSDebugAppender"  flag="win">
         <property name="immediateFlush" value="true"></property>
         <property name="layout" ref="normalLayout"></property>
     </bean>
@@ -122,7 +122,7 @@
         <property name="fileNamePattern" value="notCapturedRollingFile_%{time yyyy-MM-dd_hh-mm-ss}.log"></property>
         <!-- 未设置layout，默认使用McNormalLayout -->
     </bean>
-    <bean name="notCapturedLogger" class="McLogger">
+    <bean name="uncapturedLogger" class="McLogger">
         <property name="threshold" value="debug-"></property>
         <property name="appenders">
             <list>
@@ -176,7 +176,7 @@
     <!-- 必须有一个名为defaultLoggerRepository的bean -->
     <bean name="defaultLoggerRepository" class="McLoggerRepository">
         <property name="flushWhenQuit" value="true" />
-        <property name="notCapturedLogger" ref="notCapturedLogger" />
+        <property name="uncapturedLogger" ref="uncapturedLogger" />
         <!-- 任务执行的间隔时间，单位：ms -->
         <!-- <property name="taskTimeout" value="5000" /> -->
         <!-- 顺序任务执行器，执行顺序为list的顺序 -->

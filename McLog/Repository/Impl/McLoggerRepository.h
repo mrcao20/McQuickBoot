@@ -39,7 +39,7 @@ class MC_LOG_EXPORT McLoggerRepository
     Q_OBJECT
     MC_FULL_DEFINE(McLoggerRepository, QObject, IMcLoggerRepository)
     Q_PROPERTY(QMap<QString, IMcLoggerPtr> loggers READ loggers WRITE setLogger)
-    Q_PRIVATE_PROPERTY(d, IMcLoggerPtr notCapturedLogger MEMBER notCapturedLogger)
+    Q_PRIVATE_PROPERTY(d, IMcLoggerPtr uncapturedLogger MEMBER uncapturedLogger)
     Q_PRIVATE_PROPERTY(d, int taskTimeout MEMBER taskTimeout)
     Q_PRIVATE_PROPERTY(d, QList<IMcAdditionalTaskPtr> sequentialTasks MEMBER sequentialTasks)
     Q_PRIVATE_PROPERTY(d, bool flushWhenQuit MEMBER flushWhenQuit)

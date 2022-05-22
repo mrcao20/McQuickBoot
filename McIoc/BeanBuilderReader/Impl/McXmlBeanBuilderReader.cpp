@@ -39,6 +39,7 @@
 #include "BeanBuilder/Impl/McSharedObjectClassBeanBuilder.h"
 #include "BeanBuilder/Impl/McSharedObjectPluginBeanBuilder.h"
 #include "BeanBuilder/Impl/McSimpleBeanBuilder.h"
+#include "BeanBuilder/McCustomBeanBuilderContainer.h"
 #include "BeanFactory/IMcBeanBuilderRegistry.h"
 
 MC_DECL_PRIVATE_DATA(McXmlBeanBuilderReader)
@@ -75,6 +76,17 @@ void McXmlBeanBuilderReader::doReadBeanBuilder() noexcept
                 reader.lineNumber(), reader.columnNumber(), reader.characterOffset(), static_cast<int>(reader.error()),
                 qUtf8Printable(reader.errorString()));
         }
+    }
+}
+
+McObjectClassBeanBuilderPtr McXmlBeanBuilderReader::createObjectBeanBuilder(
+    McMetaType metaType, bool isPointer) const noexcept
+{
+    Q_UNUSED(metaType)
+    if (isPointer) {
+        return McObjectClassBeanBuilderPtr::create();
+    } else {
+        return McSharedObjectClassBeanBuilderPtr::create();
     }
 }
 
@@ -157,6 +169,17 @@ McAbstractBeanBuilderPtr McXmlBeanBuilderReader::readClass(
         return readList(reader);
     } else if (className == Mc::Constant::Tag::Xml::CLASS_MAP) {
         return readMap(reader);
+    } else if (McCustomBeanBuilderContainer::containsBuilder(className.toString())) {
+        auto builder = McCustomBeanBuilderContainer::getBuilder(className.toString());
+        while (!reader.atEnd()) {
+            auto token = reader.readNext();
+            if (token == QXmlStreamReader::EndElement && reader.name() == Mc::Constant::Tag::Xml::BEAN) {
+                break;
+            } else if (token == QXmlStreamReader::StartElement && reader.name() == Mc::Constant::Tag::Xml::PROPERTY) {
+                readProperty(builder, reader);
+            }
+        }
+        return builder;
     }
     auto metaType = McMetaType::fromTypeName(className.toLatin1());
     if (Q_UNLIKELY(!metaType.isValid())) {
@@ -164,12 +187,7 @@ McAbstractBeanBuilderPtr McXmlBeanBuilderReader::readClass(
     }
     McAbstractBeanBuilderPtr builder;
     if (metaType.pMetaType().flags().testFlag(QMetaType::PointerToQObject)) {
-        McObjectClassBeanBuilderPtr objectBuilder;
-        if (isPointer) {
-            objectBuilder = McObjectClassBeanBuilderPtr::create();
-        } else {
-            objectBuilder = McSharedObjectClassBeanBuilderPtr::create();
-        }
+        McObjectClassBeanBuilderPtr objectBuilder = createObjectBeanBuilder(metaType, isPointer);
         readObjectBean(objectBuilder, reader);
         objectBuilder->setParentBeanReference(ref);
         builder = objectBuilder;

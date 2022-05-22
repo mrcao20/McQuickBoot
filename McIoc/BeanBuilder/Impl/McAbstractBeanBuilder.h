@@ -41,7 +41,7 @@ public:
 
     void setSingleton(bool val) noexcept;
     McMetaType metaType() const noexcept;
-    void setMetaType(const McMetaType &type) noexcept;
+    void setMetaType(McMetaType type) noexcept;
     void addProperty(const QString &name, const QVariant &value) noexcept;
     void addConstructorArg(int index, const QVariant &val) noexcept;
     void addConstructorArg(const QByteArray &name, const QVariant &val) noexcept;

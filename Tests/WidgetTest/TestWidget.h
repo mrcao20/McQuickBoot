@@ -23,25 +23,27 @@
  */
 #pragma once
 
+#include <QWidget>
+
 #include <McCore/McGlobal.h>
 
 MC_FORWARD_DECL_CLASS(IMcApplicationContext)
 
-class XmlApplicationContextTest : public QObject
+class CustomWidget : public QWidget
 {
     Q_OBJECT
 public:
-    XmlApplicationContextTest(const IMcApplicationContextPtr &appCtx, bool flag);
+    MC_POCO_PROPERTY(QList<QWidget *>, childs);
+};
 
+class TestWidget : public QObject
+{
+    Q_OBJECT
 private Q_SLOTS:
-    void customCase();
-    void podCase();
-    void gadgetCase();
-    void containerCase();
-    void objectCase();
-    void pluginCase();
+    void initTestCase();
+    void builderCase();
+    void appCtxCase();
 
 private:
     IMcApplicationContextPtr m_appCtx;
-    bool m_flag{true};
 };

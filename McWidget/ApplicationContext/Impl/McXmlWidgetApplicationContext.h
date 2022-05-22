@@ -23,25 +23,26 @@
  */
 #pragma once
 
-#include <McCore/McGlobal.h>
+#include <McIoc/ApplicationContext/Impl/McReadableApplicationContext.h>
 
-MC_FORWARD_DECL_CLASS(IMcApplicationContext)
+#include "../../McWidgetGlobal.h"
 
-class XmlApplicationContextTest : public QObject
+QT_BEGIN_NAMESPACE
+MC_FORWARD_DECL_CLASS(QIODevice);
+QT_END_NAMESPACE
+
+class MC_WIDGET_EXPORT McXmlWidgetApplicationContext : public McReadableApplicationContext
 {
-    Q_OBJECT
 public:
-    XmlApplicationContextTest(const IMcApplicationContextPtr &appCtx, bool flag);
+    McXmlWidgetApplicationContext() noexcept;
+    explicit McXmlWidgetApplicationContext(const QIODevicePtr &device, const QString &flag = QString()) noexcept;
+    explicit McXmlWidgetApplicationContext(const QList<QIODevicePtr> &devices, const QString &flag = QString()) noexcept;
+    explicit McXmlWidgetApplicationContext(const IMcBeanBuilderReaderPtr &reader) noexcept;
+    McXmlWidgetApplicationContext(
+        const IMcConfigurableBeanFactoryPtr &factory, const IMcBeanBuilderReaderPtr &reader) noexcept;
 
-private Q_SLOTS:
-    void customCase();
-    void podCase();
-    void gadgetCase();
-    void containerCase();
-    void objectCase();
-    void pluginCase();
-
-private:
-    IMcApplicationContextPtr m_appCtx;
-    bool m_flag{true};
+    void setDevice(const QIODevicePtr &device, const QString &flag = QString()) noexcept;
+    void setDevices(const QList<QIODevicePtr> &devices, const QString &flag = QString()) noexcept;
 };
+
+MC_DECL_POINTER(McXmlWidgetApplicationContext)

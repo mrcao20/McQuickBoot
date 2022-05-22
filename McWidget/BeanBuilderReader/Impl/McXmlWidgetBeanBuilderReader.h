@@ -23,25 +23,19 @@
  */
 #pragma once
 
-#include <McCore/McGlobal.h>
+#include <McIoc/BeanBuilderReader/Impl/McXmlBeanBuilderReader.h>
 
-MC_FORWARD_DECL_CLASS(IMcApplicationContext)
+#include "../../McWidgetGlobal.h"
 
-class XmlApplicationContextTest : public QObject
+class MC_WIDGET_EXPORT McXmlWidgetBeanBuilderReader : public McXmlBeanBuilderReader
 {
-    Q_OBJECT
+    MC_DECL_SUPER(McXmlBeanBuilderReader)
 public:
-    XmlApplicationContextTest(const IMcApplicationContextPtr &appCtx, bool flag);
+    McXmlWidgetBeanBuilderReader(const QIODevicePtr &device, const QString &flag = QString()) noexcept;
+    McXmlWidgetBeanBuilderReader(const QList<QIODevicePtr> &devices, const QString &flag = QString()) noexcept;
 
-private Q_SLOTS:
-    void customCase();
-    void podCase();
-    void gadgetCase();
-    void containerCase();
-    void objectCase();
-    void pluginCase();
-
-private:
-    IMcApplicationContextPtr m_appCtx;
-    bool m_flag{true};
+protected:
+    McObjectClassBeanBuilderPtr createObjectBeanBuilder(McMetaType metaType, bool isPointer) const noexcept override;
 };
+
+MC_DECL_POINTER(McXmlWidgetBeanBuilderReader)

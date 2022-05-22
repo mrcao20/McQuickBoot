@@ -72,8 +72,8 @@ void McGadgetBeanBuilder::addPropertyValue(void *bean, const QMetaObject *metaOb
     QMapIterator<QString, QVariant> itr(pros);
     while (itr.hasNext()) {
         auto item = itr.next();
-        auto key = itr.key();
-        auto value = itr.value();
+        auto key = item.key();
+        auto value = item.value();
 
         auto index = metaObject->indexOfProperty(key.toLocal8Bit());
         if (index == -1) {

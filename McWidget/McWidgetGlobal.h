@@ -24,24 +24,19 @@
 #pragma once
 
 #include <McCore/McGlobal.h>
+#include <McIoc/BeanBuilder/McCustomBeanBuilderContainer.h>
 
-MC_FORWARD_DECL_CLASS(IMcApplicationContext)
+#include "BeanBuilder/Impl/McCustomWidgetBeanBuilder.h"
+#include "McWidgetMacroGlobal.h"
 
-class XmlApplicationContextTest : public QObject
+Q_DECLARE_LOGGING_CATEGORY(mcWidget)
+
+namespace Mc::Widget {
+enum RoutinePriority { BuildInTypeRegistry = Mc::RoutinePriority::Normal + 1 };
+}
+
+template<typename T>
+void mcAddCustomWidgetBuilderFactory(const typename McCustomBeanBuilder<T>::BuildFuncType &func = nullptr)
 {
-    Q_OBJECT
-public:
-    XmlApplicationContextTest(const IMcApplicationContextPtr &appCtx, bool flag);
-
-private Q_SLOTS:
-    void customCase();
-    void podCase();
-    void gadgetCase();
-    void containerCase();
-    void objectCase();
-    void pluginCase();
-
-private:
-    IMcApplicationContextPtr m_appCtx;
-    bool m_flag{true};
-};
+    mcAddCustomBuilderFactory<T, McCustomWidgetBeanBuilder<T>>(func);
+}

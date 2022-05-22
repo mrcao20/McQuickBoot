@@ -23,25 +23,15 @@
  */
 #pragma once
 
-#include <McCore/McGlobal.h>
+#include "../McIocGlobal.h"
 
-MC_FORWARD_DECL_CLASS(IMcApplicationContext)
+MC_FORWARD_DECL_CLASS(McAbstractBeanBuilder)
 
-class XmlApplicationContextTest : public QObject
+class IMcCustomBeanBuilderFactory
 {
-    Q_OBJECT
+    MC_DEFINE_INTERFACE(IMcCustomBeanBuilderFactory)
 public:
-    XmlApplicationContextTest(const IMcApplicationContextPtr &appCtx, bool flag);
-
-private Q_SLOTS:
-    void customCase();
-    void podCase();
-    void gadgetCase();
-    void containerCase();
-    void objectCase();
-    void pluginCase();
-
-private:
-    IMcApplicationContextPtr m_appCtx;
-    bool m_flag{true};
+    virtual McAbstractBeanBuilderPtr create() noexcept = 0;
 };
+
+MC_DECL_POINTER(IMcCustomBeanBuilderFactory)

@@ -21,27 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include "McWidgetGlobal.h"
 
-#include <McCore/McGlobal.h>
+#include <QStackedWidget>
 
-MC_FORWARD_DECL_CLASS(IMcApplicationContext)
+Q_LOGGING_CATEGORY(mcWidget, "mc.widget")
 
-class XmlApplicationContextTest : public QObject
-{
-    Q_OBJECT
-public:
-    XmlApplicationContextTest(const IMcApplicationContextPtr &appCtx, bool flag);
-
-private Q_SLOTS:
-    void customCase();
-    void podCase();
-    void gadgetCase();
-    void containerCase();
-    void objectCase();
-    void pluginCase();
-
-private:
-    IMcApplicationContextPtr m_appCtx;
-    bool m_flag{true};
-};
+MC_STATIC(Mc::Widget::BuildInTypeRegistry)
+mcRegisterContainer<QWidgetList>();
+mcAddCustomWidgetBuilderFactory<QStackedWidget>([](QStackedWidget *w, const QString &name, const QVariant &var) {
+    if (name == QLatin1String("widgets")) {
+        auto widgets = var.value<QWidgetList>();
+        for (auto &widget : qAsConst(widgets)) {
+            w->addWidget(widget);
+        }
+    } else {
+        w->setProperty(name.toLatin1(), var);
+    }
+});
+MC_STATIC_END

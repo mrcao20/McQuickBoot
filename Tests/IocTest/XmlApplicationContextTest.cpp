@@ -23,18 +23,37 @@
  */
 #include "XmlApplicationContextTest.h"
 
+#include <QJsonObject>
 #include <QtTest>
 
 #include <McIoc/ApplicationContext/Impl/McLocalPathApplicationContext.h>
+#include <McIoc/BeanBuilder/McCustomBeanBuilderContainer.h>
 
 #include "BeanFactoryTest.h"
 #include "BeanReaderTest.h"
+
+MC_STATIC()
+mcAddCustomBuilderFactory<QJsonObject>(
+    [](QJsonObject *obj, const QString &name, const QVariant &var) { qDebug() << "JsonObj" << obj << name << var; });
+MC_STATIC_END
 
 XmlApplicationContextTest::XmlApplicationContextTest(const IMcApplicationContextPtr &appCtx, bool flag)
 {
     m_appCtx = appCtx;
     m_appCtx->refresh();
     m_flag = flag;
+}
+
+void XmlApplicationContextTest::customCase()
+{
+    if (!m_flag) {
+        return;
+    }
+    {
+        QVERIFY(m_appCtx->containsBean("jsonObj"));
+        auto bean = m_appCtx->getBean<QJsonObject *>("jsonObj");
+        QVERIFY(bean != nullptr);
+    }
 }
 
 void XmlApplicationContextTest::podCase()

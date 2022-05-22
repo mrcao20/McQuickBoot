@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
+    <bean name="jsonObj" class="QJsonObject">
+        <property name="text" value="jsonObj" />
+    </bean>
     <bean name="podTest" class="PodTest" />
     <bean name="podTestPointer" class="PodTest" isPointer="true" />
     <bean name="gadgetTest" class="GadgetTest">

@@ -23,25 +23,14 @@
  */
 #pragma once
 
-#include <McCore/McGlobal.h>
+#include "McXmlWidgetApplicationContext.h"
 
-MC_FORWARD_DECL_CLASS(IMcApplicationContext)
-
-class XmlApplicationContextTest : public QObject
+class MC_WIDGET_EXPORT McLocalPathWidgetApplicationContext : public McXmlWidgetApplicationContext
 {
-    Q_OBJECT
 public:
-    XmlApplicationContextTest(const IMcApplicationContextPtr &appCtx, bool flag);
-
-private Q_SLOTS:
-    void customCase();
-    void podCase();
-    void gadgetCase();
-    void containerCase();
-    void objectCase();
-    void pluginCase();
-
-private:
-    IMcApplicationContextPtr m_appCtx;
-    bool m_flag{true};
+    McLocalPathWidgetApplicationContext() noexcept;
+    explicit McLocalPathWidgetApplicationContext(const QString &location, const QString &flag = QString()) noexcept;
+    explicit McLocalPathWidgetApplicationContext(const QStringList &locations, const QString &flag = QString()) noexcept;
 };
+
+MC_DECL_POINTER(McLocalPathWidgetApplicationContext)

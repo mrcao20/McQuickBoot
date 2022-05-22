@@ -33,7 +33,7 @@
 
 MC_DECL_PRIVATE_DATA(McLoggerRepository)
 QMap<QString, IMcLoggerPtr> loggers;
-IMcLoggerPtr notCapturedLogger;
+IMcLoggerPtr uncapturedLogger;
 QThread *thread{nullptr};
 int taskTimeout{3600000};
 QList<IMcAdditionalTaskPtr> sequentialTasks;
@@ -104,7 +104,7 @@ void McLoggerRepository::setLogger(const QMap<QString, IMcLoggerPtr> &loggers) n
 IMcLoggerPtr McLoggerRepository::getLogger(const QString &loggerName) noexcept
 {
     if (!d->loggers.contains(loggerName)) {
-        return d->notCapturedLogger;
+        return d->uncapturedLogger;
     }
     return d->loggers.value(loggerName);
 }
@@ -140,7 +140,7 @@ void McLoggerRepository::buildFinished() noexcept
 void McLoggerRepository::buildCompleted() noexcept
 {
     d->thread = thread();
-    if (d->notCapturedLogger.isNull()) {
+    if (d->uncapturedLogger.isNull()) {
         auto logger = McLoggerPtr::create();
         QList<IMcConfigurableAppenderPtr> appenders;
         auto consoleAppender = McConsoleAppenderPtr::create();
@@ -151,7 +151,7 @@ void McLoggerRepository::buildCompleted() noexcept
         appenders.append(consoleAppender);
         logger->setAppenders(appenders);
         logger->buildFinished();
-        d->notCapturedLogger = logger;
+        d->uncapturedLogger = logger;
     }
     QTimer::singleShot(std::chrono::milliseconds(1000), this, &McLoggerRepository::executeTasks);
 }
