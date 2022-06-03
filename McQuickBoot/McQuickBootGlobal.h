@@ -23,42 +23,8 @@
  */
 #pragma once
 
-#include <QObject>
+#include <McCore/McGlobal.h>
 
-#include <McCore/PluginChecker/IMcPluginChecker.h>
-#include <McIoc/BeanFactory/IMcBeanBuilderRegistry.h>
+#include "McQuickBootMacroGlobal.h"
 
-class PluginCheckerTest : public IMcPluginChecker
-{
-    MC_FULL_DEFINE(PluginCheckerTest, IMcPluginChecker)
-public:
-    bool check(const QJsonObject &json) noexcept override;
-};
-
-MC_DECL_POINTER(PluginCheckerTest)
-
-class RegistryTest : public IMcBeanBuilderRegistry
-{
-public:
-    RegistryTest(QList<QString> &val)
-        : m_registerBeanNames(val)
-    {
-    }
-
-    bool registerBeanBuilder(const QString &name, const IMcBeanBuilderPtr &beanBuilder) noexcept override;
-    bool registerBeanBuilder(const QHash<QString, IMcBeanBuilderPtr> &vals) noexcept override;
-    IMcBeanBuilderPtr unregisterBeanBuilder(const QString &name) noexcept override;
-    bool isContained(const QString &name) const noexcept override;
-    QHash<QString, IMcBeanBuilderPtr> getBeanBuilders() const noexcept override;
-
-private:
-    QList<QString> &m_registerBeanNames;
-    QHash<QString, IMcBeanBuilderPtr> m_hash;
-};
-
-class BeanReaderTest : public QObject
-{
-    Q_OBJECT
-private Q_SLOTS:
-    void readerCase();
-};
+Q_DECLARE_LOGGING_CATEGORY(mcQuickBoot)

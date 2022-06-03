@@ -25,7 +25,7 @@
 
 #include <QTest>
 
-#include <McCore/Utils/Impl/McNormalPluginChecker.h>
+#include <McCore/PluginChecker/Impl/McNormalPluginChecker.h>
 #include <McIoc/BeanBuilder/Impl/McBeanConnector.h>
 #include <McIoc/BeanBuilder/Impl/McBeanReference.h>
 #include <McIoc/BeanBuilder/Impl/McListBeanBuilder.h>

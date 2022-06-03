@@ -23,7 +23,7 @@
  */
 #include "McObjectPluginBeanBuilder.h"
 
-#include <McCore/Utils/IMcPluginChecker.h>
+#include <McCore/PluginChecker/IMcPluginChecker.h>
 
 #include "../IMcBeanReferenceResolver.h"
 

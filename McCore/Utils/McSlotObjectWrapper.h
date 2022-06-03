@@ -30,7 +30,8 @@ MC_FORWARD_DECL_PRIVATE_DATA(McSlotObjectWrapper)
 class MC_CORE_EXPORT McSlotObjectWrapper
 {
 public:
-    McSlotObjectWrapper(const QMetaType &qmetaType, const QObject *recever, QtPrivate::QSlotObjectBase *method) noexcept;
+    McSlotObjectWrapper(
+        const QObject *recever, const QList<QMetaType> &qmetaTypes, QtPrivate::QSlotObjectBase *method) noexcept;
     ~McSlotObjectWrapper();
     McSlotObjectWrapper(const McSlotObjectWrapper &o) noexcept;
     McSlotObjectWrapper &operator=(const McSlotObjectWrapper &o) noexcept;
@@ -39,8 +40,43 @@ public:
 
     const QObject *recever() const noexcept;
 
-    void call(const QVariant &var) const noexcept;
+    void call(const QVariant &var) const noexcept { call(QVariantList() << var); }
+    void call(const QVariantList &varList) const noexcept;
+
+    template<typename Func>
+    static McSlotObjectWrapper build(
+        const typename QtPrivate::FunctionPointer<Func>::Object *receiver, Func method) noexcept
+    {
+        typedef QtPrivate::FunctionPointer<Func> FuncType;
+
+        return McSlotObjectWrapper(receiver, McPrivate::MetaTypeHelper<typename FuncType::Arguments>::metaTypes(),
+            new QtPrivate::QSlotObject<Func, typename FuncType::Arguments, typename FuncType::ReturnType>(method));
+    }
+
+    template<typename Func>
+    static std::enable_if_t<int(QtPrivate::FunctionPointer<Func>::ArgumentCount) >= 0
+                                && !QtPrivate::FunctionPointer<Func>::IsPointerToMemberFunction,
+        McSlotObjectWrapper>
+        build(const QObject *context, Func functor) noexcept
+    {
+        typedef QtPrivate::FunctionPointer<Func> FuncType;
+
+        return McSlotObjectWrapper(context, McPrivate::MetaTypeHelper<typename FuncType::Arguments>::metaTypes(),
+            new QtPrivate::QStaticSlotObject<Func, typename FuncType::Arguments, typename FuncType::ReturnType>(
+                functor));
+    }
+
+    template<typename Func>
+    static std::enable_if_t<QtPrivate::FunctionPointer<Func>::ArgumentCount == -1, McSlotObjectWrapper> build(
+        const QObject *context, Func functor) noexcept
+    {
+        typedef McPrivate::LambdaType<Func> FuncType;
+
+        return McSlotObjectWrapper(context, McPrivate::MetaTypeHelper<typename FuncType::Arguments>::metaTypes(),
+            new QtPrivate::QFunctorSlotObject<Func, int(FuncType::ArgumentCount), typename FuncType::Arguments,
+                typename FuncType::ReturnType>(std::move(functor)));
+    }
 
 private:
-    std::unique_ptr<MC_PRIVATE_DATA_NAME(McSlotObjectWrapper)> d;
+    MC_DECL_COPYABLE_PRIVATE(McSlotObjectWrapper);
 };

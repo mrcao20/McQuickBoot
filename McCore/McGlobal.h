@@ -38,16 +38,28 @@ MC_DECL_POINTER(QObject)
 
 namespace McPrivate {
 template<typename T>
-struct MetaTypeHelper
+struct MetaTypeHelper;
+template<typename... Args>
+struct MetaTypeHelper<QtPrivate::List<Args...>>
 {
-    static QMetaType metaType() { return QMetaType::fromType<typename T::Car>(); }
+    static QList<QMetaType> metaTypes() noexcept
+    {
+        QList<QMetaType> ms;
+        (ms << ... << QMetaType::fromType<Args>());
+        return ms;
+    }
 };
 
-template<>
-struct MetaTypeHelper<QtPrivate::List<>>
+template<typename T>
+QVariant toQVariant(T &&data) noexcept
 {
-    static QMetaType metaType() { return QMetaType(); }
-};
+    return QVariant::fromValue(std::forward<T>(data));
+}
+template<int N>
+QVariant toQVariant(const char (&data)[N]) noexcept
+{
+    return QVariant(data);
+}
 
 namespace LambdaDetail {
 template<typename R, typename C, typename M, typename... Args>

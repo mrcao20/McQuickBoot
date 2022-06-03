@@ -24,14 +24,19 @@
 #include "TestCore.h"
 
 #include <QCoreApplication>
+#include <QDateTime>
 #include <QFile>
 #include <QJsonObject>
 #include <QTest>
+#include <QtConcurrent>
 
 #include <McCore/Event/McEventDispatcher.h>
 #include <McCore/McGlobal.h>
-#include <McCore/Utils/Impl/McNormalPluginChecker.h>
+#include <McCore/PluginChecker/Impl/McNormalPluginChecker.h>
+#include <McCore/Utils/McCancel.h>
 #include <McCore/Utils/McJsonUtils.h>
+#include <McCore/Utils/McPause.h>
+#include <McCore/Utils/McProgress.h>
 
 #include "MetaTypeTest.h"
 
@@ -178,4 +183,43 @@ void TestCore::loadMemoryLibraryCase()
     TestLoadFunc func = Mc::loadMemoryLibrary(data, QLatin1String("testLoadFunc"), QLatin1String(""));
     QVERIFY(func != nullptr);
     func();
+}
+
+void TestCore::callbackCase()
+{
+    McCancel cancel;
+    McPause pause;
+    McProgress progress;
+    int current = 0, total = 0;
+    progress.totalCallback([&total](int t) { total = t; });
+    progress.currentCallback([&current](int c) { current = c; });
+
+    bool isCancel = false, isPause = false, isFinished = false;
+    auto future = QtConcurrent::run([&isCancel, &isPause, &isFinished, cancel, pause, progress]() {
+        auto p = progress;
+        while (!isCancel) {
+            isCancel = cancel.isCanceled();
+            isPause = pause.isPaused();
+            p.setCurrent(10);
+            p.setTotal(10);
+        }
+        isFinished = true;
+    });
+    auto start = QDateTime::currentMSecsSinceEpoch();
+    Mc::waitForExecFunc([&isFinished, &start, cancel, pause]() {
+        auto p = pause;
+        auto c = cancel;
+        if (QDateTime::currentMSecsSinceEpoch() - start > 500 && !pause.isPaused()) {
+            p.pause();
+        }
+        if (QDateTime::currentMSecsSinceEpoch() - start > 1000 && !cancel.isCanceled()) {
+            c.cancel();
+        }
+        return isFinished;
+    });
+
+    QVERIFY(current == 10);
+    QVERIFY(total == 10);
+    QVERIFY(isCancel);
+    QVERIFY(isPause);
 }

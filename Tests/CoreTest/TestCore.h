@@ -59,4 +59,5 @@ private Q_SLOTS:
     void loadPluginCase();
     void loadLibraryCase();
     void loadMemoryLibraryCase();
+    void callbackCase();
 };

@@ -48,22 +48,17 @@ public:
         const typename QtPrivate::FunctionPointer<Func>::Object *receiver, Func method,
         Qt::ConnectionType type = Qt::AutoConnection) noexcept
     {
-        typedef QtPrivate::FunctionPointer<Func> FuncType;
-
-        Q_STATIC_ASSERT_X(int(FuncType::ArgumentCount) <= 1,
+        static_assert(int(QtPrivate::FunctionPointer<Func>::ArgumentCount) <= 1,
             "The number of parameters of callback function can only be less than or equal to 1");
 
-        McSlotObjectWrapper wrapper(McPrivate::MetaTypeHelper<typename FuncType::Arguments>::metaType(), receiver,
-            new QtPrivate::QSlotObject<Func, typename FuncType::Arguments, typename FuncType::ReturnType>(method));
-
-        return connectToEventImpl(scxmlEventSpec, std::move(wrapper), type);
+        return connectToEventImpl(scxmlEventSpec, McSlotObjectWrapper::build(receiver, method), type);
     }
 
     template<typename Func>
-    inline typename std::enable_if<int(QtPrivate::FunctionPointer<Func>::ArgumentCount) >= 0
-                                       && !QtPrivate::FunctionPointer<Func>::IsPointerToMemberFunction
-                                       && !std::is_same<const char *, Func>::value,
-        QMetaObject::Connection>::type
+    inline std::enable_if_t<int(QtPrivate::FunctionPointer<Func>::ArgumentCount) >= 0
+                                && !QtPrivate::FunctionPointer<Func>::IsPointerToMemberFunction
+                                && !std::is_same<const char *, Func>::value,
+        QMetaObject::Connection>
         connectToEvent(
             const QString &scxmlEventSpec, Func functor, Qt::ConnectionType type = Qt::AutoConnection) noexcept
     {
@@ -71,66 +66,49 @@ public:
     }
 
     template<typename Func>
-    inline typename std::enable_if<int(QtPrivate::FunctionPointer<Func>::ArgumentCount) >= 0
-                                       && !QtPrivate::FunctionPointer<Func>::IsPointerToMemberFunction
-                                       && !std::is_same<const char *, Func>::value,
-        QMetaObject::Connection>::type
+    inline std::enable_if_t<int(QtPrivate::FunctionPointer<Func>::ArgumentCount) >= 0
+                                && !QtPrivate::FunctionPointer<Func>::IsPointerToMemberFunction
+                                && !std::is_same<const char *, Func>::value,
+        QMetaObject::Connection>
         connectToEvent(const QString &scxmlEventSpec, const QObject *context, Func functor,
             Qt::ConnectionType type = Qt::AutoConnection) noexcept
     {
-        typedef QtPrivate::FunctionPointer<Func> FuncType;
-
-        Q_STATIC_ASSERT_X(int(FuncType::ArgumentCount) <= 1,
+        static_assert(int(QtPrivate::FunctionPointer<Func>::ArgumentCount) <= 1,
             "The number of parameters of callback function can only be less than or equal to 1");
 
-        McSlotObjectWrapper wrapper(McPrivate::MetaTypeHelper<typename FuncType::Arguments>::metaType(), context,
-            new QtPrivate::QStaticSlotObject<Func, typename FuncType::Arguments, typename FuncType::ReturnType>(
-                functor));
-
-        return connectToEventImpl(scxmlEventSpec, std::move(wrapper), type);
+        return connectToEventImpl(scxmlEventSpec, McSlotObjectWrapper::build(context, functor), type);
     }
 
     template<typename Func>
-    inline typename std::enable_if<QtPrivate::FunctionPointer<Func>::ArgumentCount == -1
-                                       && !QtPrivate::FunctionPointer<Func>::IsPointerToMemberFunction
-                                       && !std::is_same<const char *, Func>::value,
-        QMetaObject::Connection>::type
+    inline std::enable_if_t<QtPrivate::FunctionPointer<Func>::ArgumentCount == -1
+                                && !QtPrivate::FunctionPointer<Func>::IsPointerToMemberFunction
+                                && !std::is_same<const char *, Func>::value,
+        QMetaObject::Connection>
         connectToEvent(
             const QString &scxmlEventSpec, Func functor, Qt::ConnectionType type = Qt::AutoConnection) noexcept
     {
-        return connectToEvent(scxmlEventSpec, nullptr, functor, type);
+        return connectToEvent(scxmlEventSpec, nullptr, std::move(functor), type);
     }
 
     template<typename Func>
-    inline typename std::enable_if<QtPrivate::FunctionPointer<Func>::ArgumentCount == -1
-                                       && !QtPrivate::FunctionPointer<Func>::IsPointerToMemberFunction
-                                       && !std::is_same<const char *, Func>::value,
-        QMetaObject::Connection>::type
+    inline std::enable_if_t<QtPrivate::FunctionPointer<Func>::ArgumentCount == -1
+                                && !QtPrivate::FunctionPointer<Func>::IsPointerToMemberFunction
+                                && !std::is_same<const char *, Func>::value,
+        QMetaObject::Connection>
         connectToEvent(const QString &scxmlEventSpec, const QObject *context, Func functor,
             Qt::ConnectionType type = Qt::AutoConnection) noexcept
     {
-        typedef McPrivate::LambdaType<Func> FuncType;
-
-        Q_STATIC_ASSERT_X(int(FuncType::ArgumentCount) <= 1,
+        static_assert(int(McPrivate::LambdaType<Func>::ArgumentCount) <= 1,
             "The number of parameters of callback function can only be less than or equal to 1");
 
-        McSlotObjectWrapper wrapper(McPrivate::MetaTypeHelper<typename FuncType::Arguments>::metaType(), context,
-            new QtPrivate::QFunctorSlotObject<Func, int(FuncType::ArgumentCount), typename FuncType::Arguments,
-                typename FuncType::ReturnType>(functor));
-
-        return connectToEventImpl(scxmlEventSpec, std::move(wrapper), type);
+        return connectToEventImpl(scxmlEventSpec, McSlotObjectWrapper::build(context, std::move(functor)), type);
     }
 
     void submitEvent(const QString &eventName) noexcept;
     template<typename T>
     void submitEvent(const QString &eventName, T &&data) noexcept
     {
-        submitEvent_helper(eventName, QVariant::fromValue(data));
-    }
-    template<int N>
-    void submitEvent(const QString &eventName, const char (&data)[N]) noexcept
-    {
-        submitEvent_helper(eventName, QVariant(data));
+        submitEvent_helper(eventName, McPrivate::toQVariant(std::forward<T>(data)));
     }
 
 private:

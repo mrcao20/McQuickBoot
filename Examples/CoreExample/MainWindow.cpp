@@ -1,6 +1,8 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 
+#include <McCore/Callback/Impl/McCppAsyncCallback.h>
+#include <McCore/Callback/Impl/McCppSyncCallback.h>
 #include <McCore/Event/McEventDispatcher.h>
 #include <McCore/McGlobal.h>
 
@@ -28,11 +30,33 @@ MainWindow::MainWindow(QWidget *parent)
     Mc::eventDispatcher().connectToEvent("button.click", this, [](int var) { qDebug() << var; });
     Mc::eventDispatcher().connectToEvent("button.click", []() { qDebug() << "button.click not receive arg"; });
     Mc::eventDispatcher().connectToEvent("button.click", this, &MainWindow::eventProcess);
-    connect(ui->pushButton, &QPushButton::clicked, this, []() {
+    //!<
+
+    //! 回调函数
+    McCppSyncCallback callback([]() { qDebug() << "callback1"; });
+    callback.call("test");
+
+    McCppSyncCallback callback2([](int i) { qDebug() << "callback2" << i; });
+
+    IMcCallbackPtr callback3 = McCppSyncCallback::build([](const QString &msg) { qDebug() << "callback3" << msg; });
+    callback3->call("test3");
+    ///////////////////////////////////////////////////
+    McCppAsyncCallback asyncCallback([]() { qDebug() << "asyncCallback"; });
+    asyncCallback.call("test");
+
+    McCppAsyncCallback asyncCallback2([](int i) { qDebug() << "asyncCallback2" << i; });
+
+    IMcCallbackPtr asyncCallback3 = McCppAsyncCallback::build(
+        [](const QString &msg) { qDebug() << "asyncCallback3" << msg; });
+    asyncCallback3->call("test3");
+    //!<
+
+    connect(ui->pushButton, &QPushButton::clicked, this, [callback2, asyncCallback2]() {
         static int i = 1;
+        callback2(i);
+        asyncCallback2(i);
         mcEvt().submitEvent("button.click", i++);
     });
-    //!<
 }
 
 MainWindow::~MainWindow()

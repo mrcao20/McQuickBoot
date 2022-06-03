@@ -106,6 +106,10 @@
  QScopedPointer<MC_PRIVATE_DATA_NAME(Class)> d; \
  friend struct MC_PRIVATE_DATA_NAME(Class);
 
+#define MC_DECL_COPYABLE_PRIVATE(Class) \
+ std::unique_ptr<MC_PRIVATE_DATA_NAME(Class)> d; \
+ friend struct MC_PRIVATE_DATA_NAME(Class);
+
 #define MC_NEW_PRIVATE_DATA(Class) d.reset(new MC_PRIVATE_DATA_NAME(Class)());
 
 #define MC_FORWARD_DECL_PRIVATE_DATA(Class) struct MC_PRIVATE_DATA_NAME(Class);

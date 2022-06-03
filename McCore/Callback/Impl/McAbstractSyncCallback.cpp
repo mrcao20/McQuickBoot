@@ -21,44 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include "McAbstractSyncCallback.h"
 
-#include <QObject>
+#include <QCoreApplication>
 
-#include <McCore/PluginChecker/IMcPluginChecker.h>
-#include <McIoc/BeanFactory/IMcBeanBuilderRegistry.h>
-
-class PluginCheckerTest : public IMcPluginChecker
+void McAbstractSyncCallback::destroy() noexcept
 {
-    MC_FULL_DEFINE(PluginCheckerTest, IMcPluginChecker)
-public:
-    bool check(const QJsonObject &json) noexcept override;
-};
+    deleteLater();
+}
 
-MC_DECL_POINTER(PluginCheckerTest)
-
-class RegistryTest : public IMcBeanBuilderRegistry
+void McAbstractSyncCallback::call(const QVariantList &varList) const noexcept
 {
-public:
-    RegistryTest(QList<QString> &val)
-        : m_registerBeanNames(val)
-    {
+    QCoreApplication::postEvent(
+        const_cast<McAbstractSyncCallback *>(this), new McCustomEvent(QEvent::Type::User, varList));
+}
+
+void McAbstractSyncCallback::customEvent(QEvent *event)
+{
+    if (event->type() == QEvent::Type::User) {
+        McCustomEvent *e = static_cast<McCustomEvent *>(event);
+        syncCall(e->data().toList());
     }
-
-    bool registerBeanBuilder(const QString &name, const IMcBeanBuilderPtr &beanBuilder) noexcept override;
-    bool registerBeanBuilder(const QHash<QString, IMcBeanBuilderPtr> &vals) noexcept override;
-    IMcBeanBuilderPtr unregisterBeanBuilder(const QString &name) noexcept override;
-    bool isContained(const QString &name) const noexcept override;
-    QHash<QString, IMcBeanBuilderPtr> getBeanBuilders() const noexcept override;
-
-private:
-    QList<QString> &m_registerBeanNames;
-    QHash<QString, IMcBeanBuilderPtr> m_hash;
-};
-
-class BeanReaderTest : public QObject
-{
-    Q_OBJECT
-private Q_SLOTS:
-    void readerCase();
-};
+}

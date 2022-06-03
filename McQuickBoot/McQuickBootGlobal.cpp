@@ -21,15 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include "McQuickBootGlobal.h"
 
-#include <McCore/PluginChecker/IMcPluginChecker.h>
-
-class PluginChecker : public IMcPluginChecker
-{
-    MC_FULL_DEFINE(PluginChecker, IMcPluginChecker)
-public:
-    bool check(const QJsonObject &json) noexcept override;
-};
-
-MC_DECL_POINTER(PluginChecker)
+Q_LOGGING_CATEGORY(mcQuickBoot, "mc.quickboot")

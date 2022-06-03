@@ -26,18 +26,24 @@
 #include "Utils/McJsonUtils.h"
 
 MC_DECL_PRIVATE_DATA(McSlotObjectWrapper)
-QMetaType qmetaType;
-const QObject *recever{nullptr};
+bool hasRecever{false};
+QPointer<const QObject> recever;
+QList<QMetaType> qmetaTypes;
 QtPrivate::QSlotObjectBase *method{nullptr};
 MC_DECL_PRIVATE_DATA_END
 
 McSlotObjectWrapper::McSlotObjectWrapper(
-    const QMetaType &qmetaType, const QObject *recever, QtPrivate::QSlotObjectBase *method) noexcept
+    const QObject *recever, const QList<QMetaType> &qmetaTypes, QtPrivate::QSlotObjectBase *method) noexcept
 {
-    d = std::make_unique<MC_PRIVATE_DATA_NAME(McSlotObjectWrapper)>();
+    MC_NEW_PRIVATE_DATA(McSlotObjectWrapper);
 
-    d->qmetaType = qmetaType;
+    if (recever != nullptr) {
+        d->hasRecever = true;
+    } else {
+        d->hasRecever = false;
+    }
     d->recever = recever;
+    d->qmetaTypes = qmetaTypes;
     d->method = method;
 }
 
@@ -50,8 +56,9 @@ McSlotObjectWrapper::~McSlotObjectWrapper()
 }
 
 McSlotObjectWrapper::McSlotObjectWrapper(const McSlotObjectWrapper &o) noexcept
-    : McSlotObjectWrapper(o.d->qmetaType, o.d->recever, o.d->method)
+    : McSlotObjectWrapper(o.d->recever.data(), o.d->qmetaTypes, o.d->method)
 {
+    d->hasRecever = o.d->hasRecever;
     if (d->method != nullptr) {
         d->method->ref();
     }
@@ -65,8 +72,9 @@ McSlotObjectWrapper &McSlotObjectWrapper::operator=(const McSlotObjectWrapper &o
 }
 
 McSlotObjectWrapper::McSlotObjectWrapper(McSlotObjectWrapper &&o) noexcept
-    : McSlotObjectWrapper(o.d->qmetaType, o.d->recever, o.d->method)
+    : McSlotObjectWrapper(o.d->recever.data(), o.d->qmetaTypes, o.d->method)
 {
+    d->hasRecever = o.d->hasRecever;
     o.d->method = nullptr;
 }
 
@@ -79,32 +87,44 @@ McSlotObjectWrapper &McSlotObjectWrapper::operator=(McSlotObjectWrapper &&o) noe
 
 const QObject *McSlotObjectWrapper::recever() const noexcept
 {
-    return d->recever;
+    return d->recever.data();
 }
 
-void McSlotObjectWrapper::call(const QVariant &var) const noexcept
+void McSlotObjectWrapper::call(const QVariantList &varList) const noexcept
 {
-    if (d->method == nullptr) {
+    if ((d->hasRecever && d->recever.isNull()) || d->method == nullptr) {
         return;
     }
-    auto body = var;
-    void *bodyStar = nullptr;
-    if (d->qmetaType == QMetaType::fromType<QVariant>()) {
-        body = McJsonUtils::serialize(body);
-        bodyStar = &body;
-    } else if (d->qmetaType.isValid()) {
-        if (body.metaType() != d->qmetaType) {
-            body = McJsonUtils::serialize(body);
-            if (body.metaType() == QMetaType::fromType<QJsonObject>()) {
-                body = McJsonUtils::deserialize(body, d->qmetaType);
-            }
-            if (body.metaType() != d->qmetaType) {
-                qCCritical(mcCore(), "cannot construct object for className: %s", d->qmetaType.name());
-                return;
-            }
-        }
-        bodyStar = body.data();
+    auto argList = varList;
+    if (argList.length() < d->qmetaTypes.length()) {
+        qCCritical(
+            mcCore(), "McSlotObjectWrapper::call. receiver argument count must be equal to or less than sender.");
+        return;
     }
-    void *args[] = {nullptr, bodyStar};
-    d->method->call(const_cast<QObject *>(d->recever), args);
+    void **args = new void *[argList.length() + 1];
+    auto cleanup = qScopeGuard([&args]() { delete[] args; });
+    args[0] = nullptr;
+    for (int i = 0; i < argList.length(); ++i) {
+        QVariant &body = argList[i];
+        if (i >= d->qmetaTypes.length()) {
+            args[i + 1] = const_cast<void *>(body.constData());
+        } else if (d->qmetaTypes.at(i) == QMetaType::fromType<QVariant>()) {
+            body = McJsonUtils::serialize(body);
+            args[i + 1] = const_cast<void *>((const void *)&body);
+        } else if (d->qmetaTypes.at(i).isValid()) {
+            auto qmetaType = d->qmetaTypes.at(i);
+            if (body.metaType() != qmetaType) {
+                body = McJsonUtils::serialize(body);
+                if (body.metaType() == QMetaType::fromType<QJsonObject>()) {
+                    body = McJsonUtils::deserialize(body, qmetaType);
+                }
+                if (body.metaType() != qmetaType) {
+                    qCCritical(mcCore(), "cannot construct object for className: %s", qmetaType.name());
+                    return;
+                }
+            }
+            args[i + 1] = const_cast<void *>(body.constData());
+        }
+    }
+    d->method->call(const_cast<QObject *>(d->recever.data()), args);
 }

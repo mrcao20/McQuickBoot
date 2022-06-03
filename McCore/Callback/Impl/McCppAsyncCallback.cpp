@@ -21,44 +21,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#pragma once
+#include "McCppAsyncCallback.h"
 
-#include <QObject>
+MC_INIT(McCppAsyncCallback)
+mcRegisterMetaTypeSimple<McCppAsyncCallback>();
+MC_INIT_END
 
-#include <McCore/PluginChecker/IMcPluginChecker.h>
-#include <McIoc/BeanFactory/IMcBeanBuilderRegistry.h>
-
-class PluginCheckerTest : public IMcPluginChecker
+McCppAsyncCallback::McCppAsyncCallback(const McCppAsyncCallback &o) noexcept
+    : m_callback(o.m_callback)
 {
-    MC_FULL_DEFINE(PluginCheckerTest, IMcPluginChecker)
-public:
-    bool check(const QJsonObject &json) noexcept override;
-};
+}
 
-MC_DECL_POINTER(PluginCheckerTest)
-
-class RegistryTest : public IMcBeanBuilderRegistry
+McCppAsyncCallback &McCppAsyncCallback::operator=(const McCppAsyncCallback &o) noexcept
 {
-public:
-    RegistryTest(QList<QString> &val)
-        : m_registerBeanNames(val)
-    {
+    McCppAsyncCallback copy(o);
+    std::swap(m_callback, copy.m_callback);
+    return *this;
+}
+
+McCppAsyncCallback::McCppAsyncCallback(McCppAsyncCallback &&o) noexcept
+    : m_callback(o.m_callback)
+{
+    o.m_callback.reset();
+}
+
+McCppAsyncCallback &McCppAsyncCallback::operator=(McCppAsyncCallback &&o) noexcept
+{
+    McCppAsyncCallback copy(std::move(o));
+    std::swap(m_callback, copy.m_callback);
+    return *this;
+}
+
+void McCppAsyncCallback::call(const QVariantList &varList) const noexcept
+{
+    if (!m_callback.has_value()) {
+        return;
     }
-
-    bool registerBeanBuilder(const QString &name, const IMcBeanBuilderPtr &beanBuilder) noexcept override;
-    bool registerBeanBuilder(const QHash<QString, IMcBeanBuilderPtr> &vals) noexcept override;
-    IMcBeanBuilderPtr unregisterBeanBuilder(const QString &name) noexcept override;
-    bool isContained(const QString &name) const noexcept override;
-    QHash<QString, IMcBeanBuilderPtr> getBeanBuilders() const noexcept override;
-
-private:
-    QList<QString> &m_registerBeanNames;
-    QHash<QString, IMcBeanBuilderPtr> m_hash;
-};
-
-class BeanReaderTest : public QObject
-{
-    Q_OBJECT
-private Q_SLOTS:
-    void readerCase();
-};
+    m_callback->call(varList);
+}

@@ -30,8 +30,8 @@
 #include <QtCore/QWeakPointer>
 #include <QtCore/QtGlobal>
 
+#include "Destroyer/IMcDestroyer.h"
 #include "McMacroGlobal.h"
-#include "Utils/IMcDestroyer.h"
 
 #define MC_INTERFACES(...) \
  public: \

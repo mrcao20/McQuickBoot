@@ -27,7 +27,7 @@
 #include <QLibrary>
 #include <QXmlStreamReader>
 
-#include <McCore/Utils/Impl/McNormalPluginChecker.h>
+#include <McCore/PluginChecker/Impl/McNormalPluginChecker.h>
 
 #include "BeanBuilder/Impl/McBeanConnector.h"
 #include "BeanBuilder/Impl/McBeanEnum.h"

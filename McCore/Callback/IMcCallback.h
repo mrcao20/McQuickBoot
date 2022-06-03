@@ -23,42 +23,42 @@
  */
 #pragma once
 
-#include <QObject>
+#include "../McGlobal.h"
 
-#include <McCore/PluginChecker/IMcPluginChecker.h>
-#include <McIoc/BeanFactory/IMcBeanBuilderRegistry.h>
-
-class PluginCheckerTest : public IMcPluginChecker
+class IMcCallback
 {
-    MC_FULL_DEFINE(PluginCheckerTest, IMcPluginChecker)
+    MC_DEFINE_INTERFACE(IMcCallback)
 public:
-    bool check(const QJsonObject &json) noexcept override;
-};
-
-MC_DECL_POINTER(PluginCheckerTest)
-
-class RegistryTest : public IMcBeanBuilderRegistry
-{
-public:
-    RegistryTest(QList<QString> &val)
-        : m_registerBeanNames(val)
+    struct CallbackDeleter
     {
+        void operator()(IMcCallback *ptr) { ptr->destroy(); }
+    };
+
+    virtual void destroy() noexcept = 0;
+    virtual void call(const QVariantList &varList) const noexcept = 0;
+
+    void call(const QVariant &var) const noexcept { call(QVariantList() << var); }
+
+    template<typename... Args>
+    std::enable_if_t<!(sizeof...(Args) == 1
+                         && QMetaType::fromType<QtPrivate::List<Args...>::Car>() == QMetaType::fromType<QVariantList>()),
+        void>
+        call(Args &&...args) const noexcept
+    {
+        QVariantList vars;
+        (vars << ... << McPrivate::toQVariant(std::forward<Args>(args)));
+        call(vars);
     }
 
-    bool registerBeanBuilder(const QString &name, const IMcBeanBuilderPtr &beanBuilder) noexcept override;
-    bool registerBeanBuilder(const QHash<QString, IMcBeanBuilderPtr> &vals) noexcept override;
-    IMcBeanBuilderPtr unregisterBeanBuilder(const QString &name) noexcept override;
-    bool isContained(const QString &name) const noexcept override;
-    QHash<QString, IMcBeanBuilderPtr> getBeanBuilders() const noexcept override;
+    void operator()(const QVariantList &varList) const noexcept { call(varList); }
 
-private:
-    QList<QString> &m_registerBeanNames;
-    QHash<QString, IMcBeanBuilderPtr> m_hash;
+    void operator()(const QVariant &var) const noexcept { call(var); }
+
+    template<typename... Args>
+    void operator()(Args &&...args) const noexcept
+    {
+        call(std::forward<Args>(args)...);
+    }
 };
 
-class BeanReaderTest : public QObject
-{
-    Q_OBJECT
-private Q_SLOTS:
-    void readerCase();
-};
+MC_DECL_POINTER(IMcCallback)

@@ -11,14 +11,22 @@ set(PROJECT_HEADERS
     Config/McRuntimeConfig.h
     Config/McRuntimeConfigObject.h
     Config/McRuntimeConfigValue.h
+    Destroyer/IMcDestroyer.h
     Event/McEventDispatcher.h
     Event/McEventRouter.h
-    Utils/McSlotObjectWrapper.h
-    Utils/IMcDestroyer.h
-    Utils/IMcPluginChecker.h
     Utils/McJsonUtils.h
-    Utils/Impl/McNormalPluginChecker.h
+    Utils/McSlotObjectWrapper.h
+    Utils/McCancel.h
+    Utils/McPause.h
+    Utils/McProgress.h
+    PluginChecker/IMcPluginChecker.h
+    PluginChecker/Impl/McNormalPluginChecker.h
     MemoryLibrary/McMemoryLibrary.h
+    Callback/IMcCallback.h
+    Callback/Impl/McAbstractSyncCallback.h
+    Callback/Impl/McAbstractAsyncCallback.h
+    Callback/Impl/McCppSyncCallback.h
+    Callback/Impl/McCppAsyncCallback.h
 )
 
 set(PROJECT_SOURCES
@@ -31,8 +39,15 @@ set(PROJECT_SOURCES
     Event/McEventRouter.cpp
     Utils/McSlotObjectWrapper.cpp
     Utils/McJsonUtils.cpp
-    Utils/Impl/McNormalPluginChecker.cpp
+    Utils/McCancel.cpp
+    Utils/McPause.cpp
+    Utils/McProgress.cpp
+    PluginChecker/Impl/McNormalPluginChecker.cpp
     MemoryLibrary/McMemoryLibrary.cpp
+    Callback/Impl/McAbstractSyncCallback.cpp
+    Callback/Impl/McAbstractAsyncCallback.cpp
+    Callback/Impl/McCppSyncCallback.cpp
+    Callback/Impl/McCppAsyncCallback.cpp
 )
 
 if(WIN32)
