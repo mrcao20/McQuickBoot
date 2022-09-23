@@ -24,5 +24,5 @@ add_executable(${PROJECT_NAME}
     ${PROJECT_RESOURCES}
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Concurrent
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Concurrent
     McCore McLog)

@@ -24,4 +24,4 @@ add_executable(${PROJECT_NAME}
     ${PROJECT_RESOURCES}
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets McCore McIoc McWidget)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets McCore McIoc McWidget)

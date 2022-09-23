@@ -23,22 +23,26 @@
  */
 #pragma once
 
-#include <QtCore/QMetaType>
-#include <QtCore/QPointer>
-#include <QtCore/QSharedPointer>
-#include <QtCore/QVariant>
-#include <QtCore/QWeakPointer>
 #include <QtCore/QtGlobal>
 
-#include "Destroyer/IMcDestroyer.h"
-#include "McMacroGlobal.h"
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+# include "McMetaType_Qt5.h"
+#else
+# include <QtCore/QMetaType>
+# include <QtCore/QPointer>
+# include <QtCore/QSharedPointer>
+# include <QtCore/QVariant>
+# include <QtCore/QWeakPointer>
 
-#define MC_INTERFACES(...) \
- public: \
- using McPrivateTypeList = McPrivate::TypeList<__VA_ARGS__>; \
- using McPrivateTypeListHelper = void; \
+# include "Destroyer/IMcDestroyer.h"
+# include "McMacroGlobal.h"
+
+# define MC_INTERFACES(...) \
+  public: \
+  using McPrivateTypeList = McPrivate::TypeList<__VA_ARGS__>; \
+  using McPrivateTypeListHelper = void; \
 \
- private:
+  private:
 
 inline bool operator<(const QVariant &left, const QVariant &right)
 {
@@ -653,3 +657,4 @@ inline void mcRegisterContainer() noexcept
         }
     }
 }
+#endif

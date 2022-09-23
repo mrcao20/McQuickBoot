@@ -16,4 +16,4 @@ add_executable(${PROJECT_NAME}
     ${PROJECT_SOURCES}
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Test Qt6::Concurrent McCore)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Test Qt${QT_VERSION_MAJOR}::Concurrent McCore)

@@ -29,6 +29,10 @@ set(PROJECT_HEADERS
     Callback/Impl/McCppAsyncCallback.h
 )
 
+if(QT_VERSION_MAJOR EQUAL 5)
+    list(APPEND PROJECT_HEADERS McMetaType_Qt5.h)
+endif()
+
 set(PROJECT_SOURCES
     McGlobal.cpp
     McMetaType.cpp
@@ -77,7 +81,7 @@ add_library(${PROJECT_NAME} ${MC_BUILD_TYPE}
     ${PROJECT_SOURCES}
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Core)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE MC_CORE_LIBRARY)
 

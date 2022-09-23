@@ -41,7 +41,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 COMPONENTS Core Widgets Concurrent REQUIRED)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Widgets Concurrent)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets Concurrent)
 
 set(CMAKE_DEBUG_POSTFIX "d")
 
@@ -65,7 +66,7 @@ else()
 endif()
 
 if(INSTALL_TO_QT)
-    get_target_property(qmake Qt6::qmake LOCATION)
+    get_target_property(qmake Qt${QT_VERSION_MAJOR}::qmake LOCATION)
     execute_process(
         COMMAND ${qmake} -query QT_INSTALL_HEADERS
         OUTPUT_VARIABLE QT_INSTALL_HEADERS

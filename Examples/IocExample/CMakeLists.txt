@@ -27,4 +27,4 @@ add_executable(${PROJECT_NAME}
     ${PROJECT_FORMS}
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets McCore McIoc)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets McCore McIoc)

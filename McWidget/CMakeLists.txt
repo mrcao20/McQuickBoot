@@ -26,7 +26,7 @@ add_library(${PROJECT_NAME} ${MC_BUILD_TYPE}
     ${PROJECT_SOURCES}
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core Qt6::Widgets
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Widgets
     McCore McIoc)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE MC_WIDGET_LIBRARY)

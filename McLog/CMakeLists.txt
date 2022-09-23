@@ -91,7 +91,7 @@ add_library(${PROJECT_NAME} ${MC_BUILD_TYPE}
     ${PROJECT_SOURCES}
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Core
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Core
     McCore McIoc)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE MC_LOG_LIBRARY)
