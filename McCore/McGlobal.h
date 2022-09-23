@@ -53,7 +53,8 @@ struct MetaTypeHelper<QtPrivate::List<Args...>>
     static QList<QMetaType> metaTypes() noexcept
     {
         QList<QMetaType> ms;
-        (ms << ... << QMetaType::fromType<Args>());
+        //! 去除安卓上的警告
+        Q_UNUSED((ms << ... << QMetaType::fromType<Args>()));
         return ms;
     }
 #endif

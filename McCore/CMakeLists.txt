@@ -27,6 +27,8 @@ set(PROJECT_HEADERS
     Callback/Impl/McAbstractAsyncCallback.h
     Callback/Impl/McCppSyncCallback.h
     Callback/Impl/McCppAsyncCallback.h
+    Connection/McAbstractConnection.h
+    Connection/McCppConnection.h
 )
 
 if(QT_VERSION_MAJOR EQUAL 5)
@@ -52,6 +54,8 @@ set(PROJECT_SOURCES
     Callback/Impl/McAbstractAsyncCallback.cpp
     Callback/Impl/McCppSyncCallback.cpp
     Callback/Impl/McCppAsyncCallback.cpp
+    Connection/McAbstractConnection.cpp
+    Connection/McCppConnection.cpp
 )
 
 if(WIN32)

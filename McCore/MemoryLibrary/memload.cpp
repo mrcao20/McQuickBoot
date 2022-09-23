@@ -63,9 +63,12 @@ int open_ramfs(void)
 
     if (kernel_version_ge37()) {
         shm_fd = my_memfd_create(MEMLOAD_SHM_NAME, 1);
-
     } else {
+#ifdef Q_OS_ANDROID
+# warning "Android maybe not support load memory library"
+#else
         shm_fd = shm_open(MEMLOAD_SHM_NAME, O_RDWR | O_CREAT, S_IRWXU);
+#endif
     }
 
     return shm_fd;
