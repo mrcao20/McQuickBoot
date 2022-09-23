@@ -42,12 +42,21 @@ struct MetaTypeHelper;
 template<typename... Args>
 struct MetaTypeHelper<QtPrivate::List<Args...>>
 {
+#ifdef MC_USE_QT5
+    static QList<int> metaTypes() noexcept
+    {
+        QList<int> ms;
+        (ms << ... << qMetaTypeId<Args>());
+        return ms;
+    }
+#else
     static QList<QMetaType> metaTypes() noexcept
     {
         QList<QMetaType> ms;
         (ms << ... << QMetaType::fromType<Args>());
         return ms;
     }
+#endif
 };
 
 template<typename T>
