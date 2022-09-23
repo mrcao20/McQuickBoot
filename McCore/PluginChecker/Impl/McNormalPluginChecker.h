@@ -41,4 +41,4 @@ private:
     QJsonObject m_checkJson;
 };
 
-MC_DECL_POINTER(McNormalPluginChecker)
+MC_DECL_METATYPE(McNormalPluginChecker)

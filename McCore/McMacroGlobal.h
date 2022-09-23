@@ -177,9 +177,23 @@
  MC_INTERFACES(Parent MC_FULL_DEFINE_HELPER(__VA_ARGS__)) \
  MC_DECL_SUPER(Parent)
 
-#define MC_DECL_METATYPE(Class) MC_DECL_POINTER(Class)
+#ifdef MC_USE_QT5
+# define MC_DECL_METATYPE_NONE(Class) \
+  Q_DECLARE_METATYPE(Class##Ptr) \
+  Q_DECLARE_METATYPE(Class *)
 
-#define MC_DECL_METATYPE_NS(Class, NS) MC_DECL_POINTER_NS(Class, NS)
+# define MC_DECL_METATYPE(Class) \
+  MC_DECL_POINTER(Class) \
+  MC_DECL_METATYPE_NONE(Class)
+
+# define MC_DECL_METATYPE_NS(Class, NS) \
+  MC_DECL_POINTER_NS(Class, NS) \
+  MC_DECL_METATYPE_NONE(NS::Class)
+#else
+# define MC_DECL_METATYPE(Class) MC_DECL_POINTER(Class)
+
+# define MC_DECL_METATYPE_NS(Class, NS) MC_DECL_POINTER_NS(Class, NS)
+#endif
 
 #define MC_BASE_DESTRUCTOR(Class) virtual ~Class() = default;
 #define MC_DEFINE_INTERFACE(Class) \

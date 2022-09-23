@@ -42,3 +42,5 @@ protected:
 
     void customEvent(QEvent *event) override;
 };
+
+MC_DECL_METATYPE(McAbstractSyncCallback)

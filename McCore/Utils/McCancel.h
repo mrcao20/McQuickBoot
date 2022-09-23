@@ -79,3 +79,5 @@ public:
 private:
     QExplicitlySharedDataPointer<McCancelSharedData> d;
 };
+
+MC_DECL_METATYPE(McCancel)

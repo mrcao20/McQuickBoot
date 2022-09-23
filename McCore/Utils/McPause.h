@@ -81,3 +81,5 @@ public:
 private:
     QExplicitlySharedDataPointer<McPauseSharedData> d;
 };
+
+MC_DECL_METATYPE(McPause)

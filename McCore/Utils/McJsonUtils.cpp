@@ -23,7 +23,8 @@
  */
 #include "McJsonUtils.h"
 
-#include <QMetaClassInfo>
+#ifdef MC_USE_QT6
+# include <QMetaClassInfo>
 
 namespace {
 struct JsonUtils
@@ -356,3 +357,4 @@ QVariant McJsonUtils::deserialize(const QVariant &origin, const QMetaType &qmeta
 {
     return mcJsonUtils->deserialize(origin, qmetaType);
 }
+#endif

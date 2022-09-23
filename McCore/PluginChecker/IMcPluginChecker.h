@@ -35,4 +35,4 @@ public:
     virtual bool check(const QJsonObject &json) noexcept = 0;
 };
 
-MC_DECL_POINTER(IMcPluginChecker)
+MC_DECL_METATYPE(IMcPluginChecker)

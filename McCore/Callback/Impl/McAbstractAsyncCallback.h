@@ -31,3 +31,5 @@ class MC_CORE_EXPORT McAbstractAsyncCallback : public IMcCallback
 public:
     void destroy() noexcept override;
 };
+
+MC_DECL_METATYPE(McAbstractAsyncCallback)

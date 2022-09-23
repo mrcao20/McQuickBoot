@@ -61,4 +61,4 @@ public:
     }
 };
 
-MC_DECL_POINTER(IMcCallback)
+MC_DECL_METATYPE(IMcCallback)

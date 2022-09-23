@@ -31,10 +31,6 @@ set(PROJECT_HEADERS
     Connection/McCppConnection.h
 )
 
-if(QT_VERSION_MAJOR EQUAL 5)
-    list(APPEND PROJECT_HEADERS McMetaType_Qt5.h)
-endif()
-
 set(PROJECT_SOURCES
     McGlobal.cpp
     McMetaType.cpp
@@ -57,6 +53,18 @@ set(PROJECT_SOURCES
     Connection/McAbstractConnection.cpp
     Connection/McCppConnection.cpp
 )
+
+if(QT_VERSION_MAJOR EQUAL 5)
+    list(APPEND PROJECT_HEADERS
+        McMetaType_Qt5.h
+        Utils/McJsonUtils_Qt5.h
+    )
+
+    list(APPEND PROJECT_SOURCES
+        McMetaType_Qt5.cpp
+        Utils/McJsonUtils_Qt5.cpp
+    )
+endif()
 
 if(WIN32)
     list(APPEND PROJECT_HEADERS

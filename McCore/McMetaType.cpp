@@ -23,6 +23,7 @@
  */
 #include "McMetaType.h"
 
+#ifdef MC_USE_QT6
 MC_GLOBAL_STATIC_BEGIN(coreMetaTypeStaticData)
 QVector<McMetaType> metaTypes;
 QVector<McListMetaType> listMetaTypes;
@@ -246,3 +247,4 @@ QVector<McMapMetaType> McMapMetaType::metaTypes() noexcept
 {
     return coreMetaTypeStaticData->mapMetaTypes;
 }
+#endif

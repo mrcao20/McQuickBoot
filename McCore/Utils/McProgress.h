@@ -108,3 +108,5 @@ public:
 private:
     QExplicitlySharedDataPointer<McProgressSharedData> d;
 };
+
+MC_DECL_METATYPE(McProgress)

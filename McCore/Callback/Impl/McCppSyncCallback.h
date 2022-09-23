@@ -70,3 +70,5 @@ protected:
 private:
     std::optional<McSlotObjectWrapper> m_callback;
 };
+
+MC_DECL_METATYPE(McCppSyncCallback)
