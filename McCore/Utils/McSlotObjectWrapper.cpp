@@ -23,17 +23,29 @@
  */
 #include "McSlotObjectWrapper.h"
 
-#include "Utils/McJsonUtils.h"
+#include <QPointer>
+#include <QScopeGuard>
+
+#include "McJsonUtils.h"
 
 MC_DECL_PRIVATE_DATA(McSlotObjectWrapper)
 bool hasRecever{false};
 QPointer<const QObject> recever;
+#ifdef MC_USE_QT5
+QList<int> qmetaTypes;
+#else
 QList<QMetaType> qmetaTypes;
+#endif
 QtPrivate::QSlotObjectBase *method{nullptr};
 MC_DECL_PRIVATE_DATA_END
 
+#ifdef MC_USE_QT5
+McSlotObjectWrapper::McSlotObjectWrapper(
+    const QObject *recever, const QList<int> &qmetaTypes, QtPrivate::QSlotObjectBase *method) noexcept
+#else
 McSlotObjectWrapper::McSlotObjectWrapper(
     const QObject *recever, const QList<QMetaType> &qmetaTypes, QtPrivate::QSlotObjectBase *method) noexcept
+#endif
 {
     MC_NEW_PRIVATE_DATA(McSlotObjectWrapper);
 
@@ -108,11 +120,25 @@ void McSlotObjectWrapper::call(const QVariantList &varList) const noexcept
         QVariant &body = argList[i];
         if (i >= d->qmetaTypes.length()) {
             args[i + 1] = const_cast<void *>(body.constData());
+#ifdef MC_USE_QT5
+        } else if (d->qmetaTypes.at(i) == qMetaTypeId<QVariant>()) {
+#else
         } else if (d->qmetaTypes.at(i) == QMetaType::fromType<QVariant>()) {
+#endif
             body = McJsonUtils::serialize(body);
             args[i + 1] = const_cast<void *>((const void *)&body);
+#ifdef MC_USE_QT5
+        } else if (d->qmetaTypes.at(i) != -1) {
+#else
         } else if (d->qmetaTypes.at(i).isValid()) {
+#endif
             auto qmetaType = d->qmetaTypes.at(i);
+#ifdef MC_USE_QT5
+            if (body.userType() != qmetaType) {
+                qCritical("cannot construct object for className: %s", QMetaType::typeName(qmetaType));
+                return;
+            }
+#else
             if (body.metaType() != qmetaType) {
                 body = McJsonUtils::serialize(body);
                 if (body.metaType() == QMetaType::fromType<QJsonObject>()) {
@@ -123,6 +149,7 @@ void McSlotObjectWrapper::call(const QVariantList &varList) const noexcept
                     return;
                 }
             }
+#endif
             args[i + 1] = const_cast<void *>(body.constData());
         }
     }

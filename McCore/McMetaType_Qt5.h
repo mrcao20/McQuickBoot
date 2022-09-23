@@ -22,3 +22,35 @@
  * SOFTWARE.
  */
 #pragma once
+
+#define MC_TYPELIST(...) \
+ public: \
+ using McPrivateTypeList = McPrivate::McTypeList<__VA_ARGS__>; \
+ using McPrivateTypeListHelper = void; \
+\
+ private:
+
+#define MC_INTERFACES(...) MC_TYPELIST(__VA_ARGS__)
+
+namespace McPrivate {
+template<typename...>
+struct McTypeList;
+
+template<typename T, typename... U>
+struct McTypeList<T, U...>
+{
+    using Head = T;
+    using Tails = McTypeList<U...>;
+};
+
+// 针对空list的特化
+template<>
+struct McTypeList<>
+{
+};
+} // namespace McPrivate
+
+template<typename T>
+inline void mcRegisterMetaTypeSimple() noexcept
+{
+}

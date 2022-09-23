@@ -26,6 +26,7 @@
 #include <QCoreApplication>
 #include <QElapsedTimer>
 #include <QPluginLoader>
+#include <QScopeGuard>
 #include <QStandardPaths>
 #include <QTimer>
 #include <QUrl>

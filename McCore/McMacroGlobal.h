@@ -44,6 +44,12 @@
 # define MC_CORE_EXPORT
 #endif
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+# define MC_USE_QT5
+#else
+# define MC_USE_QT6
+#endif
+
 #define MC_STRINGIFY(x) #x
 
 #define MC_SAFETY_DELETE(p) \

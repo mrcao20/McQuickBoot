@@ -30,8 +30,13 @@ MC_FORWARD_DECL_PRIVATE_DATA(McSlotObjectWrapper)
 class MC_CORE_EXPORT McSlotObjectWrapper
 {
 public:
+#ifdef MC_USE_QT5
+    McSlotObjectWrapper(
+        const QObject *recever, const QList<int> &qmetaTypes, QtPrivate::QSlotObjectBase *method) noexcept;
+#else
     McSlotObjectWrapper(
         const QObject *recever, const QList<QMetaType> &qmetaTypes, QtPrivate::QSlotObjectBase *method) noexcept;
+#endif
     ~McSlotObjectWrapper();
     McSlotObjectWrapper(const McSlotObjectWrapper &o) noexcept;
     McSlotObjectWrapper &operator=(const McSlotObjectWrapper &o) noexcept;

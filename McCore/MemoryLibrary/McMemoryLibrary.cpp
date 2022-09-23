@@ -410,7 +410,7 @@ MC_GLOBAL_STATIC_END(staticData)
 
 McMemoryLibrary::McMemoryLibrary() noexcept
 {
-    d.reset(new McMemoryLibraryData());
+    d = new McMemoryLibraryData();
 }
 
 McMemoryLibrary::McMemoryLibrary(const QByteArray &data) noexcept
@@ -450,7 +450,7 @@ void McMemoryLibrary::setData(const QByteArray &data) noexcept
     auto result = hash.result();
     d = staticData->libraryLoaderDatas.value(result);
     if (!d) {
-        d.reset(new McMemoryLibraryData());
+        d = new McMemoryLibraryData();
         d->hashCode = result.toHex();
         d->libraryData = data;
         staticData->libraryLoaderDatas.insert(result, d);

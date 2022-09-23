@@ -23,6 +23,8 @@
  */
 #pragma once
 
+#include <optional>
+
 #include "../../Utils/McSlotObjectWrapper.h"
 #include "McAbstractAsyncCallback.h"
 

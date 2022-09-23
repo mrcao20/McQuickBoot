@@ -23,9 +23,9 @@
  */
 #pragma once
 
-#include <QtCore/QtGlobal>
+#include "McMacroGlobal.h"
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#ifdef MC_USE_QT5
 # include "McMetaType_Qt5.h"
 #else
 # include <QtCore/QMetaType>
@@ -33,9 +33,9 @@
 # include <QtCore/QSharedPointer>
 # include <QtCore/QVariant>
 # include <QtCore/QWeakPointer>
+# include <QtCore/QtGlobal>
 
 # include "Destroyer/IMcDestroyer.h"
-# include "McMacroGlobal.h"
 
 # define MC_INTERFACES(...) \
   public: \
