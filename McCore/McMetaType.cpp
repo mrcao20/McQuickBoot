@@ -23,7 +23,6 @@
  */
 #include "McMetaType.h"
 
-#ifdef MC_USE_QT6
 MC_GLOBAL_STATIC_BEGIN(coreMetaTypeStaticData)
 QVector<McMetaType> metaTypes;
 QVector<McListMetaType> listMetaTypes;
@@ -35,37 +34,20 @@ void McMetaType::registerMetaType(const McMetaType &type) noexcept
     if (!type.isValid() || type.d->isRegistered.loadRelaxed()) {
         return;
     }
+#ifdef MC_USE_QT6
     type.d->metaType.id();
     type.d->pMetaType.id();
     type.d->sMetaType.id();
+#endif
     type.d->isRegistered.storeRelaxed(true);
     coreMetaTypeStaticData->metaTypes.append(type);
 }
 
+#ifdef MC_USE_QT6
 McMetaType McMetaType::fromQMetaType(const QMetaType &type) noexcept
 {
     auto itr = std::find_if(coreMetaTypeStaticData->metaTypes.constBegin(),
         coreMetaTypeStaticData->metaTypes.constEnd(), [&type](const McMetaType &t) { return type == t.d->metaType; });
-    if (itr == coreMetaTypeStaticData->metaTypes.constEnd()) {
-        return McMetaType();
-    }
-    return *itr;
-}
-
-McMetaType McMetaType::fromPQMetaType(const QMetaType &type) noexcept
-{
-    auto itr = std::find_if(coreMetaTypeStaticData->metaTypes.constBegin(),
-        coreMetaTypeStaticData->metaTypes.constEnd(), [&type](const McMetaType &t) { return type == t.d->pMetaType; });
-    if (itr == coreMetaTypeStaticData->metaTypes.constEnd()) {
-        return McMetaType();
-    }
-    return *itr;
-}
-
-McMetaType McMetaType::fromSQMetaType(const QMetaType &type) noexcept
-{
-    auto itr = std::find_if(coreMetaTypeStaticData->metaTypes.constBegin(),
-        coreMetaTypeStaticData->metaTypes.constEnd(), [&type](const McMetaType &t) { return type == t.d->sMetaType; });
     if (itr == coreMetaTypeStaticData->metaTypes.constEnd()) {
         return McMetaType();
     }
@@ -92,49 +74,11 @@ McMetaType McMetaType::fromTQMetaType(const QMetaType &type) noexcept
     return *itr;
 }
 
-McMetaType McMetaType::fromFuzzyQMetaType(const QMetaType &type) noexcept
-{
-    McMetaType metaType;
-    auto flags = type.flags();
-    if (flags.testFlag(QMetaType::IsPointer)) {
-        metaType = McMetaType::fromPQMetaType(type);
-    } else if (flags.testFlag(QMetaType::WeakPointerToQObject)) {
-        metaType = McMetaType::fromWQMetaType(type);
-    } else if (flags.testFlag(QMetaType::TrackingPointerToQObject)) {
-        metaType = McMetaType::fromTQMetaType(type);
-    } else {
-        metaType = McMetaType::fromSQMetaType(type);
-    }
-    return metaType;
-}
-
 McMetaType McMetaType::fromTypeName(const QByteArray &typeName) noexcept
 {
     auto itr = std::find_if(coreMetaTypeStaticData->metaTypes.constBegin(),
         coreMetaTypeStaticData->metaTypes.constEnd(),
         [&typeName](const McMetaType &t) { return typeName == t.d->metaType.name(); });
-    if (itr == coreMetaTypeStaticData->metaTypes.constEnd()) {
-        return McMetaType();
-    }
-    return *itr;
-}
-
-McMetaType McMetaType::fromPTypeName(const QByteArray &typeName) noexcept
-{
-    auto itr = std::find_if(coreMetaTypeStaticData->metaTypes.constBegin(),
-        coreMetaTypeStaticData->metaTypes.constEnd(),
-        [&typeName](const McMetaType &t) { return typeName == t.d->pMetaType.name(); });
-    if (itr == coreMetaTypeStaticData->metaTypes.constEnd()) {
-        return McMetaType();
-    }
-    return *itr;
-}
-
-McMetaType McMetaType::fromSTypeName(const QByteArray &typeName) noexcept
-{
-    auto itr = std::find_if(coreMetaTypeStaticData->metaTypes.constBegin(),
-        coreMetaTypeStaticData->metaTypes.constEnd(),
-        [&typeName](const McMetaType &t) { return typeName == t.d->sMetaType.name(); });
     if (itr == coreMetaTypeStaticData->metaTypes.constEnd()) {
         return McMetaType();
     }
@@ -157,6 +101,97 @@ McMetaType McMetaType::fromTTypeName(const QByteArray &typeName) noexcept
     auto itr = std::find_if(coreMetaTypeStaticData->metaTypes.constBegin(),
         coreMetaTypeStaticData->metaTypes.constEnd(),
         [&typeName](const McMetaType &t) { return typeName == t.d->tMetaType.name(); });
+    if (itr == coreMetaTypeStaticData->metaTypes.constEnd()) {
+        return McMetaType();
+    }
+    return *itr;
+}
+#endif
+
+#ifdef MC_USE_QT5
+McMetaType McMetaType::fromPQMetaType(int type) noexcept
+#else
+McMetaType McMetaType::fromPQMetaType(const QMetaType &type) noexcept
+#endif
+{
+    auto itr = std::find_if(coreMetaTypeStaticData->metaTypes.constBegin(),
+        coreMetaTypeStaticData->metaTypes.constEnd(), [&type](const McMetaType &t) { return type == t.d->pMetaType; });
+    if (itr == coreMetaTypeStaticData->metaTypes.constEnd()) {
+        return McMetaType();
+    }
+    return *itr;
+}
+
+#ifdef MC_USE_QT5
+McMetaType McMetaType::fromSQMetaType(int type) noexcept
+#else
+McMetaType McMetaType::fromSQMetaType(const QMetaType &type) noexcept
+#endif
+{
+    auto itr = std::find_if(coreMetaTypeStaticData->metaTypes.constBegin(),
+        coreMetaTypeStaticData->metaTypes.constEnd(), [&type](const McMetaType &t) { return type == t.d->sMetaType; });
+    if (itr == coreMetaTypeStaticData->metaTypes.constEnd()) {
+        return McMetaType();
+    }
+    return *itr;
+}
+
+#ifdef MC_USE_QT5
+McMetaType McMetaType::fromFuzzyQMetaType(int type) noexcept
+{
+    McMetaType metaType;
+    auto flags = QMetaType::typeFlags(type);
+    if (flags.testFlag(QMetaType::PointerToQObject) || flags.testFlag(QMetaType::PointerToGadget)) {
+        metaType = McMetaType::fromPQMetaType(type);
+    } else {
+        metaType = McMetaType::fromSQMetaType(type);
+    }
+    return metaType;
+}
+#else
+McMetaType McMetaType::fromFuzzyQMetaType(const QMetaType &type) noexcept
+{
+    McMetaType metaType;
+    auto flags = type.flags();
+    if (flags.testFlag(QMetaType::IsPointer)) {
+        metaType = McMetaType::fromPQMetaType(type);
+    } else if (flags.testFlag(QMetaType::WeakPointerToQObject)) {
+        metaType = McMetaType::fromWQMetaType(type);
+    } else if (flags.testFlag(QMetaType::TrackingPointerToQObject)) {
+        metaType = McMetaType::fromTQMetaType(type);
+    } else {
+        metaType = McMetaType::fromSQMetaType(type);
+    }
+    return metaType;
+}
+#endif
+
+McMetaType McMetaType::fromPTypeName(const QByteArray &typeName) noexcept
+{
+    auto itr = std::find_if(coreMetaTypeStaticData->metaTypes.constBegin(),
+        coreMetaTypeStaticData->metaTypes.constEnd(), [&typeName](const McMetaType &t) {
+#ifdef MC_USE_QT5
+            return typeName == QMetaType::typeName(t.d->pMetaType);
+#else
+            return typeName == t.d->pMetaType.name();
+#endif
+        });
+    if (itr == coreMetaTypeStaticData->metaTypes.constEnd()) {
+        return McMetaType();
+    }
+    return *itr;
+}
+
+McMetaType McMetaType::fromSTypeName(const QByteArray &typeName) noexcept
+{
+    auto itr = std::find_if(coreMetaTypeStaticData->metaTypes.constBegin(),
+        coreMetaTypeStaticData->metaTypes.constEnd(), [&typeName](const McMetaType &t) {
+#ifdef MC_USE_QT5
+            return typeName == QMetaType::typeName(t.d->sMetaType);
+#else
+            return typeName == t.d->sMetaType.name();
+#endif
+        });
     if (itr == coreMetaTypeStaticData->metaTypes.constEnd()) {
         return McMetaType();
     }
@@ -202,11 +237,17 @@ void McListMetaType::registerMetaType(const McListMetaType &type) noexcept
         return;
     }
     type.d->isRegistered.storeRelaxed(true);
+#ifdef MC_USE_QT6
     type.d->metaType.id();
+#endif
     coreMetaTypeStaticData->listMetaTypes.append(type);
 }
 
+#ifdef MC_USE_QT5
+McListMetaType McListMetaType::fromQMetaType(int type) noexcept
+#else
 McListMetaType McListMetaType::fromQMetaType(const QMetaType &type) noexcept
+#endif
 {
     auto itr = std::find_if(coreMetaTypeStaticData->listMetaTypes.constBegin(),
         coreMetaTypeStaticData->listMetaTypes.constEnd(),
@@ -228,11 +269,17 @@ void McMapMetaType::registerMetaType(const McMapMetaType &type) noexcept
         return;
     }
     type.d->isRegistered.storeRelaxed(true);
+#ifdef MC_USE_QT6
     type.d->metaType.id();
+#endif
     coreMetaTypeStaticData->mapMetaTypes.append(type);
 }
 
+#ifdef MC_USE_QT5
+McMapMetaType McMapMetaType::fromQMetaType(int type) noexcept
+#else
 McMapMetaType McMapMetaType::fromQMetaType(const QMetaType &type) noexcept
+#endif
 {
     auto itr = std::find_if(coreMetaTypeStaticData->mapMetaTypes.constBegin(),
         coreMetaTypeStaticData->mapMetaTypes.constEnd(),
@@ -247,4 +294,3 @@ QVector<McMapMetaType> McMapMetaType::metaTypes() noexcept
 {
     return coreMetaTypeStaticData->mapMetaTypes;
 }
-#endif

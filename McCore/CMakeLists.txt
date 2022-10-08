@@ -56,12 +56,10 @@ set(PROJECT_SOURCES
 
 if(QT_VERSION_MAJOR EQUAL 5)
     list(APPEND PROJECT_HEADERS
-        McMetaType_Qt5.h
         Utils/McJsonUtils_Qt5.h
     )
 
     list(APPEND PROJECT_SOURCES
-        McMetaType_Qt5.cpp
         Utils/McJsonUtils_Qt5.cpp
     )
 endif()
