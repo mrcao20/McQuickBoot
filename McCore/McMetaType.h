@@ -519,10 +519,11 @@ class MetaTypeInterface
 public:
     //! 是否已经保存在容器中
     mutable QAtomicInteger<bool> isRegistered;
+    using GetMetaTypeIdFn = int (*)();
     //! 指针类型
-    int pMetaType;
+    GetMetaTypeIdFn pMetaType;
     //! 智能指针类型
-    int sMetaType;
+    GetMetaTypeIdFn sMetaType;
     //! 构造原始类型指针的函数指针
     using CreatePointerFn = void *(*)();
     CreatePointerFn createPointer;
@@ -539,9 +540,9 @@ public:
     //! 是否已经保存在容器中
     mutable QAtomicInteger<bool> isRegistered;
     //! 列表自身类型
-    int metaType;
+    MetaTypeInterface::GetMetaTypeIdFn metaType;
     //! 容器内存储的数据类型
-    int valueMetaType;
+    MetaTypeInterface::GetMetaTypeIdFn valueMetaType;
 };
 
 class MapMetaTypeInterface
@@ -550,11 +551,11 @@ public:
     //! 是否已经保存在容器中
     mutable QAtomicInteger<bool> isRegistered;
     //! 映射自身类型
-    int metaType;
+    MetaTypeInterface::GetMetaTypeIdFn metaType;
     //! 容器内键的数据类型
-    int keyMetaType;
+    MetaTypeInterface::GetMetaTypeIdFn keyMetaType;
     //! 容器内值的数据类型
-    int valueMetaType;
+    MetaTypeInterface::GetMetaTypeIdFn valueMetaType;
 };
 #else
 class MetaTypeInterface
@@ -609,6 +610,22 @@ class MetaTypeForType
 {
 public:
 #ifdef MC_USE_QT5
+    static constexpr MetaTypeInterface::GetMetaTypeIdFn getPMetaTypeId() noexcept
+    {
+        return []() {
+            static int id = qRegisterMetaType<S *>();
+            return id;
+        };
+    }
+
+    static constexpr MetaTypeInterface::GetMetaTypeIdFn getSMetaTypeId() noexcept
+    {
+        return []() {
+            static int id = qRegisterMetaType<QSharedPointer<S>>(typenameHelper<QSharedPointer<S>>().data());
+            return id;
+        };
+    }
+
     static constexpr MetaTypeInterface::CreatePointerFn getCreatePointer() noexcept
     {
         if constexpr (std::is_default_constructible_v<S>) {
@@ -653,14 +670,68 @@ public:
     }
 };
 
+#ifdef MC_USE_QT5
+template<typename S>
+class ListMetaTypeForType
+{
+public:
+    static constexpr MetaTypeInterface::GetMetaTypeIdFn getMetaTypeId() noexcept
+    {
+        return []() {
+            static int id = qRegisterMetaType<S>(typenameHelper<S>().data());
+            return id;
+        };
+    }
+
+    static constexpr MetaTypeInterface::GetMetaTypeIdFn getValueMetaTypeId() noexcept
+    {
+        return []() {
+            static int id = qMetaTypeId<typename S::value_type>();
+            return id;
+        };
+    }
+};
+#endif
+
+#ifdef MC_USE_QT5
+template<typename S>
+class MapMetaTypeForType
+{
+public:
+    static constexpr MetaTypeInterface::GetMetaTypeIdFn getMetaTypeId() noexcept
+    {
+        return []() {
+            static int id = qRegisterMetaType<S>(typenameHelper<S>().data());
+            return id;
+        };
+    }
+
+    static constexpr MetaTypeInterface::GetMetaTypeIdFn getKeyMetaTypeId() noexcept
+    {
+        return []() {
+            static int id = qMetaTypeId<typename S::key_type>();
+            return id;
+        };
+    }
+
+    static constexpr MetaTypeInterface::GetMetaTypeIdFn getValueMetaTypeId() noexcept
+    {
+        return []() {
+            static int id = qMetaTypeId<typename S::mapped_type>();
+            return id;
+        };
+    }
+};
+#endif
+
 template<typename T, typename Enable = void>
 struct MetaTypeInterfaceWrapper
 {
 #ifdef MC_USE_QT5
     static inline const MetaTypeInterface metaType = {
         /*.isRegistered=*/false,
-        /*.pMetaType=*/qRegisterMetaType<T *>(),
-        /*.sMetaType=*/qRegisterMetaType<QSharedPointer<T>>(typenameHelper<QSharedPointer<T>>().data()),
+        /*.pMetaType=*/MetaTypeForType<T>::getPMetaTypeId(),
+        /*.sMetaType=*/MetaTypeForType<T>::getSMetaTypeId(),
         /*.createPointer=*/MetaTypeForType<T>::getCreatePointer(),
         /*.createSharedPointer=*/MetaTypeForType<T>::getCreateSharedPointer(),
         /*.parents=*/nullptr,
@@ -685,8 +756,8 @@ struct MetaTypeInterfaceWrapper<T, typename std::enable_if<QtPrivate::IsPointerT
 #ifdef MC_USE_QT5
     static inline const MetaTypeInterface metaType = {
         /*.isRegistered=*/false,
-        /*.pMetaType=*/qRegisterMetaType<T *>(),
-        /*.sMetaType=*/qRegisterMetaType<QSharedPointer<T>>(typenameHelper<QSharedPointer<T>>().data()),
+        /*.pMetaType=*/MetaTypeForType<T>::getPMetaTypeId(),
+        /*.sMetaType=*/MetaTypeForType<T>::getSMetaTypeId(),
         /*.createPointer=*/MetaTypeForType<T>::getCreatePointer(),
         /*.createSharedPointer=*/MetaTypeForType<T>::getCreateSharedPointer(),
         /*.parents=*/nullptr,
@@ -711,8 +782,8 @@ struct ListMetaTypeInterfaceWrapper
 #ifdef MC_USE_QT5
     static inline const ListMetaTypeInterface metaType = {
         /*.isRegistered=*/false,
-        /*.metaType=*/qRegisterMetaType<T>(typenameHelper<T>().data()),
-        /*.valueMetaType=*/qMetaTypeId<typename T::value_type>(),
+        /*.metaType=*/ListMetaTypeForType<T>::getMetaTypeId(),
+        /*.valueMetaType=*/ListMetaTypeForType<T>::getValueMetaTypeId(),
     };
 #else
     static inline constexpr const ListMetaTypeInterface metaType = {
@@ -729,9 +800,9 @@ struct MapMetaTypeInterfaceWrapper
 #ifdef MC_USE_QT5
     static inline const MapMetaTypeInterface metaType = {
         /*.isRegistered=*/false,
-        /*.metaType=*/qRegisterMetaType<T>(typenameHelper<T>().data()),
-        /*.keyMetaType=*/qMetaTypeId<typename T::key_type>(),
-        /*.valueMetaType=*/qMetaTypeId<typename T::mapped_type>(),
+        /*.metaType=*/MapMetaTypeForType<T>::getMetaTypeId(),
+        /*.keyMetaType=*/MapMetaTypeForType<T>::getKeyMetaTypeId(),
+        /*.valueMetaType=*/MapMetaTypeForType<T>::getValueMetaTypeId(),
     };
 #else
     static inline constexpr const MapMetaTypeInterface metaType = {
@@ -817,7 +888,7 @@ public:
         if (!isValid()) {
             return -1;
         }
-        return d->pMetaType;
+        return d->pMetaType();
     }
     //! 智能指针类型
     constexpr int sMetaType() const noexcept
@@ -825,7 +896,7 @@ public:
         if (!isValid()) {
             return -1;
         }
-        return d->sMetaType;
+        return d->sMetaType();
     }
 #else
     //! 原始类型
@@ -949,7 +1020,7 @@ public:
         if (!isValid()) {
             return -1;
         }
-        return d->metaType;
+        return d->metaType();
     }
     //! 容器内存储的数据类型
     constexpr int valueMetaType() const noexcept
@@ -957,7 +1028,7 @@ public:
         if (!isValid()) {
             return -1;
         }
-        return d->valueMetaType;
+        return d->valueMetaType();
     }
 #else
     ///! 列表自身类型
@@ -1028,7 +1099,7 @@ public:
         if (!isValid()) {
             return -1;
         }
-        return d->metaType;
+        return d->metaType();
     }
     //! 容器内键的数据类型
     constexpr int keyMetaType() const noexcept
@@ -1036,7 +1107,7 @@ public:
         if (!isValid()) {
             return -1;
         }
-        return d->keyMetaType;
+        return d->keyMetaType();
     }
     //! 容器内值的数据类型
     constexpr int valueMetaType() const noexcept
@@ -1044,7 +1115,7 @@ public:
         if (!isValid()) {
             return -1;
         }
-        return d->valueMetaType;
+        return d->valueMetaType();
     }
 #else
     //! 映射自身类型
