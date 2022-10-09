@@ -46,4 +46,4 @@ private:
     MC_DECL_PRIVATE(McByDayRollingFileAppender)
 };
 
-MC_DECL_POINTER(McByDayRollingFileAppender)
+MC_DECL_METATYPE(McByDayRollingFileAppender)

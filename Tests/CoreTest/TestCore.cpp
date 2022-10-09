@@ -57,7 +57,11 @@ void TestCore::jsonCase()
     object->gadgets.append(childGadget);
     {
         auto var = McJsonUtils::serialize(QVariant::fromValue(gadget));
+#ifdef MC_USE_QT5
+        QVERIFY(var.userType() == qMetaTypeId<GadgetDataPtr>());
+#else
         QVERIFY(var.metaType() == QMetaType::fromType<GadgetDataPtr>());
+#endif
         auto tmp = var.value<GadgetDataPtr>();
         QVERIFY(!tmp.isNull());
         QVERIFY(tmp->text == QLatin1String("gadgetData"));
@@ -77,7 +81,11 @@ void TestCore::jsonCase()
     }
     {
         auto var = McJsonUtils::serialize(QVariant::fromValue(object));
+#ifdef MC_USE_QT5
+        QVERIFY(var.userType() == qMetaTypeId<QJsonObject>());
+#else
         QVERIFY(var.metaType() == QMetaType::fromType<QJsonObject>());
+#endif
         QVERIFY(var.toJsonObject().value("text") == QLatin1String("objectData"));
         QVERIFY(var.toJsonObject().value("gadgets").toArray().size() == 2);
         QVERIFY(var.toJsonObject().value("gadgets").toArray().at(0).toObject().value("text")
@@ -87,7 +95,11 @@ void TestCore::jsonCase()
         QVERIFY(var.toJsonObject().value("gadgets").toArray().at(1).toObject().value("text")
                 == QLatin1String("childGadget"));
         QVERIFY(var.toJsonObject().value("gadgets").toArray().at(1).toObject().value("child").toObject().isEmpty());
+#ifdef MC_USE_QT5
+        auto tmp = McJsonUtils::deserialize(var, qMetaTypeId<ObjectDataPtr>()).value<ObjectDataPtr>();
+#else
         auto tmp = McJsonUtils::deserialize(var, QMetaType::fromType<ObjectDataPtr>()).value<ObjectDataPtr>();
+#endif
         QVERIFY(!tmp.isNull());
         QVERIFY(tmp->text == QLatin1String("objectData"));
         QVERIFY(tmp->gadgets.size() == 2);
@@ -120,7 +132,11 @@ void TestCore::eventDispatcherCase()
 void TestCore::metaTypeCase()
 {
     auto metaType = McMetaType::fromType<MetaTypeTest>();
+#ifdef MC_USE_QT5
+    auto star = metaType.createPointer();
+#else
     auto star = metaType.metaType().create();
+#endif
     QVERIFY(star != nullptr);
     QVariant var(metaType.pMetaType(), &star);
     auto test = var.value<MetaTypeTest *>();
@@ -128,13 +144,22 @@ void TestCore::metaTypeCase()
     auto itest = var.value<IMetaTypeTest *>();
     QVERIFY(itest != nullptr);
 
+#ifdef MC_USE_QT5
+    auto metaObj = QMetaType::metaObjectForType(metaType.pMetaType());
+#else
     auto metaObj = metaType.pMetaType().metaObject();
+#endif
     QVERIFY(metaObj != nullptr);
     auto index = metaObj->indexOfMethod("testFunc(IMetaTypeTestPtr)");
     QVERIFY(index != -1);
     auto me = metaObj->method(index);
+#ifdef MC_USE_QT5
+    QVERIFY(me.returnType() == qMetaTypeId<IMetaTypeTestPtr>());
+    QVERIFY(me.parameterType(0) == qMetaTypeId<IMetaTypeTestPtr>());
+#else
     QVERIFY(me.returnMetaType() == QMetaType::fromType<IMetaTypeTestPtr>());
     QVERIFY(me.parameterMetaType(0) == QMetaType::fromType<IMetaTypeTestPtr>());
+#endif
 }
 
 void TestCore::loadPluginCase()

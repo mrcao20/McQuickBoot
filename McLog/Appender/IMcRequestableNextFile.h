@@ -33,4 +33,4 @@ public:
     virtual bool forceRequestNextFile() noexcept = 0;
 };
 
-MC_DECL_POINTER(IMcRequestableNextFile)
+MC_DECL_METATYPE(IMcRequestableNextFile)

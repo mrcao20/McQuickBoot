@@ -23,16 +23,13 @@
  */
 #pragma once
 
-#include "../McGlobal.h"
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QJsonValue>
+#include <QList>
+#include <QMap>
 
-#ifdef MC_USE_QT5
-# include "McJsonUtils_Qt5.h"
-#else
-# include <QJsonArray>
-# include <QJsonObject>
-# include <QJsonValue>
-# include <QList>
-# include <QMap>
+#include "../McGlobal.h"
 
 class MC_CORE_EXPORT McJsonUtils
 {
@@ -69,7 +66,11 @@ public:
     static QJsonObject toJsonOnGadget(const QMap<QString, T> &gadgets) noexcept;
 
     static QVariant fromJson(const QByteArray &typeName, const QVariant &value) noexcept;
+#ifdef MC_USE_QT5
+    static QVariant fromJson(int qmetaType, const QVariant &value) noexcept;
+#else
     static QVariant fromJson(const QMetaType &qmetaType, const QVariant &value) noexcept;
+#endif
     template<typename T>
     static T fromJson(const QVariant &value) noexcept;
     template<typename T>
@@ -79,7 +80,11 @@ public:
 
     //! 序列化和反序列化只针对对象而言，所以origin存储的类型只能是QObject*、QSharedPointer<QObject>、Gadget*和QSharedPointer<Gadget>
     static QVariant serialize(const QVariant &origin) noexcept;
+#ifdef MC_USE_QT5
+    static QVariant deserialize(const QVariant &origin, int qmetaType) noexcept;
+#else
     static QVariant deserialize(const QVariant &origin, const QMetaType &qmetaType) noexcept;
+#endif
 };
 
 template<typename T>
@@ -179,7 +184,11 @@ QJsonObject McJsonUtils::toJsonOnGadget(const QMap<QString, T> &gadgets) noexcep
 template<typename T>
 T McJsonUtils::fromJson(const QVariant &value) noexcept
 {
+#ifdef MC_USE_QT5
+    return McJsonUtils::fromJson(qMetaTypeId<T>(), value).template value<T>();
+#else
     return McJsonUtils::fromJson(QMetaType::fromType<T>(), value).template value<T>();
+#endif
 }
 
 template<typename T>
@@ -209,4 +218,3 @@ T McJsonUtils::fromJson(const QJsonArray &value) noexcept
     }
     return list;
 }
-#endif

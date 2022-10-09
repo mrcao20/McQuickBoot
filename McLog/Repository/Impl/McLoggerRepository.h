@@ -67,4 +67,4 @@ private:
     MC_DECL_PRIVATE(McLoggerRepository)
 };
 
-MC_DECL_POINTER(McLoggerRepository)
+MC_DECL_METATYPE(McLoggerRepository)

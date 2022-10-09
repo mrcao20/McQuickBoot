@@ -38,3 +38,5 @@ public:
 private:
     QString m_text{"SimplePlugin"};
 };
+
+MC_DECL_METATYPE(SimplePlugin)

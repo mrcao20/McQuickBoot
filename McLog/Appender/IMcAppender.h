@@ -32,4 +32,4 @@ public:
     virtual void append(QtMsgType type, const QMessageLogContext &context, const QString &str) noexcept = 0;
 };
 
-MC_DECL_POINTER(IMcAppender)
+MC_DECL_METATYPE(IMcAppender)

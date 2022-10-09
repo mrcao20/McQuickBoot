@@ -54,16 +54,6 @@ set(PROJECT_SOURCES
     Connection/McCppConnection.cpp
 )
 
-if(QT_VERSION_MAJOR EQUAL 5)
-    list(APPEND PROJECT_HEADERS
-        Utils/McJsonUtils_Qt5.h
-    )
-
-    list(APPEND PROJECT_SOURCES
-        Utils/McJsonUtils_Qt5.cpp
-    )
-endif()
-
 if(WIN32)
     list(APPEND PROJECT_HEADERS
         MemoryLibrary/MemoryModule.h

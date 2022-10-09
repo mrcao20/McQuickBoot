@@ -57,4 +57,4 @@ private:
     QMap<QString, QString> m_map;
 };
 
-MC_DECL_POINTER(ExampleObject)
+MC_DECL_METATYPE(ExampleObject)

@@ -29,7 +29,9 @@
 
 #include "../IMcConfigurableAppender.h"
 
+#ifdef MC_USE_QT6
 Q_MOC_INCLUDE("Appender/Impl/McAppenderSeparator.h")
+#endif
 
 MC_FORWARD_DECL_STRUCT(McAppenderSeparator)
 

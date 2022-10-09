@@ -33,4 +33,4 @@ public:
     void buildFinished() noexcept override;
 };
 
-MC_DECL_POINTER(McNormalLayout)
+MC_DECL_METATYPE(McNormalLayout)

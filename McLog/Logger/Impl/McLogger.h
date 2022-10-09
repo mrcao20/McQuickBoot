@@ -60,4 +60,4 @@ private:
     MC_DECL_PRIVATE(McLogger)
 };
 
-MC_DECL_POINTER(McLogger)
+MC_DECL_METATYPE(McLogger)

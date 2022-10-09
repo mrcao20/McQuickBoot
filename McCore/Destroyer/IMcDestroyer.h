@@ -41,4 +41,4 @@ public:
     virtual void destroy() = 0;
 };
 
-MC_DECL_POINTER(IMcDestroyer)
+MC_DECL_METATYPE(IMcDestroyer)

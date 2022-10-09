@@ -31,7 +31,7 @@ public:
     MC_BASE_DESTRUCTOR(IRegisterTest)
 };
 
-MC_DECL_POINTER(IRegisterTest)
+MC_DECL_METATYPE(IRegisterTest)
 
 class RegisterTest : public QObject, public IRegisterTest
 {
@@ -46,4 +46,4 @@ private:
     QString m_text{"registerTest"};
 };
 
-MC_DECL_POINTER(RegisterTest)
+MC_DECL_METATYPE(RegisterTest)

@@ -59,7 +59,11 @@ void McAnnotationBeanDefinitionReader::doReadBeanBuilder() noexcept
         if (registry()->isContained(beanName)) {
             continue;
         }
+#ifdef MC_USE_QT5
+        auto metaObj = QMetaType::metaObjectForType(metaType.pMetaType());
+#else
         auto metaObj = metaType.pMetaType().metaObject();
+#endif
         Q_ASSERT(metaObj != nullptr);
         bool isSingleton = true; //!< 默认为单例
         auto singletonIndex = metaObj->indexOfClassInfo(MC_SINGLETON_TAG);
@@ -74,7 +78,12 @@ void McAnnotationBeanDefinitionReader::doReadBeanBuilder() noexcept
             isPointer = classInfo.value() == QLatin1String("true");
         }
         McAbstractBeanBuilderPtr builder;
-        if (metaType.pMetaType().flags().testFlag(QMetaType::PointerToQObject)) {
+#ifdef MC_USE_QT5
+        auto flags = QMetaType::typeFlags(metaType.pMetaType());
+#else
+        auto flags = metaType.pMetaType().flags();
+#endif
+        if (flags.testFlag(QMetaType::PointerToQObject)) {
             McObjectClassBeanBuilderPtr objectBuilder;
             if (isPointer) {
                 objectBuilder = McObjectClassBeanBuilderPtr::create();
@@ -124,7 +133,11 @@ QMap<QString, McMetaType> McAnnotationBeanDefinitionReader::parseComponent() noe
 {
     QMap<QString, McMetaType> components;
     for (auto &metaType : qAsConst(d->metaTypes)) {
+#ifdef MC_USE_QT5
+        auto metaObj = QMetaType::metaObjectForType(metaType.pMetaType());
+#else
         auto metaObj = metaType.pMetaType().metaObject();
+#endif
         if (metaObj == nullptr) {
             continue;
         }
@@ -189,7 +202,11 @@ void McAnnotationBeanDefinitionReader::parsePropertyOnResource(
         return;
     }
     auto pro = metaObj->property(proIndex);
+#ifdef MC_USE_QT5
+    auto qmetaType = pro.userType();
+#else
     auto qmetaType = pro.metaType();
+#endif
     auto listMetaType = McListMetaType::fromQMetaType(qmetaType);
     if (listMetaType.isValid()) {
         auto metaType = McMetaType::fromFuzzyQMetaType(listMetaType.valueMetaType());
@@ -208,7 +225,11 @@ void McAnnotationBeanDefinitionReader::parsePropertyOnResource(
     }
     auto mapMetaType = McMapMetaType::fromQMetaType(qmetaType);
     if (mapMetaType.isValid()) {
+#ifdef MC_USE_QT5
+        if (mapMetaType.keyMetaType() != qMetaTypeId<QString>()) {
+#else
         if (mapMetaType.keyMetaType() != QMetaType::fromType<QString>()) {
+#endif
             qCCritical(
                 mcIoc(), "Key must be QString. property: %s. class: %s", proName.constData(), metaObj->className());
         } else {

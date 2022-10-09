@@ -61,4 +61,4 @@ private:
     MC_DECL_PRIVATE(McLogPackager)
 };
 
-MC_DECL_POINTER(McLogPackager)
+MC_DECL_METATYPE(McLogPackager)

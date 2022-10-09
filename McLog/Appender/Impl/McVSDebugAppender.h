@@ -38,4 +38,4 @@ protected:
     void writeAfter() noexcept override;
 };
 
-MC_DECL_POINTER(McVSDebugAppender)
+MC_DECL_METATYPE(McVSDebugAppender)

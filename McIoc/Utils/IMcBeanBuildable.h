@@ -34,3 +34,5 @@ public:
     virtual void buildThreadMoved() noexcept {};
     virtual void buildCompleted() noexcept {};
 };
+
+MC_DECL_METATYPE(IMcBeanBuildable)

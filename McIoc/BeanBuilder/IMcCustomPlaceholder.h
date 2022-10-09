@@ -34,4 +34,4 @@ public:
     virtual QVariant getKey() const noexcept = 0;
 };
 
-MC_DECL_POINTER(IMcCustomPlaceholder)
+MC_DECL_METATYPE(IMcCustomPlaceholder)

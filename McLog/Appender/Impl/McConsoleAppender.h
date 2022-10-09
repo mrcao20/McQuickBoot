@@ -49,4 +49,4 @@ private:
     MC_DECL_PRIVATE(McConsoleAppender)
 };
 
-MC_DECL_POINTER(McConsoleAppender)
+MC_DECL_METATYPE(McConsoleAppender)

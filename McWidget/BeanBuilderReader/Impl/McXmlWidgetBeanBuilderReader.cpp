@@ -41,7 +41,11 @@ McXmlWidgetBeanBuilderReader::McXmlWidgetBeanBuilderReader(
 McObjectClassBeanBuilderPtr McXmlWidgetBeanBuilderReader::createObjectBeanBuilder(
     McMetaType metaType, bool isPointer) const noexcept
 {
+#ifdef MC_USE_QT5
+    auto metaObj = QMetaType::metaObjectForType(metaType.pMetaType());
+#else
     auto metaObj = metaType.pMetaType().metaObject();
+#endif
     if (metaObj == nullptr || !metaObj->inherits(&QWidget::staticMetaObject)) {
         return super::createObjectBeanBuilder(metaType, isPointer);
     }

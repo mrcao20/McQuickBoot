@@ -37,8 +37,12 @@ template<typename T, typename BUILDER = McCustomBeanBuilder<T>>
 void mcAddCustomBuilderFactory(
     const typename McCustomBeanBuilder<T>::BuildFuncType &func = nullptr, bool isShared = false)
 {
+#ifdef MC_USE_QT5
+    const char *className = McPrivate::typenameHelper<T>().data();
+#else
     constexpr QMetaType qmetaType = QMetaType::fromType<T>();
     constexpr const char *className = qmetaType.name();
+#endif
     McCustomBeanBuilderContainer::addBuilderFactory(
         QLatin1String(className), McCustomBeanBuilderFactoryPtr<T, BUILDER>::create(func, isShared));
 }

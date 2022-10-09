@@ -42,4 +42,4 @@ public:
     QVariant getKey() const noexcept override;
 };
 
-MC_DECL_POINTER(SimplePlugin2)
+MC_DECL_METATYPE(SimplePlugin2)

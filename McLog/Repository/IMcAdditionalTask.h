@@ -32,4 +32,4 @@ public:
     virtual void execute() noexcept = 0;
 };
 
-MC_DECL_POINTER(IMcAdditionalTask)
+MC_DECL_METATYPE(IMcAdditionalTask)

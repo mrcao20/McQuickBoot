@@ -46,4 +46,4 @@ private:
     MC_DECL_PRIVATE(McVSDebugDevice)
 };
 
-MC_DECL_POINTER(McVSDebugDevice)
+MC_DECL_METATYPE(McVSDebugDevice)

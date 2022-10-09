@@ -30,4 +30,4 @@ struct SimplePod
     QString text{"simplePod"};
 };
 
-MC_DECL_POINTER(SimplePod)
+MC_DECL_METATYPE(SimplePod)

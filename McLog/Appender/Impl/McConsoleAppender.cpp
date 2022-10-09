@@ -24,6 +24,9 @@
 #include "McConsoleAppender.h"
 
 #include <QFile>
+#ifdef MC_USE_QT5
+# include <QTextCodec>
+#endif
 
 MC_AUTO_INIT(McConsoleAppender)
 MC_INIT_END
@@ -65,7 +68,11 @@ void McConsoleAppender::buildFinished() noexcept
     }
 
     setDevice(file);
+#ifdef MC_USE_QT5
+    setCodec(QTextCodec::codecForLocale());
+#else
     setEncoding(QStringConverter::System);
+#endif
 }
 
 void McConsoleAppender::writeBefore() noexcept {}

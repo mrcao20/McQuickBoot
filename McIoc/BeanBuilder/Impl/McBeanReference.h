@@ -35,4 +35,4 @@ private:
     QString m_name; //!< 被引用bean的名称
 };
 
-MC_DECL_POINTER(McBeanReference)
+MC_DECL_METATYPE(McBeanReference)

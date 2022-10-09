@@ -92,7 +92,7 @@ void XmlApplicationContextTest::containerCase()
 {
     {
         QVERIFY(!m_appCtx->isPointer("listTest"));
-        auto bean = m_appCtx->getBean("listTest").value<QList<QString>>();
+        auto bean = m_appCtx->getBean("listTest").value<QStringList>();
         QVERIFY(bean.size() == 3);
         auto debug = qDebug();
         for (auto text : bean) {

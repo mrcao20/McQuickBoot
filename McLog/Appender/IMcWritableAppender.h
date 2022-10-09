@@ -36,4 +36,4 @@ public:
     virtual void setDevice(const QIODevicePtr &device) noexcept = 0;
 };
 
-MC_DECL_POINTER(IMcWritableAppender)
+MC_DECL_METATYPE(IMcWritableAppender)

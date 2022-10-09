@@ -49,4 +49,4 @@ public:
     QVariant getKey() const noexcept override;
 };
 
-MC_DECL_POINTER(SimpleObject)
+MC_DECL_METATYPE(SimpleObject)

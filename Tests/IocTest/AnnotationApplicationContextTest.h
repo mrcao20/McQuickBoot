@@ -33,7 +33,7 @@ struct SimpleGadget
 public:
     QString text{"simpleGadget"};
 };
-MC_DECL_POINTER(SimpleGadget)
+MC_DECL_METATYPE(SimpleGadget)
 
 struct SimpleGadgetPointer
 {
@@ -43,6 +43,7 @@ struct SimpleGadgetPointer
 public:
     QString text{"simpleGadgetPointer"};
 };
+MC_DECL_METATYPE(SimpleGadgetPointer)
 
 struct ComplexGadget
 {
@@ -60,7 +61,7 @@ public:
     SimpleGadgetPointer *simpleGadgetPointer{nullptr};
     SimpleGadgetPointer *simpleGadgetPointer2{nullptr};
 };
-MC_DECL_POINTER(ComplexGadget)
+MC_DECL_METATYPE(ComplexGadget)
 
 class ObjectInterface
 {
@@ -68,7 +69,7 @@ class ObjectInterface
 public:
     virtual QString test() = 0;
 };
-MC_DECL_POINTER(ObjectInterface)
+MC_DECL_METATYPE(ObjectInterface)
 
 class ObjectPointerInterface
 {
@@ -76,6 +77,7 @@ class ObjectPointerInterface
 public:
     virtual QString test() = 0;
 };
+MC_DECL_METATYPE(ObjectPointerInterface)
 
 class SimpleObject
     : public QObject
@@ -91,7 +93,7 @@ public:
 private:
     QString m_text{"simpleObject"};
 };
-MC_DECL_POINTER(SimpleObject)
+MC_DECL_METATYPE(SimpleObject)
 
 class SimpleObject2
     : public QObject
@@ -106,7 +108,7 @@ public:
 private:
     QString m_text{"simpleObject2"};
 };
-MC_DECL_POINTER(SimpleObject2)
+MC_DECL_METATYPE(SimpleObject2)
 
 class SimpleObjectPointer
     : public QObject
@@ -122,6 +124,7 @@ public:
 private:
     QString m_text{"simpleObjectPointer"};
 };
+MC_DECL_METATYPE(SimpleObjectPointer)
 
 class SimpleObjectPointer2
     : public QObject
@@ -137,6 +140,7 @@ public:
 private:
     QString m_text{"simpleObjectPointer2"};
 };
+MC_DECL_METATYPE(SimpleObjectPointer2)
 
 class ComplexObject : public QObject
 {
@@ -162,7 +166,7 @@ public:
     QList<ObjectPointerInterface *> objectPointerInterfaceList;
     QMap<QString, ObjectPointerInterface *> objectPointerInterfaceMap;
 };
-MC_DECL_POINTER(ComplexObject)
+MC_DECL_METATYPE(ComplexObject)
 
 //////////////////////////////////////////////////////////////////
 MC_FORWARD_DECL_CLASS(IMcApplicationContext)

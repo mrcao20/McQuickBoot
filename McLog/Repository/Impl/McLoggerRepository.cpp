@@ -24,6 +24,7 @@
 #include "McLoggerRepository.h"
 
 #include <QAbstractEventDispatcher>
+#include <QScopeGuard>
 #include <QThread>
 #include <QTimer>
 

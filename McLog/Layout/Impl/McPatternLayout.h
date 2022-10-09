@@ -50,4 +50,4 @@ private:
     MC_DECL_PRIVATE(McPatternLayout)
 };
 
-MC_DECL_POINTER(McPatternLayout)
+MC_DECL_METATYPE(McPatternLayout)

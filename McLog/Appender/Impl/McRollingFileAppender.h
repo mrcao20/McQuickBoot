@@ -68,4 +68,4 @@ private:
     MC_DECL_PRIVATE(McRollingFileAppender)
 };
 
-MC_DECL_POINTER(McRollingFileAppender)
+MC_DECL_METATYPE(McRollingFileAppender)

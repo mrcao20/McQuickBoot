@@ -35,7 +35,7 @@ public:
     bool check(const QJsonObject &json) noexcept override;
 };
 
-MC_DECL_POINTER(PluginCheckerTest)
+MC_DECL_METATYPE(PluginCheckerTest)
 
 class RegistryTest : public IMcBeanBuilderRegistry
 {

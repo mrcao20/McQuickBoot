@@ -33,4 +33,4 @@ public:
     void buildFinished() noexcept override;
 };
 
-MC_DECL_POINTER(McBySizeDailyRollingFileAppender)
+MC_DECL_METATYPE(McBySizeDailyRollingFileAppender)

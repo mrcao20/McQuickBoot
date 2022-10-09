@@ -23,6 +23,8 @@
  */
 #pragma once
 
+#include <QJsonObject>
+
 #include <McCore/McGlobal.h>
 
 MC_FORWARD_DECL_CLASS(IMcApplicationContext)
@@ -45,3 +47,5 @@ private:
     IMcApplicationContextPtr m_appCtx;
     bool m_flag{true};
 };
+
+MC_DECL_METATYPE(QJsonObject)

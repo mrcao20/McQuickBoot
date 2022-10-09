@@ -29,7 +29,11 @@
 
 void McGadgetBeanBuilder::setClassName(const QByteArray &className) noexcept
 {
+#ifdef MC_USE_QT5
+    McMetaType type = McMetaType::fromPTypeName(className + "*");
+#else
     McMetaType type = McMetaType::fromTypeName(className);
+#endif
     if (Q_UNLIKELY(!type.isValid())) {
         qCCritical(mcIoc(), "class '%s' is not registered", className.constData());
         return;
@@ -48,7 +52,11 @@ void McGadgetBeanBuilder::complete(QVariant &bean, QThread *thread) noexcept
     if (Q_UNLIKELY(!metaType().isValid())) {
         return;
     }
+#ifdef MC_USE_QT5
+    auto metaObject = QMetaType::metaObjectForType(metaType().pMetaType());
+#else
     auto metaObject = metaType().metaType().metaObject();
+#endif
     auto beanStar = *reinterpret_cast<void **>(bean.data());
     auto buildableObj = bean.value<IMcBeanBuildable *>();
     auto properties = buildProperties();

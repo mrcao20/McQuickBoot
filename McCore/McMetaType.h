@@ -519,12 +519,13 @@ class MetaTypeInterface
 public:
     //! 是否已经保存在容器中
     mutable QAtomicInteger<bool> isRegistered;
-    //! 原始类型
-    int metaType;
     //! 指针类型
     int pMetaType;
     //! 智能指针类型
     int sMetaType;
+    //! 构造原始类型指针的函数指针
+    using CreatePointerFn = void *(*)();
+    CreatePointerFn createPointer;
     //! 构造QSharedPointer的函数指针
     using CreateSharedPointerFn = QVariant (*)(void *);
     CreateSharedPointerFn createSharedPointer;
@@ -607,6 +608,17 @@ template<typename S>
 class MetaTypeForType
 {
 public:
+#ifdef MC_USE_QT5
+    static constexpr MetaTypeInterface::CreatePointerFn getCreatePointer() noexcept
+    {
+        if constexpr (std::is_default_constructible_v<S>) {
+            return []() -> void * { return new S(); };
+        } else {
+            return nullptr;
+        }
+    }
+#endif
+
     static constexpr MetaTypeInterface::CreateSharedPointerFn getCreateSharedPointer() noexcept
     {
         if constexpr (std::is_default_constructible_v<S>) {
@@ -647,35 +659,9 @@ struct MetaTypeInterfaceWrapper
 #ifdef MC_USE_QT5
     static inline const MetaTypeInterface metaType = {
         /*.isRegistered=*/false,
-        /*.metaType=*/-1,
         /*.pMetaType=*/qRegisterMetaType<T *>(),
         /*.sMetaType=*/qRegisterMetaType<QSharedPointer<T>>(typenameHelper<QSharedPointer<T>>().data()),
-        /*.createSharedPointer=*/MetaTypeForType<T>::getCreateSharedPointer(),
-        /*.parents=*/nullptr,
-    };
-#else
-    static inline constexpr const MetaTypeInterface metaType = {
-        /*.isRegistered=*/false,
-        /*.metaType=*/QMetaType::fromType<T>(),
-        /*.pMetaType=*/QMetaType::fromType<T *>(),
-        /*.sMetaType=*/QMetaType::fromType<QSharedPointer<T>>(),
-        /*.wMetaType=*/QMetaType::fromType<QWeakPointer<T>>(),
-        /*.tMetaType=*/QMetaType(),
-        /*.createSharedPointer=*/MetaTypeForType<T>::getCreateSharedPointer(),
-        /*.parents=*/nullptr,
-    };
-#endif
-};
-
-template<typename T>
-struct MetaTypeInterfaceWrapper<T, typename std::enable_if<QtPrivate::IsGadgetHelper<T>::IsRealGadget>::type>
-{
-#ifdef MC_USE_QT5
-    static inline const MetaTypeInterface metaType = {
-        /*.isRegistered=*/false,
-        /*.metaType=*/qRegisterMetaType<T>(),
-        /*.pMetaType=*/qRegisterMetaType<T *>(),
-        /*.sMetaType=*/qRegisterMetaType<QSharedPointer<T>>(typenameHelper<QSharedPointer<T>>().data()),
+        /*.createPointer=*/MetaTypeForType<T>::getCreatePointer(),
         /*.createSharedPointer=*/MetaTypeForType<T>::getCreateSharedPointer(),
         /*.parents=*/nullptr,
     };
@@ -699,9 +685,9 @@ struct MetaTypeInterfaceWrapper<T, typename std::enable_if<QtPrivate::IsPointerT
 #ifdef MC_USE_QT5
     static inline const MetaTypeInterface metaType = {
         /*.isRegistered=*/false,
-        /*.metaType=*/-1,
         /*.pMetaType=*/qRegisterMetaType<T *>(),
         /*.sMetaType=*/qRegisterMetaType<QSharedPointer<T>>(typenameHelper<QSharedPointer<T>>().data()),
+        /*.createPointer=*/MetaTypeForType<T>::getCreatePointer(),
         /*.createSharedPointer=*/MetaTypeForType<T>::getCreateSharedPointer(),
         /*.parents=*/nullptr,
     };
@@ -825,14 +811,6 @@ public:
     static QVector<McMetaType> metaTypes() noexcept;
 
 #ifdef MC_USE_QT5
-    //! 原始类型
-    constexpr int metaType() const noexcept
-    {
-        if (!isValid()) {
-            return -1;
-        }
-        return d->metaType;
-    }
     //! 指针类型
     constexpr int pMetaType() const noexcept
     {
@@ -892,6 +870,9 @@ public:
     }
 #endif
 
+#ifdef MC_USE_QT5
+    void *createPointer() const noexcept;
+#endif
     QVariant createSharedPointer(void *copy = nullptr) const noexcept;
 
     void addParentMetaType(const McMetaType &type) const noexcept;
@@ -912,21 +893,27 @@ public:
         if (a.d == nullptr || b.d == nullptr)
             return false;
 #ifdef MC_USE_QT5
-        return a.d->metaType == b.d->metaType && a.d->pMetaType == b.d->pMetaType && a.d->sMetaType == b.d->sMetaType;
+        return a.d->pMetaType == b.d->pMetaType && a.d->sMetaType == b.d->sMetaType;
 #else
         return a.d->metaType == b.d->metaType && a.d->pMetaType == b.d->pMetaType && a.d->sMetaType == b.d->sMetaType
                && a.d->wMetaType == b.d->wMetaType && a.d->tMetaType == b.d->tMetaType;
 #endif
     }
-    friend bool operator!=(McMetaType a, McMetaType b) { return !(a == b); }
+    friend bool operator!=(McMetaType a, McMetaType b)
+    {
+        return !(a == b);
+    }
+#ifdef MC_USE_QT5
+    friend Q_DECL_CONST_FUNCTION uint qHash(McMetaType key, uint seed) noexcept
+    {
+        return qHash(key.sMetaType(), seed);
+    }
+#else
     friend Q_DECL_CONST_FUNCTION size_t qHash(McMetaType key, size_t seed) noexcept
     {
-#ifdef MC_USE_QT5
-        return qHash(key.sMetaType(), seed);
-#else
         return qHash(key.metaType().id(), seed);
-#endif
     }
+#endif
 
 private:
     const McPrivate::MetaTypeInterface *d{nullptr};
@@ -1280,7 +1267,11 @@ template<typename T>
 inline void mcRegisterContainer() noexcept
 {
     if constexpr (bool(QtPrivate::IsSequentialContainer<T>::Value)) {
+#ifdef MC_USE_QT5
+        McListMetaType customMetaType = McListMetaType::fromType<T>();
+#else
         constexpr McListMetaType customMetaType = McListMetaType::fromType<T>();
+#endif
         if (customMetaType.d->isRegistered.loadRelaxed()) {
             return;
         }
@@ -1322,7 +1313,11 @@ inline void mcRegisterContainer() noexcept
             }
         }
     } else if constexpr (bool(QtPrivate::IsAssociativeContainer<T>::Value)) {
+#ifdef MC_USE_QT5
+        McMapMetaType customMetaType = McMapMetaType::fromType<T>();
+#else
         constexpr McMapMetaType customMetaType = McMapMetaType::fromType<T>();
+#endif
         if (customMetaType.d->isRegistered.loadRelaxed()) {
             return;
         }

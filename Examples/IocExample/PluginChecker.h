@@ -32,4 +32,4 @@ public:
     bool check(const QJsonObject &json) noexcept override;
 };
 
-MC_DECL_POINTER(PluginChecker)
+MC_DECL_METATYPE(PluginChecker)

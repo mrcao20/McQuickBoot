@@ -35,4 +35,4 @@ private:
     QString m_placeholder;
 };
 
-MC_DECL_POINTER(McBeanPlaceholder)
+MC_DECL_METATYPE(McBeanPlaceholder)

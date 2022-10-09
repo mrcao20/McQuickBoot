@@ -58,4 +58,4 @@ private:
     MC_DECL_PRIVATE(McLogDeleter)
 };
 
-MC_DECL_POINTER(McLogDeleter)
+MC_DECL_METATYPE(McLogDeleter)

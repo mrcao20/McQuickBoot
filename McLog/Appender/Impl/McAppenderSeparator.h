@@ -37,4 +37,4 @@ public:
     MC_POCO_PROPERTY(quint64, autoSeparateInterval, {300000})
 };
 
-MC_DECL_POINTER(McAppenderSeparator)
+MC_DECL_METATYPE(McAppenderSeparator)

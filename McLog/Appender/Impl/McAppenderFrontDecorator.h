@@ -34,4 +34,4 @@ protected:
         const QString &str) noexcept override;
 };
 
-MC_DECL_POINTER(McAppenderFrontDecorator)
+MC_DECL_METATYPE(McAppenderFrontDecorator)

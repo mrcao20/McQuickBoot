@@ -35,7 +35,7 @@ public:
     MC_POCO_PROPERTY(QSharedPointer<GadgetData>, child)
 };
 
-MC_DECL_POINTER(GadgetData)
+MC_DECL_METATYPE(GadgetData)
 
 class ObjectData : public QObject
 {
@@ -46,7 +46,7 @@ public:
     MC_POCO_PROPERTY(QList<GadgetDataPtr>, gadgets)
 };
 
-MC_DECL_POINTER(ObjectData)
+MC_DECL_METATYPE(ObjectData)
 
 class TestCore : public QObject
 {

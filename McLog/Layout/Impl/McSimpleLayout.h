@@ -33,4 +33,4 @@ public:
     void buildFinished() noexcept override;
 };
 
-MC_DECL_POINTER(McSimpleLayout)
+MC_DECL_METATYPE(McSimpleLayout)

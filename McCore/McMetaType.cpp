@@ -146,6 +146,9 @@ McMetaType McMetaType::fromFuzzyQMetaType(int type) noexcept
     } else {
         metaType = McMetaType::fromSQMetaType(type);
     }
+    if (!metaType.isValid()) {
+        metaType = McMetaType::fromPQMetaType(type);
+    }
     return metaType;
 }
 #else
@@ -202,6 +205,16 @@ QVector<McMetaType> McMetaType::metaTypes() noexcept
 {
     return coreMetaTypeStaticData->metaTypes;
 }
+
+#ifdef MC_USE_QT5
+void *McMetaType::createPointer() const noexcept
+{
+    if (!isValid() || d->createPointer == nullptr) {
+        return nullptr;
+    }
+    return d->createPointer();
+}
+#endif
 
 QVariant McMetaType::createSharedPointer(void *copy) const noexcept
 {

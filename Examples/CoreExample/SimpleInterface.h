@@ -32,6 +32,6 @@ public:
     virtual void simpleFunc() = 0;
 };
 
-MC_DECL_POINTER(SimpleInterface)
+MC_DECL_METATYPE(SimpleInterface)
 #define SimpleInterfaceIID "org.quickboot.mc.iocexample.SimpleInterface"
 Q_DECLARE_INTERFACE(SimpleInterface, SimpleInterfaceIID)

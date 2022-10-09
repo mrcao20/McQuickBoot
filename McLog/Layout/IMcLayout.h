@@ -32,4 +32,4 @@ public:
     virtual QString format(QtMsgType type, const QMessageLogContext &context, const QString &str) noexcept = 0;
 };
 
-MC_DECL_POINTER(IMcLayout)
+MC_DECL_METATYPE(IMcLayout)

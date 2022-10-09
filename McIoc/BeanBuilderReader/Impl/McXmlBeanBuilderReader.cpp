@@ -181,12 +181,21 @@ McAbstractBeanBuilderPtr McXmlBeanBuilderReader::readClass(
         }
         return builder;
     }
+#ifdef MC_USE_QT5
+    auto metaType = McMetaType::fromPTypeName(className.toLatin1() + "*");
+#else
     auto metaType = McMetaType::fromTypeName(className.toLatin1());
+#endif
     if (Q_UNLIKELY(!metaType.isValid())) {
         return McAbstractBeanBuilderPtr();
     }
     McAbstractBeanBuilderPtr builder;
-    if (metaType.pMetaType().flags().testFlag(QMetaType::PointerToQObject)) {
+#ifdef MC_USE_QT5
+    auto flags = QMetaType::typeFlags(metaType.pMetaType());
+#else
+    auto flags = metaType.pMetaType().flags();
+#endif
+    if (flags.testFlag(QMetaType::PointerToQObject)) {
         McObjectClassBeanBuilderPtr objectBuilder = createObjectBeanBuilder(metaType, isPointer);
         readObjectBean(objectBuilder, reader);
         objectBuilder->setParentBeanReference(ref);
@@ -516,7 +525,11 @@ QMap<QVariant, QVariant> McXmlBeanBuilderReader::readMapValue(QXmlStreamReader &
             } else if (token == QXmlStreamReader::StartElement && reader.name() == Mc::Constant::Tag::Xml::LIST) {
                 auto list = readListValue(reader);
                 for (auto value : list) {
+#ifdef MC_USE_QT5
+                    if (value.userType() != qMetaTypeId<McBeanReferencePtr>()) {
+#else
                     if (value.metaType() != QMetaType::fromType<McBeanReferencePtr>()) {
+#endif
                         qCCritical(mcIoc())
                             << "if you want to used plh in map tag. please make sure the value be ref tag.";
                         continue;

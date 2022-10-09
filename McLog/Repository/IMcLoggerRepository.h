@@ -39,4 +39,4 @@ public:
     virtual void flushWhenQuit() noexcept = 0;
 };
 
-MC_DECL_POINTER(IMcLoggerRepository)
+MC_DECL_METATYPE(IMcLoggerRepository)

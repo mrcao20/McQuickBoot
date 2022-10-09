@@ -1,0 +1,5 @@
+include(McCore/McCore.pri)
+include(McIoc/McIoc.pri)
+include(McLog/McLog.pri)
+include(McQuickBoot/McQuickBoot.pri)
+include(McWidget/McWidget.pri)

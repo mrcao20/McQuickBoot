@@ -29,7 +29,7 @@
 
 namespace Mc::XmlBuilder {
 MC_DECL_PRIVATE_DATA(BeanCollection)
-QVector<IBeanPtr> beans;
+QList<IBeanPtr> beans;
 MC_DECL_PRIVATE_DATA_END
 
 BeanCollection::BeanCollection() noexcept

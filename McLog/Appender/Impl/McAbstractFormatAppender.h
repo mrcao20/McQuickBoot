@@ -25,7 +25,9 @@
 
 #include "McAbstractIODeviceAppender.h"
 
+#ifdef MC_USE_QT6
 Q_MOC_INCLUDE("Layout/IMcLayout.h")
+#endif
 
 MC_FORWARD_DECL_CLASS(IMcLayout)
 

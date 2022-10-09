@@ -61,7 +61,11 @@ void McAnnotationApplicationContext::addConnect(const QString &beanName, const Q
     auto e = McBeanEnumPtr::create();
     e->setScope(QLatin1String("Qt"));
     e->setType(QLatin1String("ConnectionType"));
+#ifdef MC_USE_QT5
+    auto metaObj = qt_getQtMetaObject();
+#else
     auto metaObj = &Qt::staticMetaObject;
+#endif
     auto index = metaObj->indexOfEnumerator("ConnectionType");
     e->setValue(metaObj->enumerator(index).valueToKeys(type));
     con->setType(e);

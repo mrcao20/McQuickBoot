@@ -31,7 +31,7 @@ public:
     MC_BASE_DESTRUCTOR(IMetaTypeTest)
 };
 
-MC_DECL_POINTER(IMetaTypeTest)
+MC_DECL_METATYPE(IMetaTypeTest)
 
 class MetaTypeTest : public QObject, public IMetaTypeTest
 {
@@ -41,4 +41,4 @@ public:
     Q_INVOKABLE IMetaTypeTestPtr testFunc(const IMetaTypeTestPtr &val);
 };
 
-MC_DECL_POINTER(MetaTypeTest)
+MC_DECL_METATYPE(MetaTypeTest)

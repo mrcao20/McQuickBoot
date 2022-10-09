@@ -33,7 +33,7 @@ struct PodTest
 {
     QString text{"podTest"};
 };
-MC_DECL_POINTER(PodTest)
+MC_DECL_METATYPE(PodTest)
 
 struct GadgetTest : public IMcDestroyer
 {
@@ -50,7 +50,7 @@ public:
 
     QString text{"gadgetTest"};
 };
-MC_DECL_POINTER(GadgetTest)
+MC_DECL_METATYPE(GadgetTest)
 
 class ObjectTest
     : public QObject
@@ -62,7 +62,7 @@ class ObjectTest
     MC_FULL_DEFINE(ObjectTest, QObject, IObjectTest, IMcDestroyer)
     Q_PROPERTY(QString text MEMBER m_text)
     Q_PROPERTY(ObjectTestPtr object MEMBER m_object)
-    Q_PROPERTY(QList<QString> list MEMBER m_list)
+    Q_PROPERTY(QStringList list MEMBER m_list)
     Q_PROPERTY(QMap<QString, QSharedPointer<ObjectTest>> map MEMBER m_map)
 public:
     ObjectTest();
@@ -81,10 +81,10 @@ private Q_SLOTS:
 private:
     QString m_text{"objectTest"};
     QSharedPointer<ObjectTest> m_object;
-    QList<QString> m_list;
+    QStringList m_list;
     QMap<QString, QSharedPointer<ObjectTest>> m_map;
 };
-MC_DECL_POINTER(ObjectTest)
+MC_DECL_METATYPE(ObjectTest)
 
 class BeanFactoryTest : public QObject
 {

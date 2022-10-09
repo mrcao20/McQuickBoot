@@ -50,4 +50,4 @@ private:
     MC_DECL_PRIVATE(McSizeRollingFileAppender)
 };
 
-MC_DECL_POINTER(McSizeRollingFileAppender)
+MC_DECL_METATYPE(McSizeRollingFileAppender)

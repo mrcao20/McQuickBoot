@@ -46,8 +46,13 @@ public:
     void setDevice(const QIODevicePtr &device) noexcept override;
     QByteArray codecName() const noexcept;
     void setCodecName(const QByteArray &val) noexcept;
+#ifdef MC_USE_QT5
+    QTextCodec *codec() const noexcept override;
+    void setCodec(QTextCodec *val) noexcept override;
+#else
     QStringConverter::Encoding encoding() const noexcept override;
     void setEncoding(QStringConverter::Encoding val) noexcept override;
+#endif
 
     void buildCompleted() noexcept override;
 

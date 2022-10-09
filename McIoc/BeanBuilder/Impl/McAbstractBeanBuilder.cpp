@@ -142,6 +142,20 @@ QVariant McAbstractBeanBuilder::create() noexcept
 QVariant McAbstractBeanBuilder::convert(const QVariant &value, const QVariant &extra) const noexcept
 {
     QVariant result;
+#ifdef MC_USE_QT5
+    auto type = value.userType();
+    if (type == qMetaTypeId<McBeanReferencePtr>()) {
+        result = convertRef(value, extra);
+    } else if (type == qMetaTypeId<McBeanEnumPtr>()) {
+        result = convertEnum(value, extra);
+    } else if (type == qMetaTypeId<QVariantList>()) {
+        result = convertList(value, extra);
+    } else if (type == qMetaTypeId<QMap<QVariant, QVariant>>()) {
+        result = convertMap(value, extra);
+    } else {
+        result = value;
+    }
+#else
     auto type = value.metaType();
     if (type == QMetaType::fromType<McBeanReferencePtr>()) {
         result = convertRef(value, extra);
@@ -154,6 +168,7 @@ QVariant McAbstractBeanBuilder::convert(const QVariant &value, const QVariant &e
     } else {
         result = value;
     }
+#endif
     return result;
 }
 
@@ -182,11 +197,20 @@ QVariant McAbstractBeanBuilder::convertEnum(const QVariant &value, const QVarian
         return QVariant();
     }
     const QMetaObject *mo = nullptr;
+#ifdef MC_USE_QT5
+    if (e->scope() == "Qt") {
+        mo = qt_getQtMetaObject();
+    } else {
+        int type = QMetaType::type(e->scope().toLocal8Bit());
+        mo = QMetaType::metaObjectForType(type);
+    }
+#else
     if (e->scope() == "Qt") {
         mo = &Qt::staticMetaObject;
     } else {
         mo = QMetaType::fromName(e->scope().toLocal8Bit()).metaObject();
     }
+#endif
     if (Q_UNLIKELY(mo == nullptr)) {
         qCCritical(mcIoc(), "cannot get meta object for type: %s\n", qPrintable(e->scope()));
         return QVariant();
@@ -229,7 +253,11 @@ QVariant McAbstractBeanBuilder::convertMap(const QVariant &value, const QVariant
         QVariant resultKey, resultValue;
 
         resultValue = convert(value, extra);
+#ifdef MC_USE_QT5
+        if (key.userType() == qMetaTypeId<McBeanPlaceholderPtr>()) {
+#else
         if (key.metaType() == QMetaType::fromType<McBeanPlaceholderPtr>()) {
+#endif
             auto valueObj = resultValue.value<QObject *>();
             auto keyPlh = key.value<McBeanPlaceholderPtr>();
             auto plh = keyPlh->placeholder();
@@ -280,9 +308,17 @@ QVariantMap McAbstractBeanBuilder::buildProperties(const QVariant &extra) const 
 
 QVariant McAbstractBeanBuilder::createByMetaType() noexcept
 {
+#ifdef MC_USE_QT5
+    auto beanStar = d->metaType.createPointer();
+#else
     auto beanStar = d->metaType.metaType().create();
+#endif
     if (Q_UNLIKELY(beanStar == nullptr)) {
+#ifdef MC_USE_QT5
+        qCCritical(mcIoc(), "cannot create object: '%s'", QMetaType::typeName(d->metaType.pMetaType()));
+#else
         qCCritical(mcIoc(), "cannot create object: '%s'", d->metaType.metaType().name());
+#endif
         return QVariant();
     }
     QVariant beanVar(d->metaType.pMetaType(), &beanStar);
@@ -295,7 +331,11 @@ QVariant McAbstractBeanBuilder::createByMetaObject() noexcept
         qCCritical(mcIoc(), "the number of constructor parameters cannot more than %d", Q_METAMETHOD_INVOKE_MAX_ARGS);
         return QVariant();
     }
+#ifdef MC_USE_QT5
+    auto metaObj = QMetaType::metaObjectForType(d->metaType.pMetaType());
+#else
     auto metaObj = d->metaType.pMetaType().metaObject();
+#endif
     if (Q_UNLIKELY(metaObj == nullptr)) {
         return QVariant();
     }
@@ -337,7 +377,12 @@ QVariant McAbstractBeanBuilder::createByMetaObject() noexcept
     }
     QVector<QGenericArgument> arguments(Q_METAMETHOD_INVOKE_MAX_ARGS);
     for (int i = 0; i < argValues.size(); ++i) {
-        arguments.replace(i, QGenericArgument(constructor.parameterTypeName(i).constData(), argValues[i].constData()));
+#ifdef MC_USE_QT5
+        QByteArray typeName = QMetaType::typeName(constructor.parameterType(i));
+#else
+        QByteArray typeName = constructor.parameterTypeName(i);
+#endif
+        arguments.replace(i, QGenericArgument(typeName.constData(), argValues[i].constData()));
     }
     void *beanStar = nullptr;
     void *param[] = {&beanStar, arguments.at(0).data(), arguments.at(1).data(), arguments.at(2).data(),
@@ -345,7 +390,11 @@ QVariant McAbstractBeanBuilder::createByMetaObject() noexcept
         arguments.at(7).data(), arguments.at(8).data(), arguments.at(9).data()};
     auto idx = metaObj->indexOfConstructor(constructor.methodSignature().constData());
     if (metaObj->static_metacall(QMetaObject::CreateInstance, idx, param) >= 0 || beanStar == nullptr) {
+#ifdef MC_USE_QT5
+        qCCritical(mcIoc(), "cannot create object: '%s'", QMetaType::typeName(d->metaType.pMetaType()));
+#else
         qCCritical(mcIoc(), "cannot create object: '%s'", d->metaType.metaType().name());
+#endif
         return QVariant();
     }
     QVariant beanVar(d->metaType.pMetaType(), &beanStar);

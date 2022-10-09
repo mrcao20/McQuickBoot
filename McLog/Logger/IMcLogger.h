@@ -32,4 +32,4 @@ public:
     virtual void log(QtMsgType type, const QMessageLogContext &context, const QString &str) noexcept = 0;
 };
 
-MC_DECL_POINTER(IMcLogger)
+MC_DECL_METATYPE(IMcLogger)

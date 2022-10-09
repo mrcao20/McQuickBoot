@@ -39,7 +39,7 @@ public:
     MC_POCO_PROPERTY(QString, text2);
 };
 
-MC_DECL_POINTER(SimpleGadget)
+MC_DECL_METATYPE(SimpleGadget)
 
 struct SimpleGadgetPointer
 {
@@ -47,3 +47,5 @@ struct SimpleGadgetPointer
 public:
     QString text{"simpleGadgetPointer"};
 };
+
+MC_DECL_METATYPE(SimpleGadgetPointer)

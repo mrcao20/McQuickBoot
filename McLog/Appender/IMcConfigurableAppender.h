@@ -42,4 +42,4 @@ public:
     virtual QList<QtMsgType> types() const noexcept = 0;
 };
 
-MC_DECL_POINTER(IMcConfigurableAppender)
+MC_DECL_METATYPE(IMcConfigurableAppender)

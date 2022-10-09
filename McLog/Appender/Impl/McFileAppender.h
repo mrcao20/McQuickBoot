@@ -61,4 +61,4 @@ private:
     MC_DECL_PRIVATE(McFileAppender)
 };
 
-MC_DECL_POINTER(McFileAppender)
+MC_DECL_METATYPE(McFileAppender)
