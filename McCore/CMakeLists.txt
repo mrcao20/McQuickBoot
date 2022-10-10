@@ -82,6 +82,9 @@ add_library(${PROJECT_NAME} ${MC_BUILD_TYPE}
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Core)
+if(UNIX)
+    target_link_libraries(${PROJECT_NAME} PRIVATE rt)
+endif()
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE MC_CORE_LIBRARY)
 

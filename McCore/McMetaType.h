@@ -691,9 +691,7 @@ public:
         };
     }
 };
-#endif
 
-#ifdef MC_USE_QT5
 template<typename S>
 class MapMetaTypeForType
 {
@@ -728,7 +726,7 @@ template<typename T, typename Enable = void>
 struct MetaTypeInterfaceWrapper
 {
 #ifdef MC_USE_QT5
-    static inline const MetaTypeInterface metaType = {
+    static inline constexpr const MetaTypeInterface metaType = {
         /*.isRegistered=*/false,
         /*.pMetaType=*/MetaTypeForType<T>::getPMetaTypeId(),
         /*.sMetaType=*/MetaTypeForType<T>::getSMetaTypeId(),
@@ -754,7 +752,7 @@ template<typename T>
 struct MetaTypeInterfaceWrapper<T, typename std::enable_if<QtPrivate::IsPointerToTypeDerivedFromQObject<T *>::Value>::type>
 {
 #ifdef MC_USE_QT5
-    static inline const MetaTypeInterface metaType = {
+    static inline constexpr const MetaTypeInterface metaType = {
         /*.isRegistered=*/false,
         /*.pMetaType=*/MetaTypeForType<T>::getPMetaTypeId(),
         /*.sMetaType=*/MetaTypeForType<T>::getSMetaTypeId(),
@@ -780,7 +778,7 @@ template<typename T>
 struct ListMetaTypeInterfaceWrapper
 {
 #ifdef MC_USE_QT5
-    static inline const ListMetaTypeInterface metaType = {
+    static inline constexpr const ListMetaTypeInterface metaType = {
         /*.isRegistered=*/false,
         /*.metaType=*/ListMetaTypeForType<T>::getMetaTypeId(),
         /*.valueMetaType=*/ListMetaTypeForType<T>::getValueMetaTypeId(),
@@ -798,7 +796,7 @@ template<typename T>
 struct MapMetaTypeInterfaceWrapper
 {
 #ifdef MC_USE_QT5
-    static inline const MapMetaTypeInterface metaType = {
+    static inline constexpr const MapMetaTypeInterface metaType = {
         /*.isRegistered=*/false,
         /*.metaType=*/MapMetaTypeForType<T>::getMetaTypeId(),
         /*.keyMetaType=*/MapMetaTypeForType<T>::getKeyMetaTypeId(),
@@ -815,33 +813,21 @@ struct MapMetaTypeInterfaceWrapper
 };
 
 template<typename T>
-#ifdef MC_USE_QT5
-const MetaTypeInterface *metaTypeInterfaceForType() noexcept
-#else
 constexpr const MetaTypeInterface *metaTypeInterfaceForType() noexcept
-#endif
 {
     using Ty = std::remove_cv_t<std::remove_reference_t<T>>;
     return &MetaTypeInterfaceWrapper<Ty>::metaType;
 }
 
 template<typename T>
-#ifdef MC_USE_QT5
-const ListMetaTypeInterface *listMetaTypeInterfaceForType() noexcept
-#else
 constexpr const ListMetaTypeInterface *listMetaTypeInterfaceForType() noexcept
-#endif
 {
     using Ty = std::remove_cv_t<std::remove_reference_t<T>>;
     return &ListMetaTypeInterfaceWrapper<Ty>::metaType;
 }
 
 template<typename T>
-#ifdef MC_USE_QT5
-const MapMetaTypeInterface *mapMetaTypeInterfaceForType() noexcept
-#else
 constexpr const MapMetaTypeInterface *mapMetaTypeInterfaceForType() noexcept
-#endif
 {
     using Ty = std::remove_cv_t<std::remove_reference_t<T>>;
     return &MapMetaTypeInterfaceWrapper<Ty>::metaType;
@@ -1210,13 +1196,8 @@ struct RegisterConverterHelper2
         if (!QMetaType::hasRegisteredConverterFunction<FromPtr, To *>()) {
             QMetaType::registerConverter<FromPtr, To *>([](const FromPtr &from) { return from.operator->(); });
         }
-#ifdef MC_USE_QT5
-        McMetaType srcMetaType = McMetaType::fromType<From>();
-        McMetaType dstMetaType = McMetaType::fromType<To>();
-#else
         constexpr McMetaType srcMetaType = McMetaType::fromType<From>();
         constexpr McMetaType dstMetaType = McMetaType::fromType<To>();
-#endif
         srcMetaType.addParentMetaType(dstMetaType);
     }
 };
@@ -1307,11 +1288,7 @@ template<typename T>
 inline void mcRegisterMetaTypeSimple() noexcept
 {
     static_assert(!std::is_pointer<T>::value, "mcRegisterMetaTypeSimple's template type must not be a pointer type");
-#ifdef MC_USE_QT5
-    McMetaType metaType = McMetaType::fromType<T>();
-#else
     constexpr McMetaType metaType = McMetaType::fromType<T>();
-#endif
     if (metaType.d->isRegistered.loadRelaxed()) {
         return;
     }
@@ -1322,11 +1299,7 @@ template<typename T>
 inline void mcRegisterMetaType() noexcept
 {
     static_assert(!std::is_pointer<T>::value, "mcRegisterMetaType's template type must not be a pointer type");
-#ifdef MC_USE_QT5
-    McMetaType metaType = McMetaType::fromType<T>();
-#else
     constexpr McMetaType metaType = McMetaType::fromType<T>();
-#endif
     if (metaType.d->isRegistered.loadRelaxed()) {
         return;
     }
@@ -1338,11 +1311,7 @@ template<typename T>
 inline void mcRegisterContainer() noexcept
 {
     if constexpr (bool(QtPrivate::IsSequentialContainer<T>::Value)) {
-#ifdef MC_USE_QT5
-        McListMetaType customMetaType = McListMetaType::fromType<T>();
-#else
         constexpr McListMetaType customMetaType = McListMetaType::fromType<T>();
-#endif
         if (customMetaType.d->isRegistered.loadRelaxed()) {
             return;
         }
@@ -1384,11 +1353,7 @@ inline void mcRegisterContainer() noexcept
             }
         }
     } else if constexpr (bool(QtPrivate::IsAssociativeContainer<T>::Value)) {
-#ifdef MC_USE_QT5
-        McMapMetaType customMetaType = McMapMetaType::fromType<T>();
-#else
         constexpr McMapMetaType customMetaType = McMapMetaType::fromType<T>();
-#endif
         if (customMetaType.d->isRegistered.loadRelaxed()) {
             return;
         }
