@@ -1,3 +1,5 @@
+INCLUDEPATH += $$PWD
+
 DEFINES += MC_CORE_LIBRARY
 HEADERS += \
     $$PWD/McMacroGlobal.h \

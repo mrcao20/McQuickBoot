@@ -1,3 +1,5 @@
+INCLUDEPATH += $$PWD
+
 DEFINES += MC_QUICKBOOT_LIBRARY
 HEADERS += \
     $$PWD/McQuickBootMacroGlobal.h \

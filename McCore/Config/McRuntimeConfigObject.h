@@ -11,7 +11,7 @@
  */
 #pragma once
 
-#include "McGlobal.h"
+#include "../McGlobal.h"
 
 class MC_CORE_EXPORT McRuntimeConfigObject
 {

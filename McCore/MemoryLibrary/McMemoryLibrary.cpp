@@ -488,10 +488,10 @@ bool McMemoryLibrary::load() noexcept
                 )) { //失败
             d->errorString = QString("未定义错误描述(%1)").arg(errorCode);
         } else { //成功
-# ifdef MC_USE_QT5
-            d->errorString = QString::fromUtf8(lpBuffer);
-# else
+# ifdef UNICODE
             d->errorString = QString::fromWCharArray(lpBuffer);
+# else
+            d->errorString = QString::fromUtf8(lpBuffer);
 # endif
             LocalFree(lpBuffer);
         }

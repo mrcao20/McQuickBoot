@@ -17,6 +17,10 @@
 
 #include "../IMcLogger.h"
 
+#ifdef MC_USE_QT6
+Q_MOC_INCLUDE("Appender/IMcConfigurableAppender.h")
+#endif
+
 MC_FORWARD_DECL_CLASS(IMcConfigurableAppender)
 
 MC_FORWARD_DECL_PRIVATE_DATA(McLogger)

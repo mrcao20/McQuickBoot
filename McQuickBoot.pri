@@ -1,3 +1,5 @@
+INCLUDEPATH += $$PWD
+
 include(McCore/McCore.pri)
 include(McIoc/McIoc.pri)
 include(McLog/McLog.pri)

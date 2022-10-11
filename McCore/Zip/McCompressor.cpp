@@ -17,7 +17,7 @@
 #include <QScopeGuard>
 #include <QtGlobal>
 
-#include "McGlobal.h"
+#include "../McGlobal.h"
 #include "zip.h"
 
 namespace {

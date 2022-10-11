@@ -1,3 +1,5 @@
+INCLUDEPATH += $$PWD
+
 DEFINES += MC_LOG_LIBRARY
 HEADERS += \
     $$PWD/McLogMacroGlobal.h \
