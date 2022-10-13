@@ -11,9 +11,7 @@
  */
 #include "McRuntimeConfig.h"
 
-namespace {
 Q_GLOBAL_STATIC(McRuntimeConfigObject, g_runtimeConfig)
-}
 
 namespace Mc {
 McRuntimeConfigObject &runtimeConfig() noexcept

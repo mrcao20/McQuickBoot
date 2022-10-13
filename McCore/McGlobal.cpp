@@ -68,8 +68,7 @@ Q_CONSTRUCTOR_FUNCTION(coreStaticInit)
 
 McCustomEvent::~McCustomEvent() noexcept {}
 
-namespace {
-QString getStandardPath(QStandardPaths::StandardLocation type)
+static QString getStandardPath(QStandardPaths::StandardLocation type)
 {
     auto paths = QStandardPaths::standardLocations(type);
     if (paths.isEmpty()) {
@@ -78,7 +77,7 @@ QString getStandardPath(QStandardPaths::StandardLocation type)
     return paths.first();
 }
 
-QSharedPointer<QLibrary> loadLibraryHelper(const QString &path, const QLatin1String &checkSymbol) noexcept
+static QSharedPointer<QLibrary> loadLibraryHelper(const QString &path, const QLatin1String &checkSymbol) noexcept
 {
     auto libPath = Mc::toAbsolutePath(path);
     if (!QLibrary::isLibrary(libPath)) {
@@ -104,7 +103,7 @@ QSharedPointer<QLibrary> loadLibraryHelper(const QString &path, const QLatin1Str
     return QSharedPointer<QLibrary>();
 }
 
-McMemoryLibrary loadMemoryLibraryHelper(const QByteArray &data, const QLatin1String &checkSymbol) noexcept
+static McMemoryLibrary loadMemoryLibraryHelper(const QByteArray &data, const QLatin1String &checkSymbol) noexcept
 {
     McMemoryLibrary library(data);
     if (!library.load()) {
@@ -123,7 +122,6 @@ McMemoryLibrary loadMemoryLibraryHelper(const QByteArray &data, const QLatin1Str
     library.unload();
     return McMemoryLibrary();
 }
-} // namespace
 
 MC_GLOBAL_STATIC_BEGIN(coreGlobalStaticData)
 QString applicationDirPath;

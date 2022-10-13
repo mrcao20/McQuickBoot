@@ -11,10 +11,8 @@
  */
 #include "McCustomBeanBuilderContainer.h"
 
-namespace {
 using BuilderFactoryType = QHash<QString, IMcCustomBeanBuilderFactoryPtr>;
 Q_GLOBAL_STATIC(BuilderFactoryType, staticBeanBuilderFactories)
-} // namespace
 
 void McCustomBeanBuilderContainer::addBuilderFactory(
     const QString &className, const IMcCustomBeanBuilderFactoryPtr &factory) noexcept

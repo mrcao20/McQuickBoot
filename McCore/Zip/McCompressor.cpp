@@ -20,8 +20,7 @@
 #include "../McGlobal.h"
 #include "zip.h"
 
-namespace {
-bool compressFile(zipFile zFile, const QString &filePath, const QString &destPath) noexcept
+static bool compressFile(zipFile zFile, const QString &filePath, const QString &destPath) noexcept
 {
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly)) {
@@ -41,7 +40,6 @@ bool compressFile(zipFile zFile, const QString &filePath, const QString &destPat
     }
     return zipCloseFileInZip(zFile) == ZIP_OK;
 }
-} // namespace
 
 bool McCompressor::compressFiles(
     const QString &fileCompressed, const QStringList &files, const QString &rootPath) noexcept

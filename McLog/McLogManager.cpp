@@ -14,14 +14,12 @@
 #include "Logger/IMcLogger.h"
 #include "Repository/IMcLoggerRepository.h"
 
-namespace {
-void customMessageHandlerNone(QtMsgType msgType, const QMessageLogContext &msgLogCtx, const QString &msg) noexcept
+static void customMessageHandlerNone(QtMsgType msgType, const QMessageLogContext &msgLogCtx, const QString &msg) noexcept
 {
     Q_UNUSED(msgType)
     Q_UNUSED(msgLogCtx)
     Q_UNUSED(msg)
 }
-} // namespace
 
 MC_DECL_PRIVATE_DATA(McLogManager)
 IMcLoggerRepositoryPtr loggerRepository;

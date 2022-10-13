@@ -1,6 +1,6 @@
 INCLUDEPATH += $$PWD
 
-DEFINES += MC_CORE_LIBRARY
+DEFINES += MC_CORE_LIBRARY MC_CODE_LINK
 HEADERS += \
     $$PWD/McMacroGlobal.h \
     $$PWD/McGlobal.h \

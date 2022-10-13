@@ -176,10 +176,23 @@ MC_CORE_EXPORT QObject *loadPlugin(
     const QString &pluginPath, const std::function<bool(const QJsonObject &)> &checker = nullptr) noexcept;
 
 template<typename T>
-T *loadPlugin(const QString &pluginPath, const std::function<bool(const QJsonObject &)> &checker = nullptr) noexcept
+inline T *loadPlugin(
+    const QString &pluginPath, const std::function<bool(const QJsonObject &)> &checker = nullptr) noexcept
 {
     QObject *obj = loadPlugin(pluginPath, checker);
     return qobject_cast<T *>(obj);
+}
+
+template<typename T>
+inline bool qmetaCheck(QObject *obj) noexcept
+{
+    return (obj != nullptr && obj->metaObject() == &T::staticMetaObject);
+}
+
+template<typename T>
+inline bool qmetaInheritsCheck(QObject *obj) noexcept
+{
+    return (obj != nullptr && obj->metaObject()->inherits(&T::staticMetaObject));
 }
 } // namespace Mc
 

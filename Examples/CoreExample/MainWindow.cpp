@@ -17,6 +17,11 @@ qDebug() << "core example init: " << Mc::toAbsolutePath("{appData}/bin");
 MC_DESTROY()
 qDebug() << "core example destroy";
 MC_STATIC_END
+
+MC_INIT2(MainWindow)
+{
+    qDebug() << "test MC_INIT2";
+}
 //!<
 
 MainWindow::MainWindow(QWidget *parent)

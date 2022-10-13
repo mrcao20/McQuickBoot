@@ -24,12 +24,6 @@ McEventDispatcher::McEventDispatcher() noexcept
 
 McEventDispatcher::~McEventDispatcher() {}
 
-McEventDispatcher *McEventDispatcher::instance() noexcept
-{
-    static McEventDispatcher ins;
-    return &ins;
-}
-
 QMetaObject::Connection McEventDispatcher::connectToEvent(
     const QString &scxmlEventSpec, const QObject *receiver, const char *method, Qt::ConnectionType type) noexcept
 {
@@ -55,6 +49,7 @@ QMetaObject::Connection McEventDispatcher::connectToEventImpl(
 namespace Mc {
 McEventDispatcher &eventDispatcher() noexcept
 {
-    return *McEventDispatcher::instance();
+    static McEventDispatcher ins;
+    return ins;
 }
 } // namespace Mc

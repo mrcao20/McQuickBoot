@@ -15,6 +15,7 @@
 
 class IRegisterTest
 {
+    MC_DECL_INIT(IRegisterTest)
 public:
     MC_BASE_DESTRUCTOR(IRegisterTest)
 };

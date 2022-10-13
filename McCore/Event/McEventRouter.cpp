@@ -11,8 +11,6 @@
  */
 #include "McEventRouter.h"
 
-namespace {
-
 static QString nextSegment(const QStringList &segments) noexcept
 {
     if (segments.isEmpty())
@@ -21,8 +19,6 @@ static QString nextSegment(const QStringList &segments) noexcept
     const QString &segment = segments.first();
     return segment == QLatin1String("*") ? QString() : segment;
 }
-
-} // namespace
 
 QMetaObject::Connection McEventRouter::connectToEvent(
     const QStringList &segments, const QObject *receiver, const char *method, Qt::ConnectionType type) noexcept

@@ -22,7 +22,6 @@
 
 #include "Appender/IMcCodecableAppender.h"
 
-namespace {
 template<typename Mutex, typename Lock = std::unique_lock<typename std::decay<Mutex>::type>>
 Lock qt_unique_lock(Mutex &mutex)
 {
@@ -78,7 +77,6 @@ static void win_outputDebugString_helper(const QString &message)
     }
 }
 #endif
-} // namespace
 
 MC_DECL_PRIVATE_DATA(McVSDebugDevice)
 IMcCodecableAppender *codecableAppender{nullptr};

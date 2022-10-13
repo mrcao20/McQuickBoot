@@ -20,13 +20,11 @@ MC_FORWARD_DECL_PRIVATE_DATA(McEventDispatcher)
 
 class MC_CORE_EXPORT McEventDispatcher
 {
-    McEventDispatcher() noexcept;
     Q_DISABLE_COPY_MOVE(McEventDispatcher)
 
 public:
+    McEventDispatcher() noexcept;
     ~McEventDispatcher();
-
-    static McEventDispatcher *instance() noexcept;
 
     QMetaObject::Connection connectToEvent(const QString &scxmlEventSpec, const QObject *receiver, const char *method,
         Qt::ConnectionType type = Qt::AutoConnection) noexcept;

@@ -13,10 +13,14 @@
 
 #include <QtCore/qglobal.h>
 
-#include "McConfig.h"
+#ifdef MC_CODE_LINK
+# define MC_QUICKBOOT_VERSION QT_VERSION_CHECK(0, 0, 0)
+#else
+# include "McConfig.h"
 
-#define MC_QUICKBOOT_VERSION \
- QT_VERSION_CHECK(MC_QUICKBOOT_VERSION_MAJOR, MC_QUICKBOOT_VERSION_MINOR, MC_QUICKBOOT_VERSION_PATCH)
+# define MC_QUICKBOOT_VERSION \
+  QT_VERSION_CHECK(MC_QUICKBOOT_VERSION_MAJOR, MC_QUICKBOOT_VERSION_MINOR, MC_QUICKBOOT_VERSION_PATCH)
+#endif
 
 #if defined(MC_BUILD_STATIC) && !defined(MC_EXPORT_DISABLE)
 # define MC_EXPORT_DISABLE
@@ -137,17 +141,48 @@
  } \
  ();
 
-#define MC_STATIC(...) \
- namespace { \
- static const int __Static_Code_Block__ = []() -> int { \
+#define MC_STATIC(...) static const int __Static_Code_Block__ = []() -> int { \
         constexpr auto __prePriority__ = McPrivate::extractRoutinePriority(__VA_ARGS__); \
         Mc::addPreRoutine(__prePriority__, [](){
 #define MC_STATIC_END \
  }); \
  return 0; \
  } \
- (); \
- }
+ ();
+
+#define MC_INIT2_HELPER(Class, EXTRA, ...) \
+ static void Class##__Static_Code_Block_Constructor_Func__() noexcept; \
+ const int Class::Class##_Static_Init = []() -> int { \
+using ClassType = Class; \
+{ \
+ClassType *_ = nullptr; \
+Q_UNUSED(_); \
+} \
+constexpr auto __prePriority__ = McPrivate::extractRoutinePriority(__VA_ARGS__); \
+Mc::addPreRoutine(__prePriority__, []() { EXTRA Class##__Static_Code_Block_Constructor_Func__(); }); \
+return 0; \
+ }(); \
+ static void Class##__Static_Code_Block_Constructor_Func__() noexcept
+#define MC_INIT2(Class, ...) MC_INIT2_HELPER(Class, Q_UNUSED((int *)nullptr);, __VA_ARGS__)
+#define MC_AUTO_INIT2(Class, ...) MC_INIT2_HELPER(Class, mcRegisterMetaType<Class>();, __VA_ARGS__)
+
+#define MC_STATIC2(...) \
+ static void __Static_Code_Block_Constructor_Func__() noexcept; \
+ static const int __Static_Code_Block_Constructor__ = []() -> int { \
+constexpr auto __prePriority__ = McPrivate::extractRoutinePriority(__VA_ARGS__); \
+Mc::addPreRoutine(__prePriority__, []() { __Static_Code_Block_Constructor_Func__(); }); \
+return 0; \
+ }(); \
+ static void __Static_Code_Block_Constructor_Func__() noexcept
+
+#define MC_DESTROY2(...) \
+ static void __Static_Code_Block_Destructor_Func__() noexcept; \
+ static const int __Static_Code_Block_Destructor__ = []() -> int { \
+constexpr auto __postPriority__ = McPrivate::extractRoutinePriority(__VA_ARGS__); \
+Mc::addPostRoutine(__postPriority__, []() { __Static_Code_Block_Destructor_Func__(); }); \
+return 0; \
+ }(); \
+ static void __Static_Code_Block_Destructor_Func__() noexcept
 
 #define MC_GLOBAL_STATIC_BEGIN(NAME) \
  namespace { \
