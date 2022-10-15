@@ -1,8 +1,5 @@
 project(McWidget)
 
-include_directories(${CMAKE_SOURCE_DIR})
-include_directories(${CMAKE_BINARY_DIR}/McCore)
-
 set(PROJECT_HEADERS
     McWidgetMacroGlobal.h
     McWidgetGlobal.h

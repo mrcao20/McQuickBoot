@@ -1,6 +1,5 @@
 INCLUDEPATH += $$PWD
 
-DEFINES += MC_WIDGET_LIBRARY
 HEADERS += \
     $$PWD/McWidgetMacroGlobal.h \
     $$PWD/McWidgetGlobal.h \

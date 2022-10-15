@@ -1,6 +1,5 @@
 INCLUDEPATH += $$PWD
 
-DEFINES += MC_IOC_LIBRARY
 HEADERS += \
     $$PWD/McIocMacroGlobal.h \
     $$PWD/McIocConstantGlobal.h \

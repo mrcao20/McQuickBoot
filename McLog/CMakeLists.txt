@@ -1,14 +1,12 @@
 project(McLog)
 
-include_directories(${CMAKE_SOURCE_DIR})
-include_directories(${CMAKE_BINARY_DIR}/McCore)
-
 set(PROJECT_HEADERS
     McLogMacroGlobal.h
     McLogGlobal.h
     Utils/McMessagePattern.h
     Utils/McFileUtils.h
     Utils/McLogDeleter.h
+    Utils/McLogPackager.h
     Appender/IMcAppender.h
     Appender/IMcConfigurableAppender.h
     Appender/IMcCodecableAppender.h
@@ -48,6 +46,7 @@ set(PROJECT_SOURCES
     Utils/McMessagePattern.cpp
     Utils/McFileUtils.cpp
     Utils/McLogDeleter.cpp
+    Utils/McLogPackager.cpp
     Appender/Impl/McAbstractAppender.cpp
     Appender/Impl/McAbstractIODeviceAppender.cpp
     Appender/Impl/McAbstractFormatAppender.cpp
@@ -76,13 +75,11 @@ if(WIN32)
     list(APPEND PROJECT_HEADERS
         Device/McVSDebugDevice.h
         Appender/Impl/McVSDebugAppender.h
-        Utils/McLogPackager.h
     )
 
     list(APPEND PROJECT_SOURCES
         Device/McVSDebugDevice.cpp
         Appender/Impl/McVSDebugAppender.cpp
-        Utils/McLogPackager.cpp
     )
 endif()
 

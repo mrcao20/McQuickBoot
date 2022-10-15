@@ -1,6 +1,6 @@
 INCLUDEPATH += $$PWD
 
-DEFINES += MC_CORE_LIBRARY MC_CODE_LINK
+DEFINES += MC_CODE_LINK
 HEADERS += \
     $$PWD/McMacroGlobal.h \
     $$PWD/McGlobal.h \
@@ -25,7 +25,8 @@ HEADERS += \
     $$PWD/Callback/Impl/McCppSyncCallback.h \
     $$PWD/Callback/Impl/McCppAsyncCallback.h \
     $$PWD/Connection/McAbstractConnection.h \
-    $$PWD/Connection/McCppConnection.h
+    $$PWD/Connection/McCppConnection.h \
+    $$PWD/Zip/McCompressor.h
 
 SOURCES += \
     $$PWD/McGlobal.cpp \
@@ -47,23 +48,12 @@ SOURCES += \
     $$PWD/Callback/Impl/McCppSyncCallback.cpp \
     $$PWD/Callback/Impl/McCppAsyncCallback.cpp \
     $$PWD/Connection/McAbstractConnection.cpp \
-    $$PWD/Connection/McCppConnection.cpp
+    $$PWD/Connection/McCppConnection.cpp \
+    $$PWD/Zip/McCompressor.cpp
 
 win32 {
-    HEADERS += \
-        $$PWD/MemoryLibrary/MemoryModule.h \
-        $$PWD/Zip/McCompressor.h \
-        $$PWD/Zip/zip.h \
-        $$PWD/Zip/unzip.h \
-        $$PWD/Zip/ioapi.h \
-        $$PWD/Zip/crypt.h
-
-    SOURCES += \
-        $$PWD/MemoryLibrary/MemoryModule.c \
-        $$PWD/Zip/McCompressor.cpp \
-        $$PWD/Zip/zip.c \
-        $$PWD/Zip/unzip.c \
-        $$PWD/Zip/ioapi.c
+    HEADERS += $$PWD/MemoryLibrary/MemoryModule.h
+    SOURCES += $$PWD/MemoryLibrary/MemoryModule.c
 } else {
     HEADERS += $$PWD/MemoryLibrary/memload.h
     SOURCES += $$PWD/MemoryLibrary/memload.cpp

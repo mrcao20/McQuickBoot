@@ -92,6 +92,9 @@ if(INSTALL_TO_QT)
     list(APPEND MC_QUICKBOOT_INSTALL_BINS ${QT_INSTALL_BINS})
 endif()
 
+include_directories(${CMAKE_SOURCE_DIR})
+include_directories(${CMAKE_BINARY_DIR}/McCore)
+
 add_subdirectory(McCore)
 add_subdirectory(McIoc)
 add_subdirectory(McLog)

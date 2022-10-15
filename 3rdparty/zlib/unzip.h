@@ -44,12 +44,12 @@
 #define _unz64_H
 
 #ifndef _ZLIB_H
-#include <QtZlib/zlib.h>
+# include "zlib.h"
 #endif
 
-#include "../McMacroGlobal.h"
-#undef ZEXPORT
-#define ZEXPORT MC_CORE_EXPORT
+//#include "../McMacroGlobal.h"
+//#undef ZEXPORT
+//#define ZEXPORT MC_CORE_EXPORT
 
 #ifdef __cplusplus
 extern "C" {

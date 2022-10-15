@@ -18,7 +18,7 @@
 #include <QtGlobal>
 
 #include "../McGlobal.h"
-#include "zip.h"
+#include "zlib/zip.h"
 
 static bool compressFile(zipFile zFile, const QString &filePath, const QString &destPath) noexcept
 {

@@ -29,6 +29,7 @@ set(PROJECT_HEADERS
     Callback/Impl/McCppAsyncCallback.h
     Connection/McAbstractConnection.h
     Connection/McCppConnection.h
+    Zip/McCompressor.h
 )
 
 set(PROJECT_SOURCES
@@ -52,25 +53,14 @@ set(PROJECT_SOURCES
     Callback/Impl/McCppAsyncCallback.cpp
     Connection/McAbstractConnection.cpp
     Connection/McCppConnection.cpp
+    Zip/McCompressor.cpp
 )
 
-if(WIN32)
-    list(APPEND PROJECT_HEADERS
-        MemoryLibrary/MemoryModule.h
-        Zip/McCompressor.h
-        Zip/zip.h
-        Zip/unzip.h
-        Zip/ioapi.h
-        Zip/crypt.h
-    )
+include(${CMAKE_SOURCE_DIR}/3rdparty/3rdparty.cmake)
 
-    list(APPEND PROJECT_SOURCES
-        MemoryLibrary/MemoryModule.c
-        Zip/McCompressor.cpp
-        Zip/zip.c
-        Zip/unzip.c
-        Zip/ioapi.c
-    )
+if(WIN32)
+    list(APPEND PROJECT_HEADERS MemoryLibrary/MemoryModule.h)
+    list(APPEND PROJECT_SOURCES MemoryLibrary/MemoryModule.c)
 else()
     list(APPEND PROJECT_HEADERS MemoryLibrary/memload.h)
     list(APPEND PROJECT_SOURCES MemoryLibrary/memload.cpp)
