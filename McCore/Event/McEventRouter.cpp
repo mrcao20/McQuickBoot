@@ -45,6 +45,42 @@ QMetaObject::Connection McEventRouter::connectToEvent(
     }
 }
 
+bool McEventRouter::disconnectEvent(const QStringList &segments, const QObject *receiver, const char *method) noexcept
+{
+    if (segments.isEmpty()) {
+        return false;
+    }
+    QString segment = segments.constFirst();
+    if (!m_children.contains(segment)) {
+        return false;
+    }
+    if (segments.size() == 1) {
+        auto router = m_children.take(segment);
+        bool flag = router->disconnect(router, SIGNAL(eventOccurred(QVariant)), receiver, method);
+        router->deleteLater();
+        return flag;
+    }
+    return child(segment)->disconnectEvent(segments.mid(1), receiver, method);
+}
+
+bool McEventRouter::disconnectEvent(const QStringList &segments, const QObject *receiver) noexcept
+{
+    if (segments.isEmpty()) {
+        return false;
+    }
+    QString segment = segments.constFirst();
+    if (!m_children.contains(segment)) {
+        return false;
+    }
+    if (segments.size() == 1) {
+        auto router = m_children.take(segment);
+        bool flag = router->disconnect(router, &McEventRouter::eventOccurred, receiver, nullptr);
+        router->deleteLater();
+        return flag;
+    }
+    return child(segment)->disconnectEvent(segments.mid(1), receiver);
+}
+
 void McEventRouter::route(const QStringList &segments, const QVariant &data) noexcept
 {
     Q_EMIT eventOccurred(data);

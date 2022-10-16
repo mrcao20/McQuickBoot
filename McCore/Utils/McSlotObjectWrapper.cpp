@@ -123,7 +123,7 @@ void McSlotObjectWrapper::call(const QVariantList &varList) const noexcept
             auto qmetaType = d->qmetaTypes.at(i);
 #ifdef MC_USE_QT5
             if (body.userType() != qmetaType) {
-                qCritical("cannot construct object for className: %s", QMetaType::typeName(qmetaType));
+                qCCritical(mcCore, "cannot construct object for className: %s", QMetaType::typeName(qmetaType));
                 return;
             }
 #else

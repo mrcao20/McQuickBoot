@@ -94,6 +94,8 @@
  } \
  ;
 
+#define MC_DECL_PRIVATE_DATA2(Class) struct MC_PRIVATE_DATA_NAME(Class)
+
 #define MC_PRIVATE_DATA_DESTRUCTOR(Class) \
  ~MC_PRIVATE_DATA_NAME(Class)() \
  {

@@ -1,4 +1,4 @@
-# 注意不能填写LANGUAGES，填C无法编译C++的符号，填CXX则无法编译本库所链接的其他第三方C库
+# 注意LANGUAGES必须同时包含C和CXX，因为本库由C++编写，但又链接了其他第三方C库
 
 include_directories(${CMAKE_CURRENT_LIST_DIR})
 

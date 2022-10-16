@@ -25,14 +25,32 @@ McEventDispatcher::McEventDispatcher() noexcept
 McEventDispatcher::~McEventDispatcher() {}
 
 QMetaObject::Connection McEventDispatcher::connectToEvent(
-    const QString &scxmlEventSpec, const QObject *receiver, const char *method, Qt::ConnectionType type) noexcept
+    const QString &eventSpec, const QObject *receiver, const char *method, Qt::ConnectionType type) noexcept
 {
-    return d->router.connectToEvent(scxmlEventSpec.split(QLatin1Char('.')), receiver, method, type);
+    return d->router.connectToEvent(eventSpec.split(QLatin1Char('.')), receiver, method, type);
 }
 
 void McEventDispatcher::submitEvent(const QString &eventName) noexcept
 {
     submitEvent_helper(eventName, QVariant());
+}
+
+bool McEventDispatcher::disconnectEvent(const QString &eventSpec, const QObject *receiver, const char *method) noexcept
+{
+    if (eventSpec.isEmpty()) {
+        return d->router.disconnect(SIGNAL(eventOccurred(QVariant)), receiver, method);
+    } else {
+        return d->router.disconnectEvent(eventSpec.split(QLatin1Char('.')), receiver, method);
+    }
+}
+
+bool McEventDispatcher::disconnectEvent(const QString &eventSpec, const QObject *receiver) noexcept
+{
+    if (eventSpec.isEmpty()) {
+        return d->router.disconnect(&d->router, &McEventRouter::eventOccurred, receiver, nullptr);
+    } else {
+        return d->router.disconnectEvent(eventSpec.split(QLatin1Char('.')), receiver);
+    }
 }
 
 void McEventDispatcher::submitEvent_helper(const QString &eventName, const QVariant &data) noexcept
@@ -41,9 +59,9 @@ void McEventDispatcher::submitEvent_helper(const QString &eventName, const QVari
 }
 
 QMetaObject::Connection McEventDispatcher::connectToEventImpl(
-    const QString &scxmlEventSpec, const McSlotObjectWrapper &slotObject, Qt::ConnectionType type) noexcept
+    const QString &eventSpec, const McSlotObjectWrapper &slotObject, Qt::ConnectionType type) noexcept
 {
-    return d->router.connectToEvent(scxmlEventSpec.split(QLatin1Char('.')), slotObject, type);
+    return d->router.connectToEvent(eventSpec.split(QLatin1Char('.')), slotObject, type);
 }
 
 namespace Mc {

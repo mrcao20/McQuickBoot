@@ -30,6 +30,9 @@ public:
     QMetaObject::Connection connectToEvent(
         const QStringList &segments, const McSlotObjectWrapper &slotObject, Qt::ConnectionType type) noexcept;
 
+    bool disconnectEvent(const QStringList &segments, const QObject *receiver, const char *method) noexcept;
+    bool disconnectEvent(const QStringList &segments, const QObject *receiver) noexcept;
+
     void route(const QStringList &segments, const QVariant &data) noexcept;
 
 Q_SIGNALS:

@@ -8,9 +8,7 @@ set(PROJECT_HEADERS
     McMacroGlobal.h
     McGlobal.h
     McMetaType.h
-    Config/McRuntimeConfig.h
-    Config/McRuntimeConfigObject.h
-    Config/McRuntimeConfigValue.h
+    Config/McConfigNode.h
     Destroyer/IMcDestroyer.h
     Event/McEventDispatcher.h
     Event/McEventRouter.h
@@ -35,9 +33,7 @@ set(PROJECT_HEADERS
 set(PROJECT_SOURCES
     McGlobal.cpp
     McMetaType.cpp
-    Config/McRuntimeConfig.cpp
-    Config/McRuntimeConfigObject.cpp
-    Config/McRuntimeConfigValue.cpp
+    Config/McConfigNode.cpp
     Event/McEventDispatcher.cpp
     Event/McEventRouter.cpp
     Utils/McSlotObjectWrapper.cpp

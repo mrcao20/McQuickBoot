@@ -3,6 +3,7 @@
 
 #include <McCore/Callback/Impl/McCppAsyncCallback.h>
 #include <McCore/Callback/Impl/McCppSyncCallback.h>
+#include <McCore/Config/McConfigNode.h>
 #include <McCore/Event/McEventDispatcher.h>
 #include <McCore/McGlobal.h>
 
@@ -61,7 +62,16 @@ MainWindow::MainWindow(QWidget *parent)
         callback2(i);
         asyncCallback2(i);
         mcEvt().submitEvent("button.click", i++);
+
+        {
+            //! Config
+            Mc::globalConfig()["aaaaa"]["bbbbbb"] = i;
+            int ii = Mc::globalConfig()["aaaaa"]["bbbbbb"];
+            qDebug() << "Config:" << ii;
+            //!<
+        }
     });
+    qDebug() << Mc::globalConfig()["aaaaa"].isDefined();
 }
 
 MainWindow::~MainWindow()
