@@ -6,6 +6,7 @@ list(APPEND PROJECT_HEADERS
     ${CMAKE_CURRENT_LIST_DIR}/McMacroGlobal.h
     ${CMAKE_CURRENT_LIST_DIR}/McGlobal.h
     ${CMAKE_CURRENT_LIST_DIR}/McMetaType.h
+    ${CMAKE_CURRENT_LIST_DIR}/Config/McConfigNode.h
     ${CMAKE_CURRENT_LIST_DIR}/Destroyer/IMcDestroyer.h
     ${CMAKE_CURRENT_LIST_DIR}/Event/McEventDispatcher.h
     ${CMAKE_CURRENT_LIST_DIR}/Event/McEventRouter.h
@@ -30,6 +31,7 @@ list(APPEND PROJECT_HEADERS
 list(APPEND PROJECT_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/McGlobal.cpp
     ${CMAKE_CURRENT_LIST_DIR}/McMetaType.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Config/McConfigNode.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Event/McEventDispatcher.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Event/McEventRouter.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Utils/McSlotObjectWrapper.cpp
