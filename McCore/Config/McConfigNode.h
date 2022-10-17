@@ -12,6 +12,7 @@
 #pragma once
 
 #include "../McGlobal.h"
+#include "McConfigNodeIterator.h"
 
 namespace YAML {
 class Node;
@@ -28,6 +29,7 @@ public:
         Scalar,
         Sequence,
         Map,
+        Pair, //!< 当YAML Node类型为Map，但是只有一个键值对时即为此类型
     };
 
     McConfigNode() noexcept;
@@ -56,11 +58,14 @@ public:
     bool isScalar() const noexcept { return type() == NodeType::Scalar; }
     bool isSequence() const noexcept { return type() == NodeType::Sequence; }
     bool isMap() const noexcept { return type() == NodeType::Map; }
+    //! 由于yaml没有pair类型，所以这个函数是判断节点是map类型，但size等于1的情况
+    bool isPair() const noexcept { return type() == NodeType::Pair; }
 
     //! bool conversions
     bool operator!() const noexcept { return !isDefined(); }
 
     //! access
+    //! 如果需要读取的类型为map，尽量使用asMap函数，因为当只有一个键值对时内部将其处理为了pair而导致无法转换成map
     template<typename T>
     T as() const noexcept
     {
@@ -75,6 +80,37 @@ public:
         return var.value<T>();
     }
     QVariant as(const QVariant &fallback) const noexcept;
+
+    template<typename T>
+    T asMap() const noexcept
+    {
+        QVariant var = asMap();
+        return var.value<T>();
+    }
+    QVariant asMap() const noexcept;
+    template<typename T, typename S>
+    T asMap(const S &fallback) const noexcept
+    {
+        QVariant var = asMap(McPrivate::toQVariant(fallback));
+        return var.value<T>();
+    }
+    QVariant asMap(const QVariant &fallback) const noexcept;
+
+    template<typename T>
+    T asPair() const noexcept
+    {
+        QVariant var = asPair();
+        return var.value<T>();
+    }
+    QVariant asPair() const noexcept;
+    template<typename T, typename S>
+    T asPair(const S &fallback) const noexcept
+    {
+        QVariant var = asPair(McPrivate::toQVariant(fallback));
+        return var.value<T>();
+    }
+    QVariant asPair(const QVariant &fallback) const noexcept;
+
     QString scalar() const noexcept;
     template<typename T>
     operator T() const noexcept
@@ -94,6 +130,26 @@ public:
 
     //! size/iterator
     std::size_t size() const noexcept;
+    //! 注意此函数取出的节点只能用于读取数据，写入数据无效
+    McConfigNode at(std::size_t index) const noexcept;
+
+    //! 注意类型为map或pair时才能获取所有键
+    QStringList keys() const noexcept;
+    //! 注意类型为pair才能使用key/value函数
+    QString key() const noexcept;
+    McConfigNode value() const noexcept;
+
+    using iterator = McConfigNodeIterator;
+    using const_iterator = McConfigNodeConstIterator;
+
+    iterator begin() noexcept;
+    const_iterator begin() const noexcept;
+    const_iterator constBegin() const noexcept;
+    const_iterator cbegin() const noexcept;
+    iterator end() noexcept;
+    const_iterator end() const noexcept;
+    const_iterator constEnd() const noexcept;
+    const_iterator cend() const noexcept;
 
     //! sequence
     template<typename T>

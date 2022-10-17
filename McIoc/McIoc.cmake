@@ -1,5 +1,9 @@
 include_directories(${CMAKE_CURRENT_LIST_DIR})
 
+if(USE_LIBRARY)
+    add_definitions(-DMC_IOC_LIBRARY)
+endif()
+
 list(APPEND PROJECT_HEADERS
     ${CMAKE_CURRENT_LIST_DIR}/McIocMacroGlobal.h
     ${CMAKE_CURRENT_LIST_DIR}/McIocConstantGlobal.h

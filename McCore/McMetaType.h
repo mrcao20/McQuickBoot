@@ -369,6 +369,7 @@ public:
         skipStructClassOrEnum(begin, end);
         skipQtNamespace(begin, end);
 
+# ifdef MC_USE_QT6
         if (skipToken(begin, end, "QVector")) {
             // Replace QVector by QList
             appendStr("QList");
@@ -378,6 +379,7 @@ public:
             // replace QPair by std::pair
             appendStr("std::pair");
         }
+# endif
 
         if (!hasMiddleConst)
             // Normalize the integer types
@@ -501,6 +503,26 @@ inline bool operator<(const QVariant &left, const QVariant &right)
 
 class McMetaType;
 namespace McPrivate {
+template<typename T>
+struct is_pair : std::false_type
+{
+};
+
+template<typename T1_, typename T2_>
+struct is_pair<std::pair<T1_, T2_>> : std::true_type
+{
+    using T1 = T1_;
+    using T2 = T2_;
+};
+#ifdef MC_USE_QT5
+template<typename T1_, typename T2_>
+struct is_pair<QPair<T1_, T2_>> : std::true_type
+{
+    using T1 = T1_;
+    using T2 = T2_;
+};
+#endif
+
 #ifdef MC_USE_QT5
 class MetaTypeInterface
 {
@@ -543,6 +565,19 @@ public:
     //! 容器内键的数据类型
     MetaTypeInterface::GetMetaTypeIdFn keyMetaType;
     //! 容器内值的数据类型
+    MetaTypeInterface::GetMetaTypeIdFn valueMetaType;
+};
+
+class PairMetaTypeInterface
+{
+public:
+    //! 是否已经保存在容器中
+    mutable QAtomicInteger<bool> isRegistered;
+    //! 键值对自身类型
+    MetaTypeInterface::GetMetaTypeIdFn metaType;
+    //! 键值对内键的数据类型
+    MetaTypeInterface::GetMetaTypeIdFn keyMetaType;
+    //! 键值对内值的数据类型
     MetaTypeInterface::GetMetaTypeIdFn valueMetaType;
 };
 #else
@@ -589,6 +624,19 @@ public:
     //! 容器内键的数据类型
     QMetaType keyMetaType;
     //! 容器内值的数据类型
+    QMetaType valueMetaType;
+};
+
+class PairMetaTypeInterface
+{
+public:
+    //! 是否已经保存在容器中
+    mutable QAtomicInteger<bool> isRegistered;
+    //! 键值对自身类型
+    QMetaType metaType;
+    //! 键值对内键的数据类型
+    QMetaType keyMetaType;
+    //! 键值对内值的数据类型
     QMetaType valueMetaType;
 };
 #endif
@@ -708,6 +756,35 @@ public:
         };
     }
 };
+
+template<typename S>
+class PairMetaTypeForType
+{
+public:
+    static constexpr MetaTypeInterface::GetMetaTypeIdFn getMetaTypeId() noexcept
+    {
+        return []() {
+            static int id = qRegisterMetaType<S>(typenameHelper<S>().data());
+            return id;
+        };
+    }
+
+    static constexpr MetaTypeInterface::GetMetaTypeIdFn getKeyMetaTypeId() noexcept
+    {
+        return []() {
+            static int id = qMetaTypeId<typename is_pair<S>::T1>();
+            return id;
+        };
+    }
+
+    static constexpr MetaTypeInterface::GetMetaTypeIdFn getValueMetaTypeId() noexcept
+    {
+        return []() {
+            static int id = qMetaTypeId<typename is_pair<S>::T2>();
+            return id;
+        };
+    }
+};
 #endif
 
 template<typename T, typename Enable = void>
@@ -801,6 +878,26 @@ struct MapMetaTypeInterfaceWrapper
 };
 
 template<typename T>
+struct PairMetaTypeInterfaceWrapper
+{
+#ifdef MC_USE_QT5
+    static inline constexpr const PairMetaTypeInterface metaType = {
+        /*.isRegistered=*/false,
+        /*.metaType=*/PairMetaTypeForType<T>::getMetaTypeId(),
+        /*.keyMetaType=*/PairMetaTypeForType<T>::getKeyMetaTypeId(),
+        /*.valueMetaType=*/PairMetaTypeForType<T>::getValueMetaTypeId(),
+    };
+#else
+    static inline constexpr const PairMetaTypeInterface metaType = {
+        /*.isRegistered=*/false,
+        /*.metaType=*/QMetaType::fromType<T>(),
+        /*.keyMetaType=*/QMetaType::fromType<typename is_pair<T>::T1>(),
+        /*.valueMetaType=*/QMetaType::fromType<typename is_pair<T>::T2>(),
+    };
+#endif
+};
+
+template<typename T>
 constexpr const MetaTypeInterface *metaTypeInterfaceForType() noexcept
 {
     using Ty = std::remove_cv_t<std::remove_reference_t<T>>;
@@ -820,8 +917,16 @@ constexpr const MapMetaTypeInterface *mapMetaTypeInterfaceForType() noexcept
     using Ty = std::remove_cv_t<std::remove_reference_t<T>>;
     return &MapMetaTypeInterfaceWrapper<Ty>::metaType;
 }
+
+template<typename T>
+constexpr const PairMetaTypeInterface *pairMetaTypeInterfaceForType() noexcept
+{
+    using Ty = std::remove_cv_t<std::remove_reference_t<T>>;
+    return &PairMetaTypeInterfaceWrapper<Ty>::metaType;
+}
 } // namespace McPrivate
 
+////////////////////////////////////////////
 class MC_CORE_EXPORT McMetaType
 {
 public:
@@ -969,6 +1074,7 @@ private:
     friend inline void mcRegisterMetaType() noexcept;
 };
 
+////////////////////////////////////////////
 class MC_CORE_EXPORT McListMetaType
 {
 public:
@@ -1048,6 +1154,7 @@ private:
     friend inline void mcRegisterContainer() noexcept;
 };
 
+////////////////////////////////////////////
 class MC_CORE_EXPORT McMapMetaType
 {
 public:
@@ -1139,6 +1246,109 @@ public:
 
 private:
     const McPrivate::MapMetaTypeInterface *d{nullptr};
+
+    template<typename T>
+    friend inline void mcRegisterContainer() noexcept;
+};
+
+////////////////////////////////////////////
+class MC_CORE_EXPORT McPairMetaType
+{
+public:
+    constexpr McPairMetaType() noexcept = default;
+    constexpr McPairMetaType(const McPrivate::PairMetaTypeInterface *val) noexcept
+        : d(val)
+    {
+    }
+
+    static void registerMetaType(const McPairMetaType &type) noexcept;
+
+#ifdef MC_USE_QT5
+    static McPairMetaType fromQMetaType(int type) noexcept;
+#else
+    static McPairMetaType fromQMetaType(const QMetaType &type) noexcept;
+#endif
+    static QVector<McPairMetaType> metaTypes() noexcept;
+
+#ifdef MC_USE_QT5
+    //! 映射自身类型
+    constexpr int metaType() const noexcept
+    {
+        if (!isValid()) {
+            return -1;
+        }
+        return d->metaType();
+    }
+    //! 容器内键的数据类型
+    constexpr int keyMetaType() const noexcept
+    {
+        if (!isValid()) {
+            return -1;
+        }
+        return d->keyMetaType();
+    }
+    //! 容器内值的数据类型
+    constexpr int valueMetaType() const noexcept
+    {
+        if (!isValid()) {
+            return -1;
+        }
+        return d->valueMetaType();
+    }
+#else
+    //! 映射自身类型
+    constexpr QMetaType metaType() const noexcept
+    {
+        if (!isValid()) {
+            return QMetaType();
+        }
+        return d->metaType;
+    }
+    //! 容器内键的数据类型
+    constexpr QMetaType keyMetaType() const noexcept
+    {
+        if (!isValid()) {
+            return QMetaType();
+        }
+        return d->keyMetaType;
+    }
+    //! 容器内值的数据类型
+    constexpr QMetaType valueMetaType() const noexcept
+    {
+        if (!isValid()) {
+            return QMetaType();
+        }
+        return d->valueMetaType;
+    }
+#endif
+
+    constexpr bool isValid() const noexcept
+    {
+        return d != nullptr;
+    }
+
+    template<typename T>
+    constexpr static McPairMetaType fromType()
+    {
+        return McPairMetaType(McPrivate::pairMetaTypeInterfaceForType<T>());
+    }
+
+    friend bool operator==(McPairMetaType a, McPairMetaType b)
+    {
+        if (a.d == b.d)
+            return true;
+        if (a.d == nullptr || b.d == nullptr)
+            return false;
+        return a.d->metaType == b.d->metaType && a.d->keyMetaType == b.d->keyMetaType
+               && a.d->valueMetaType == b.d->valueMetaType;
+    }
+    friend bool operator!=(McPairMetaType a, McPairMetaType b)
+    {
+        return !(a == b);
+    }
+
+private:
+    const McPrivate::PairMetaTypeInterface *d{nullptr};
 
     template<typename T>
     friend inline void mcRegisterContainer() noexcept;
@@ -1384,6 +1594,50 @@ inline void mcRegisterContainer() noexcept
                     for (auto itr = from.cbegin(), end = from.cend(); itr != end; ++itr) {
                         to.insert(QVariant::fromValue(itr.key()), QVariant::fromValue(itr.value()));
                     }
+                    return to;
+                });
+            }
+        }
+    } else if constexpr (bool(McPrivate::is_pair<T>::value)) {
+        constexpr McPairMetaType customMetaType = McPairMetaType::fromType<T>();
+        if (customMetaType.d->isRegistered.loadRelaxed()) {
+            return;
+        }
+#ifdef MC_USE_QT5
+        int metaType = customMetaType.metaType();
+#else
+        constexpr QMetaType metaType = customMetaType.metaType();
+#endif
+        using KeyType = typename McPrivate::is_pair<T>::T1;
+        using ValueType = typename McPrivate::is_pair<T>::T2;
+        mcRegisterContainer<KeyType>();
+        mcRegisterContainer<ValueType>();
+        McPairMetaType::registerMetaType(customMetaType);
+#ifdef MC_USE_QT5
+        int pairMetaType = qMetaTypeId<QPair<QVariant, QVariant>>();
+#else
+        constexpr QMetaType pairMetaType = QMetaType::fromType<QPair<QVariant, QVariant>>();
+#endif
+        if (!QMetaType::hasRegisteredConverterFunction(pairMetaType, metaType)) {
+            QVariant var(pairMetaType);
+            if (!var.canConvert(metaType)) {
+                QMetaType::registerConverter<QPair<QVariant, QVariant>, T>([](const QPair<QVariant, QVariant> &from) {
+                    T to;
+                    using keyType = typename McPrivate::is_pair<T>::T1;
+                    using mappedType = typename McPrivate::is_pair<T>::T2;
+                    to.first = from.first.template value<keyType>();
+                    to.second = from.second.template value<mappedType>();
+                    return to;
+                });
+            }
+        }
+        if (!QMetaType::hasRegisteredConverterFunction(metaType, pairMetaType)) {
+            QVariant var(metaType);
+            if (!var.canConvert(pairMetaType)) {
+                QMetaType::registerConverter<T, QPair<QVariant, QVariant>>([](const T &from) {
+                    QPair<QVariant, QVariant> to;
+                    to.first = QVariant::fromValue(from.first);
+                    to.second = QVariant::fromValue(from.second);
                     return to;
                 });
             }

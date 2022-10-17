@@ -13,13 +13,13 @@
 
 #include <QtCore/qglobal.h>
 
-#ifdef MC_CODE_LINK
-# define MC_QUICKBOOT_VERSION QT_VERSION_CHECK(0, 0, 0)
-#else
+#if __has_include("McConfig.h")
 # include "McConfig.h"
 
 # define MC_QUICKBOOT_VERSION \
   QT_VERSION_CHECK(MC_QUICKBOOT_VERSION_MAJOR, MC_QUICKBOOT_VERSION_MINOR, MC_QUICKBOOT_VERSION_PATCH)
+#else
+# define MC_QUICKBOOT_VERSION QT_VERSION_CHECK(0, 0, 0)
 #endif
 
 #if defined(MC_BUILD_STATIC) && !defined(MC_EXPORT_DISABLE)

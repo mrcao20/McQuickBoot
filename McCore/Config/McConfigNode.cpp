@@ -42,18 +42,20 @@ struct convert<QVariant>
 {
     static Node encode(const QVariant &rhs)
     {
-        if (rhs.canConvert<QVariantMap>()) {
-            QVariantMap map = rhs.toMap();
+        if (rhs.canConvert<QMap<QVariant, QVariant>>()) {
+            auto map = rhs.value<QMap<QVariant, QVariant>>();
             if (map.size() == 1) {
                 auto pair = qMakePair(map.firstKey(), map.first());
                 return Node(pair);
             } else {
                 return Node(map);
             }
+        } else if (rhs.canConvert<QString>()) {
+            return Node(rhs.toString());
         } else if (rhs.canConvert<QVariantList>()) {
             return Node(rhs.toList());
-        } else if (rhs.canConvert<QPair<QString, QVariant>>()) {
-            return Node(rhs.value<QPair<QString, QVariant>>());
+        } else if (rhs.canConvert<QPair<QVariant, QVariant>>()) {
+            return Node(rhs.value<QPair<QVariant, QVariant>>());
         } else {
             return Node(rhs.toString());
         }
@@ -69,12 +71,12 @@ struct convert<QVariant>
         } else if (node.IsSequence()) {
             rhs = node.as<QVariantList>();
         } else if (node.IsMap()) {
-            auto map = node.as<QVariantMap>();
+            auto map = node.as<QMap<QVariant, QVariant>>();
             if (map.size() == 1) {
                 auto pair = qMakePair(map.firstKey(), map.first());
                 rhs.setValue(pair);
             } else {
-                rhs = map;
+                rhs.setValue(map);
             }
         }
         return true;
@@ -169,6 +171,31 @@ struct convert<QList<T>>
     }
 };
 
+//! std::pair<QVariant, QVariant>
+template<>
+struct convert<std::pair<QVariant, QVariant>>
+{
+    static Node encode(const std::pair<QVariant, QVariant> &rhs)
+    {
+        Node node(NodeType::Map);
+        node.force_insert(rhs.first, rhs.second);
+        return node;
+    }
+
+    static bool decode(const Node &node, std::pair<QVariant, QVariant> &rhs)
+    {
+        if (!node.IsMap())
+            return false;
+
+        const_iterator itr = node.begin();
+        if (itr != node.end()) {
+            rhs.first = itr->first.as<QVariant>();
+            rhs.second = itr->second.as<QVariant>();
+        }
+        return true;
+    }
+};
+
 #ifdef MC_USE_QT5
 //! QPair
 template<typename T, typename U>
@@ -232,7 +259,11 @@ McConfigNode::McConfigNode(NodeType type) noexcept
     : McConfigNode()
 {
     try {
-        d->yamlNode = YAML::Node(static_cast<YAML::NodeType::value>(type));
+        auto yamlType = static_cast<YAML::NodeType::value>(type);
+        if (type == NodeType::Pair) {
+            yamlType = YAML::NodeType::Map;
+        }
+        d->yamlNode = YAML::Node(yamlType);
     } catch (const std::exception &e) {
         Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
     }
@@ -346,7 +377,12 @@ void McConfigNode::sync() noexcept
 McConfigNode::NodeType McConfigNode::type() const noexcept
 {
     try {
-        return static_cast<McConfigNode::NodeType>(d->yamlNode.Type());
+        auto yamlType = d->yamlNode.Type();
+        if (yamlType == YAML::NodeType::Map && d->yamlNode.size() == 1) {
+            return NodeType::Pair;
+        } else {
+            return static_cast<McConfigNode::NodeType>(yamlType);
+        }
     } catch (const std::exception &e) {
         Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
         return McConfigNode::NodeType::Undefined;
@@ -377,6 +413,47 @@ QVariant McConfigNode::as(const QVariant &fallback) const noexcept
 {
     try {
         return d->yamlNode.as<QVariant>(fallback);
+    } catch (const std::exception &e) {
+        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        return QVariant();
+    }
+}
+
+QVariant McConfigNode::asMap() const noexcept
+{
+    try {
+        return QVariant::fromValue(d->yamlNode.as<QMap<QVariant, QVariant>>());
+    } catch (const std::exception &e) {
+        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        return QVariant();
+    }
+}
+
+QVariant McConfigNode::asMap(const QVariant &fallback) const noexcept
+{
+    try {
+        return QVariant::fromValue(d->yamlNode.as<QMap<QVariant, QVariant>>(fallback.value<QMap<QVariant, QVariant>>()));
+    } catch (const std::exception &e) {
+        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        return QVariant();
+    }
+}
+
+QVariant McConfigNode::asPair() const noexcept
+{
+    try {
+        return QVariant::fromValue(d->yamlNode.as<QPair<QVariant, QVariant>>());
+    } catch (const std::exception &e) {
+        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        return QVariant();
+    }
+}
+
+QVariant McConfigNode::asPair(const QVariant &fallback) const noexcept
+{
+    try {
+        return QVariant::fromValue(
+            d->yamlNode.as<QPair<QVariant, QVariant>>(fallback.value<QPair<QVariant, QVariant>>()));
     } catch (const std::exception &e) {
         Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
         return QVariant();
@@ -432,6 +509,108 @@ std::size_t McConfigNode::size() const noexcept
         Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
         return 0;
     }
+}
+
+McConfigNode McConfigNode::at(std::size_t index) const noexcept
+{
+    McConfigNode node;
+    try {
+        std::size_t tmp = 0;
+        for (auto itr = d->yamlNode.begin(), end = d->yamlNode.end(); itr != end; ++itr) {
+            if (tmp < index) {
+                ++tmp;
+                continue;
+            }
+            if (itr->IsDefined()) {
+                node = McConfigNode(itr->as<YAML::Node>());
+            } else {
+                node[McConfigNode(itr->first)] = McConfigNode(itr->second);
+            }
+            break;
+        }
+    } catch (const std::exception &e) {
+        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+    }
+    return node;
+}
+
+QStringList McConfigNode::keys() const noexcept
+{
+    QStringList nodeKeys;
+    try {
+        for (auto itr = d->yamlNode.begin(), end = d->yamlNode.end(); itr != end; ++itr) {
+            nodeKeys.append(itr->first.as<QString>());
+        }
+    } catch (const std::exception &e) {
+        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+    }
+    return nodeKeys;
+}
+
+QString McConfigNode::key() const noexcept
+{
+    if (!isPair()) {
+        return QString();
+    }
+    try {
+        return d->yamlNode.begin()->first.as<QString>();
+    } catch (const std::exception &e) {
+        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        return QString();
+    }
+}
+
+McConfigNode McConfigNode::value() const noexcept
+{
+    if (!isPair()) {
+        return McConfigNode();
+    }
+    try {
+        return McConfigNode(d->yamlNode.begin()->second);
+    } catch (const std::exception &e) {
+        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        return McConfigNode();
+    }
+}
+
+McConfigNode::iterator McConfigNode::begin() noexcept
+{
+    return iterator(d->yamlNode.begin());
+}
+
+McConfigNode::const_iterator McConfigNode::begin() const noexcept
+{
+    return const_iterator(d->yamlNode.begin());
+}
+
+McConfigNode::const_iterator McConfigNode::constBegin() const noexcept
+{
+    return const_iterator(d->yamlNode.begin());
+}
+
+McConfigNode::const_iterator McConfigNode::cbegin() const noexcept
+{
+    return const_iterator(d->yamlNode.begin());
+}
+
+McConfigNode::iterator McConfigNode::end() noexcept
+{
+    return iterator(d->yamlNode.end());
+}
+
+McConfigNode::const_iterator McConfigNode::end() const noexcept
+{
+    return const_iterator(d->yamlNode.end());
+}
+
+McConfigNode::const_iterator McConfigNode::constEnd() const noexcept
+{
+    return const_iterator(d->yamlNode.end());
+}
+
+McConfigNode::const_iterator McConfigNode::cend() const noexcept
+{
+    return const_iterator(d->yamlNode.end());
 }
 
 void McConfigNode::append(const QVariant &rhs) noexcept

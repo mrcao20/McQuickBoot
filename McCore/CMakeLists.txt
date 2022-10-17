@@ -9,6 +9,7 @@ set(PROJECT_HEADERS
     McGlobal.h
     McMetaType.h
     Config/McConfigNode.h
+    Config/McConfigNodeIterator.h
     Destroyer/IMcDestroyer.h
     Event/McEventDispatcher.h
     Event/McEventRouter.h
@@ -34,6 +35,7 @@ set(PROJECT_SOURCES
     McGlobal.cpp
     McMetaType.cpp
     Config/McConfigNode.cpp
+    Config/McConfigNodeIterator.cpp
     Event/McEventDispatcher.cpp
     Event/McEventRouter.cpp
     Utils/McSlotObjectWrapper.cpp

@@ -1,5 +1,9 @@
 include_directories(${CMAKE_CURRENT_LIST_DIR})
 
+if(USE_LIBRARY)
+    add_definitions(-DMC_LOG_LIBRARY)
+endif()
+
 list(APPEND PROJECT_HEADERS
     ${CMAKE_CURRENT_LIST_DIR}/McLogMacroGlobal.h
     ${CMAKE_CURRENT_LIST_DIR}/McLogGlobal.h

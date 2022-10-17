@@ -62,16 +62,26 @@ MainWindow::MainWindow(QWidget *parent)
         callback2(i);
         asyncCallback2(i);
         mcEvt().submitEvent("button.click", i++);
-
-        {
-            //! Config
-            Mc::globalConfig()["aaaaa"]["bbbbbb"] = i;
-            int ii = Mc::globalConfig()["aaaaa"]["bbbbbb"];
-            qDebug() << "Config:" << ii;
-            //!<
-        }
     });
-    qDebug() << Mc::globalConfig()["aaaaa"].isDefined();
+
+    {
+        qDebug() << "===================== config test =====================";
+        mcRegisterContainer<QMap<QString, int>>();
+        if (!Mc::globalConfig()["aaa"].isDefined()) {
+            QMap<QString, int> map;
+            map.insert("bbb", 1);
+            map.insert("ccc", 2);
+            Mc::globalConfig()["aaa"] = map;
+        }
+        QMap<QString, int> pair = Mc::globalConfig()["aaa"].asMap<QMap<QString, int>>();
+        qDebug() << pair << Mc::globalConfig()["aaa"].isPair();
+
+        auto keys = Mc::globalConfig()["aaa"].keys();
+        qDebug() << keys;
+        qDebug() << Mc::globalConfig()["aaa"].at(0).key() << Mc::globalConfig()["aaa"].at(0).value().as<QString>();
+        qDebug() << Mc::globalConfig()["aaa"][keys.constLast()].as<QString>();
+        qDebug() << "===================== config test end =====================";
+    }
 }
 
 MainWindow::~MainWindow()

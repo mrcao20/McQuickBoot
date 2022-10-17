@@ -90,7 +90,11 @@ void McObjectBeanBuilder::doMoveToThread(const QVariant &bean, QThread *thread, 
         obj->moveToThread(thread);
     }
     for (auto &value : properties) {
-        if (!value.canConvert<McBeanReferencePtr>()) {
+#ifdef MC_USE_QT5
+        if (value.userType() != qMetaTypeId<McBeanReferencePtr>()) {
+#else
+        if (value.metaType() != QMetaType::fromType<McBeanReferencePtr>()) {
+#endif
             continue;
         }
         auto ref = value.value<McBeanReferencePtr>();

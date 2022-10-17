@@ -1,5 +1,9 @@
 INCLUDEPATH += $$PWD
 
+contains(DEFINES, MC_USE_LIBRARY) {
+    DEFINES += MC_LOG_LIBRARY
+}
+
 HEADERS += \
     $$PWD/McLogMacroGlobal.h \
     $$PWD/McLogGlobal.h \

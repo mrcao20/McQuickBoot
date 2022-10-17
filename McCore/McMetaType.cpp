@@ -15,8 +15,10 @@ MC_GLOBAL_STATIC_BEGIN(coreMetaTypeStaticData)
 QVector<McMetaType> metaTypes;
 QVector<McListMetaType> listMetaTypes;
 QVector<McMapMetaType> mapMetaTypes;
+QVector<McPairMetaType> pairMetaTypes;
 MC_GLOBAL_STATIC_END(coreMetaTypeStaticData)
 
+////////////////////////////////////////////
 void McMetaType::registerMetaType(const McMetaType &type) noexcept
 {
     if (!type.isValid() || type.d->isRegistered.loadRelaxed()) {
@@ -243,6 +245,7 @@ QSet<McMetaType> McMetaType::parentMetaTypes() const noexcept
     return *d->parents;
 }
 
+////////////////////////////////////////////
 void McListMetaType::registerMetaType(const McListMetaType &type) noexcept
 {
     if (!type.isValid() || type.d->isRegistered.loadRelaxed()) {
@@ -282,6 +285,7 @@ QVector<McListMetaType> McListMetaType::metaTypes() noexcept
     return coreMetaTypeStaticData->listMetaTypes;
 }
 
+////////////////////////////////////////////
 void McMapMetaType::registerMetaType(const McMapMetaType &type) noexcept
 {
     if (!type.isValid() || type.d->isRegistered.loadRelaxed()) {
@@ -320,4 +324,45 @@ McMapMetaType McMapMetaType::fromQMetaType(const QMetaType &type) noexcept
 QVector<McMapMetaType> McMapMetaType::metaTypes() noexcept
 {
     return coreMetaTypeStaticData->mapMetaTypes;
+}
+
+////////////////////////////////////////////
+void McPairMetaType::registerMetaType(const McPairMetaType &type) noexcept
+{
+    if (!type.isValid() || type.d->isRegistered.loadRelaxed()) {
+        return;
+    }
+    type.d->isRegistered.storeRelaxed(true);
+#ifdef MC_USE_QT5
+    type.d->metaType();
+    type.d->keyMetaType();
+    type.d->valueMetaType();
+#else
+    type.d->metaType.id();
+#endif
+    coreMetaTypeStaticData->pairMetaTypes.append(type);
+}
+
+#ifdef MC_USE_QT5
+McPairMetaType McPairMetaType::fromQMetaType(int type) noexcept
+{
+    auto itr = std::find_if(coreMetaTypeStaticData->pairMetaTypes.constBegin(),
+        coreMetaTypeStaticData->pairMetaTypes.constEnd(),
+        [&type](const McPairMetaType &t) { return type == t.d->metaType(); });
+#else
+McPairMetaType McPairMetaType::fromQMetaType(const QMetaType &type) noexcept
+{
+    auto itr = std::find_if(coreMetaTypeStaticData->pairMetaTypes.constBegin(),
+        coreMetaTypeStaticData->pairMetaTypes.constEnd(),
+        [&type](const McPairMetaType &t) { return type == t.d->metaType; });
+#endif
+    if (itr == coreMetaTypeStaticData->pairMetaTypes.constEnd()) {
+        return McPairMetaType();
+    }
+    return *itr;
+}
+
+QVector<McPairMetaType> McPairMetaType::metaTypes() noexcept
+{
+    return coreMetaTypeStaticData->pairMetaTypes;
 }

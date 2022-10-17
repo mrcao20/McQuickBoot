@@ -2,7 +2,12 @@
 
 include_directories(${CMAKE_CURRENT_LIST_DIR})
 
-add_definitions(-DMC_EXPORT_DISABLE)
+option(USE_LIBRARY "如果将此库放在程序的某一个库中，其他模块链接到该库使用时打开此配置" ON)
+option(EXPORT_DISABLE "如果将此库直接链接到程序，不放在任何库中时打开此配置" OFF)
+
+if(EXPORT_DISABLE)
+    add_definitions(-DMC_EXPORT_DISABLE)
+endif()
 
 include(${CMAKE_CURRENT_LIST_DIR}/McCore/McCore.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/McIoc/McIoc.cmake)
