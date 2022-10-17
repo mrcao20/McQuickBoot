@@ -12,7 +12,7 @@
 #pragma once
 
 #include "../McGlobal.h"
-#include "McConfigNodeIterator.h"
+//#include "McConfigNodeIterator.h"
 
 namespace YAML {
 class Node;
@@ -139,17 +139,18 @@ public:
     QString key() const noexcept;
     McConfigNode value() const noexcept;
 
-    using iterator = McConfigNodeIterator;
-    using const_iterator = McConfigNodeConstIterator;
+    //! 迭代器暂时无法实现
+    //    using iterator = McConfigNodeIterator;
+    //    using const_iterator = McConfigNodeConstIterator;
 
-    iterator begin() noexcept;
-    const_iterator begin() const noexcept;
-    const_iterator constBegin() const noexcept;
-    const_iterator cbegin() const noexcept;
-    iterator end() noexcept;
-    const_iterator end() const noexcept;
-    const_iterator constEnd() const noexcept;
-    const_iterator cend() const noexcept;
+    //    iterator begin() noexcept;
+    //    const_iterator begin() const noexcept;
+    //    const_iterator constBegin() const noexcept;
+    //    const_iterator cbegin() const noexcept;
+    //    iterator end() noexcept;
+    //    const_iterator end() const noexcept;
+    //    const_iterator constEnd() const noexcept;
+    //    const_iterator cend() const noexcept;
 
     //! sequence
     template<typename T>

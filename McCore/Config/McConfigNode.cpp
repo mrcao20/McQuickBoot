@@ -573,45 +573,45 @@ McConfigNode McConfigNode::value() const noexcept
     }
 }
 
-McConfigNode::iterator McConfigNode::begin() noexcept
-{
-    return iterator(d->yamlNode.begin());
-}
+// McConfigNode::iterator McConfigNode::begin() noexcept
+//{
+//     return iterator(d->yamlNode.begin());
+// }
 
-McConfigNode::const_iterator McConfigNode::begin() const noexcept
-{
-    return const_iterator(d->yamlNode.begin());
-}
+// McConfigNode::const_iterator McConfigNode::begin() const noexcept
+//{
+//     return const_iterator(d->yamlNode.begin());
+// }
 
-McConfigNode::const_iterator McConfigNode::constBegin() const noexcept
-{
-    return const_iterator(d->yamlNode.begin());
-}
+// McConfigNode::const_iterator McConfigNode::constBegin() const noexcept
+//{
+//     return const_iterator(d->yamlNode.begin());
+// }
 
-McConfigNode::const_iterator McConfigNode::cbegin() const noexcept
-{
-    return const_iterator(d->yamlNode.begin());
-}
+// McConfigNode::const_iterator McConfigNode::cbegin() const noexcept
+//{
+//     return const_iterator(d->yamlNode.begin());
+// }
 
-McConfigNode::iterator McConfigNode::end() noexcept
-{
-    return iterator(d->yamlNode.end());
-}
+// McConfigNode::iterator McConfigNode::end() noexcept
+//{
+//     return iterator(d->yamlNode.end());
+// }
 
-McConfigNode::const_iterator McConfigNode::end() const noexcept
-{
-    return const_iterator(d->yamlNode.end());
-}
+// McConfigNode::const_iterator McConfigNode::end() const noexcept
+//{
+//     return const_iterator(d->yamlNode.end());
+// }
 
-McConfigNode::const_iterator McConfigNode::constEnd() const noexcept
-{
-    return const_iterator(d->yamlNode.end());
-}
+// McConfigNode::const_iterator McConfigNode::constEnd() const noexcept
+//{
+//     return const_iterator(d->yamlNode.end());
+// }
 
-McConfigNode::const_iterator McConfigNode::cend() const noexcept
-{
-    return const_iterator(d->yamlNode.end());
-}
+// McConfigNode::const_iterator McConfigNode::cend() const noexcept
+//{
+//     return const_iterator(d->yamlNode.end());
+// }
 
 void McConfigNode::append(const QVariant &rhs) noexcept
 {
