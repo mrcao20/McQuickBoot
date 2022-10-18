@@ -12,13 +12,23 @@
 #pragma once
 
 #include "../McGlobal.h"
-//#include "McConfigNodeIterator.h"
 
 namespace YAML {
 class Node;
+
+namespace detail {
+struct iterator_value;
+template<typename V>
+class iterator_base;
+} // namespace detail
+
+using iterator = detail::iterator_base<detail::iterator_value>;
+using const_iterator = detail::iterator_base<const detail::iterator_value>;
 }
 
 MC_FORWARD_DECL_PRIVATE_DATA(McConfigNode)
+MC_FORWARD_DECL_PRIVATE_DATA(McConfigNodeIterator)
+MC_FORWARD_DECL_PRIVATE_DATA(McConfigNodeConstIterator)
 
 class MC_CORE_EXPORT McConfigNode
 {
@@ -139,18 +149,81 @@ public:
     QString key() const noexcept;
     McConfigNode value() const noexcept;
 
-    //! 迭代器暂时无法实现
-    //    using iterator = McConfigNodeIterator;
-    //    using const_iterator = McConfigNodeConstIterator;
+    class MC_CORE_EXPORT iterator
+    {
+        //        struct Proxy
+        //        {
+        //            explicit Proxy(const McConfigNode &x)
+        //                : m_ref(x)
+        //            {
+        //            }
+        //            McConfigNode *operator->() { return std::addressof(m_ref); }
+        //            operator McConfigNode *() { return std::addressof(m_ref); }
 
-    //    iterator begin() noexcept;
-    //    const_iterator begin() const noexcept;
-    //    const_iterator constBegin() const noexcept;
-    //    const_iterator cbegin() const noexcept;
-    //    iterator end() noexcept;
-    //    const_iterator end() const noexcept;
-    //    const_iterator constEnd() const noexcept;
-    //    const_iterator cend() const noexcept;
+        //            McConfigNode m_ref;
+        //        };
+
+    public:
+        using iterator_category = std::forward_iterator_tag;
+        using difference_type = std::ptrdiff_t;
+
+        iterator() noexcept;
+        iterator(YAML::iterator yamlItr) noexcept;
+        ~iterator();
+
+        iterator(const iterator &o) noexcept;
+        iterator &operator=(const iterator &o) noexcept;
+        iterator(iterator &&o) noexcept;
+        iterator &operator=(iterator &&o) noexcept;
+
+        iterator &operator++();
+        iterator operator++(int);
+
+        bool operator==(const iterator &rhs) const;
+        bool operator!=(const iterator &rhs) const;
+
+        McConfigNode operator*() const;
+        //        Proxy operator->() const;
+
+    private:
+        MC_DECL_PRIVATE(McConfigNodeIterator)
+    };
+
+    class MC_CORE_EXPORT const_iterator
+    {
+    public:
+        using iterator_category = std::forward_iterator_tag;
+        using difference_type = std::ptrdiff_t;
+
+        const_iterator() noexcept;
+        const_iterator(YAML::const_iterator yamlItr) noexcept;
+        ~const_iterator();
+
+        const_iterator(const const_iterator &o) noexcept;
+        const_iterator &operator=(const const_iterator &o) noexcept;
+        const_iterator(const_iterator &&o) noexcept;
+        const_iterator &operator=(const_iterator &&o) noexcept;
+
+        const_iterator &operator++();
+        const_iterator operator++(int);
+
+        bool operator==(const const_iterator &rhs) const;
+        bool operator!=(const const_iterator &rhs) const;
+
+        McConfigNode operator*() const;
+
+    private:
+        MC_DECL_PRIVATE(McConfigNodeConstIterator)
+    };
+
+    iterator begin() noexcept;
+    const_iterator begin() const noexcept;
+    const_iterator constBegin() const noexcept;
+    const_iterator cbegin() const noexcept;
+    iterator end() noexcept;
+    const_iterator end() const noexcept;
+    const_iterator constEnd() const noexcept;
+    const_iterator cend() const noexcept;
 
     //! sequence
     template<typename T>

@@ -9,7 +9,6 @@ HEADERS += \
     $$PWD/McGlobal.h \
     $$PWD/McMetaType.h \
     $$PWD/Config/McConfigNode.h \
-    $$PWD/Config/McConfigNodeIterator.h \
     $$PWD/Destroyer/IMcDestroyer.h \
     $$PWD/Event/McEventDispatcher.h \
     $$PWD/Event/McEventRouter.h \
@@ -34,7 +33,6 @@ SOURCES += \
     $$PWD/McGlobal.cpp \
     $$PWD/McMetaType.cpp \
     $$PWD/Config/McConfigNode.cpp \
-    $$PWD/Config/McConfigNodeIterator.cpp \
     $$PWD/Event/McEventDispatcher.cpp \
     $$PWD/Event/McEventRouter.cpp \
     $$PWD/Utils/McSlotObjectWrapper.cpp \

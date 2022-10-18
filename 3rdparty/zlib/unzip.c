@@ -72,8 +72,8 @@
         #define NOUNCRYPT
 #endif
 
-#include <QtZlib/zlib.h>
 #include "unzip.h"
+#include "zlib.h"
 
 #ifdef STDC
 #  include <stddef.h>

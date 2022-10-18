@@ -30,11 +30,14 @@
  private:
 
 #ifdef MC_USE_QT5
+QT_WARNING_PUSH
+QT_WARNING_DISABLE_DEPRECATED
 template<>
 inline bool qMapLessThanKey(const QVariant &key1, const QVariant &key2)
 {
-    return qMapLessThanKey(key1.data(), key2.data());
+    return key1 < key2;
 }
+QT_WARNING_POP
 
 # include <array>
 

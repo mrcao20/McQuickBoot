@@ -80,6 +80,11 @@ MainWindow::MainWindow(QWidget *parent)
         qDebug() << keys;
         qDebug() << Mc::globalConfig()["aaa"].at(0).key() << Mc::globalConfig()["aaa"].at(0).value().as<QString>();
         qDebug() << Mc::globalConfig()["aaa"][keys.constLast()].as<QString>();
+
+        for (auto itr = Mc::globalConfig()["aaa"].constBegin(), end = Mc::globalConfig()["aaa"].constEnd(); itr != end;
+             ++itr) {
+            qDebug() << (*itr).key() << (*itr).value().as<QString>();
+        }
         qDebug() << "===================== config test end =====================";
     }
 }

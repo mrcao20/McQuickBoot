@@ -250,6 +250,16 @@ MC_DECL_PRIVATE_DATA2(McConfigNode)
     McConfigNode *rootNode{nullptr};
 };
 
+MC_DECL_PRIVATE_DATA2(McConfigNodeIterator)
+{
+    YAML::iterator yamlItr;
+};
+
+MC_DECL_PRIVATE_DATA2(McConfigNodeConstIterator)
+{
+    YAML::const_iterator yamlItr;
+};
+
 McConfigNode::McConfigNode() noexcept
 {
     MC_NEW_PRIVATE_DATA(McConfigNode);
@@ -573,45 +583,202 @@ McConfigNode McConfigNode::value() const noexcept
     }
 }
 
-// McConfigNode::iterator McConfigNode::begin() noexcept
+McConfigNode::iterator::iterator() noexcept
+{
+    MC_NEW_PRIVATE_DATA(McConfigNodeIterator);
+}
+
+McConfigNode::iterator::iterator(YAML::iterator yamlItr) noexcept
+    : iterator()
+{
+    d->yamlItr = yamlItr;
+}
+
+McConfigNode::iterator::~iterator() {}
+
+McConfigNode::iterator::iterator(const iterator &o) noexcept
+    : iterator(o.d->yamlItr)
+{
+}
+
+McConfigNode::iterator &McConfigNode::iterator::operator=(const iterator &o) noexcept
+{
+    d->yamlItr = o.d->yamlItr;
+    return *this;
+}
+
+McConfigNode::iterator::iterator(iterator &&o) noexcept
+    : iterator(o.d->yamlItr)
+{
+    o.d.reset();
+}
+
+McConfigNode::iterator &McConfigNode::iterator::operator=(iterator &&o) noexcept
+{
+    d->yamlItr = o.d->yamlItr;
+
+    o.d.reset();
+    return *this;
+}
+
+McConfigNode::iterator &McConfigNode::iterator::operator++()
+{
+    ++d->yamlItr;
+    return *this;
+}
+
+McConfigNode::iterator McConfigNode::iterator::operator++(int)
+{
+    iterator tmp(d->yamlItr);
+    ++(*this);
+    return tmp;
+}
+
+bool McConfigNode::iterator::operator==(const iterator &rhs) const
+{
+    return d->yamlItr == rhs.d->yamlItr;
+}
+
+bool McConfigNode::iterator::operator!=(const iterator &rhs) const
+{
+    return d->yamlItr != rhs.d->yamlItr;
+}
+
+McConfigNode McConfigNode::iterator::operator*() const
+{
+    McConfigNode node;
+    try {
+        if (d->yamlItr->IsDefined()) {
+            node = McConfigNode(d->yamlItr->as<YAML::Node>());
+        } else {
+            node[McConfigNode(d->yamlItr->first)] = McConfigNode(d->yamlItr->second);
+        }
+    } catch (const std::exception &e) {
+        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+    }
+    return node;
+}
+
+// McConfigNode::iterator::Proxy McConfigNode::iterator::operator->() const
 //{
-//     return iterator(d->yamlNode.begin());
+//     return Proxy(operator*());
 // }
 
-// McConfigNode::const_iterator McConfigNode::begin() const noexcept
-//{
-//     return const_iterator(d->yamlNode.begin());
-// }
+McConfigNode::const_iterator::const_iterator() noexcept
+{
+    MC_NEW_PRIVATE_DATA(McConfigNodeConstIterator);
+}
 
-// McConfigNode::const_iterator McConfigNode::constBegin() const noexcept
-//{
-//     return const_iterator(d->yamlNode.begin());
-// }
+McConfigNode::const_iterator::const_iterator(YAML::const_iterator yamlItr) noexcept
+    : const_iterator()
+{
+    d->yamlItr = yamlItr;
+}
 
-// McConfigNode::const_iterator McConfigNode::cbegin() const noexcept
-//{
-//     return const_iterator(d->yamlNode.begin());
-// }
+McConfigNode::const_iterator::~const_iterator() {}
 
-// McConfigNode::iterator McConfigNode::end() noexcept
-//{
-//     return iterator(d->yamlNode.end());
-// }
+McConfigNode::const_iterator::const_iterator(const const_iterator &o) noexcept
+    : const_iterator(o.d->yamlItr)
+{
+}
 
-// McConfigNode::const_iterator McConfigNode::end() const noexcept
-//{
-//     return const_iterator(d->yamlNode.end());
-// }
+McConfigNode::const_iterator &McConfigNode::const_iterator::operator=(const const_iterator &o) noexcept
+{
+    d->yamlItr = o.d->yamlItr;
+    return *this;
+}
 
-// McConfigNode::const_iterator McConfigNode::constEnd() const noexcept
-//{
-//     return const_iterator(d->yamlNode.end());
-// }
+McConfigNode::const_iterator::const_iterator(const_iterator &&o) noexcept
+    : const_iterator(o.d->yamlItr)
+{
+    o.d.reset();
+}
 
-// McConfigNode::const_iterator McConfigNode::cend() const noexcept
-//{
-//     return const_iterator(d->yamlNode.end());
-// }
+McConfigNode::const_iterator &McConfigNode::const_iterator::operator=(const_iterator &&o) noexcept
+{
+    d->yamlItr = o.d->yamlItr;
+
+    o.d.reset();
+    return *this;
+}
+
+McConfigNode::const_iterator &McConfigNode::const_iterator::operator++()
+{
+    ++d->yamlItr;
+    return *this;
+}
+
+McConfigNode::const_iterator McConfigNode::const_iterator::operator++(int)
+{
+    const_iterator tmp(d->yamlItr);
+    ++(*this);
+    return tmp;
+}
+
+bool McConfigNode::const_iterator::operator==(const const_iterator &rhs) const
+{
+    return d->yamlItr == rhs.d->yamlItr;
+}
+
+bool McConfigNode::const_iterator::operator!=(const const_iterator &rhs) const
+{
+    return d->yamlItr != rhs.d->yamlItr;
+}
+
+McConfigNode McConfigNode::const_iterator::operator*() const
+{
+    McConfigNode node;
+    try {
+        if (d->yamlItr->IsDefined()) {
+            node = McConfigNode(d->yamlItr->as<YAML::Node>());
+        } else {
+            node[McConfigNode(d->yamlItr->first)] = McConfigNode(d->yamlItr->second);
+        }
+    } catch (const std::exception &e) {
+        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+    }
+    return node;
+}
+
+McConfigNode::iterator McConfigNode::begin() noexcept
+{
+    return iterator(d->yamlNode.begin());
+}
+
+McConfigNode::const_iterator McConfigNode::begin() const noexcept
+{
+    return const_iterator(d->yamlNode.begin());
+}
+
+McConfigNode::const_iterator McConfigNode::constBegin() const noexcept
+{
+    return const_iterator(d->yamlNode.begin());
+}
+
+McConfigNode::const_iterator McConfigNode::cbegin() const noexcept
+{
+    return const_iterator(d->yamlNode.begin());
+}
+
+McConfigNode::iterator McConfigNode::end() noexcept
+{
+    return iterator(d->yamlNode.end());
+}
+
+McConfigNode::const_iterator McConfigNode::end() const noexcept
+{
+    return const_iterator(d->yamlNode.end());
+}
+
+McConfigNode::const_iterator McConfigNode::constEnd() const noexcept
+{
+    return const_iterator(d->yamlNode.end());
+}
+
+McConfigNode::const_iterator McConfigNode::cend() const noexcept
+{
+    return const_iterator(d->yamlNode.end());
+}
 
 void McConfigNode::append(const QVariant &rhs) noexcept
 {
