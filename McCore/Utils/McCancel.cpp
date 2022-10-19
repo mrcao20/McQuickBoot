@@ -15,7 +15,7 @@ MC_INIT(McCancel)
 mcRegisterMetaTypeSimple<McCancel>();
 MC_INIT_END
 
-struct McCancelSharedData : public QSharedData
+MC_DECL_SHARED_PRIVATE_DATA2(McCancel)
 {
     QAtomicInteger<bool> isCanceled{false};
     IMcCallbackPtr callback;
@@ -23,7 +23,7 @@ struct McCancelSharedData : public QSharedData
 
 McCancel::McCancel() noexcept
 {
-    d = new McCancelSharedData();
+    MC_NEW_SHARED_PRIVATE_DATA(McCancel);
 }
 
 McCancel::~McCancel() {}

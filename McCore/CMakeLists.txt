@@ -17,6 +17,7 @@ set(PROJECT_HEADERS
     Utils/McCancel.h
     Utils/McPause.h
     Utils/McProgress.h
+    Utils/McRequest.h
     PluginChecker/IMcPluginChecker.h
     PluginChecker/Impl/McNormalPluginChecker.h
     MemoryLibrary/McMemoryLibrary.h
@@ -41,6 +42,7 @@ set(PROJECT_SOURCES
     Utils/McCancel.cpp
     Utils/McPause.cpp
     Utils/McProgress.cpp
+    Utils/McRequest.cpp
     PluginChecker/Impl/McNormalPluginChecker.cpp
     MemoryLibrary/McMemoryLibrary.cpp
     Callback/Impl/McAbstractSyncCallback.cpp

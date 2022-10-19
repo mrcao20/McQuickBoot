@@ -96,21 +96,44 @@
 
 #define MC_DECL_PRIVATE_DATA2(Class) struct MC_PRIVATE_DATA_NAME(Class)
 
+#define MC_DECL_SHARED_PRIVATE_DATA(Class) \
+ struct MC_PRIVATE_DATA_NAME(Class) \
+     : public QSharedData \
+ {
+#define MC_DECL_SHARED_PRIVATE_DATA_END \
+ } \
+ ;
+
+#define MC_DECL_SHARED_PRIVATE_DATA2(Class) \
+ struct MC_PRIVATE_DATA_NAME(Class) \
+     : public QSharedData
+
 #define MC_PRIVATE_DATA_DESTRUCTOR(Class) \
  ~MC_PRIVATE_DATA_NAME(Class)() \
  {
 //
 #define MC_PRIVATE_DATA_DESTRUCTOR_END }
 
+#define MC_PRIVATE_DATA_DESTRUCTOR2(Class) ~MC_PRIVATE_DATA_NAME(Class)()
+
+#define MC_PRIVATE_DATA_TYPE(Class) QScopedPointer<MC_PRIVATE_DATA_NAME(Class)>
+#define MC_COPYABLE_PRIVATE_DATA_TYPE(Class) std::unique_ptr<MC_PRIVATE_DATA_NAME(Class)>
+#define MC_SHARED_PRIVATE_DATA_TYPE(Class) QExplicitlySharedDataPointer<MC_PRIVATE_DATA_NAME(Class)>
+
 #define MC_DECL_PRIVATE(Class) \
- QScopedPointer<MC_PRIVATE_DATA_NAME(Class)> d; \
+ MC_PRIVATE_DATA_TYPE(Class) d; \
  friend struct MC_PRIVATE_DATA_NAME(Class);
 
 #define MC_DECL_COPYABLE_PRIVATE(Class) \
- std::unique_ptr<MC_PRIVATE_DATA_NAME(Class)> d; \
+ MC_COPYABLE_PRIVATE_DATA_TYPE(Class) d; \
+ friend struct MC_PRIVATE_DATA_NAME(Class);
+
+#define MC_DECL_SHARED_PRIVATE(Class) \
+ MC_SHARED_PRIVATE_DATA_TYPE(Class) d; \
  friend struct MC_PRIVATE_DATA_NAME(Class);
 
 #define MC_NEW_PRIVATE_DATA(Class) d.reset(new MC_PRIVATE_DATA_NAME(Class)());
+#define MC_NEW_SHARED_PRIVATE_DATA(Class) d = new MC_PRIVATE_DATA_NAME(Class)();
 
 #define MC_FORWARD_DECL_PRIVATE_DATA(Class) struct MC_PRIVATE_DATA_NAME(Class);
 

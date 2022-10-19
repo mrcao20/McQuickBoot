@@ -16,7 +16,7 @@
 #include "../Callback/Impl/McCppSyncCallback.h"
 #include "../McGlobal.h"
 
-struct McProgressSharedData;
+MC_FORWARD_DECL_PRIVATE_DATA(McProgress)
 
 class MC_CORE_EXPORT McProgress
 {
@@ -94,7 +94,7 @@ public:
     }
 
 private:
-    QExplicitlySharedDataPointer<McProgressSharedData> d;
+    MC_DECL_SHARED_PRIVATE(McProgress)
 };
 
 MC_DECL_METATYPE(McProgress)

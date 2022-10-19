@@ -15,7 +15,7 @@ MC_INIT(McProgress)
 mcRegisterMetaTypeSimple<McProgress>();
 MC_INIT_END
 
-struct McProgressSharedData : public QSharedData
+MC_DECL_SHARED_PRIVATE_DATA2(McProgress)
 {
     QAtomicInt current{0};
     QAtomicInt total{100};
@@ -25,7 +25,7 @@ struct McProgressSharedData : public QSharedData
 
 McProgress::McProgress() noexcept
 {
-    d = new McProgressSharedData();
+    MC_NEW_SHARED_PRIVATE_DATA(McProgress);
 }
 
 McProgress::~McProgress() {}

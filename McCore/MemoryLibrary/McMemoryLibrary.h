@@ -377,7 +377,7 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 
 #include "../McGlobal.h"
 
-struct McMemoryLibraryData;
+MC_FORWARD_DECL_PRIVATE_DATA(McMemoryLibrary)
 
 /*!
  * \brief The McMemoryLibrary class
@@ -406,5 +406,5 @@ public:
     QFunctionPointer resolve(const QLatin1String &symbol) noexcept;
 
 private:
-    QExplicitlySharedDataPointer<McMemoryLibraryData> d;
+    MC_DECL_SHARED_PRIVATE(McMemoryLibrary)
 };

@@ -17,6 +17,7 @@ list(APPEND PROJECT_HEADERS
     ${CMAKE_CURRENT_LIST_DIR}/Utils/McCancel.h
     ${CMAKE_CURRENT_LIST_DIR}/Utils/McPause.h
     ${CMAKE_CURRENT_LIST_DIR}/Utils/McProgress.h
+    ${CMAKE_CURRENT_LIST_DIR}/Utils/McRequest.h
     ${CMAKE_CURRENT_LIST_DIR}/PluginChecker/IMcPluginChecker.h
     ${CMAKE_CURRENT_LIST_DIR}/PluginChecker/Impl/McNormalPluginChecker.h
     ${CMAKE_CURRENT_LIST_DIR}/MemoryLibrary/McMemoryLibrary.h
@@ -41,6 +42,7 @@ list(APPEND PROJECT_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/Utils/McCancel.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Utils/McPause.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Utils/McProgress.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Utils/McRequest.cpp
     ${CMAKE_CURRENT_LIST_DIR}/PluginChecker/Impl/McNormalPluginChecker.cpp
     ${CMAKE_CURRENT_LIST_DIR}/MemoryLibrary/McMemoryLibrary.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Callback/Impl/McAbstractSyncCallback.cpp

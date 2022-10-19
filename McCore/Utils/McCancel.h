@@ -16,7 +16,7 @@
 #include "../Callback/Impl/McCppAsyncCallback.h"
 #include "../McGlobal.h"
 
-struct McCancelSharedData;
+MC_FORWARD_DECL_PRIVATE_DATA(McCancel)
 
 class MC_CORE_EXPORT McCancel
 {
@@ -65,7 +65,7 @@ public:
     }
 
 private:
-    QExplicitlySharedDataPointer<McCancelSharedData> d;
+    MC_DECL_SHARED_PRIVATE(McCancel)
 };
 
 MC_DECL_METATYPE(McCancel)

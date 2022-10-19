@@ -16,7 +16,7 @@
 #include "../Callback/Impl/McCppAsyncCallback.h"
 #include "../McGlobal.h"
 
-struct McPauseSharedData;
+MC_FORWARD_DECL_PRIVATE_DATA(McPause)
 
 class MC_CORE_EXPORT McPause
 {
@@ -67,7 +67,7 @@ public:
     }
 
 private:
-    QExplicitlySharedDataPointer<McPauseSharedData> d;
+    MC_DECL_SHARED_PRIVATE(McPause)
 };
 
 MC_DECL_METATYPE(McPause)

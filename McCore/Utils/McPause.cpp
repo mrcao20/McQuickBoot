@@ -15,7 +15,7 @@ MC_INIT(McPause)
 mcRegisterMetaTypeSimple<McPause>();
 MC_INIT_END
 
-struct McPauseSharedData : public QSharedData
+MC_DECL_SHARED_PRIVATE_DATA2(McPause)
 {
     QAtomicInteger<bool> isPaused{false};
     IMcCallbackPtr callback;
@@ -23,7 +23,7 @@ struct McPauseSharedData : public QSharedData
 
 McPause::McPause() noexcept
 {
-    d = new McPauseSharedData();
+    MC_NEW_SHARED_PRIVATE_DATA(McPause);
 }
 
 McPause::~McPause() {}

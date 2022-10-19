@@ -384,14 +384,14 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
 # include "memload.h"
 #endif
 
-struct McMemoryLibraryData : public QSharedData
+MC_DECL_SHARED_PRIVATE_DATA2(McMemoryLibrary)
 {
     QByteArray hashCode;
     QString errorString;
     QByteArray libraryData;
     void *handle{nullptr};
 
-    ~McMemoryLibraryData()
+    MC_PRIVATE_DATA_DESTRUCTOR2(McMemoryLibrary)
     {
         if (handle != nullptr) {
 #ifdef Q_OS_WIN
@@ -405,12 +405,12 @@ struct McMemoryLibraryData : public QSharedData
 };
 
 MC_GLOBAL_STATIC_BEGIN(staticData)
-QHash<QByteArray, QExplicitlySharedDataPointer<McMemoryLibraryData>> libraryLoaderDatas;
+QHash<QByteArray, MC_SHARED_PRIVATE_DATA_TYPE(McMemoryLibrary)> libraryLoaderDatas;
 MC_GLOBAL_STATIC_END(staticData)
 
 McMemoryLibrary::McMemoryLibrary() noexcept
 {
-    d = new McMemoryLibraryData();
+    MC_NEW_SHARED_PRIVATE_DATA(McMemoryLibrary);
 }
 
 McMemoryLibrary::McMemoryLibrary(const QByteArray &data) noexcept
@@ -426,7 +426,7 @@ McMemoryLibrary::McMemoryLibrary(const McMemoryLibrary &o) noexcept
 }
 
 McMemoryLibrary::McMemoryLibrary(McMemoryLibrary &&o) noexcept
-    : d(qExchange(o.d, QExplicitlySharedDataPointer<McMemoryLibraryData>()))
+    : d(qExchange(o.d, MC_SHARED_PRIVATE_DATA_TYPE(McMemoryLibrary)()))
 {
 }
 
@@ -450,7 +450,7 @@ void McMemoryLibrary::setData(const QByteArray &data) noexcept
     auto result = hash.result();
     d = staticData->libraryLoaderDatas.value(result);
     if (!d) {
-        d = new McMemoryLibraryData();
+        MC_NEW_SHARED_PRIVATE_DATA(McMemoryLibrary);
         d->hashCode = result.toHex();
         d->libraryData = data;
         staticData->libraryLoaderDatas.insert(result, d);

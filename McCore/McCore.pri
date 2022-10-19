@@ -17,6 +17,7 @@ HEADERS += \
     $$PWD/Utils/McCancel.h \
     $$PWD/Utils/McPause.h \
     $$PWD/Utils/McProgress.h \
+    $$PWD/Utils/McRequest.h \
     $$PWD/PluginChecker/IMcPluginChecker.h \
     $$PWD/PluginChecker/Impl/McNormalPluginChecker.h \
     $$PWD/MemoryLibrary/McMemoryLibrary.h \
@@ -40,6 +41,7 @@ SOURCES += \
     $$PWD/Utils/McCancel.cpp \
     $$PWD/Utils/McPause.cpp \
     $$PWD/Utils/McProgress.cpp \
+    $$PWD/Utils/McRequest.cpp \
     $$PWD/PluginChecker/Impl/McNormalPluginChecker.cpp \
     $$PWD/MemoryLibrary/McMemoryLibrary.cpp \
     $$PWD/Callback/Impl/McAbstractSyncCallback.cpp \
