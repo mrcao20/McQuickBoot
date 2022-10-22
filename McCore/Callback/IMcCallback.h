@@ -23,26 +23,33 @@ public:
     };
 
     virtual void destroy() noexcept = 0;
-    virtual void call(const QVariantList &varList) const noexcept = 0;
+    virtual QVariant call(const QVariantList &varList) const noexcept = 0;
 
-    void call(const QVariant &var) const noexcept { call(QVariantList() << var); }
+    QVariant call(const QVariant &var) const noexcept { return call(QVariantList() << var); }
 
     template<typename... Args>
-    void call(const Args &...args) const noexcept
+    QVariant call(const Args &...args) const noexcept
     {
         QVariantList vars;
         (vars << ... << McPrivate::toQVariant(args));
-        call(vars);
+        return call(vars);
+    }
+    template<typename R, typename... Args>
+    R call(const Args &...args) const noexcept
+    {
+        QVariantList vars;
+        (vars << ... << McPrivate::toQVariant(args));
+        return call(vars).value<R>();
     }
 
-    void operator()(const QVariantList &varList) const noexcept { call(varList); }
+    QVariant operator()(const QVariantList &varList) const noexcept { return call(varList); }
 
-    void operator()(const QVariant &var) const noexcept { call(var); }
+    QVariant operator()(const QVariant &var) const noexcept { return call(var); }
 
     template<typename... Args>
-    void operator()(Args &&...args) const noexcept
+    QVariant operator()(Args &&...args) const noexcept
     {
-        call(std::forward<Args>(args)...);
+        return call(std::forward<Args>(args)...);
     }
 };
 

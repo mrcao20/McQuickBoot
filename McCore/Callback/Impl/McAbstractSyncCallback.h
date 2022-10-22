@@ -23,7 +23,7 @@ public:
     using IMcCallback::call;
 
     void destroy() noexcept override;
-    void call(const QVariantList &varList) const noexcept override final;
+    QVariant call(const QVariantList &varList) const noexcept override final;
 
 protected:
     virtual void syncCall(const QVariantList &varList) const noexcept = 0;

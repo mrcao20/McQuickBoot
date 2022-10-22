@@ -18,10 +18,11 @@ void McAbstractSyncCallback::destroy() noexcept
     deleteLater();
 }
 
-void McAbstractSyncCallback::call(const QVariantList &varList) const noexcept
+QVariant McAbstractSyncCallback::call(const QVariantList &varList) const noexcept
 {
     QCoreApplication::postEvent(
         const_cast<McAbstractSyncCallback *>(this), new McCustomEvent(QEvent::Type::User, varList));
+    return QVariant();
 }
 
 void McAbstractSyncCallback::customEvent(QEvent *event)

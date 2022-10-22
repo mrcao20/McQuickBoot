@@ -21,22 +21,28 @@ bool hasRecever{false};
 QPointer<const QObject> recever;
 #ifdef MC_USE_QT5
 QList<int> qmetaTypes;
+int returnMetaType;
 #else
 QList<QMetaType> qmetaTypes;
+QMetaType returnMetaType;
 #endif
 QtPrivate::QSlotObjectBase *method{nullptr};
 MC_DECL_PRIVATE_DATA_END
 
-#ifdef MC_USE_QT5
-McSlotObjectWrapper::McSlotObjectWrapper(
-    const QObject *recever, const QList<int> &qmetaTypes, QtPrivate::QSlotObjectBase *method) noexcept
-#else
-McSlotObjectWrapper::McSlotObjectWrapper(
-    const QObject *recever, const QList<QMetaType> &qmetaTypes, QtPrivate::QSlotObjectBase *method) noexcept
-#endif
+McSlotObjectWrapper::McSlotObjectWrapper() noexcept
 {
     MC_NEW_PRIVATE_DATA(McSlotObjectWrapper);
+}
 
+#ifdef MC_USE_QT5
+McSlotObjectWrapper::McSlotObjectWrapper(const QObject *recever, const QList<int> &qmetaTypes, int returnMetaType,
+    QtPrivate::QSlotObjectBase *method) noexcept
+#else
+McSlotObjectWrapper::McSlotObjectWrapper(const QObject *recever, const QList<QMetaType> &qmetaTypes,
+    QMetaType returnMetaType, QtPrivate::QSlotObjectBase *method) noexcept
+    : McSlotObjectWrapper()
+#endif
+{
     if (recever != nullptr) {
         d->hasRecever = true;
     } else {
@@ -44,6 +50,7 @@ McSlotObjectWrapper::McSlotObjectWrapper(
     }
     d->recever = recever;
     d->qmetaTypes = qmetaTypes;
+    d->returnMetaType = returnMetaType;
     d->method = method;
 }
 
@@ -56,7 +63,7 @@ McSlotObjectWrapper::~McSlotObjectWrapper()
 }
 
 McSlotObjectWrapper::McSlotObjectWrapper(const McSlotObjectWrapper &o) noexcept
-    : McSlotObjectWrapper(o.d->recever.data(), o.d->qmetaTypes, o.d->method)
+    : McSlotObjectWrapper(o.d->recever.data(), o.d->qmetaTypes, o.d->returnMetaType, o.d->method)
 {
     d->hasRecever = o.d->hasRecever;
     if (d->method != nullptr) {
@@ -72,7 +79,7 @@ McSlotObjectWrapper &McSlotObjectWrapper::operator=(const McSlotObjectWrapper &o
 }
 
 McSlotObjectWrapper::McSlotObjectWrapper(McSlotObjectWrapper &&o) noexcept
-    : McSlotObjectWrapper(o.d->recever.data(), o.d->qmetaTypes, o.d->method)
+    : McSlotObjectWrapper(o.d->recever.data(), o.d->qmetaTypes, o.d->returnMetaType, o.d->method)
 {
     d->hasRecever = o.d->hasRecever;
     o.d->method = nullptr;
@@ -90,20 +97,47 @@ const QObject *McSlotObjectWrapper::recever() const noexcept
     return d->recever.data();
 }
 
-void McSlotObjectWrapper::call(const QVariantList &varList) const noexcept
+#ifdef MC_USE_QT5
+QList<int> McSlotObjectWrapper::metaTypes() const noexcept
+#else
+QList<QMetaType> McSlotObjectWrapper::metaTypes() const noexcept
+#endif
+{
+    return d->qmetaTypes;
+}
+
+#ifdef MC_USE_QT5
+int McSlotObjectWrapper::returnMetaType() const noexcept
+#else
+QMetaType McSlotObjectWrapper::returnMetaType() const noexcept
+#endif
+{
+    return d->returnMetaType;
+}
+
+QVariant McSlotObjectWrapper::call(const QVariantList &varList) const noexcept
 {
     if ((d->hasRecever && d->recever.isNull()) || d->method == nullptr) {
-        return;
+        return QVariant();
     }
     auto argList = varList;
     if (argList.length() < d->qmetaTypes.length()) {
         qCCritical(
             mcCore(), "McSlotObjectWrapper::call. receiver argument count must be equal to or less than sender.");
-        return;
+        return QVariant();
     }
     void **args = new void *[argList.length() + 1];
     auto cleanup = qScopeGuard([&args]() { delete[] args; });
-    args[0] = nullptr;
+    QVariant returnValue;
+#ifdef MC_USE_QT5
+    if (d->returnMetaType != qMetaTypeId<void>()) {
+        returnValue = QVariant(static_cast<QVariant::Type>(d->returnMetaType));
+#else
+    if (d->returnMetaType != QMetaType::fromType<void>()) {
+        returnValue = QVariant(d->returnMetaType);
+#endif
+    }
+    args[0] = const_cast<void *>(returnValue.constData());
     for (int i = 0; i < argList.length(); ++i) {
         QVariant &body = argList[i];
         if (i >= d->qmetaTypes.length()) {
@@ -123,8 +157,14 @@ void McSlotObjectWrapper::call(const QVariantList &varList) const noexcept
             auto qmetaType = d->qmetaTypes.at(i);
 #ifdef MC_USE_QT5
             if (body.userType() != qmetaType) {
-                qCCritical(mcCore, "cannot construct object for className: %s", QMetaType::typeName(qmetaType));
-                return;
+                body = McJsonUtils::serialize(body);
+                if (body.userType() == qMetaTypeId<QJsonObject>()) {
+                    body = McJsonUtils::deserialize(body, qmetaType);
+                }
+                if (body.userType() != qmetaType) {
+                    qCCritical(mcCore, "cannot construct object for className: %s", QMetaType::typeName(qmetaType));
+                    return QVariant();
+                }
             }
 #else
             if (body.metaType() != qmetaType) {
@@ -134,7 +174,7 @@ void McSlotObjectWrapper::call(const QVariantList &varList) const noexcept
                 }
                 if (body.metaType() != qmetaType) {
                     qCCritical(mcCore(), "cannot construct object for className: %s", qmetaType.name());
-                    return;
+                    return QVariant();
                 }
             }
 #endif
@@ -142,4 +182,5 @@ void McSlotObjectWrapper::call(const QVariantList &varList) const noexcept
         }
     }
     d->method->call(const_cast<QObject *>(d->recever.data()), args);
+    return returnValue;
 }

@@ -40,10 +40,10 @@ McCppAsyncCallback &McCppAsyncCallback::operator=(McCppAsyncCallback &&o) noexce
     return *this;
 }
 
-void McCppAsyncCallback::call(const QVariantList &varList) const noexcept
+QVariant McCppAsyncCallback::call(const QVariantList &varList) const noexcept
 {
     if (!m_callback.has_value()) {
-        return;
+        return QVariant();
     }
-    m_callback->call(varList);
+    return m_callback->call(varList);
 }

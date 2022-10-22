@@ -112,10 +112,17 @@ namespace Mc {
 //! 标识析构代码块的优先级，同一优先级下的代码块没有顺序
 enum RoutinePriority : int {
     RoutineMin = std::numeric_limits<int>::min(), //!< 最小值，不可再小
+    RoutineQuickBootThreadPool = -200, //!< 启动框架中全局线程池的析构优先级
     RoutineLogDestroy = -100, //!< 日志库析构的优先级
     RoutineNormal = 0, //!< 默认优先级，未特殊指定时均使用此优先级
     RoutineWidgetBuildInTypeRegistry = 10, //!< 界面库内置类型注册的优先级
     RoutineMax = std::numeric_limits<int>::max(), //!< 最大值，不可再大
+};
+
+enum class NewHandlerType {
+    None = -1, //!< 不处理new失败的情况
+    Fatal = 0, //!< 如果出现new失败的情况，直接调用qFatal打印错误消息，并退出程序
+    Prealloc = 1 //!< 采用预分配内存的方案
 };
 
 template<typename Container>
@@ -177,6 +184,12 @@ MC_CORE_EXPORT QFunctionPointer loadMemoryLibrary(
 MC_CORE_EXPORT void loadMemoryLibrary(const QByteArray &data, const QLatin1String &checkSymbol) noexcept;
 MC_CORE_EXPORT QObject *loadPlugin(
     const QString &pluginPath, const std::function<bool(const QJsonObject &)> &checker = nullptr) noexcept;
+
+//! 如果type为Prealloc，则可以传入第二个参数标识预分配内存的大小，单位：byte，默认64KB。
+//! 此时还可以传入第三个参数，为一个函数。当预分配的内存释放之后，就会调用该函数。
+//! 否则第二个参数无效
+MC_CORE_EXPORT void setNewHandlerType(
+    NewHandlerType type, quint64 size = 65536, const std::function<void()> &func = nullptr);
 
 template<typename T>
 inline T *loadPlugin(

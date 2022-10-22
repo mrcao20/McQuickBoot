@@ -18,12 +18,13 @@ MC_FORWARD_DECL_PRIVATE_DATA(McSlotObjectWrapper)
 class MC_CORE_EXPORT McSlotObjectWrapper
 {
 public:
+    McSlotObjectWrapper() noexcept;
 #ifdef MC_USE_QT5
-    McSlotObjectWrapper(
-        const QObject *recever, const QList<int> &qmetaTypes, QtPrivate::QSlotObjectBase *method) noexcept;
+    McSlotObjectWrapper(const QObject *recever, const QList<int> &qmetaTypes, int returnMetaType,
+        QtPrivate::QSlotObjectBase *method) noexcept;
 #else
-    McSlotObjectWrapper(
-        const QObject *recever, const QList<QMetaType> &qmetaTypes, QtPrivate::QSlotObjectBase *method) noexcept;
+    McSlotObjectWrapper(const QObject *recever, const QList<QMetaType> &qmetaTypes, QMetaType returnMetaType,
+        QtPrivate::QSlotObjectBase *method) noexcept;
 #endif
     ~McSlotObjectWrapper();
     McSlotObjectWrapper(const McSlotObjectWrapper &o) noexcept;
@@ -32,17 +33,32 @@ public:
     McSlotObjectWrapper &operator=(McSlotObjectWrapper &&o) noexcept;
 
     const QObject *recever() const noexcept;
+#ifdef MC_USE_QT5
+    QList<int> metaTypes() const noexcept;
+    int returnMetaType() const noexcept;
+#else
+    QList<QMetaType> metaTypes() const noexcept;
+    QMetaType returnMetaType() const noexcept;
+#endif
 
-    void call(const QVariant &var) const noexcept { call(QVariantList() << var); }
-    void call(const QVariantList &varList) const noexcept;
+    QVariant call(const QVariant &var) const noexcept
+    {
+        return call(QVariantList() << var);
+    }
+    QVariant call(const QVariantList &varList) const noexcept;
 
     template<typename Func>
     static McSlotObjectWrapper build(
         const typename QtPrivate::FunctionPointer<Func>::Object *receiver, Func method) noexcept
     {
         typedef QtPrivate::FunctionPointer<Func> FuncType;
-
+#ifdef MC_USE_QT5
+        int returnMetaType = qMetaTypeId<typename FuncType::ReturnType>();
+#else
+        constexpr QMetaType returnMetaType = QMetaType::fromType<typename FuncType::ReturnType>();
+#endif
         return McSlotObjectWrapper(receiver, McPrivate::MetaTypeHelper<typename FuncType::Arguments>::metaTypes(),
+            returnMetaType,
             new QtPrivate::QSlotObject<Func, typename FuncType::Arguments, typename FuncType::ReturnType>(method));
     }
 
@@ -53,8 +69,13 @@ public:
         build(const QObject *context, Func functor) noexcept
     {
         typedef QtPrivate::FunctionPointer<Func> FuncType;
-
+#ifdef MC_USE_QT5
+        int returnMetaType = qMetaTypeId<typename FuncType::ReturnType>();
+#else
+        constexpr QMetaType returnMetaType = QMetaType::fromType<typename FuncType::ReturnType>();
+#endif
         return McSlotObjectWrapper(context, McPrivate::MetaTypeHelper<typename FuncType::Arguments>::metaTypes(),
+            returnMetaType,
             new QtPrivate::QStaticSlotObject<Func, typename FuncType::Arguments, typename FuncType::ReturnType>(
                 functor));
     }
@@ -64,8 +85,13 @@ public:
         const QObject *context, Func functor) noexcept
     {
         typedef McPrivate::LambdaType<Func> FuncType;
-
+#ifdef MC_USE_QT5
+        int returnMetaType = qMetaTypeId<typename FuncType::ReturnType>();
+#else
+        constexpr QMetaType returnMetaType = QMetaType::fromType<typename FuncType::ReturnType>();
+#endif
         return McSlotObjectWrapper(context, McPrivate::MetaTypeHelper<typename FuncType::Arguments>::metaTypes(),
+            returnMetaType,
             new QtPrivate::QFunctorSlotObject<Func, int(FuncType::ArgumentCount), typename FuncType::Arguments,
                 typename FuncType::ReturnType>(std::move(functor)));
     }

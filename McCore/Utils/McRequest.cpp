@@ -13,7 +13,9 @@
 
 MC_INIT2(McRequest)
 {
-    mcRegisterMetaTypeSimple<McRequest>();
+#ifdef MC_USE_QT5
+    qRegisterMetaType<McRequest>();
+#endif
 }
 
 MC_DECL_SHARED_PRIVATE_DATA2(McRequest)

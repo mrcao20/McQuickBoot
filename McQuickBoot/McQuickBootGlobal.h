@@ -16,3 +16,12 @@
 #include "McQuickBootMacroGlobal.h"
 
 Q_DECLARE_LOGGING_CATEGORY(mcQuickBoot)
+
+class QThreadPool;
+
+namespace Mc {
+MC_QUICKBOOT_EXPORT QThreadPool *globalThreadPool() noexcept;
+MC_QUICKBOOT_EXPORT void setWaitThreadPoolDone(bool val) noexcept;
+MC_QUICKBOOT_EXPORT void setThreadPoolWaitTimeout(int val) noexcept;
+MC_QUICKBOOT_EXPORT void setMaxThreadCount(int val) noexcept;
+} // namespace Mc

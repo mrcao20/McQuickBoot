@@ -40,15 +40,18 @@ MainWindow::MainWindow(QWidget *parent)
 
     //! 回调函数
     McCppSyncCallback callback([]() { qDebug() << "callback1"; });
-    callback.call(new QMainWindow(this));
+    qDebug() << "callback1 return:" << callback.call(new QMainWindow(this));
 
     McCppSyncCallback callback2([](int i) { qDebug() << "callback2" << i; });
 
     IMcCallbackPtr callback3 = McCppSyncCallback::build([](const QString &msg) { qDebug() << "callback3" << msg; });
     callback3->call("test3");
     ///////////////////////////////////////////////////
-    McCppAsyncCallback asyncCallback([]() { qDebug() << "asyncCallback"; });
-    asyncCallback.call("test");
+    McCppAsyncCallback asyncCallback([]() -> QString {
+        qDebug() << "asyncCallback";
+        return "asyncCallback return";
+    });
+    qDebug() << asyncCallback.call<QString>("test");
 
     McCppAsyncCallback asyncCallback2([](int i) { qDebug() << "asyncCallback2" << i; });
 
@@ -59,7 +62,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->pushButton, &QPushButton::clicked, this, [callback2, asyncCallback2]() {
         static int i = 1;
-        callback2(i);
+        qDebug() << "callback2 return:" << callback2(i);
         asyncCallback2(i);
         mcEvt().submitEvent("button.click", i++);
     });

@@ -3,10 +3,18 @@ project(McQuickBoot)
 set(PROJECT_HEADERS
     McQuickBootMacroGlobal.h
     McQuickBootGlobal.h
+    Invoker/McInvoker.h
+    Invoker/McAbstractPromise.h
+    Invoker/McCppPromise.h
+    Invoker/McResult.h
 )
 
 set(PROJECT_SOURCES
     McQuickBootGlobal.cpp
+    Invoker/McInvoker.cpp
+    Invoker/McAbstractPromise.cpp
+    Invoker/McCppPromise.cpp
+    Invoker/McResult.cpp
 )
 
 add_library(${PROJECT_NAME} ${MC_BUILD_TYPE}

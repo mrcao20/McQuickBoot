@@ -137,7 +137,25 @@ QHash<QString, std::function<QString()>> pathPlaceholders{
     {QLatin1String("{config}"), std::bind(getStandardPath, QStandardPaths::GenericConfigLocation)},
     {QLatin1String("{appData}"), std::bind(getStandardPath, QStandardPaths::AppDataLocation)},
 };
+
+char *preallocMemory{nullptr};
+std::function<void()> newHandlerFunc;
 MC_GLOBAL_STATIC_END(coreGlobalStaticData)
+
+static void fatalNewHandler()
+{
+    Mc::setNewHandlerType(Mc::NewHandlerType::None);
+    qFatal("out of memory");
+}
+
+static void preallocNewHandler()
+{
+    Mc::setNewHandlerType(Mc::NewHandlerType::None);
+    MC_SAFETY_DELETE2(coreGlobalStaticData->preallocMemory)
+    if (coreGlobalStaticData->newHandlerFunc != nullptr) {
+        coreGlobalStaticData->newHandlerFunc();
+    }
+}
 
 namespace Mc {
 bool waitForExecFunc(const std::function<bool()> &func, qint64 timeout) noexcept
@@ -326,5 +344,23 @@ QObject *loadPlugin(const QString &pluginPath, const std::function<bool(const QJ
     }
     Mc::callPreRoutine();
     return loader.instance();
+}
+
+void setNewHandlerType(NewHandlerType type, quint64 size, const std::function<void()> &func)
+{
+    if (type == NewHandlerType::None) {
+        std::set_new_handler(nullptr);
+    } else if (type == NewHandlerType::Fatal) {
+        std::set_new_handler(&fatalNewHandler);
+    } else {
+        if (size < 0) {
+            return;
+        }
+        coreGlobalStaticData->newHandlerFunc = func;
+        if (size > 0) {
+            coreGlobalStaticData->preallocMemory = new char[size];
+        }
+        std::set_new_handler(&preallocNewHandler);
+    }
 }
 } // namespace Mc

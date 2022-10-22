@@ -16,6 +16,11 @@
 #include "../../Utils/McSlotObjectWrapper.h"
 #include "McAbstractAsyncCallback.h"
 
+/*!
+ * \brief The McCppAsyncCallback class
+ * 调用此类的call方法，回调函数将会立即执行。
+ * 即回调函数的执行线程和调用此类的call方法的线程为同一个。
+ */
 class MC_CORE_EXPORT McCppAsyncCallback : public McAbstractAsyncCallback
 {
     MC_DECL_INIT(McCppAsyncCallback)
@@ -29,7 +34,7 @@ public:
     McCppAsyncCallback(McCppAsyncCallback &&o) noexcept;
     McCppAsyncCallback &operator=(McCppAsyncCallback &&o) noexcept;
 
-    void call(const QVariantList &varList) const noexcept override;
+    QVariant call(const QVariantList &varList) const noexcept override;
 
     template<typename Func>
     McCppAsyncCallback(const typename QtPrivate::FunctionPointer<Func>::Object *receiver, Func callback) noexcept

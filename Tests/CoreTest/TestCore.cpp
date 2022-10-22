@@ -231,8 +231,10 @@ void TestCore::callbackCase()
         return isFinished;
     });
 
+    auto functor = McSlotObjectWrapper::build(nullptr, []() { return 1; });
     QVERIFY(current == 10);
     QVERIFY(total == 10);
     QVERIFY(isCancel);
     QVERIFY(isPause);
+    QVERIFY(functor.call(QVariantList()).value<int>() == 1);
 }

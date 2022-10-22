@@ -88,7 +88,9 @@ struct McRequest::CheckHelper<>
     static bool check(qsizetype, const QVariantList &) noexcept { return true; }
 };
 
-MC_DECL_METATYPE(McRequest)
+#ifdef MC_USE_QT5
+Q_DECLARE_METATYPE(McRequest)
+#endif
 
 /////////////////////////////////////////////////////////////////
 template<typename... Args>
