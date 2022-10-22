@@ -40,7 +40,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     //! 回调函数
     McCppSyncCallback callback([]() { qDebug() << "callback1"; });
-    callback.call("test");
+    callback.call(new QMainWindow(this));
 
     McCppSyncCallback callback2([](int i) { qDebug() << "callback2" << i; });
 

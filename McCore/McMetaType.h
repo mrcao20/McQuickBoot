@@ -532,6 +532,8 @@ class MetaTypeInterface
 public:
     //! 是否已经保存在容器中
     mutable QAtomicInteger<bool> isRegistered;
+    //! 原始类型名
+    const char *name;
     using GetMetaTypeIdFn = int (*)();
     //! 指针类型
     GetMetaTypeIdFn pMetaType;
@@ -649,6 +651,8 @@ class MetaTypeForType
 {
 public:
 #ifdef MC_USE_QT5
+    static constexpr decltype(typenameHelper<S>()) name = typenameHelper<S>();
+
     static constexpr MetaTypeInterface::GetMetaTypeIdFn getPMetaTypeId() noexcept
     {
         return []() {
@@ -796,6 +800,7 @@ struct MetaTypeInterfaceWrapper
 #ifdef MC_USE_QT5
     static inline constexpr const MetaTypeInterface metaType = {
         /*.isRegistered=*/false,
+        /*.name=*/MetaTypeForType<T>::name.data(),
         /*.pMetaType=*/MetaTypeForType<T>::getPMetaTypeId(),
         /*.sMetaType=*/MetaTypeForType<T>::getSMetaTypeId(),
         /*.createPointer=*/MetaTypeForType<T>::getCreatePointer(),
@@ -822,6 +827,7 @@ struct MetaTypeInterfaceWrapper<T, typename std::enable_if<QtPrivate::IsPointerT
 #ifdef MC_USE_QT5
     static inline constexpr const MetaTypeInterface metaType = {
         /*.isRegistered=*/false,
+        /*.name=*/MetaTypeForType<T>::name.data(),
         /*.pMetaType=*/MetaTypeForType<T>::getPMetaTypeId(),
         /*.sMetaType=*/MetaTypeForType<T>::getSMetaTypeId(),
         /*.createPointer=*/MetaTypeForType<T>::getCreatePointer(),
@@ -945,7 +951,6 @@ public:
     static McMetaType fromQMetaType(const QMetaType &type) noexcept;
     static McMetaType fromWQMetaType(const QMetaType &type) noexcept;
     static McMetaType fromTQMetaType(const QMetaType &type) noexcept;
-    static McMetaType fromTypeName(const QByteArray &typeName) noexcept;
     static McMetaType fromWTypeName(const QByteArray &typeName) noexcept;
     static McMetaType fromTTypeName(const QByteArray &typeName) noexcept;
 #endif
@@ -959,11 +964,18 @@ public:
     static McMetaType fromSQMetaType(const QMetaType &type) noexcept;
     static McMetaType fromFuzzyQMetaType(const QMetaType &type) noexcept;
 #endif
+
+    static McMetaType fromTypeName(const QByteArray &typeName) noexcept;
     static McMetaType fromPTypeName(const QByteArray &typeName) noexcept;
     static McMetaType fromSTypeName(const QByteArray &typeName) noexcept;
     static QVector<McMetaType> metaTypes() noexcept;
 
 #ifdef MC_USE_QT5
+    //! 原始类型名
+    constexpr const char *name() const noexcept
+    {
+        return d->name;
+    }
     //! 指针类型
     constexpr int pMetaType() const noexcept
     {
@@ -1023,9 +1035,17 @@ public:
     }
 #endif
 
+    template<typename T>
+    T createPointer() const noexcept
+    {
+        QVariant var = createQVariantPointer();
+        return var.value<T>();
+    }
 #ifdef MC_USE_QT5
     void *createPointer() const noexcept;
 #endif
+
+    QVariant createQVariantPointer() const noexcept;
     QVariant createSharedPointer(void *copy = nullptr) const noexcept;
 
     void addParentMetaType(const McMetaType &type) const noexcept;

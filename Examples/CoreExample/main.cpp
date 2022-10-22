@@ -5,7 +5,7 @@
 
 #include "MainWindow.h"
 
-MC_STATIC(Mc::RoutinePriority::Normal + 1)
+MC_STATIC(Mc::RoutinePriority::RoutineNormal + 1)
 qDebug() << "static block high level";
 MC_STATIC_END
 

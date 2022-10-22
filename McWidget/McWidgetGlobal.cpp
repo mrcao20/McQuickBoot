@@ -15,7 +15,7 @@
 
 Q_LOGGING_CATEGORY(mcWidget, "mc.widget")
 
-MC_STATIC(Mc::Widget::BuildInTypeRegistry)
+MC_STATIC(Mc::RoutinePriority::RoutineWidgetBuildInTypeRegistry)
 mcRegisterContainer<QWidgetList>();
 mcAddCustomWidgetBuilderFactory<QStackedWidget>([](QStackedWidget *w, const QString &name, const QVariant &var) {
     if (name == QLatin1String("widgets")) {

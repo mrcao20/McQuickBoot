@@ -67,17 +67,6 @@ McMetaType McMetaType::fromTQMetaType(const QMetaType &type) noexcept
     return *itr;
 }
 
-McMetaType McMetaType::fromTypeName(const QByteArray &typeName) noexcept
-{
-    auto itr = std::find_if(coreMetaTypeStaticData->metaTypes.constBegin(),
-        coreMetaTypeStaticData->metaTypes.constEnd(),
-        [&typeName](const McMetaType &t) { return typeName == t.d->metaType.name(); });
-    if (itr == coreMetaTypeStaticData->metaTypes.constEnd()) {
-        return McMetaType();
-    }
-    return *itr;
-}
-
 McMetaType McMetaType::fromWTypeName(const QByteArray &typeName) noexcept
 {
     auto itr = std::find_if(coreMetaTypeStaticData->metaTypes.constBegin(),
@@ -170,6 +159,22 @@ McMetaType McMetaType::fromFuzzyQMetaType(const QMetaType &type) noexcept
 }
 #endif
 
+McMetaType McMetaType::fromTypeName(const QByteArray &typeName) noexcept
+{
+    auto itr = std::find_if(coreMetaTypeStaticData->metaTypes.constBegin(),
+        coreMetaTypeStaticData->metaTypes.constEnd(), [&typeName](const McMetaType &t) {
+#ifdef MC_USE_QT5
+            return typeName == t.d->name;
+#else
+            return typeName == t.d->metaType.name();
+#endif
+        });
+    if (itr == coreMetaTypeStaticData->metaTypes.constEnd()) {
+        return McMetaType();
+    }
+    return *itr;
+}
+
 McMetaType McMetaType::fromPTypeName(const QByteArray &typeName) noexcept
 {
     auto itr = std::find_if(coreMetaTypeStaticData->metaTypes.constBegin(),
@@ -216,6 +221,19 @@ void *McMetaType::createPointer() const noexcept
     return d->createPointer();
 }
 #endif
+
+QVariant McMetaType::createQVariantPointer() const noexcept
+{
+#ifdef MC_USE_QT5
+    void *star = createPointer();
+#else
+    void *star = d->metaType.create();
+#endif
+    if (Q_UNLIKELY(star == nullptr)) {
+        return QVariant();
+    }
+    return QVariant(pMetaType(), &star);
+}
 
 QVariant McMetaType::createSharedPointer(void *copy) const noexcept
 {

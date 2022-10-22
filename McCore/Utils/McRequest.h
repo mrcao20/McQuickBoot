@@ -55,6 +55,12 @@ public:
     void setPause(const McPause &val) noexcept;
     void setProgress(const McProgress &val) noexcept;
     void setParams(const QVariantList &val) noexcept;
+    template<typename T>
+    void addParam(const T &t) noexcept
+    {
+        addParam(McPrivate::toQVariant(t));
+    }
+    void addParam(const QVariant &var) noexcept;
 
 private:
     template<typename...>

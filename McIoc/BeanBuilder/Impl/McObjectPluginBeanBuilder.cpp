@@ -62,11 +62,7 @@ QVariant McObjectPluginBeanBuilder::create() noexcept
         return QVariant();
     }
     QByteArray className = obj->metaObject()->className();
-#ifdef MC_USE_QT5
-    setMetaType(McMetaType::fromPTypeName(className + "*"));
-#else
     setMetaType(McMetaType::fromTypeName(className));
-#endif
     auto beanStar = obj->qt_metacast(className);
     QVariant beanVar(metaType().pMetaType(), &beanStar);
     return beanVar;

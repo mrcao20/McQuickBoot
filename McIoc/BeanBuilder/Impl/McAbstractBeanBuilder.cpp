@@ -303,7 +303,7 @@ QVariant McAbstractBeanBuilder::createByMetaType() noexcept
 #endif
     if (Q_UNLIKELY(beanStar == nullptr)) {
 #ifdef MC_USE_QT5
-        qCCritical(mcIoc(), "cannot create object: '%s'", QMetaType::typeName(d->metaType.pMetaType()));
+        qCCritical(mcIoc(), "cannot create object: '%s'", d->metaType.name());
 #else
         qCCritical(mcIoc(), "cannot create object: '%s'", d->metaType.metaType().name());
 #endif
@@ -379,7 +379,7 @@ QVariant McAbstractBeanBuilder::createByMetaObject() noexcept
     auto idx = metaObj->indexOfConstructor(constructor.methodSignature().constData());
     if (metaObj->static_metacall(QMetaObject::CreateInstance, idx, param) >= 0 || beanStar == nullptr) {
 #ifdef MC_USE_QT5
-        qCCritical(mcIoc(), "cannot create object: '%s'", QMetaType::typeName(d->metaType.pMetaType()));
+        qCCritical(mcIoc(), "cannot create object: '%s'", d->metaType.name());
 #else
         qCCritical(mcIoc(), "cannot create object: '%s'", d->metaType.metaType().name());
 #endif

@@ -20,7 +20,7 @@ MC_AUTO_INIT2(IRegisterTest)
     qDebug() << "test MC_AUTO_INIT2";
 }
 
-MC_AUTO_INIT(RegisterTest, Mc::RoutinePriority::Normal - 1)
+MC_AUTO_INIT(RegisterTest, Mc::RoutinePriority::RoutineNormal - 1)
 qDebug() << "static block low level";
 mcRegisterContainer<QList<RegisterTestPtr>>();
 mcRegisterContainer<QMap<int, RegisterTestPtr>>();

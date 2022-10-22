@@ -13,11 +13,7 @@
 
 void McObjectClassBeanBuilder::setClassName(const QByteArray &className) noexcept
 {
-#ifdef MC_USE_QT5
-    McMetaType type = McMetaType::fromPTypeName(className + "*");
-#else
     McMetaType type = McMetaType::fromTypeName(className);
-#endif
     if (Q_UNLIKELY(!type.isValid())) {
         qCCritical(mcIoc(), "class '%s' is not registered", className.constData());
         return;

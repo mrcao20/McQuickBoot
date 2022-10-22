@@ -27,7 +27,7 @@ bool handlerWhenQuit{false};
 MC_DECL_PRIVATE_DATA_END
 
 MC_INIT(McLogManager)
-MC_DESTROY(Mc::RoutinePriority::Min)
+MC_DESTROY(Mc::RoutinePriority::RoutineLogDestroy)
 if (!McLogManager::instance()->loggerRepository().isNull()) {
     McLogManager::instance()->loggerRepository()->flushWhenQuit();
 }

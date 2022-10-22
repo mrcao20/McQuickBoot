@@ -28,13 +28,10 @@ public:
     void call(const QVariant &var) const noexcept { call(QVariantList() << var); }
 
     template<typename... Args>
-    std::enable_if_t<!(sizeof...(Args) == 1
-                         && QMetaType::fromType<QtPrivate::List<Args...>::Car>() == QMetaType::fromType<QVariantList>()),
-        void>
-        call(Args &&...args) const noexcept
+    void call(const Args &...args) const noexcept
     {
         QVariantList vars;
-        (vars << ... << McPrivate::toQVariant(std::forward<Args>(args)));
+        (vars << ... << McPrivate::toQVariant(args));
         call(vars);
     }
 

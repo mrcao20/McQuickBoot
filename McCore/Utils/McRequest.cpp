@@ -109,6 +109,11 @@ void McRequest::setParams(const QVariantList &val) noexcept
     d->params = val;
 }
 
+void McRequest::addParam(const QVariant &var) noexcept
+{
+    d->params.append(var);
+}
+
 ///////////////////////////////////////////////
 #ifdef MC_USE_QT6
 Q_DECL_CONST_FUNCTION size_t qHash(QMetaType key, size_t seed) noexcept

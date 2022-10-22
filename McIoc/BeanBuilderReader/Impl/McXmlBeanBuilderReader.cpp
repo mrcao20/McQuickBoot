@@ -169,11 +169,7 @@ McAbstractBeanBuilderPtr McXmlBeanBuilderReader::readClass(
         }
         return builder;
     }
-#ifdef MC_USE_QT5
-    auto metaType = McMetaType::fromPTypeName(className.toLatin1() + "*");
-#else
     auto metaType = McMetaType::fromTypeName(className.toLatin1());
-#endif
     if (Q_UNLIKELY(!metaType.isValid())) {
         return McAbstractBeanBuilderPtr();
     }

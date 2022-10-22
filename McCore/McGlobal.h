@@ -109,10 +109,13 @@ private:
 };
 
 namespace Mc {
+//! 标识析构代码块的优先级，同一优先级下的代码块没有顺序
 enum RoutinePriority : int {
-    Min = -10,
-    Normal = 0,
-    Max = 10,
+    RoutineMin = std::numeric_limits<int>::min(), //!< 最小值，不可再小
+    RoutineLogDestroy = -100, //!< 日志库析构的优先级
+    RoutineNormal = 0, //!< 默认优先级，未特殊指定时均使用此优先级
+    RoutineWidgetBuildInTypeRegistry = 10, //!< 界面库内置类型注册的优先级
+    RoutineMax = std::numeric_limits<int>::max(), //!< 最大值，不可再大
 };
 
 template<typename Container>
@@ -197,7 +200,7 @@ inline bool qmetaInheritsCheck(QObject *obj) noexcept
 } // namespace Mc
 
 namespace McPrivate {
-inline constexpr auto extractRoutinePriority(int val = Mc::RoutinePriority::Normal) noexcept
+inline constexpr auto extractRoutinePriority(int val = Mc::RoutinePriority::RoutineNormal) noexcept
 {
     return val;
 }

@@ -19,10 +19,6 @@
 
 Q_DECLARE_LOGGING_CATEGORY(mcWidget)
 
-namespace Mc::Widget {
-enum RoutinePriority { BuildInTypeRegistry = Mc::RoutinePriority::Normal + 1 };
-}
-
 template<typename T>
 void mcAddCustomWidgetBuilderFactory(const typename McCustomBeanBuilder<T>::BuildFuncType &func = nullptr)
 {
