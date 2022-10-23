@@ -8,6 +8,8 @@
 MC_STATIC()
 MC_STATIC_END
 
+void aaa() {}
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -20,10 +22,20 @@ MainWindow::MainWindow(QWidget *parent)
         qDebug() << "invoke:" << str << QThread::currentThread();
         return 1;
     };
+    Mc::invoke(functor);
     Mc::invoke(functor, "invoke1").then([](int i) { qDebug() << "invoke return 1:" << i << QThread::currentThread(); });
+    Mc::invoke(this, &MainWindow::func);
+    Mc::invoke(this, &MainWindow::func, "aaa");
+    Mc::invoke(&aaa);
+    Mc::invoke(&aaa, "vvv");
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::func()
+{
+    qDebug() << "MainWindow func:" << QThread::currentThread();
 }

@@ -22,7 +22,7 @@ MC_QUICKBOOT_EXPORT void invoke(
     McAbstractPromise *promise, const McSlotObjectWrapper &functor, const QVariantList &arguments) noexcept;
 
 template<typename R, typename Func, typename... Args>
-inline R &invoke(
+inline R &invokeObject(
     const typename QtPrivate::FunctionPointer<Func>::Object *receiver, Func callback, const Args &...args) noexcept
 {
     QVariantList arguments;
@@ -35,7 +35,7 @@ inline R &invoke(
 }
 
 template<typename R, typename Func, typename... Args>
-inline R &invoke(Func callback, const Args &...args) noexcept
+inline R &invokePlain(Func callback, const Args &...args) noexcept
 {
     QVariantList arguments;
     (arguments << ... << McPrivate::toQVariant(args));
@@ -45,19 +45,40 @@ inline R &invoke(Func callback, const Args &...args) noexcept
     invoke(promise, functor, arguments);
     return *promise;
 }
+
+namespace detail {
+template<typename T, typename = void>
+struct is_object_invoke : std::false_type
+{
+};
+template<typename T>
+struct is_object_invoke<T, std::void_t<typename QtPrivate::FunctionPointer<T>::Object>> : std::true_type
+{
+};
+} // namespace detail
 } // namespace McPrivate
 
 namespace Mc {
-template<typename Func, typename... Args>
-inline McCppPromise &invoke(
-    const typename QtPrivate::FunctionPointer<Func>::Object *receiver, Func callback, const Args &...args) noexcept
+template<typename Func>
+inline McCppPromise &invoke(Func callback) noexcept
 {
-    return McPrivate::invoke<McCppPromise, Func, Args...>(receiver, callback, args...);
+    return McPrivate::invokePlain<McCppPromise, Func>(callback);
 }
 
-template<typename Func, typename... Args>
-inline McCppPromise &invoke(Func callback, const Args &...args) noexcept
+template<typename Class, typename Func, typename... Args>
+inline std::enable_if_t<McPrivate::detail::is_object_invoke<Func>::value
+                            && std::is_same_v<std::remove_cv_t<std::remove_reference_t<std::remove_pointer_t<Class>>>,
+                                typename QtPrivate::FunctionPointer<Func>::Object>,
+    McCppPromise &>
+    invoke(const Class *receiver, Func callback, const Args &...args) noexcept
 {
-    return McPrivate::invoke<McCppPromise, Func, Args...>(callback, args...);
+    return McPrivate::invokeObject<McCppPromise, Func, Args...>(receiver, callback, args...);
 }
+
+template<typename Func, typename Arg1, typename... Args>
+inline std::enable_if_t<!McPrivate::detail::is_object_invoke<Arg1>::value, McCppPromise &> invoke(
+    Func callback, const Arg1 &arg1, const Args &...args) noexcept
+{
+    return McPrivate::invokePlain<McCppPromise, Func, Arg1, Args...>(callback, arg1, args...);
 }
+} // namespace Mc

@@ -39,6 +39,10 @@ static bool buildArguments(const McSlotObjectWrapper &functor, const QVariantLis
     } else if (metaTypes.size() == 1 && McPrivate::isContainedCustomRequest(metaTypes.constFirst())) {
         auto mainMetaType = metaTypes.constFirst();
         auto childMetaTypes = McPrivate::getCustomRequestMetaType(mainMetaType);
+        if (originArgs.size() < childMetaTypes.size()) {
+            errMsg = fail("Incoming argument size must be greater than or equal to functor argument size");
+            return false;
+        }
         QVariantList reqArgs;
         for (qsizetype i = 0; i < childMetaTypes.size(); ++i) {
             auto type = childMetaTypes.at(i);
@@ -59,6 +63,10 @@ static bool buildArguments(const McSlotObjectWrapper &functor, const QVariantLis
         }
         dstArgs.append(McPrivate::buildCustomRequest(mainMetaType, reqArgs, request));
     } else {
+        if (originArgs.size() < metaTypes.size()) {
+            errMsg = fail("Incoming argument size must be greater than or equal to functor argument size");
+            return false;
+        }
         for (qsizetype i = 0; i < metaTypes.size(); ++i) {
             auto type = metaTypes.at(i);
             QVariant value = originArgs.at(i); //!< 由于调用此函数时参数个数一定一致，所以这里一定有值

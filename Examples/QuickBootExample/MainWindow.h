@@ -17,6 +17,10 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    void func();
+
+    static void f() {}
+
 private:
     Ui::MainWindow *ui;
 };

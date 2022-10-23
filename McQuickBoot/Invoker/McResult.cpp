@@ -78,7 +78,17 @@ void McResult::setInternalError(bool val) noexcept
     d->isInternalError = val;
 }
 
-#ifdef MC_USE_QT5
+QDebug operator<<(QDebug dbg, const McResult &r)
+{
+    QDebugStateSaver saver(dbg);
+    QJsonObject jsonObj;
+    jsonObj.insert("isSuccess", r.isSuccess());
+    jsonObj.insert("result", QJsonValue::fromVariant(r.result()));
+    jsonObj.insert("errMsg", r.errMsg());
+    dbg.noquote() << QJsonDocument(jsonObj).toJson();
+    return dbg;
+}
+
 QDebug operator<<(QDebug dbg, McResult *r)
 {
     QDebugStateSaver saver(dbg);
@@ -100,15 +110,3 @@ QDebug operator<<(QDebug dbg, const QSharedPointer<McResult> &r)
     dbg.noquote() << QJsonDocument(jsonObj).toJson();
     return dbg;
 }
-#else
-QDebug operator<<(QDebug dbg, const McResult &r)
-{
-    QDebugStateSaver saver(dbg);
-    QJsonObject jsonObj;
-    jsonObj.insert("isSuccess", r.isSuccess());
-    jsonObj.insert("result", QJsonValue::fromVariant(r.result()));
-    jsonObj.insert("errMsg", r.errMsg());
-    dbg.noquote() << QJsonDocument(jsonObj).toJson();
-    return dbg;
-}
-#endif

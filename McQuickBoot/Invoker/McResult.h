@@ -55,13 +55,9 @@ public:
         result->setErrMsg(val);
         return result;
     }
-
-#ifdef MC_USE_QT5
+    friend MC_QUICKBOOT_EXPORT QDebug operator<<(QDebug dbg, const McResult &r);
     friend MC_QUICKBOOT_EXPORT QDebug operator<<(QDebug dbg, McResult *r);
     friend MC_QUICKBOOT_EXPORT QDebug operator<<(QDebug dbg, const QSharedPointer<McResult> &r);
-#else
-    friend MC_QUICKBOOT_EXPORT QDebug operator<<(QDebug dbg, const McResult &r);
-#endif
 
 private:
     MC_DECL_PRIVATE(McResult)

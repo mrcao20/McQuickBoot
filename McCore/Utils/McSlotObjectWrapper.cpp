@@ -40,8 +40,8 @@ McSlotObjectWrapper::McSlotObjectWrapper(const QObject *recever, const QList<int
 #else
 McSlotObjectWrapper::McSlotObjectWrapper(const QObject *recever, const QList<QMetaType> &qmetaTypes,
     QMetaType returnMetaType, QtPrivate::QSlotObjectBase *method) noexcept
-    : McSlotObjectWrapper()
 #endif
+    : McSlotObjectWrapper()
 {
     if (recever != nullptr) {
         d->hasRecever = true;
