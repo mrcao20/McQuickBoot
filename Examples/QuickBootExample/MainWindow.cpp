@@ -4,11 +4,15 @@
 #include <QThread>
 
 #include <McQuickBoot/Invoker/McInvoker.h>
+#include <McQuickBoot/Invoker/McResult.h>
 
 MC_STATIC()
 MC_STATIC_END
 
-void aaa() {}
+void aaa()
+{
+    throw std::exception("aaa exception");
+}
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -26,7 +30,7 @@ MainWindow::MainWindow(QWidget *parent)
     Mc::invoke(functor, "invoke1").then([](int i) { qDebug() << "invoke return 1:" << i << QThread::currentThread(); });
     Mc::invoke(this, &MainWindow::func);
     Mc::invoke(this, &MainWindow::func, "aaa");
-    Mc::invoke(&aaa);
+    Mc::invoke(&aaa).onError([](const McResultPtr &r) { qDebug() << "aaa error:" << r; });
     Mc::invoke(&aaa, "vvv");
 }
 

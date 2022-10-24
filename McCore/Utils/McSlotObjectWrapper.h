@@ -20,10 +20,10 @@ class MC_CORE_EXPORT McSlotObjectWrapper
 public:
     McSlotObjectWrapper() noexcept;
 #ifdef MC_USE_QT5
-    McSlotObjectWrapper(const QObject *recever, const QList<int> &qmetaTypes, int returnMetaType,
+    McSlotObjectWrapper(const QObject *receiver, const QList<int> &qmetaTypes, int returnMetaType,
         QtPrivate::QSlotObjectBase *method) noexcept;
 #else
-    McSlotObjectWrapper(const QObject *recever, const QList<QMetaType> &qmetaTypes, QMetaType returnMetaType,
+    McSlotObjectWrapper(const QObject *receiver, const QList<QMetaType> &qmetaTypes, QMetaType returnMetaType,
         QtPrivate::QSlotObjectBase *method) noexcept;
 #endif
     ~McSlotObjectWrapper();
@@ -32,7 +32,7 @@ public:
     McSlotObjectWrapper(McSlotObjectWrapper &&o) noexcept;
     McSlotObjectWrapper &operator=(McSlotObjectWrapper &&o) noexcept;
 
-    const QObject *recever() const noexcept;
+    const QObject *receiver() const noexcept;
 #ifdef MC_USE_QT5
     QList<int> metaTypes() const noexcept;
     int returnMetaType() const noexcept;
@@ -41,11 +41,14 @@ public:
     QMetaType returnMetaType() const noexcept;
 #endif
 
-    QVariant call(const QVariant &var) const noexcept
+    //! 包裹的函数可能会抛异常，所以此类的call方法不能加noexcept关键字。
+    //! \todo 尝试在编译期判断目标函数是否抛异常，从而使用不同类的call方法，从而让编译器优化noexcept
+    QVariant call(const QVariant &var) const
     {
         return call(QVariantList() << var);
     }
-    QVariant call(const QVariantList &varList) const noexcept;
+    QVariant call(const QVariantList &varList) const;
+    void call(void **arguments) const;
 
     template<typename Func>
     static McSlotObjectWrapper build(

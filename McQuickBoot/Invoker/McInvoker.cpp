@@ -88,9 +88,24 @@ static bool buildArguments(const McSlotObjectWrapper &functor, const QVariantLis
     return true;
 }
 
+static QVariant syncInvoke_helper(
+    const McRequest &request, const McSlotObjectWrapper &functor, const QVariantList &originArgs) noexcept
+{
+    QVariantList dstArgs;
+    QVariant body;
+    if (buildArguments(functor, originArgs, request, dstArgs, body)) {
+        try {
+            body = functor.call(dstArgs);
+        } catch (const std::exception &e) {
+            body = fail(e.what());
+        }
+    }
+    return body;
+}
+
 QVariant syncInvoke(const McSlotObjectWrapper &functor, const QVariantList &arguments) noexcept
 {
-    return functor.call(arguments);
+    return syncInvoke_helper(McRequest(), functor, arguments);
 }
 
 void invoke(McAbstractPromise *promise, const McSlotObjectWrapper &functor, const QVariantList &arguments) noexcept
@@ -105,11 +120,7 @@ void invoke(McAbstractPromise *promise, const McSlotObjectWrapper &functor, cons
             request.setProgress(promise->getProgress());
         }
 
-        QVariantList dstArgs;
-        QVariant body;
-        if (buildArguments(functor, originArgs, request, dstArgs, body)) {
-            body = functor.call(dstArgs);
-        }
+        QVariant body = syncInvoke_helper(request, functor, originArgs);
 
         if (promise.isNull()) { //!< promise可能被QML析构
             qCCritical(mcQuickBoot, "promise is null. it's maybe destroyed of qmlengine");

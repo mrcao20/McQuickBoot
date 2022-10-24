@@ -14,6 +14,7 @@
 MC_DECL_PRIVATE_DATA2(McCppPromise)
 {
     McSlotObjectWrapper callback;
+    McSlotObjectWrapper canceled;
     McSlotObjectWrapper error;
 };
 
@@ -36,6 +37,11 @@ void McCppPromise::callCallback() noexcept
     d->callback.call(body());
 }
 
+void McCppPromise::callCanceled() noexcept
+{
+    d->canceled.call(body());
+}
+
 void McCppPromise::callError() noexcept
 {
     d->error.call(body());
@@ -52,9 +58,11 @@ void McCppPromise::setCallback(CallbackType type, const McSlotObjectWrapper &fun
         d->callback = functor;
         setAsyncCall(true);
         break;
+    case CallbackType::Canceled:
+        d->canceled = functor;
+        break;
     case CallbackType::Error:
         d->error = functor;
-        setAsyncCall(false);
         break;
     default:
         break;

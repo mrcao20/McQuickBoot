@@ -14,9 +14,8 @@
 #include <QMetaMethod>
 
 MC_DECL_PRIVATE_DATA(McCppConnection)
-QObject *receiver{nullptr};
 QMetaMethod sig;
-QtPrivate::QSlotObjectBase *callback{nullptr};
+McSlotObjectWrapper callback;
 MC_DECL_PRIVATE_DATA_END
 
 McCppConnection::McCppConnection(QObject *parent) noexcept
@@ -27,24 +26,22 @@ McCppConnection::McCppConnection(QObject *parent) noexcept
 
 McCppConnection::~McCppConnection()
 {
-    d->callback->destroyIfLastRef();
 }
 
-QMetaObject::Connection McCppConnection::init(QObject *sender, const QString &signal, QObject *receiver,
-    QtPrivate::QSlotObjectBase *slot, Qt::ConnectionType type) noexcept
+QMetaObject::Connection McCppConnection::init(
+    QObject *sender, const QString &signal, const McSlotObjectWrapper &slot, Qt::ConnectionType type) noexcept
 {
     d->callback = slot;
     auto con = McAbstractConnection::init(sender, signal, type, d->sig);
     if (!d->sig.isValid()) {
         return con;
     }
-    moveToThread(receiver->thread());
-    setParent(receiver);
-    d->receiver = receiver;
+    moveToThread(slot.receiver()->thread());
+    setParent(const_cast<QObject *>(slot.receiver()));
     return con;
 }
 
 void McCppConnection::call(void **arguments) noexcept
 {
-    d->callback->call(d->receiver, arguments);
+    d->callback.call(arguments);
 }

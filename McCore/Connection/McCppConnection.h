@@ -11,6 +11,7 @@
  */
 #pragma once
 
+#include "../Utils/McSlotObjectWrapper.h"
 #include "McAbstractConnection.h"
 
 MC_FORWARD_DECL_PRIVATE_DATA(McCppConnection)
@@ -21,8 +22,8 @@ public:
     explicit McCppConnection(QObject *parent = nullptr) noexcept;
     ~McCppConnection() override;
 
-    QMetaObject::Connection init(QObject *sender, const QString &signal, QObject *receiver,
-        QtPrivate::QSlotObjectBase *slot, Qt::ConnectionType type) noexcept;
+    QMetaObject::Connection init(
+        QObject *sender, const QString &signal, const McSlotObjectWrapper &slot, Qt::ConnectionType type) noexcept;
 
 protected:
     using McAbstractConnection::init;

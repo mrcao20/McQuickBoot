@@ -48,23 +48,19 @@ public:
     Q_INVOKABLE void attach(QObject *obj) noexcept;
     Q_INVOKABLE void detach() noexcept;
 
-protected:
-    void customEvent(QEvent *event) override;
+    McProgress &getProgress() const noexcept;
+    McCancel &getCancel() const noexcept;
+    McPause &getPause() const noexcept;
 
+protected:
     virtual void callCallback() noexcept = 0;
+    virtual void callCanceled() noexcept = 0;
     virtual void callError() noexcept = 0;
 
     QVariant body() const noexcept;
     void setBody(const QVariant &var) noexcept;
     void setStarted(bool val = true) noexcept;
     void setFinished(bool val = true) noexcept;
-
-    McProgress &getProgress() const noexcept;
-    McCancel &getCancel() const noexcept;
-    McPause &getPause() const noexcept;
-
-private:
-    void call() noexcept;
 
 private:
     MC_DECL_PRIVATE(McAbstractPromise)

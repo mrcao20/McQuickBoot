@@ -33,7 +33,7 @@ QMetaObject::Connection McEventRouter::connectToEvent(
 {
     QString segment = nextSegment(segments);
     if (segment.isEmpty()) {
-        auto receiver = slotObject.recever();
+        auto receiver = slotObject.receiver();
         if (receiver == nullptr) {
             receiver = this;
         }

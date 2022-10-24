@@ -38,7 +38,7 @@ public:
     void setTotalCallback(const IMcCallbackPtr &val) noexcept;
 
     template<typename Func>
-    void currentCallback(const typename QtPrivate::FunctionPointer<Func>::Object *recever, Func func) noexcept
+    void onCurrentCallback(const typename QtPrivate::FunctionPointer<Func>::Object *recever, Func func) noexcept
     {
         static_assert(int(QtPrivate::FunctionPointer<Func>::ArgumentCount) == 1,
             "The number of parameters of callback function can only be equal to 1(int current)");
@@ -49,7 +49,7 @@ public:
     std::enable_if_t<int(QtPrivate::FunctionPointer<Func>::ArgumentCount) >= 0
                          && !QtPrivate::FunctionPointer<Func>::IsPointerToMemberFunction,
         void>
-        currentCallback(Func func) noexcept
+        onCurrentCallback(Func func) noexcept
     {
         static_assert(int(QtPrivate::FunctionPointer<Func>::ArgumentCount) == 1,
             "The number of parameters of callback function can only be equal to 1(int current)");
@@ -57,7 +57,7 @@ public:
         setCurrentCallback(McCppSyncCallback::build(func));
     }
     template<typename Func>
-    std::enable_if_t<QtPrivate::FunctionPointer<Func>::ArgumentCount == -1, void> currentCallback(Func func) noexcept
+    std::enable_if_t<QtPrivate::FunctionPointer<Func>::ArgumentCount == -1, void> onCurrentCallback(Func func) noexcept
     {
         static_assert(int(McPrivate::LambdaType<Func>::ArgumentCount) == 1,
             "The number of parameters of callback function can only be equal to 1(int current)");
@@ -66,7 +66,7 @@ public:
     }
 
     template<typename Func>
-    void totalCallback(const typename QtPrivate::FunctionPointer<Func>::Object *recever, Func func) noexcept
+    void onTotalCallback(const typename QtPrivate::FunctionPointer<Func>::Object *recever, Func func) noexcept
     {
         static_assert(int(QtPrivate::FunctionPointer<Func>::ArgumentCount) == 1,
             "The number of parameters of callback function can only be equal to 1(int total)");
@@ -77,7 +77,7 @@ public:
     std::enable_if_t<int(QtPrivate::FunctionPointer<Func>::ArgumentCount) >= 0
                          && !QtPrivate::FunctionPointer<Func>::IsPointerToMemberFunction,
         void>
-        totalCallback(Func func) noexcept
+        onTotalCallback(Func func) noexcept
     {
         static_assert(int(QtPrivate::FunctionPointer<Func>::ArgumentCount) == 1,
             "The number of parameters of callback function can only be equal to 1(int total)");
@@ -85,7 +85,7 @@ public:
         setTotalCallback(McCppSyncCallback::build(func));
     }
     template<typename Func>
-    std::enable_if_t<QtPrivate::FunctionPointer<Func>::ArgumentCount == -1, void> totalCallback(Func func) noexcept
+    std::enable_if_t<QtPrivate::FunctionPointer<Func>::ArgumentCount == -1, void> onTotalCallback(Func func) noexcept
     {
         static_assert(int(McPrivate::LambdaType<Func>::ArgumentCount) == 1,
             "The number of parameters of callback function can only be equal to 1(int total)");

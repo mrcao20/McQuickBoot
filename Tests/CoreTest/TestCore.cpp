@@ -204,8 +204,8 @@ void TestCore::callbackCase()
     McPause pause;
     McProgress progress;
     int current = 0, total = 0;
-    progress.totalCallback([&total](int t) { total = t; });
-    progress.currentCallback([&current](int c) { current = c; });
+    progress.onTotalCallback([&total](int t) { total = t; });
+    progress.onCurrentCallback([&current](int c) { current = c; });
 
     bool isCancel = false, isPause = false, isFinished = false;
     auto future = QtConcurrent::run([&isCancel, &isPause, &isFinished, cancel, pause, progress]() {

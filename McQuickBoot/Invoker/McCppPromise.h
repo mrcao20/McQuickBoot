@@ -22,6 +22,7 @@ class MC_QUICKBOOT_EXPORT McCppPromise : public McAbstractPromise
     enum class CallbackType {
         Sync,
         Async,
+        Canceled,
         Error,
     };
 
@@ -77,47 +78,63 @@ public:
         return *this;
     }
 
+    //! \note 只有调用此类的cancel方法或使用此类的getCancel返回的McCancel类才会使onCanceled回调生效
     template<typename Func>
-    McCppPromise &error(const typename QtPrivate::FunctionPointer<Func>::Object *receiver, Func callback) noexcept
+    McCppPromise &onCanceled(const typename QtPrivate::FunctionPointer<Func>::Object *receiver, Func callback) noexcept
+    {
+        setCallback(CallbackType::Canceled, McSlotObjectWrapper::build(receiver, callback));
+        return *this;
+    }
+    template<typename Func>
+    McCppPromise &onCanceled(Func callback) noexcept
+    {
+        setCallback(CallbackType::Canceled, McSlotObjectWrapper::build(nullptr, callback));
+        return *this;
+    }
+
+    template<typename Func>
+    McCppPromise &onError(const typename QtPrivate::FunctionPointer<Func>::Object *receiver, Func callback) noexcept
     {
         setCallback(CallbackType::Error, McSlotObjectWrapper::build(receiver, callback));
         return *this;
     }
     template<typename Func>
-    McCppPromise &error(Func callback) noexcept
+    McCppPromise &onError(Func callback) noexcept
     {
         setCallback(CallbackType::Error, McSlotObjectWrapper::build(nullptr, callback));
         return *this;
     }
 
     template<typename Func>
-    McCppPromise &currentProgress(
+    McCppPromise &onCurrentProgress(
         const typename QtPrivate::FunctionPointer<Func>::Object *recever, Func callback) noexcept
     {
-        getProgress().currentCallback(recever, callback);
+        getProgress().onCurrentCallback(recever, callback);
         return *this;
     }
     template<typename Func>
-    McCppPromise &currentProgress(Func callback) noexcept
+    McCppPromise &onCurrentProgress(Func callback) noexcept
     {
-        getProgress().currentCallback(callback);
+        getProgress().onCurrentCallback(callback);
         return *this;
     }
     template<typename Func>
-    McCppPromise &totalProgress(const typename QtPrivate::FunctionPointer<Func>::Object *recever, Func callback) noexcept
+    McCppPromise &onTotalProgress(
+        const typename QtPrivate::FunctionPointer<Func>::Object *recever, Func callback) noexcept
     {
-        getProgress().totalCallback(recever, callback);
+        getProgress().onTotalCallback(recever, callback);
         return *this;
     }
     template<typename Func>
-    McCppPromise &totalProgress(Func callback) noexcept
+    McCppPromise &onTotalProgress(Func callback) noexcept
     {
-        getProgress().totalCallback(callback);
+        getProgress().onTotalCallback(callback);
         return *this;
     }
 
 protected:
     void callCallback() noexcept override;
+    void callCanceled() noexcept override;
     void callError() noexcept override;
 
 private:

@@ -104,41 +104,6 @@ void McAbstractPromise::detach() noexcept
     d->attachedObject = nullptr;
 }
 
-void McAbstractPromise::customEvent(QEvent *event)
-{
-    if (event->type() == QEvent::Type::User) {
-        call();
-    }
-}
-
-QVariant McAbstractPromise::body() const noexcept
-{
-    return d->body;
-}
-
-void McAbstractPromise::setBody(const QVariant &var) noexcept
-{
-    d->body = var;
-
-    if (isAsyncCall()) {
-        call();
-        return;
-    }
-
-    //! 发布的事件由QT删除
-    qApp->postEvent(this, new QEvent(static_cast<QEvent::Type>(QEvent::Type::User)));
-}
-
-void McAbstractPromise::setStarted(bool val) noexcept
-{
-    d->isStarted.storeRelaxed(val);
-}
-
-void McAbstractPromise::setFinished(bool val) noexcept
-{
-    d->isFinished.storeRelaxed(val);
-}
-
 McProgress &McAbstractPromise::getProgress() const noexcept
 {
     return d->progress;
@@ -154,11 +119,21 @@ McPause &McAbstractPromise::getPause() const noexcept
     return d->pause;
 }
 
-void McAbstractPromise::call() noexcept
+QVariant McAbstractPromise::body() const noexcept
 {
+    return d->body;
+}
+
+void McAbstractPromise::setBody(const QVariant &var) noexcept
+{
+    d->body = var;
+
     auto cleanup = qScopeGuard([this]() {
-        this->setFinished();
-        this->deleteLater();
+        auto func = [this]() { //!< 由于都是使用Qt::QueuedConnection标志，所以此函数一定后于callCallback等调用
+            setFinished();
+            deleteLater();
+        };
+        QMetaObject::invokeMethod(this, func, Qt::QueuedConnection);
     });
 
     //    for (const auto &handler : qAsConst(d->responseHanlders)) {
@@ -171,15 +146,23 @@ void McAbstractPromise::call() noexcept
         return;
     }
 
-    if (!d->body.canConvert<McResultPtr>()) {
+    if (isCanceled()) {
+        QMetaObject::invokeMethod(this, &McAbstractPromise::callCanceled, Qt::QueuedConnection);
+    } else if (d->body.canConvert<McResultPtr>() && d->body.value<McResultPtr>()->isInternalError()) {
+        QMetaObject::invokeMethod(this, &McAbstractPromise::callError, Qt::QueuedConnection);
+    } else if (isAsyncCall()) {
         callCallback();
-        return;
-    }
-    auto result = d->body.value<McResultPtr>();
-    if (result->isInternalError()) {
-        qCWarning(mcQuickBoot()) << result;
-        callError();
     } else {
-        callCallback();
+        QMetaObject::invokeMethod(this, &McAbstractPromise::callCallback, Qt::QueuedConnection);
     }
+}
+
+void McAbstractPromise::setStarted(bool val) noexcept
+{
+    d->isStarted.storeRelaxed(val);
+}
+
+void McAbstractPromise::setFinished(bool val) noexcept
+{
+    d->isFinished.storeRelaxed(val);
 }

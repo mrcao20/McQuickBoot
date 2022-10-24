@@ -39,7 +39,7 @@ public:
     void setCallback(const IMcCallbackPtr &val) noexcept;
 
     template<typename Func>
-    void callback(const typename QtPrivate::FunctionPointer<Func>::Object *recever, Func func) noexcept
+    void onCallback(const typename QtPrivate::FunctionPointer<Func>::Object *recever, Func func) noexcept
     {
         static_assert(int(QtPrivate::FunctionPointer<Func>::ArgumentCount) <= 1,
             "The number of parameters of callback function can only be less than or equal to 1(bool isPaused)");
@@ -50,7 +50,7 @@ public:
     std::enable_if_t<int(QtPrivate::FunctionPointer<Func>::ArgumentCount) >= 0
                          && !QtPrivate::FunctionPointer<Func>::IsPointerToMemberFunction,
         void>
-        callback(Func func) noexcept
+        onCallback(Func func) noexcept
     {
         static_assert(int(QtPrivate::FunctionPointer<Func>::ArgumentCount) <= 1,
             "The number of parameters of callback function can only be less than or equal to 1(bool isPaused)");
@@ -58,7 +58,7 @@ public:
         setCallback(McCppAsyncCallback::build(func));
     }
     template<typename Func>
-    std::enable_if_t<QtPrivate::FunctionPointer<Func>::ArgumentCount == -1, void> callback(Func func) noexcept
+    std::enable_if_t<QtPrivate::FunctionPointer<Func>::ArgumentCount == -1, void> onCallback(Func func) noexcept
     {
         static_assert(int(McPrivate::LambdaType<Func>::ArgumentCount) <= 1,
             "The number of parameters of callback function can only be less than or equal to 1(bool isPaused)");
