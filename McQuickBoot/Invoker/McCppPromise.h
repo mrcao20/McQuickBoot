@@ -42,12 +42,23 @@ public:
     template<typename Func>
     McCppPromise &then(const typename QtPrivate::FunctionPointer<Func>::Object *receiver, Func callback) noexcept
     {
+        static_assert(int(QtPrivate::FunctionPointer<Func>::ArgumentCount) <= 1,
+            "The number of parameters of callback function can only be less than or equal to 1");
+
         setCallback(CallbackType::Sync, McSlotObjectWrapper::build(receiver, callback));
         return *this;
     }
     template<typename Func>
     McCppPromise &then(Func callback) noexcept
     {
+        if constexpr (int(QtPrivate::FunctionPointer<Func>::ArgumentCount) >= 0) {
+            static_assert(int(QtPrivate::FunctionPointer<Func>::ArgumentCount) <= 1,
+                "The number of parameters of callback function can only be less than or equal to 1");
+        } else {
+            static_assert(int(McPrivate::LambdaType<Func>::ArgumentCount) <= 1,
+                "The number of parameters of callback function can only be less than or equal to 1");
+        }
+
         setCallback(CallbackType::Sync, McSlotObjectWrapper::build(nullptr, callback));
         return *this;
     }
@@ -55,12 +66,23 @@ public:
     template<typename Func>
     McCppPromise &syncThen(const typename QtPrivate::FunctionPointer<Func>::Object *receiver, Func callback) noexcept
     {
+        static_assert(int(QtPrivate::FunctionPointer<Func>::ArgumentCount) <= 1,
+            "The number of parameters of callback function can only be less than or equal to 1");
+
         setCallback(CallbackType::Sync, McSlotObjectWrapper::build(receiver, callback));
         return *this;
     }
     template<typename Func>
     McCppPromise &syncThen(Func callback) noexcept
     {
+        if constexpr (int(QtPrivate::FunctionPointer<Func>::ArgumentCount) >= 0) {
+            static_assert(int(QtPrivate::FunctionPointer<Func>::ArgumentCount) <= 1,
+                "The number of parameters of callback function can only be less than or equal to 1");
+        } else {
+            static_assert(int(McPrivate::LambdaType<Func>::ArgumentCount) <= 1,
+                "The number of parameters of callback function can only be less than or equal to 1");
+        }
+
         setCallback(CallbackType::Sync, McSlotObjectWrapper::build(nullptr, callback));
         return *this;
     }
@@ -68,12 +90,23 @@ public:
     template<typename Func>
     McCppPromise &asyncThen(const typename QtPrivate::FunctionPointer<Func>::Object *receiver, Func callback) noexcept
     {
+        static_assert(int(QtPrivate::FunctionPointer<Func>::ArgumentCount) <= 1,
+            "The number of parameters of callback function can only be less than or equal to 1");
+
         setCallback(CallbackType::Async, McSlotObjectWrapper::build(receiver, callback));
         return *this;
     }
     template<typename Func>
     McCppPromise &asyncThen(Func callback) noexcept
     {
+        if constexpr (int(QtPrivate::FunctionPointer<Func>::ArgumentCount) >= 0) {
+            static_assert(int(QtPrivate::FunctionPointer<Func>::ArgumentCount) <= 1,
+                "The number of parameters of callback function can only be less than or equal to 1");
+        } else {
+            static_assert(int(McPrivate::LambdaType<Func>::ArgumentCount) <= 1,
+                "The number of parameters of callback function can only be less than or equal to 1");
+        }
+
         setCallback(CallbackType::Async, McSlotObjectWrapper::build(nullptr, callback));
         return *this;
     }
@@ -82,12 +115,23 @@ public:
     template<typename Func>
     McCppPromise &onCanceled(const typename QtPrivate::FunctionPointer<Func>::Object *receiver, Func callback) noexcept
     {
+        static_assert(int(QtPrivate::FunctionPointer<Func>::ArgumentCount) <= 1,
+            "The number of parameters of callback function can only be less than or equal to 1");
+
         setCallback(CallbackType::Canceled, McSlotObjectWrapper::build(receiver, callback));
         return *this;
     }
     template<typename Func>
     McCppPromise &onCanceled(Func callback) noexcept
     {
+        if constexpr (int(QtPrivate::FunctionPointer<Func>::ArgumentCount) >= 0) {
+            static_assert(int(QtPrivate::FunctionPointer<Func>::ArgumentCount) <= 1,
+                "The number of parameters of callback function can only be less than or equal to 1");
+        } else {
+            static_assert(int(McPrivate::LambdaType<Func>::ArgumentCount) <= 1,
+                "The number of parameters of callback function can only be less than or equal to 1");
+        }
+
         setCallback(CallbackType::Canceled, McSlotObjectWrapper::build(nullptr, callback));
         return *this;
     }
@@ -95,12 +139,23 @@ public:
     template<typename Func>
     McCppPromise &onError(const typename QtPrivate::FunctionPointer<Func>::Object *receiver, Func callback) noexcept
     {
+        static_assert(int(QtPrivate::FunctionPointer<Func>::ArgumentCount) <= 1,
+            "The number of parameters of callback function can only be less than or equal to 1");
+
         setCallback(CallbackType::Error, McSlotObjectWrapper::build(receiver, callback));
         return *this;
     }
     template<typename Func>
     McCppPromise &onError(Func callback) noexcept
     {
+        if constexpr (int(QtPrivate::FunctionPointer<Func>::ArgumentCount) >= 0) {
+            static_assert(int(QtPrivate::FunctionPointer<Func>::ArgumentCount) <= 1,
+                "The number of parameters of callback function can only be less than or equal to 1");
+        } else {
+            static_assert(int(McPrivate::LambdaType<Func>::ArgumentCount) <= 1,
+                "The number of parameters of callback function can only be less than or equal to 1");
+        }
+
         setCallback(CallbackType::Error, McSlotObjectWrapper::build(nullptr, callback));
         return *this;
     }

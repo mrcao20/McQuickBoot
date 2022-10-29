@@ -58,7 +58,8 @@ public:
     McConfigNode(McConfigNode &&o) noexcept;
     McConfigNode &operator=(McConfigNode &&o) noexcept;
 
-    static McConfigNode loadOrCreate(const QString &configPath) noexcept;
+    static McConfigNode loadOrCreate(
+        const QString &configPath, QIODevice::OpenMode flags = QIODevice::ReadWrite) noexcept;
 
     void sync() noexcept;
 

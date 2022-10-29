@@ -201,10 +201,10 @@ QString toAbsolutePath(const QString &inPath) noexcept
             path.replace(key, plhPath);
         }
     }
-    QString dstPath = QDir::toNativeSeparators(path);
-    if (QDir::isAbsolutePath(dstPath)) {
-        return dstPath;
+    if (QDir::isAbsolutePath(path)) {
+        return path;
     }
+    QString dstPath = QDir::toNativeSeparators(path);
     QString sepDot = ".";
     QString sepDotDot = "..";
     sepDot += QDir::separator();

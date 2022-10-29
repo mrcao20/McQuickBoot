@@ -331,7 +331,7 @@ McConfigNode &McConfigNode::operator=(McConfigNode &&o) noexcept
     return *this;
 }
 
-McConfigNode McConfigNode::loadOrCreate(const QString &configPath) noexcept
+McConfigNode McConfigNode::loadOrCreate(const QString &configPath, QIODevice::OpenMode flags) noexcept
 {
     QString realPath = configPath;
     if (realPath.isEmpty()) {
@@ -347,14 +347,16 @@ McConfigNode McConfigNode::loadOrCreate(const QString &configPath) noexcept
         }
     }
     QFile file(realPath);
-    if (!file.open(QIODevice::ReadWrite)) {
+    if (!file.open(flags)) {
         qCCritical(mcCore) << "cannot open config file. error code:" << file.error()
                            << ". error:" << file.errorString();
         return McConfigNode();
     }
     try {
         McConfigNode node(YAML::Load(file.readAll()));
-        node.d->configPath = realPath;
+        if (flags.testFlag(QIODevice::WriteOnly)) {
+            node.d->configPath = realPath;
+        }
         return node;
     } catch (const std::exception &e) {
         qCCritical(mcCore, "parse yaml failure. exception: %s\n", e.what());
