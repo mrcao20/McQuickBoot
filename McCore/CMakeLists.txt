@@ -1,4 +1,4 @@
-project(McCore)
+project(McCore LANGUAGES C CXX ASM)
 
 configure_file(McConfig.h.in McConfig.h)
 

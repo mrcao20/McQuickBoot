@@ -11,7 +11,11 @@ MC_STATIC_END
 
 void aaa()
 {
+#ifdef Q_OS_WIN
     throw std::exception("aaa exception");
+#else
+    throw std::exception();
+#endif
 }
 
 MainWindow::MainWindow(QWidget *parent)
