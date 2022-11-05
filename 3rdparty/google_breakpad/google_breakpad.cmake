@@ -1,6 +1,7 @@
 include_directories(${CMAKE_CURRENT_LIST_DIR})
 
 list(APPEND PROJECT_HEADERS
+    ${CMAKE_CURRENT_LIST_DIR}/third_party/lss/linux_syscall_support.h
     ${CMAKE_CURRENT_LIST_DIR}/google_breakpad/common/minidump_size.h
     ${CMAKE_CURRENT_LIST_DIR}/google_breakpad/common/minidump_format.h
     ${CMAKE_CURRENT_LIST_DIR}/google_breakpad/common/breakpad_types.h
@@ -23,6 +24,16 @@ list(APPEND PROJECT_HEADERS
     ${CMAKE_CURRENT_LIST_DIR}/common/basictypes.h
     ${CMAKE_CURRENT_LIST_DIR}/common/using_std_string.h
     ${CMAKE_CURRENT_LIST_DIR}/common/memory_range.h
+    ${CMAKE_CURRENT_LIST_DIR}/common/memory_allocator.h
+    ${CMAKE_CURRENT_LIST_DIR}/common/minidump_type_helper.h
+    ${CMAKE_CURRENT_LIST_DIR}/common/macros.h
+    ${CMAKE_CURRENT_LIST_DIR}/common/convert_UTF.h
+    ${CMAKE_CURRENT_LIST_DIR}/common/string_conversion.h
+)
+
+list(APPEND PROJECT_SOURCES
+    ${CMAKE_CURRENT_LIST_DIR}/common/convert_UTF.cc
+    ${CMAKE_CURRENT_LIST_DIR}/common/string_conversion.cc
 )
 
 if(WIN32)
@@ -41,12 +52,6 @@ if(WIN32)
     )
 elseif(UNIX)
     list(APPEND PROJECT_HEADERS
-        ${CMAKE_CURRENT_LIST_DIR}/third_party/lss/linux_syscall_support.h
-        ${CMAKE_CURRENT_LIST_DIR}/common/memory_allocator.h
-        ${CMAKE_CURRENT_LIST_DIR}/common/minidump_type_helper.h
-        ${CMAKE_CURRENT_LIST_DIR}/common/macros.h
-        ${CMAKE_CURRENT_LIST_DIR}/common/convert_UTF.h
-        ${CMAKE_CURRENT_LIST_DIR}/common/string_conversion.h
         ${CMAKE_CURRENT_LIST_DIR}/common/linux/breakpad_getcontext.h
         ${CMAKE_CURRENT_LIST_DIR}/common/linux/ucontext_constants.h
         ${CMAKE_CURRENT_LIST_DIR}/common/linux/eintr_wrapper.h
@@ -83,8 +88,6 @@ elseif(UNIX)
     )
 
     list(APPEND PROJECT_SOURCES
-        ${CMAKE_CURRENT_LIST_DIR}/common/convert_UTF.cc
-        ${CMAKE_CURRENT_LIST_DIR}/common/string_conversion.cc
         ${CMAKE_CURRENT_LIST_DIR}/common/linux/breakpad_getcontext.S
         ${CMAKE_CURRENT_LIST_DIR}/common/linux/file_id.cc
         ${CMAKE_CURRENT_LIST_DIR}/common/linux/guid_creator.cc
