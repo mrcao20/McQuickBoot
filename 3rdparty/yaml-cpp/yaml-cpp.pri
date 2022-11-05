@@ -20,7 +20,6 @@ HEADERS += \
     $$PWD/indentation.h \
     $$PWD/mark.h \
     $$PWD/node/convert.h \
-    $$PWD/node/detail/bool_type.h \
     $$PWD/node/detail/impl.h \
     $$PWD/node/detail/iterator.h \
     $$PWD/node/detail/iterator_fwd.h \

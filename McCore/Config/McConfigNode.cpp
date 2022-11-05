@@ -225,21 +225,6 @@ struct convert<QPair<T, U>>
 
 //! TODO: Add the rest of the container classes
 //! QLinkedList, QStack, QQueue, QSet, QMultiMap, QHash, QMultiHash, QStringList, ...
-
-namespace detail {
-template<>
-struct to_value_t<QString>
-{
-    explicit to_value_t(const QString &t_)
-        : t(t_)
-    {
-    }
-    const QString t;
-    typedef std::string return_type;
-
-    const std::string operator()() const { return t.toStdString(); }
-};
-} // namespace detail
 } // end namespace YAML
 
 MC_DECL_PRIVATE_DATA2(McConfigNode)

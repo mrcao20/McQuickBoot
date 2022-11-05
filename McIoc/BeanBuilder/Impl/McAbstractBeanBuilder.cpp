@@ -296,11 +296,7 @@ QVariantMap McAbstractBeanBuilder::buildProperties(const QVariant &extra) const 
 
 QVariant McAbstractBeanBuilder::createByMetaType() noexcept
 {
-#ifdef MC_USE_QT5
     auto beanStar = d->metaType.createPointer();
-#else
-    auto beanStar = d->metaType.metaType().create();
-#endif
     if (Q_UNLIKELY(beanStar == nullptr)) {
 #ifdef MC_USE_QT5
         qCCritical(mcIoc(), "cannot create object: '%s'", d->metaType.name());

@@ -120,11 +120,7 @@ void TestCore::eventDispatcherCase()
 void TestCore::metaTypeCase()
 {
     auto metaType = McMetaType::fromType<MetaTypeTest>();
-#ifdef MC_USE_QT5
     auto star = metaType.createPointer();
-#else
-    auto star = metaType.metaType().create();
-#endif
     QVERIFY(star != nullptr);
     QVariant var(metaType.pMetaType(), &star);
     auto test = var.value<MetaTypeTest *>();

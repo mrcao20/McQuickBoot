@@ -7,6 +7,9 @@ set(PROJECT_HEADERS
     Invoker/McAbstractPromise.h
     Invoker/McCppPromise.h
     Invoker/McResult.h
+    Invoker/McAbstractInvoker.h
+    Invoker/McCppInvoker.h
+    QuickBoot/McAbstractQuickBoot.h
 )
 
 set(PROJECT_SOURCES
@@ -15,6 +18,9 @@ set(PROJECT_SOURCES
     Invoker/McAbstractPromise.cpp
     Invoker/McCppPromise.cpp
     Invoker/McResult.cpp
+    Invoker/McAbstractInvoker.cpp
+    Invoker/McCppInvoker.cpp
+    QuickBoot/McAbstractQuickBoot.cpp
 )
 
 add_library(${PROJECT_NAME} ${MC_BUILD_TYPE}

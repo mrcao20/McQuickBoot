@@ -25,10 +25,12 @@
 # define MC_LOG_EXPORT
 #endif
 
+// clang-format off
 #define MC_LOGGER(name) QLoggingCategory(name)
 
 #define MC_DEFAULT_LOGGER MC_LOGGER("default")
 
 #define MC_PRINT_ERR(...) \
- fprintf(stderr, __VA_ARGS__); \
- fflush(stderr);
+    fprintf(stderr, __VA_ARGS__); \
+    fflush(stderr);
+// clang-format on

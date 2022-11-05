@@ -116,6 +116,7 @@ enum RoutinePriority : int {
     RoutineLogDestroy = -100, //!< 日志库析构的优先级
     RoutineNormal = 0, //!< 默认优先级，未特殊指定时均使用此优先级
     RoutineWidgetBuildInTypeRegistry = 10, //!< 界面库内置类型注册的优先级
+    RoutineQuickBootServiceLoad = 20, //!< 启动框架的业务库加载优先级
     RoutineMax = std::numeric_limits<int>::max(), //!< 最大值，不可再大
 };
 

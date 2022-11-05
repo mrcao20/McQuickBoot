@@ -33,6 +33,7 @@
 
 #endif //! !Q_MOC_RUN
 
+// clang-format off
 //! Q_CLASSINFO
 #define MC_COMPONENT_TAG "McComponent"
 
@@ -50,24 +51,25 @@
 //! 注入映射容器时，Key只能是QString，表示beanName
 #define MC_RESOURCE(name) Q_CLASSINFO(MC_RESOURCE_TAG, name)
 #define MC_COMPONENT(...) \
- MC_BEANNAME("" __VA_ARGS__) \
- Q_CLASSINFO(MC_COMPONENT_TAG, MC_COMPONENT_TAG)
+    MC_BEANNAME("" __VA_ARGS__) \
+    Q_CLASSINFO(MC_COMPONENT_TAG, MC_COMPONENT_TAG)
 //!< Q_CLASSINFO
 
 //! PROPERTY
 #define MC_PROPERTY(Type, name, ...) \
- MC_AUTOWIRED(#name) \
- Q_PROPERTY(Type name __VA_ARGS__)
+    MC_AUTOWIRED(#name) \
+    Q_PROPERTY(Type name __VA_ARGS__)
 
 #define MC_PROPERTY2(Type, name, ...) \
- MC_RESOURCE(#name) \
- Q_PROPERTY(Type name __VA_ARGS__)
+    MC_RESOURCE(#name) \
+    Q_PROPERTY(Type name __VA_ARGS__)
 
 #define MC_PRIVATE_PROPERTY(Type, name, ...) \
- MC_AUTOWIRED(#name) \
- Q_PRIVATE_PROPERTY(d, Type name __VA_ARGS__)
+    MC_AUTOWIRED(#name) \
+    Q_PRIVATE_PROPERTY(d, Type name __VA_ARGS__)
 
 #define MC_PRIVATE_PROPERTY2(Type, name, ...) \
- MC_RESOURCE(#name) \
- Q_PRIVATE_PROPERTY(d, Type name __VA_ARGS__)
+    MC_RESOURCE(#name) \
+    Q_PRIVATE_PROPERTY(d, Type name __VA_ARGS__)
 //!< PROPERTY
+// clang-format on

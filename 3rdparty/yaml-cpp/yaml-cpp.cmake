@@ -20,7 +20,6 @@ list(APPEND PROJECT_HEADERS
     ${CMAKE_CURRENT_LIST_DIR}/indentation.h
     ${CMAKE_CURRENT_LIST_DIR}/mark.h
     ${CMAKE_CURRENT_LIST_DIR}/node/convert.h
-    ${CMAKE_CURRENT_LIST_DIR}/node/detail/bool_type.h
     ${CMAKE_CURRENT_LIST_DIR}/node/detail/impl.h
     ${CMAKE_CURRENT_LIST_DIR}/node/detail/iterator.h
     ${CMAKE_CURRENT_LIST_DIR}/node/detail/iterator_fwd.h
@@ -57,6 +56,8 @@ list(APPEND PROJECT_HEADERS
     ${CMAKE_CURRENT_LIST_DIR}/token.h
     ${CMAKE_CURRENT_LIST_DIR}/traits.h
     ${CMAKE_CURRENT_LIST_DIR}/yaml.h
+    ${CMAKE_CURRENT_LIST_DIR}/noexcept.h
+    ${CMAKE_CURRENT_LIST_DIR}/depthguard.h
     ${CMAKE_CURRENT_LIST_DIR}/contrib/anchordict.h
     ${CMAKE_CURRENT_LIST_DIR}/contrib/graphbuilder.h
     ${CMAKE_CURRENT_LIST_DIR}/contrib/graphbuilderadapter.h
@@ -91,6 +92,7 @@ list(APPEND PROJECT_SOURCES
     ${CMAKE_CURRENT_LIST_DIR}/singledocparser.cpp
     ${CMAKE_CURRENT_LIST_DIR}/stream.cpp
     ${CMAKE_CURRENT_LIST_DIR}/tag.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/depthguard.cpp
     ${CMAKE_CURRENT_LIST_DIR}/contrib/graphbuilder.cpp
     ${CMAKE_CURRENT_LIST_DIR}/contrib/graphbuilderadapter.cpp
 )

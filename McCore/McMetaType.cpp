@@ -212,23 +212,24 @@ QVector<McMetaType> McMetaType::metaTypes() noexcept
     return coreMetaTypeStaticData->metaTypes;
 }
 
-#ifdef MC_USE_QT5
 void *McMetaType::createPointer() const noexcept
 {
-    if (!isValid() || d->createPointer == nullptr) {
+    if (!isValid()) {
+        return nullptr;
+    }
+#ifdef MC_USE_QT5
+    if (d->createPointer == nullptr) {
         return nullptr;
     }
     return d->createPointer();
-}
+#else
+    return d->metaType.create();
 #endif
+}
 
 QVariant McMetaType::createQVariantPointer() const noexcept
 {
-#ifdef MC_USE_QT5
     void *star = createPointer();
-#else
-    void *star = d->metaType.create();
-#endif
     if (Q_UNLIKELY(star == nullptr)) {
         return QVariant();
     }

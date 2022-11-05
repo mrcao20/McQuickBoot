@@ -82,16 +82,15 @@ QVariant JsonUtils::makeValue(const QMetaType &qmetaType, const QVariant &arg) n
 QVariant JsonUtils::makeGadgetValue(int qmetaType, McMetaType metaType, const QVariant &arg) noexcept
 {
     auto metaObj = QMetaType::metaObjectForType(metaType.pMetaType());
-    auto gadget = metaType.createPointer();
 #else
 QVariant JsonUtils::makeGadgetValue(const QMetaType &qmetaType, McMetaType metaType, const QVariant &arg) noexcept
 {
     auto metaObj = metaType.pMetaType().metaObject();
-    auto gadget = metaType.metaType().create();
 #endif
     if (metaObj == nullptr) {
         return QVariant();
     }
+    auto gadget = metaType.createPointer();
     auto count = metaObj->propertyCount();
     auto args = arg.toMap();
     for (int i = 0; i < count; ++i) {
@@ -135,11 +134,7 @@ QVariant JsonUtils::makeObjectValue(const QMetaType &qmetaType, McMetaType metaT
     QObject *obj = nullptr;
     QVariant ret;
     if (metaType.pMetaType() == qmetaType) {
-#ifdef MC_USE_QT5
         auto bean = metaType.createPointer();
-#else
-        auto bean = metaType.metaType().create();
-#endif
         ret = QVariant(qmetaType, &bean);
         obj = ret.value<QObject *>();
     } else if (metaType.sMetaType() == qmetaType) {

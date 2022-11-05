@@ -1036,16 +1036,20 @@ public:
 #endif
 
     template<typename T>
-    T createPointer() const noexcept
+    T *createPointer() const noexcept
     {
         QVariant var = createQVariantPointer();
-        return var.value<T>();
+        return var.value<T *>();
     }
-#ifdef MC_USE_QT5
     void *createPointer() const noexcept;
-#endif
 
     QVariant createQVariantPointer() const noexcept;
+    template<typename T>
+    QSharedPointer<T> createSharedPointer(void *copy = nullptr) const noexcept
+    {
+        QVariant var = createSharedPointer(copy);
+        return var.value<QSharedPointer<T>>();
+    }
     QVariant createSharedPointer(void *copy = nullptr) const noexcept;
 
     void addParentMetaType(const McMetaType &type) const noexcept;
