@@ -11,6 +11,8 @@
  */
 #pragma once
 
+#include <QDeadlineTimer>
+
 #include <McCore/Utils/McCancel.h>
 #include <McCore/Utils/McPause.h>
 #include <McCore/Utils/McProgress.h>
@@ -19,8 +21,13 @@
 
 class McAbstractPromise;
 namespace McPrivate {
-MC_QUICKBOOT_EXPORT void invoke(
-    McAbstractPromise *promise, const McSlotObjectWrapper &functor, const QVariantList &arguments) noexcept;
+#ifdef MC_USE_QT5
+MC_QUICKBOOT_EXPORT void invoke(McAbstractPromise *promise, const McSlotObjectWrapper &functor,
+    const QList<int> &metaTypes, const QVariantList &arguments) noexcept;
+#else
+MC_QUICKBOOT_EXPORT void invoke(McAbstractPromise *promise, const McSlotObjectWrapper &functor,
+    const QList<QMetaType> &metaTypes, const QVariantList &arguments) noexcept;
+#endif
 }
 
 MC_FORWARD_DECL_PRIVATE_DATA(McAbstractPromise)
@@ -38,9 +45,15 @@ public:
     Q_INVOKABLE void resume() noexcept;
     Q_INVOKABLE bool isPaused() const noexcept;
     Q_INVOKABLE bool isStarted() const noexcept;
+    Q_INVOKABLE bool isRunning() const noexcept;
     Q_INVOKABLE bool isFinished() const noexcept;
+    Q_INVOKABLE QThread *targetThread() noexcept;
     Q_INVOKABLE QVariant result() const noexcept;
+    Q_INVOKABLE bool waitForStarted(qint64 msec = -1) const noexcept;
+    Q_INVOKABLE bool waitForRunning(qint64 msec = -1) const noexcept;
     Q_INVOKABLE bool waitForFinished(qint64 msec = -1) const noexcept;
+    Q_INVOKABLE void terminate(
+        bool isWait = false, QDeadlineTimer deadline = QDeadlineTimer(QDeadlineTimer::Forever)) const noexcept;
 
     bool isAsyncCall() const noexcept;
     void setAsyncCall(bool val) noexcept;
@@ -60,11 +73,19 @@ protected:
     QVariant body() const noexcept;
     void setBody(const QVariant &var) noexcept;
     void setStarted(bool val = true) noexcept;
+    void setRunning(bool val = true) noexcept;
     void setFinished(bool val = true) noexcept;
+    void setTargetThread(QThread *val) noexcept;
 
 private:
     MC_DECL_PRIVATE(McAbstractPromise)
 
-    friend void McPrivate::invoke(
-        McAbstractPromise *promise, const McSlotObjectWrapper &functor, const QVariantList &arguments) noexcept;
+    friend class McAbstractInvoker;
+#ifdef MC_USE_QT5
+    friend void McPrivate::invoke(McAbstractPromise *promise, const McSlotObjectWrapper &functor,
+        const QList<int> &metaTypes, const QVariantList &arguments) noexcept;
+#else
+    friend void McPrivate::invoke(McAbstractPromise *promise, const McSlotObjectWrapper &functor,
+        const QList<QMetaType> &metaTypes, const QVariantList &arguments) noexcept;
+#endif
 };

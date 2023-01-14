@@ -13,6 +13,7 @@
 
 #include <QCoreApplication>
 #include <QScopeGuard>
+#include <QThread>
 
 #include "McResult.h"
 
@@ -26,7 +27,9 @@ MC_DECL_PRIVATE_DATA2(McAbstractPromise)
     QPointer<QObject> attachedObject;
     bool isAttached{false};
     QAtomicInteger<bool> isStarted{false};
+    QAtomicInteger<bool> isRunning{false};
     QAtomicInteger<bool> isFinished{false};
+    QThread *targetThread{nullptr};
 };
 
 McAbstractPromise::McAbstractPromise(QObject *parent) noexcept
@@ -67,9 +70,19 @@ bool McAbstractPromise::isStarted() const noexcept
     return d->isStarted.loadRelaxed();
 }
 
+bool McAbstractPromise::isRunning() const noexcept
+{
+    return d->isRunning.loadRelaxed();
+}
+
 bool McAbstractPromise::isFinished() const noexcept
 {
     return d->isFinished.loadRelaxed();
+}
+
+QThread *McAbstractPromise::targetThread() noexcept
+{
+    return d->targetThread;
 }
 
 QVariant McAbstractPromise::result() const noexcept
@@ -77,9 +90,30 @@ QVariant McAbstractPromise::result() const noexcept
     return body();
 }
 
+bool McAbstractPromise::waitForStarted(qint64 msec) const noexcept
+{
+    return Mc::waitForExecFunc([this]() { return this->isStarted(); }, msec);
+}
+
+bool McAbstractPromise::waitForRunning(qint64 msec) const noexcept
+{
+    return Mc::waitForExecFunc([this]() { return this->isRunning(); }, msec);
+}
+
 bool McAbstractPromise::waitForFinished(qint64 msec) const noexcept
 {
     return Mc::waitForExecFunc([this]() { return this->isFinished(); }, msec);
+}
+
+void McAbstractPromise::terminate(bool isWait, QDeadlineTimer deadline) const noexcept
+{
+    if (d->targetThread == nullptr) {
+        return;
+    }
+    d->targetThread->terminate();
+    if (isWait) {
+        d->targetThread->wait(deadline);
+    }
 }
 
 bool McAbstractPromise::isAsyncCall() const noexcept
@@ -146,14 +180,22 @@ void McAbstractPromise::setBody(const QVariant &var) noexcept
         return;
     }
 
+    QObject *object = this;
+    if (d->isAttached) {
+        object = d->attachedObject.data();
+    }
+
     if (isCanceled()) {
-        QMetaObject::invokeMethod(this, &McAbstractPromise::callCanceled, Qt::QueuedConnection);
+        QMetaObject::invokeMethod(
+            object, [this]() { callCanceled(); }, Qt::QueuedConnection);
     } else if (d->body.canConvert<McResultPtr>() && d->body.value<McResultPtr>()->isInternalError()) {
-        QMetaObject::invokeMethod(this, &McAbstractPromise::callError, Qt::QueuedConnection);
+        QMetaObject::invokeMethod(
+            object, [this]() { callError(); }, Qt::QueuedConnection);
     } else if (isAsyncCall()) {
         callCallback();
     } else {
-        QMetaObject::invokeMethod(this, &McAbstractPromise::callCallback, Qt::QueuedConnection);
+        QMetaObject::invokeMethod(
+            object, [this]() { callCallback(); }, Qt::QueuedConnection);
     }
 }
 
@@ -162,7 +204,17 @@ void McAbstractPromise::setStarted(bool val) noexcept
     d->isStarted.storeRelaxed(val);
 }
 
+void McAbstractPromise::setRunning(bool val) noexcept
+{
+    d->isRunning.storeRelaxed(val);
+}
+
 void McAbstractPromise::setFinished(bool val) noexcept
 {
     d->isFinished.storeRelaxed(val);
+}
+
+void McAbstractPromise::setTargetThread(QThread *val) noexcept
+{
+    d->targetThread = val;
 }

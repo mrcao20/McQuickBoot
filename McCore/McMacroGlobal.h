@@ -11,6 +11,7 @@
  */
 #pragma once
 
+#include <QtCore/QSharedPointer>
 #include <QtCore/qglobal.h>
 
 #if __has_include("McConfig.h")
@@ -246,6 +247,14 @@
     MC_BASE_DESTRUCTOR(Class) \
     private: \
     Q_DISABLE_COPY_MOVE(Class)
+
+#define MC_DECLARE_OPERATORS_FOR_FLAGS(Flags) \
+    constexpr friend QFlags<Flags::enum_type> operator|(Flags::enum_type f1, Flags::enum_type f2) noexcept \
+    { return QFlags<Flags::enum_type>(f1) | f2; } \
+    constexpr friend QFlags<Flags::enum_type> operator|(Flags::enum_type f1, QFlags<Flags::enum_type> f2) noexcept \
+    { return f2 | f1; } \
+    constexpr friend QIncompatibleFlag operator|(Flags::enum_type f1, int f2) noexcept \
+    { return QIncompatibleFlag(int(f1) | f2); }
 
 //! PROPERTY
 #define MC_POCO_PROPERTY(Type, name, ...) \

@@ -2,9 +2,6 @@ HEADERS += \
     $$PWD/anchor.h \
     $$PWD/binary.h \
     $$PWD/collectionstack.h \
-    $$PWD/contrib/anchordict.h \
-    $$PWD/contrib/graphbuilder.h \
-    $$PWD/contrib/graphbuilderadapter.h \
     $$PWD/directives.h \
     $$PWD/dll.h \
     $$PWD/emitfromevents.h \
@@ -56,6 +53,8 @@ HEADERS += \
     $$PWD/token.h \
     $$PWD/traits.h \
     $$PWD/yaml.h \
+    $$PWD/noexcept.h \
+    $$PWD/depthguard.h \
     $$PWD/contrib/anchordict.h \
     $$PWD/contrib/graphbuilder.h \
     $$PWD/contrib/graphbuilderadapter.h
@@ -89,5 +88,6 @@ SOURCES += \
     $$PWD/singledocparser.cpp \
     $$PWD/stream.cpp \
     $$PWD/tag.cpp \
+    $$PWD/depthguard.cpp \
     $$PWD/contrib/graphbuilder.cpp \
     $$PWD/contrib/graphbuilderadapter.cpp

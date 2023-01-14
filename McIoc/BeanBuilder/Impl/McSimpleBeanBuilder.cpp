@@ -51,6 +51,18 @@ bool McSimpleBeanBuilder::isPointer() const noexcept
     return d->isPointer;
 }
 
+const QMetaObject *McSimpleBeanBuilder::getBeanMetaObject() const noexcept
+{
+    auto obj = d->bean.value<QObject *>();
+    if (obj == nullptr) {
+        obj = d->bean.value<QObjectPtr>().data();
+    }
+    if (obj == nullptr) {
+        return nullptr;
+    }
+    return obj->metaObject();
+}
+
 void McSimpleBeanBuilder::setReferenceResolver(IMcBeanReferenceResolver *resolver) noexcept
 {
     Q_UNUSED(resolver)

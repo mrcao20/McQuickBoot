@@ -27,6 +27,7 @@ public:
     void moveToThread(QThread *thread) noexcept override;
     bool isSingleton() const noexcept override;
     bool isPointer() const noexcept override;
+    const QMetaObject *getBeanMetaObject() const noexcept override;
     void setReferenceResolver(IMcBeanReferenceResolver *resolver) noexcept override;
 
 private:

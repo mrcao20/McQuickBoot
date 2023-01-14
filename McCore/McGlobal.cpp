@@ -77,7 +77,7 @@ static QString getStandardPath(QStandardPaths::StandardLocation type)
     return paths.first();
 }
 
-static QSharedPointer<QLibrary> loadLibraryHelper(const QString &path, const QLatin1String &checkSymbol) noexcept
+static QSharedPointer<QLibrary> loadLibraryHelper(const QString &path, QLatin1String checkSymbol) noexcept
 {
     auto libPath = Mc::toAbsolutePath(path);
     if (!QLibrary::isLibrary(libPath)) {
@@ -103,7 +103,7 @@ static QSharedPointer<QLibrary> loadLibraryHelper(const QString &path, const QLa
     return QSharedPointer<QLibrary>();
 }
 
-static McMemoryLibrary loadMemoryLibraryHelper(const QByteArray &data, const QLatin1String &checkSymbol) noexcept
+static McMemoryLibrary loadMemoryLibraryHelper(const QByteArray &data, QLatin1String checkSymbol) noexcept
 {
     McMemoryLibrary library(data);
     if (!library.load()) {
@@ -127,15 +127,15 @@ MC_GLOBAL_STATIC_BEGIN(coreGlobalStaticData)
 QString applicationDirPath;
 QString applicationName;
 QHash<QString, std::function<QString()>> pathPlaceholders{
-    {QLatin1String("{desktop}"), std::bind(getStandardPath, QStandardPaths::DesktopLocation)},
-    {QLatin1String("{documents}"), std::bind(getStandardPath, QStandardPaths::DocumentsLocation)},
-    {QLatin1String("{temp}"), std::bind(getStandardPath, QStandardPaths::TempLocation)},
-    {QLatin1String("{home}"), std::bind(getStandardPath, QStandardPaths::HomeLocation)},
-    {QLatin1String("{appLocalData}"), std::bind(getStandardPath, QStandardPaths::AppLocalDataLocation)},
-    {QLatin1String("{data}"), std::bind(getStandardPath, QStandardPaths::AppLocalDataLocation)},
-    {QLatin1String("{cache}"), std::bind(getStandardPath, QStandardPaths::CacheLocation)},
-    {QLatin1String("{config}"), std::bind(getStandardPath, QStandardPaths::GenericConfigLocation)},
-    {QLatin1String("{appData}"), std::bind(getStandardPath, QStandardPaths::AppDataLocation)},
+    {QStringLiteral("{desktop}"), std::bind(getStandardPath, QStandardPaths::DesktopLocation)},
+    {QStringLiteral("{documents}"), std::bind(getStandardPath, QStandardPaths::DocumentsLocation)},
+    {QStringLiteral("{temp}"), std::bind(getStandardPath, QStandardPaths::TempLocation)},
+    {QStringLiteral("{home}"), std::bind(getStandardPath, QStandardPaths::HomeLocation)},
+    {QStringLiteral("{appLocalData}"), std::bind(getStandardPath, QStandardPaths::AppLocalDataLocation)},
+    {QStringLiteral("{data}"), std::bind(getStandardPath, QStandardPaths::AppLocalDataLocation)},
+    {QStringLiteral("{cache}"), std::bind(getStandardPath, QStandardPaths::CacheLocation)},
+    {QStringLiteral("{config}"), std::bind(getStandardPath, QStandardPaths::GenericConfigLocation)},
+    {QStringLiteral("{appData}"), std::bind(getStandardPath, QStandardPaths::AppDataLocation)},
 };
 
 char *preallocMemory{nullptr};
@@ -298,7 +298,7 @@ void addPostRoutine(int priority, const CleanUpFunction &func) noexcept
     (*funcs)[priority].prepend(func);
 }
 
-QFunctionPointer loadLibrary(const QString &path, const QLatin1String &symbol, const QLatin1String &checkSymbol) noexcept
+QFunctionPointer loadLibrary(const QString &path, QLatin1String symbol, QLatin1String checkSymbol) noexcept
 {
     auto library = loadLibraryHelper(path, checkSymbol);
     if (library.isNull()) {
@@ -307,13 +307,12 @@ QFunctionPointer loadLibrary(const QString &path, const QLatin1String &symbol, c
     return library->resolve(symbol.data());
 }
 
-void loadLibrary(const QString &path, const QLatin1String &checkSymbol) noexcept
+void loadLibrary(const QString &path, QLatin1String checkSymbol) noexcept
 {
     loadLibraryHelper(path, checkSymbol);
 }
 
-QFunctionPointer loadMemoryLibrary(
-    const QByteArray &data, const QLatin1String &symbol, const QLatin1String &checkSymbol) noexcept
+QFunctionPointer loadMemoryLibrary(const QByteArray &data, QLatin1String symbol, QLatin1String checkSymbol) noexcept
 {
     auto library = loadMemoryLibraryHelper(data, checkSymbol);
     if (!library.isLoaded()) {
@@ -322,7 +321,7 @@ QFunctionPointer loadMemoryLibrary(
     return library.resolve(symbol);
 }
 
-void loadMemoryLibrary(const QByteArray &data, const QLatin1String &checkSymbol) noexcept
+void loadMemoryLibrary(const QByteArray &data, QLatin1String checkSymbol) noexcept
 {
     loadMemoryLibraryHelper(data, checkSymbol);
 }

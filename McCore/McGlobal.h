@@ -34,7 +34,8 @@ struct MetaTypeHelper<QtPrivate::List<Args...>>
     static QList<int> metaTypes() noexcept
     {
         QList<int> ms;
-        (ms << ... << qMetaTypeId<Args>());
+        //! 去除安卓上的警告
+        Q_UNUSED((ms << ... << qMetaTypeId<Args>()));
         return ms;
     }
 #else
@@ -178,11 +179,11 @@ MC_CORE_EXPORT void cleanPreRoutine() noexcept;
 MC_CORE_EXPORT void addPostRoutine(int priority, const CleanUpFunction &func) noexcept;
 
 MC_CORE_EXPORT QFunctionPointer loadLibrary(
-    const QString &path, const QLatin1String &symbol, const QLatin1String &checkSymbol) noexcept;
-MC_CORE_EXPORT void loadLibrary(const QString &path, const QLatin1String &checkSymbol) noexcept;
+    const QString &path, QLatin1String symbol, QLatin1String checkSymbol) noexcept;
+MC_CORE_EXPORT void loadLibrary(const QString &path, QLatin1String checkSymbol) noexcept;
 MC_CORE_EXPORT QFunctionPointer loadMemoryLibrary(
-    const QByteArray &data, const QLatin1String &symbol, const QLatin1String &checkSymbol) noexcept;
-MC_CORE_EXPORT void loadMemoryLibrary(const QByteArray &data, const QLatin1String &checkSymbol) noexcept;
+    const QByteArray &data, QLatin1String symbol, QLatin1String checkSymbol) noexcept;
+MC_CORE_EXPORT void loadMemoryLibrary(const QByteArray &data, QLatin1String checkSymbol) noexcept;
 MC_CORE_EXPORT QObject *loadPlugin(
     const QString &pluginPath, const std::function<bool(const QJsonObject &)> &checker = nullptr) noexcept;
 

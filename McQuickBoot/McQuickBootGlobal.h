@@ -11,7 +11,7 @@
  */
 #pragma once
 
-#include <McCore/McGlobal.h>
+#include <McIoc/McIocGlobal.h>
 
 #include "McQuickBootMacroGlobal.h"
 
@@ -32,7 +32,7 @@ MC_QUICKBOOT_EXPORT void setMaxThreadCount(int val) noexcept;
 
 // 是否添加默认查找路径，默认会到mcservices目录下查找，如果不需要则需要手动调用此函数置为false
 MC_QUICKBOOT_EXPORT void setDefaultSearch(bool val) noexcept;
-MC_QUICKBOOT_EXPORT void setLibraryCheckSymbol(const QLatin1String &symbol) noexcept;
+MC_QUICKBOOT_EXPORT void setLibraryCheckSymbol(QLatin1String symbol) noexcept;
 //! 必须传入全路径，可以是相对与可执行程序的相对路径
 MC_QUICKBOOT_EXPORT void addServiceSearchPath(const QString &path) noexcept;
 MC_QUICKBOOT_EXPORT void addServiceSearchPath(const QStringList &paths) noexcept;

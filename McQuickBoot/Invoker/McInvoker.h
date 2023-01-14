@@ -17,9 +17,18 @@
 #include "McCppPromise.h"
 
 namespace McPrivate {
-MC_QUICKBOOT_EXPORT QVariant syncInvoke(const McSlotObjectWrapper &functor, const QVariantList &arguments) noexcept;
-MC_QUICKBOOT_EXPORT void invoke(
-    McAbstractPromise *promise, const McSlotObjectWrapper &functor, const QVariantList &arguments) noexcept;
+MC_QUICKBOOT_EXPORT QVariant fail(const QString &val) noexcept;
+#ifdef MC_USE_QT5
+MC_QUICKBOOT_EXPORT QVariant syncInvoke(
+    const McSlotObjectWrapper &functor, const QList<int> &metaTypes, const QVariantList &arguments) noexcept;
+MC_QUICKBOOT_EXPORT void invoke(McAbstractPromise *promise, const McSlotObjectWrapper &functor,
+    const QList<int> &metaTypes, const QVariantList &arguments) noexcept;
+#else
+MC_QUICKBOOT_EXPORT QVariant syncInvoke(
+    const McSlotObjectWrapper &functor, const QList<QMetaType> &metaTypes, const QVariantList &arguments) noexcept;
+MC_QUICKBOOT_EXPORT void invoke(McAbstractPromise *promise, const McSlotObjectWrapper &functor,
+    const QList<QMetaType> &metaTypes, const QVariantList &arguments) noexcept;
+#endif
 
 template<typename R, typename Func, typename... Args>
 inline R &invokeObject(
@@ -30,7 +39,7 @@ inline R &invokeObject(
     auto functor = McSlotObjectWrapper::build(receiver, callback);
 
     auto promise = new R(); //!< 没有指定父对象，该对象将在整个请求完毕时被析构
-    invoke(promise, functor, arguments);
+    invoke(promise, functor, functor.metaTypes(), arguments);
     return *promise;
 }
 
@@ -42,7 +51,7 @@ inline R &invokePlain(Func callback, const Args &...args) noexcept
     auto functor = McSlotObjectWrapper::build(nullptr, callback);
 
     auto promise = new R(); //!< 没有指定父对象，该对象将在整个请求完毕时被析构
-    invoke(promise, functor, arguments);
+    invoke(promise, functor, functor.metaTypes(), arguments);
     return *promise;
 }
 

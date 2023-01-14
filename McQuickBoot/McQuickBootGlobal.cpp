@@ -30,7 +30,7 @@ MC_GLOBAL_STATIC_END(staticData)
 MC_STATIC2(Mc::RoutineQuickBootServiceLoad)
 {
     if (staticData->isDefaultSearch) {
-        Mc::addServiceSearchPath("./mcservices");
+        Mc::addServiceSearchPath(QStringLiteral("./mcservices"));
     }
     Mc::loadLibraryForDir(staticData->serviceSearchPaths);
     Mc::loadLibrary(staticData->serviceLibraryPaths);
@@ -72,7 +72,7 @@ void setDefaultSearch(bool val) noexcept
     staticData->isDefaultSearch = val;
 }
 
-void setLibraryCheckSymbol(const QLatin1String &symbol) noexcept
+void setLibraryCheckSymbol(QLatin1String symbol) noexcept
 {
     staticData->libraryCheckSymbol = symbol;
 }

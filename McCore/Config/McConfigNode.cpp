@@ -260,7 +260,7 @@ McConfigNode::McConfigNode(NodeType type) noexcept
         }
         d->yamlNode = YAML::Node(yamlType);
     } catch (const std::exception &e) {
-        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        qCDebug(mcCore, "yaml exception: %s", e.what());
     }
 }
 
@@ -276,7 +276,7 @@ McConfigNode::McConfigNode(const QVariant &rhs) noexcept
     try {
         d->yamlNode = YAML::Node(rhs);
     } catch (const std::exception &e) {
-        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        qCDebug(mcCore, "yaml exception: %s", e.what());
     }
 }
 
@@ -344,7 +344,7 @@ McConfigNode McConfigNode::loadOrCreate(const QString &configPath, QIODevice::Op
         }
         return node;
     } catch (const std::exception &e) {
-        qCCritical(mcCore, "parse yaml failure. exception: %s\n", e.what());
+        qCCritical(mcCore, "parse yaml failure. exception: %s", e.what());
         return McConfigNode();
     }
 }
@@ -367,7 +367,7 @@ void McConfigNode::sync() noexcept
         emitter << d->yamlNode;
         file.write(emitter.c_str());
     } catch (const std::exception &e) {
-        qCCritical(mcCore, "parse yaml failure. exception: %s\n", e.what());
+        qCCritical(mcCore, "dump yaml failure. exception: %s", e.what());
     }
 }
 
@@ -381,7 +381,7 @@ McConfigNode::NodeType McConfigNode::type() const noexcept
             return static_cast<McConfigNode::NodeType>(yamlType);
         }
     } catch (const std::exception &e) {
-        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        qCDebug(mcCore, "yaml exception: %s", e.what());
         return McConfigNode::NodeType::Undefined;
     }
 }
@@ -391,7 +391,7 @@ bool McConfigNode::isDefined() const noexcept
     try {
         return d->yamlNode.IsDefined();
     } catch (const std::exception &e) {
-        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        qCDebug(mcCore, "yaml exception: %s", e.what());
         return false;
     }
 }
@@ -401,7 +401,7 @@ QVariant McConfigNode::as() const noexcept
     try {
         return d->yamlNode.as<QVariant>();
     } catch (const std::exception &e) {
-        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        qCDebug(mcCore, "yaml exception: %s", e.what());
         return QVariant();
     }
 }
@@ -411,7 +411,7 @@ QVariant McConfigNode::as(const QVariant &fallback) const noexcept
     try {
         return d->yamlNode.as<QVariant>(fallback);
     } catch (const std::exception &e) {
-        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        qCDebug(mcCore, "yaml exception: %s", e.what());
         return QVariant();
     }
 }
@@ -421,7 +421,7 @@ QVariant McConfigNode::asMap() const noexcept
     try {
         return QVariant::fromValue(d->yamlNode.as<QMap<QVariant, QVariant>>());
     } catch (const std::exception &e) {
-        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        qCDebug(mcCore, "yaml exception: %s", e.what());
         return QVariant();
     }
 }
@@ -431,7 +431,7 @@ QVariant McConfigNode::asMap(const QVariant &fallback) const noexcept
     try {
         return QVariant::fromValue(d->yamlNode.as<QMap<QVariant, QVariant>>(fallback.value<QMap<QVariant, QVariant>>()));
     } catch (const std::exception &e) {
-        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        qCDebug(mcCore, "yaml exception: %s", e.what());
         return QVariant();
     }
 }
@@ -441,7 +441,7 @@ QVariant McConfigNode::asPair() const noexcept
     try {
         return QVariant::fromValue(d->yamlNode.as<QPair<QVariant, QVariant>>());
     } catch (const std::exception &e) {
-        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        qCDebug(mcCore, "yaml exception: %s", e.what());
         return QVariant();
     }
 }
@@ -452,7 +452,7 @@ QVariant McConfigNode::asPair(const QVariant &fallback) const noexcept
         return QVariant::fromValue(
             d->yamlNode.as<QPair<QVariant, QVariant>>(fallback.value<QPair<QVariant, QVariant>>()));
     } catch (const std::exception &e) {
-        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        qCDebug(mcCore, "yaml exception: %s", e.what());
         return QVariant();
     }
 }
@@ -462,7 +462,7 @@ QString McConfigNode::scalar() const noexcept
     try {
         return QString::fromStdString(d->yamlNode.Scalar());
     } catch (const std::exception &e) {
-        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        qCDebug(mcCore, "yaml exception: %s", e.what());
         return QString();
     }
 }
@@ -472,7 +472,7 @@ bool McConfigNode::is(const McConfigNode &rhs) const noexcept
     try {
         return d->yamlNode.is(rhs.d->yamlNode);
     } catch (const std::exception &e) {
-        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        qCDebug(mcCore, "yaml exception: %s", e.what());
         return false;
     }
 }
@@ -482,7 +482,7 @@ McConfigNode &McConfigNode::operator=(const QVariant &rhs) noexcept
     try {
         d->yamlNode = rhs;
     } catch (const std::exception &e) {
-        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        qCDebug(mcCore, "yaml exception: %s", e.what());
     }
     sync();
     return *this;
@@ -493,7 +493,7 @@ void McConfigNode::reset(const McConfigNode &rhs) noexcept
     try {
         d->yamlNode.reset(rhs.d->yamlNode);
     } catch (const std::exception &e) {
-        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        qCDebug(mcCore, "yaml exception: %s", e.what());
     }
     sync();
 }
@@ -503,7 +503,7 @@ std::size_t McConfigNode::size() const noexcept
     try {
         return d->yamlNode.size();
     } catch (const std::exception &e) {
-        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        qCDebug(mcCore, "yaml exception: %s", e.what());
         return 0;
     }
 }
@@ -526,7 +526,7 @@ McConfigNode McConfigNode::at(std::size_t index) const noexcept
             break;
         }
     } catch (const std::exception &e) {
-        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        qCDebug(mcCore, "yaml exception: %s", e.what());
     }
     return node;
 }
@@ -539,7 +539,7 @@ QStringList McConfigNode::keys() const noexcept
             nodeKeys.append(itr->first.as<QString>());
         }
     } catch (const std::exception &e) {
-        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        qCDebug(mcCore, "yaml exception: %s", e.what());
     }
     return nodeKeys;
 }
@@ -552,7 +552,7 @@ QString McConfigNode::key() const noexcept
     try {
         return d->yamlNode.begin()->first.as<QString>();
     } catch (const std::exception &e) {
-        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        qCDebug(mcCore, "yaml exception: %s", e.what());
         return QString();
     }
 }
@@ -565,7 +565,7 @@ McConfigNode McConfigNode::value() const noexcept
     try {
         return McConfigNode(d->yamlNode.begin()->second);
     } catch (const std::exception &e) {
-        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        qCDebug(mcCore, "yaml exception: %s", e.what());
         return McConfigNode();
     }
 }
@@ -641,7 +641,7 @@ McConfigNode McConfigNode::iterator::operator*() const
             node[McConfigNode(d->yamlItr->first)] = McConfigNode(d->yamlItr->second);
         }
     } catch (const std::exception &e) {
-        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        qCDebug(mcCore, "yaml exception: %s", e.what());
     }
     return node;
 }
@@ -722,7 +722,7 @@ McConfigNode McConfigNode::const_iterator::operator*() const
             node[McConfigNode(d->yamlItr->first)] = McConfigNode(d->yamlItr->second);
         }
     } catch (const std::exception &e) {
-        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        qCDebug(mcCore, "yaml exception: %s", e.what());
     }
     return node;
 }
@@ -772,7 +772,7 @@ void McConfigNode::append(const QVariant &rhs) noexcept
     try {
         d->yamlNode.push_back(rhs);
     } catch (const std::exception &e) {
-        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        qCDebug(mcCore, "yaml exception: %s", e.what());
     }
     sync();
 }
@@ -782,7 +782,7 @@ void McConfigNode::append(const McConfigNode &rhs) noexcept
     try {
         d->yamlNode.push_back(rhs.d->yamlNode);
     } catch (const std::exception &e) {
-        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        qCDebug(mcCore, "yaml exception: %s", e.what());
     }
     setRootNode(rhs);
     sync();
@@ -795,7 +795,7 @@ const McConfigNode McConfigNode::operator[](const QString &key) const noexcept
         setRootNode(node);
         return node;
     } catch (const std::exception &e) {
-        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        qCDebug(mcCore, "yaml exception: %s", e.what());
         return McConfigNode();
     }
 }
@@ -807,7 +807,7 @@ McConfigNode McConfigNode::operator[](const QString &key) noexcept
         setRootNode(node);
         return node;
     } catch (const std::exception &e) {
-        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        qCDebug(mcCore, "yaml exception: %s", e.what());
         return McConfigNode();
     }
 }
@@ -819,7 +819,7 @@ bool McConfigNode::remove(const QString &key) noexcept
         sync();
         return flag;
     } catch (const std::exception &e) {
-        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        qCDebug(mcCore, "yaml exception: %s", e.what());
         return false;
     }
 }
@@ -831,7 +831,7 @@ const McConfigNode McConfigNode::operator[](const McConfigNode &key) const noexc
         setRootNode(node);
         return node;
     } catch (const std::exception &e) {
-        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        qCDebug(mcCore, "yaml exception: %s", e.what());
         return McConfigNode();
     }
 }
@@ -843,7 +843,7 @@ McConfigNode McConfigNode::operator[](const McConfigNode &key) noexcept
         setRootNode(node);
         return node;
     } catch (const std::exception &e) {
-        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        qCDebug(mcCore, "yaml exception: %s", e.what());
         return McConfigNode();
     }
 }
@@ -855,7 +855,7 @@ bool McConfigNode::remove(const McConfigNode &key) noexcept
         sync();
         return flag;
     } catch (const std::exception &e) {
-        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        qCDebug(mcCore, "yaml exception: %s", e.what());
         return false;
     }
 }
@@ -865,7 +865,7 @@ void McConfigNode::insert(const QString &key, const QVariant &value) noexcept
     try {
         d->yamlNode.force_insert(key, value);
     } catch (const std::exception &e) {
-        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        qCDebug(mcCore, "yaml exception: %s", e.what());
     }
     sync();
 }
@@ -875,7 +875,7 @@ void McConfigNode::insert(const QString &key, const McConfigNode &value) noexcep
     try {
         d->yamlNode.force_insert(key, value.d->yamlNode);
     } catch (const std::exception &e) {
-        Q_ASSERT_X(false, Q_FUNC_INFO, e.what());
+        qCDebug(mcCore, "yaml exception: %s", e.what());
     }
     setRootNode(value);
     sync();

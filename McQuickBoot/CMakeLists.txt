@@ -9,6 +9,7 @@ set(PROJECT_HEADERS
     Invoker/McResult.h
     Invoker/McAbstractInvoker.h
     Invoker/McCppInvoker.h
+    ComponentContainer/McControllerContainer.h
     QuickBoot/McAbstractQuickBoot.h
 )
 
@@ -20,6 +21,7 @@ set(PROJECT_SOURCES
     Invoker/McResult.cpp
     Invoker/McAbstractInvoker.cpp
     Invoker/McCppInvoker.cpp
+    ComponentContainer/McControllerContainer.cpp
     QuickBoot/McAbstractQuickBoot.cpp
 )
 

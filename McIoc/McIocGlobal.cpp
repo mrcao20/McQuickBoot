@@ -15,6 +15,7 @@
 #include <QMetaClassInfo>
 
 #include "ApplicationContext/Impl/McAnnotationApplicationContext.h"
+#include "BeanBuilder/IMcBeanBuilder.h"
 
 Q_LOGGING_CATEGORY(mcIoc, "mc.ioc")
 
@@ -50,6 +51,70 @@ QString getBeanName(const QMetaObject *metaObj) noexcept
 } // namespace McPrivate
 
 namespace Mc {
+QList<QString> getAllComponent(const IMcApplicationContextPtr &appCtx) noexcept
+{
+    if (appCtx.isNull()) {
+        qCCritical(mcIoc, "Please call 'initContainer' to initialize container first");
+        return QList<QString>();
+    }
+    QList<QString> components;
+    auto beanBuilders = appCtx->getBeanBuilders();
+    for (auto itr = beanBuilders.cbegin(); itr != beanBuilders.cend(); ++itr) {
+        auto beanBuilder = itr.value();
+        if (!isComponent(beanBuilder->getBeanMetaObject()))
+            continue;
+        components.append(itr.key());
+    }
+    return components;
+}
+
+QList<QString> getComponents(const IMcApplicationContextPtr &appCtx, const QString &componentType) noexcept
+{
+    if (appCtx.isNull()) {
+        qCCritical(mcIoc, "Please call 'initContainer' to initialize container first");
+        return QList<QString>();
+    }
+    QList<QString> components;
+    auto beanBuilders = appCtx->getBeanBuilders();
+    for (auto itr = beanBuilders.cbegin(); itr != beanBuilders.cend(); ++itr) {
+        auto beanBuilder = itr.value();
+        if (!isComponentType(beanBuilder->getBeanMetaObject(), componentType))
+            continue;
+        components.append(itr.key());
+    }
+    return components;
+}
+
+bool isComponent(const QMetaObject *metaObj) noexcept
+{
+    if (metaObj == nullptr) {
+        return false;
+    }
+    int classInfoCount = metaObj->classInfoCount();
+    for (int i = 0; i < classInfoCount; ++i) {
+        auto classInfo = metaObj->classInfo(i);
+        if (qstrcmp(classInfo.name(), MC_COMPONENT_TAG) != 0)
+            continue;
+        return true;
+    }
+    return false;
+}
+
+bool isComponentType(const QMetaObject *metaObj, const QString &type) noexcept
+{
+    if (metaObj == nullptr) {
+        return false;
+    }
+    int classInfoCount = metaObj->classInfoCount();
+    for (int i = 0; i < classInfoCount; ++i) {
+        auto classInfo = metaObj->classInfo(i);
+        if (qstrcmp(classInfo.name(), MC_COMPONENT_TAG) != 0)
+            continue;
+        return classInfo.value() == type;
+    }
+    return false;
+}
+
 bool isContainedTag(const QByteArray &tags, const QByteArray &tag) noexcept
 {
     auto tagList = tags.split(' ');

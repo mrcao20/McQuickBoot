@@ -2,9 +2,6 @@ list(APPEND PROJECT_HEADERS
     ${CMAKE_CURRENT_LIST_DIR}/anchor.h
     ${CMAKE_CURRENT_LIST_DIR}/binary.h
     ${CMAKE_CURRENT_LIST_DIR}/collectionstack.h
-    ${CMAKE_CURRENT_LIST_DIR}/contrib/anchordict.h
-    ${CMAKE_CURRENT_LIST_DIR}/contrib/graphbuilder.h
-    ${CMAKE_CURRENT_LIST_DIR}/contrib/graphbuilderadapter.h
     ${CMAKE_CURRENT_LIST_DIR}/directives.h
     ${CMAKE_CURRENT_LIST_DIR}/dll.h
     ${CMAKE_CURRENT_LIST_DIR}/emitfromevents.h

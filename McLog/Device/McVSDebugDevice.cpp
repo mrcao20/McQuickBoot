@@ -42,7 +42,7 @@ static void win_outputDebugString_helper(QStringView message)
     auto locker = qt_unique_lock(m);
     // fast path: Avoid string copies if one output is enough
     if (message.length() <= maxOutputStringLength) {
-        OutputDebugStringW(reinterpret_cast<const wchar_t *>(message.utf16()));
+        OutputDebugString(reinterpret_cast<const wchar_t *>(message.utf16()));
     } else {
         wchar_t *messagePart = new wchar_t[maxOutputStringLength + 1];
         for (int i = 0; i < message.length(); i += maxOutputStringLength) {
@@ -50,7 +50,7 @@ static void win_outputDebugString_helper(QStringView message)
             const int len = message.mid(i, length).toWCharArray(messagePart);
             Q_ASSERT(len == length);
             messagePart[len] = 0;
-            OutputDebugStringW(messagePart);
+            OutputDebugString(messagePart);
         }
         delete[] messagePart;
     }

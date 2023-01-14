@@ -36,10 +36,11 @@ public:
     void addConstructorArg(const ConstructorArg &arg) noexcept;
     IMcBeanReferenceResolver *resolver() const noexcept;
 
-    QVariant build(QThread *thread) noexcept override;
-    void moveToThread(QThread *thread) noexcept override;
+    QVariant build(QThread *thread) noexcept override final;
+    void moveToThread(QThread *thread) noexcept override final;
     bool isSingleton() const noexcept override;
-    void setReferenceResolver(IMcBeanReferenceResolver *resolver) noexcept override;
+    const QMetaObject *getBeanMetaObject() const noexcept override;
+    void setReferenceResolver(IMcBeanReferenceResolver *resolver) noexcept override final;
 
 protected:
     virtual void complete(QVariant &bean, QThread *thread) noexcept = 0;

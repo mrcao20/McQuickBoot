@@ -161,7 +161,7 @@ QVariant McSlotObjectWrapper::call(const QVariantList &varList) const
                 if (body.userType() == qMetaTypeId<QJsonObject>()) {
                     body = McJsonUtils::deserialize(body, qmetaType);
                 }
-                if (body.userType() != qmetaType) {
+                if (body.userType() != qmetaType && !body.convert(qmetaType)) {
                     qCCritical(mcCore, "cannot construct object for className: %s", QMetaType::typeName(qmetaType));
                     return QVariant();
                 }
@@ -172,7 +172,7 @@ QVariant McSlotObjectWrapper::call(const QVariantList &varList) const
                 if (body.metaType() == QMetaType::fromType<QJsonObject>()) {
                     body = McJsonUtils::deserialize(body, qmetaType);
                 }
-                if (body.metaType() != qmetaType) {
+                if (body.metaType() != qmetaType && !body.convert(qmetaType)) {
                     qCCritical(mcCore(), "cannot construct object for className: %s", qmetaType.name());
                     return QVariant();
                 }

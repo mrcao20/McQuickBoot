@@ -110,6 +110,16 @@ bool McAbstractBeanBuilder::isSingleton() const noexcept
     return d->isSingleton;
 }
 
+const QMetaObject *McAbstractBeanBuilder::getBeanMetaObject() const noexcept
+{
+#ifdef MC_USE_QT5
+    auto metaObject = QMetaType::metaObjectForType(d->metaType.pMetaType());
+#else
+    auto metaObject = d->metaType.metaType().metaObject();
+#endif
+    return metaObject;
+}
+
 void McAbstractBeanBuilder::setReferenceResolver(IMcBeanReferenceResolver *resolver) noexcept
 {
     d->resolver = resolver;

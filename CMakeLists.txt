@@ -18,6 +18,9 @@ endif()
 
 # 不需要小写的QT宏
 add_definitions(-DQT_NO_KEYWORDS)
+if(WIN32)
+    add_definitions(-DUNICODE -D_UNICODE)
+endif()
 
 if(!CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release")

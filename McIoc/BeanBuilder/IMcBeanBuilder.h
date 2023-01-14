@@ -23,6 +23,7 @@ public:
     virtual void moveToThread(QThread *thread) noexcept = 0;
     virtual bool isSingleton() const noexcept = 0;
     virtual bool isPointer() const noexcept = 0;
+    virtual const QMetaObject *getBeanMetaObject() const noexcept = 0;
 
     virtual void setReferenceResolver(IMcBeanReferenceResolver *resolver) noexcept = 0;
 };

@@ -27,15 +27,15 @@ QString getBeanName(const QMetaObject *metaObj) noexcept;
 } // namespace McPrivate
 
 namespace Mc {
-////! 获取所有被Component标记的bean
-// MC_IOC_EXPORT QList<QString> getAllComponent(IMcApplicationContextConstPtrRef appCtx) noexcept;
-////! 获取所有组建类型为componentType的bean的名称
-// MC_IOC_EXPORT QList<QString> getComponents(IMcApplicationContextConstPtrRef appCtx, const QString &componentType)
-// noexcept;
-////! 是否被Component标记
-// MC_IOC_EXPORT bool isComponent(const QMetaObject *metaObj) noexcept;
-////! 传入的元对象的组件类型是否为type
-// MC_IOC_EXPORT bool isComponentType(const QMetaObject *metaObj, const QString &type) noexcept;
+//! 获取所有被Component标记的bean
+MC_IOC_EXPORT QList<QString> getAllComponent(const IMcApplicationContextPtr &appCtx) noexcept;
+//! 获取所有组件类型为componentType的bean的名称
+MC_IOC_EXPORT QList<QString> getComponents(
+    const IMcApplicationContextPtr &appCtx, const QString &componentType) noexcept;
+//! 是否被Component标记
+MC_IOC_EXPORT bool isComponent(const QMetaObject *metaObj) noexcept;
+//! 传入的元对象的组件类型是否为type
+MC_IOC_EXPORT bool isComponentType(const QMetaObject *metaObj, const QString &type) noexcept;
 MC_IOC_EXPORT bool isContainedTag(const QByteArray &tags, const QByteArray &tag) noexcept;
 MC_IOC_EXPORT QObject *getObject(IMcApplicationContext *appCtx, const QString &beanName) noexcept;
 

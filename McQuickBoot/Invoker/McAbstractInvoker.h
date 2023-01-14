@@ -14,15 +14,19 @@
 #include <QObject>
 #include <QVariant>
 
-#include "../McQuickBootMacroGlobal.h"
+#include "../McQuickBootGlobal.h"
 
+class McAbstractPromise;
 class IMcApplicationContext;
+
+MC_FORWARD_DECL_CLASS(McControllerContainer)
 
 MC_FORWARD_DECL_PRIVATE_DATA(McAbstractInvoker)
 
 class MC_QUICKBOOT_EXPORT McAbstractInvoker : public QObject
 {
     Q_OBJECT
+    MC_PRIVATE_PROPERTY(McControllerContainerPtr, controllerContainer, MEMBER controllerContainer)
 public:
     explicit McAbstractInvoker(QObject *parent = nullptr) noexcept;
     ~McAbstractInvoker() override;
@@ -34,6 +38,7 @@ public:
     //    Q_INVOKABLE QObject *getModel(const QString &name) const noexcept;
 
 protected:
+    void run(McAbstractPromise *promise, const QString &uri, const QVariantList &data, bool async = true) noexcept;
     QVariant getBeanToVariant(const QString &name) const noexcept;
 
 private:

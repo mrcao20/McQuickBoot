@@ -502,6 +502,14 @@ inline bool operator<(const QVariant &left, const QVariant &right)
     auto res = QVariant::compare(left, right);
     return res == QPartialOrdering::Less;
 }
+
+namespace McPrivate {
+template<typename T>
+inline constexpr auto typenameHelper()
+{
+    return QtPrivate::typenameHelper<T>();
+}
+} // namespace McPrivate
 #endif
 
 class McMetaType;

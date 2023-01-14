@@ -11,8 +11,6 @@
  */
 #include "McCppInvoker.h"
 
-#include "McInvoker.h"
-
 MC_AUTO_INIT2(McCppInvoker) {}
 
 McCppInvoker::McCppInvoker(QObject *parent) noexcept
@@ -22,36 +20,38 @@ McCppInvoker::McCppInvoker(QObject *parent) noexcept
 
 McCppInvoker::~McCppInvoker() {}
 
-// McCppInvoker &McCppInvoker::invoke(const QString &uri) noexcept
-//{
-//     auto response = new McCppInvoker();
-//     run(response, uri, QVariant());
-//     return *response; //!< 没有指定父对象，该对象将在整个请求完毕时被析构
-// }
+McCppPromise &McCppInvoker::invoke(const QString &uri) noexcept
+{
+    return invoke(uri, QVariantList());
+}
 
-// McCppInvoker &McCppInvoker::invoke(const QString &uri, const QVariant &data) noexcept
-//{
-//     return invoke(uri, QVariantList() << data);
-// }
+McCppPromise &McCppInvoker::invoke(const QString &uri, const QVariant &data) noexcept
+{
+    return invoke(uri, QVariantList() << data);
+}
 
-// McCppInvoker &McCppInvoker::invoke(const QString &uri, const QVariantList &data) noexcept
-//{
-//     auto response = new McCppInvoker();
-//     run(response, uri, data);
-//     return *response; //!< 没有指定父对象，该对象将在整个请求完毕时被析构
-// }
+McCppPromise &McCppInvoker::invoke(const QString &uri, const QVariantList &data) noexcept
+{
+    auto promise = new McCppPromise(); //!< 没有指定父对象，该对象将在整个请求完毕时被析构
+    run(promise, uri, data);
+    return *promise;
+}
 
-// QVariant McCppInvoker::syncInvoke(const QString &uri) noexcept
-//{
-//     return controllerContainer()->invoke(uri, QVariant(), McRequest());
-// }
+QVariant McCppInvoker::syncInvoke(const QString &uri) noexcept
+{
+    return syncInvoke(uri, QVariantList());
+}
 
-// QVariant McCppInvoker::syncInvoke(const QString &uri, const QVariant &data) noexcept
-//{
-//     return syncInvoke(uri, QVariantList() << data);
-// }
+QVariant McCppInvoker::syncInvoke(const QString &uri, const QVariant &data) noexcept
+{
+    return syncInvoke(uri, QVariantList() << data);
+}
 
-// QVariant McCppInvoker::syncInvoke(const QString &uri, const QVariantList &data) noexcept
-//{
-//     return controllerContainer()->invoke(uri, data, McRequest());
-// }
+QVariant McCppInvoker::syncInvoke(const QString &uri, const QVariantList &data) noexcept
+{
+    auto promise = new McCppPromise(); //!< 没有指定父对象，该对象将在整个请求完毕时被析构
+    QVariant result;
+    promise->asyncThen([&result](const QVariant &var) { result = var; });
+    run(promise, uri, data, false);
+    return result;
+}

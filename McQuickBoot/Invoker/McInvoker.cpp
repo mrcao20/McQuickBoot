@@ -18,17 +18,14 @@
 #include "McResult.h"
 
 namespace McPrivate {
-static QVariant fail(const QString &val) noexcept
-{
-    auto result = McResult::fail(val);
-    result->setInternalError(true);
-    return QVariant::fromValue(result);
-}
-
-static bool buildArguments(const McSlotObjectWrapper &functor, const QVariantList &originArgs, McRequest request,
+#ifdef MC_USE_QT5
+static bool buildArguments(const QList<int> &metaTypes, const QVariantList &originArgs, McRequest request,
     QVariantList &dstArgs, QVariant &errMsg) noexcept
+#else
+static bool buildArguments(const QList<QMetaType> &metaTypes, const QVariantList &originArgs, McRequest request,
+    QVariantList &dstArgs, QVariant &errMsg) noexcept
+#endif
 {
-    auto metaTypes = functor.metaTypes();
 #ifdef MC_USE_QT5
     if (metaTypes.size() == 1 && metaTypes.constFirst() == qMetaTypeId<McRequest>()) {
 #else
@@ -40,7 +37,8 @@ static bool buildArguments(const McSlotObjectWrapper &functor, const QVariantLis
         auto mainMetaType = metaTypes.constFirst();
         auto childMetaTypes = McPrivate::getCustomRequestMetaType(mainMetaType);
         if (originArgs.size() < childMetaTypes.size()) {
-            errMsg = fail("Incoming argument size must be greater than or equal to functor argument size");
+            errMsg = fail(
+                QStringLiteral("Incoming argument size must be greater than or equal to functor argument size"));
             return false;
         }
         QVariantList reqArgs;
@@ -53,8 +51,8 @@ static bool buildArguments(const McSlotObjectWrapper &functor, const QVariantLis
                                       "target typeName: %3")
                                   .arg(value.typeName(), QString::number(value.type()), QMetaType::typeName(type)));
 #else
-                errMsg = fail(QString("property convert failure. origin type name: %1. typeid: %2. "
-                                      "target typeName: %3")
+                errMsg = fail(QStringLiteral("property convert failure. origin type name: %1. typeid: %2. "
+                                             "target typeName: %3")
                                   .arg(value.typeName(), QString::number(value.typeId()), type.name()));
 #endif
                 return false;
@@ -64,7 +62,8 @@ static bool buildArguments(const McSlotObjectWrapper &functor, const QVariantLis
         dstArgs.append(McPrivate::buildCustomRequest(mainMetaType, reqArgs, request));
     } else {
         if (originArgs.size() < metaTypes.size()) {
-            errMsg = fail("Incoming argument size must be greater than or equal to functor argument size");
+            errMsg = fail(
+                QStringLiteral("Incoming argument size must be greater than or equal to functor argument size"));
             return false;
         }
         for (qsizetype i = 0; i < metaTypes.size(); ++i) {
@@ -76,8 +75,8 @@ static bool buildArguments(const McSlotObjectWrapper &functor, const QVariantLis
                                       "target typeName: %3")
                                   .arg(value.typeName(), QString::number(value.type()), QMetaType::typeName(type)));
 #else
-                errMsg = fail(QString("property convert failure. origin type name: %1. typeid: %2. "
-                                      "target typeName: %3")
+                errMsg = fail(QStringLiteral("property convert failure. origin type name: %1. typeid: %2. "
+                                             "target typeName: %3")
                                   .arg(value.typeName(), QString::number(value.typeId()), type.name()));
 #endif
                 return false;
@@ -88,12 +87,17 @@ static bool buildArguments(const McSlotObjectWrapper &functor, const QVariantLis
     return true;
 }
 
-static QVariant syncInvoke_helper(
-    const McRequest &request, const McSlotObjectWrapper &functor, const QVariantList &originArgs) noexcept
+#ifdef MC_USE_QT5
+static QVariant syncInvoke_helper(const McRequest &request, const McSlotObjectWrapper &functor,
+    const QList<int> &metaTypes, const QVariantList &originArgs) noexcept
+#else
+static QVariant syncInvoke_helper(const McRequest &request, const McSlotObjectWrapper &functor,
+    const QList<QMetaType> &metaTypes, const QVariantList &originArgs) noexcept
+#endif
 {
     QVariantList dstArgs;
     QVariant body;
-    if (buildArguments(functor, originArgs, request, dstArgs, body)) {
+    if (buildArguments(metaTypes, originArgs, request, dstArgs, body)) {
         try {
             body = functor.call(dstArgs);
         } catch (const std::exception &e) {
@@ -103,30 +107,57 @@ static QVariant syncInvoke_helper(
     return body;
 }
 
-QVariant syncInvoke(const McSlotObjectWrapper &functor, const QVariantList &arguments) noexcept
+QVariant fail(const QString &val) noexcept
 {
-    return syncInvoke_helper(McRequest(), functor, arguments);
+    auto result = McResult::fail(val);
+    result->setInternalError(true);
+    return QVariant::fromValue(result);
 }
 
-void invoke(McAbstractPromise *promise, const McSlotObjectWrapper &functor, const QVariantList &arguments) noexcept
+#ifdef MC_USE_QT5
+QVariant syncInvoke(
+    const McSlotObjectWrapper &functor, const QList<int> &metaTypes, const QVariantList &arguments) noexcept
+#else
+QVariant syncInvoke(
+    const McSlotObjectWrapper &functor, const QList<QMetaType> &metaTypes, const QVariantList &arguments) noexcept
+#endif
 {
-    Mc::globalThreadPool()->start([promise = QPointer<McAbstractPromise>(promise), functor, originArgs = arguments]() {
-        //! 注意此lambda表达式不能随意return，必须确保promise正确的析构
-        McRequest request;
-        if (!promise.isNull()) {
-            promise->setStarted();
-            request.setCancel(promise->getCancel());
-            request.setPause(promise->getPause());
-            request.setProgress(promise->getProgress());
-        }
+    return syncInvoke_helper(McRequest(), functor, metaTypes, arguments);
+}
 
-        QVariant body = syncInvoke_helper(request, functor, originArgs);
+#ifdef MC_USE_QT5
+void invoke(McAbstractPromise *promise, const McSlotObjectWrapper &functor, const QList<int> &metaTypes,
+    const QVariantList &arguments) noexcept
+#else
+void invoke(McAbstractPromise *promise, const McSlotObjectWrapper &functor, const QList<QMetaType> &metaTypes,
+    const QVariantList &arguments) noexcept
+#endif
+{
+    auto runThreadFunc = [promise, functor, metaTypes, arguments]() {
+        Mc::globalThreadPool()->start(
+            [promise = QPointer<McAbstractPromise>(promise), functor, metaTypes, originArgs = arguments]() {
+                //! 注意此lambda表达式不能随意return，必须确保promise正确的析构
+                McRequest request;
+                if (!promise.isNull()) {
+                    promise->setStarted();
+                    promise->setTargetThread(QThread::currentThread());
+                    request.setCancel(promise->getCancel());
+                    request.setPause(promise->getPause());
+                    request.setProgress(promise->getProgress());
+                    promise->setRunning();
+                }
 
-        if (promise.isNull()) { //!< promise可能被QML析构
-            qCCritical(mcQuickBoot, "promise is null. it's maybe destroyed of qmlengine");
-            return;
-        }
-        promise->setBody(body);
-    });
+                QVariant body = syncInvoke_helper(request, functor, metaTypes, originArgs);
+
+                if (promise.isNull()) { //!< promise可能被QML析构
+                    qCCritical(mcQuickBoot, "promise is null. it's maybe destroyed of qmlengine");
+                    return;
+                }
+                promise->setRunning(false);
+                //! setBody之中会调用deleteLater
+                promise->setBody(body);
+            });
+    };
+    QMetaObject::invokeMethod(promise, runThreadFunc, Qt::QueuedConnection);
 }
 } // namespace McPrivate
