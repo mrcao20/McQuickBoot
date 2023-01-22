@@ -31,11 +31,36 @@ template<typename... Args>
 struct MetaTypeHelper<QtPrivate::List<Args...>>
 {
 #ifdef MC_USE_QT5
+    template<typename T>
+    struct Helper
+    {
+        static int id() noexcept
+        {
+            if constexpr (!std::is_enum_v<T> || QtPrivate::IsQEnumHelper<T>::Value) {
+                return qMetaTypeId<T>();
+            } else {
+                return qMetaTypeId<std::underlying_type_t<T>>();
+            }
+        }
+    };
+    template<typename T>
+    struct Helper<QFlags<T>>
+    {
+        static int id() noexcept
+        {
+            if constexpr (QtPrivate::IsQEnumHelper<QFlags<T>>::Value) {
+                return qMetaTypeId<QFlags<T>>();
+            } else {
+                return qMetaTypeId<std::underlying_type_t<T>>();
+            }
+        }
+    };
+
     static QList<int> metaTypes() noexcept
     {
         QList<int> ms;
         //! 去除安卓上的警告
-        Q_UNUSED((ms << ... << qMetaTypeId<Args>()));
+        Q_UNUSED((ms << ... << Helper<Args>::id()));
         return ms;
     }
 #else
@@ -49,11 +74,32 @@ struct MetaTypeHelper<QtPrivate::List<Args...>>
 #endif
 };
 
+#ifdef MC_USE_QT5
+template<typename T>
+QVariant toQVariant(const T &data) noexcept
+{
+    if constexpr (!std::is_enum_v<T> || QtPrivate::IsQEnumHelper<T>::Value) {
+        return QVariant::fromValue(data);
+    } else {
+        return static_cast<std::underlying_type_t<T>>(data);
+    }
+}
+template<typename T>
+QVariant toQVariant(const QFlags<T> &flags) noexcept
+{
+    if constexpr (QtPrivate::IsQEnumHelper<QFlags<T>>::Value) {
+        return QVariant::fromValue(flags);
+    } else {
+        return static_cast<std::underlying_type_t<T>>(QFlags<T>::Int(flags));
+    }
+}
+#else
 template<typename T>
 QVariant toQVariant(T &&data) noexcept
 {
     return QVariant::fromValue(std::forward<T>(data));
 }
+#endif
 template<int N>
 QVariant toQVariant(const char (&data)[N]) noexcept
 {
@@ -208,9 +254,21 @@ inline bool qmetaCheck(QObject *obj) noexcept
 }
 
 template<typename T>
+inline bool qmetaCheck(const QObjectPtr &obj) noexcept
+{
+    return (!obj.isNull() && obj->metaObject() == &T::staticMetaObject);
+}
+
+template<typename T>
 inline bool qmetaInheritsCheck(QObject *obj) noexcept
 {
     return (obj != nullptr && obj->metaObject()->inherits(&T::staticMetaObject));
+}
+
+template<typename T>
+inline bool qmetaInheritsCheck(const QObjectPtr &obj) noexcept
+{
+    return (!obj.isNull() && obj->metaObject()->inherits(&T::staticMetaObject));
 }
 } // namespace Mc
 

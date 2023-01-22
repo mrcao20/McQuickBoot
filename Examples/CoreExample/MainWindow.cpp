@@ -36,6 +36,13 @@ MainWindow::MainWindow(QWidget *parent)
     Mc::eventDispatcher().connectToEvent("button.click", this, [](double var) { qDebug() << var; });
     Mc::eventDispatcher().connectToEvent("button.click", []() { qDebug() << "button.click not receive arg"; });
     Mc::eventDispatcher().connectToEvent("button.click", this, &MainWindow::eventProcess);
+    Mc::eventDispatcher().connectToEvent("enum.meta", this, [](Qt::ScrollBarPolicy e) { qDebug() << "enum.meta" << e; });
+    Mc::eventDispatcher().connectToEvent(
+        "enum.metaFlag", this, [](Qt::Alignment f) { qDebug() << "enum.metaFlag" << f; });
+    Mc::eventDispatcher().connectToEvent(
+        "enum.plain", this, [](QWidget::RenderFlag e) { qDebug() << "enum.plain" << e; });
+    Mc::eventDispatcher().connectToEvent(
+        "enum.plainFlag", this, [](QWidget::RenderFlags f) { qDebug() << "enum.plain" << f; });
     //!<
 
     //! 回调函数
@@ -65,6 +72,11 @@ MainWindow::MainWindow(QWidget *parent)
         qDebug() << "callback2 return:" << callback2(i);
         asyncCallback2(i);
         mcEvt().submitEvent("button.click", i++);
+
+        Mc::eventDispatcher().submitEvent("enum.meta", Qt::ScrollBarAsNeeded);
+        Mc::eventDispatcher().submitEvent("enum.metaFlag", Qt::Alignment(Qt::AlignLeft));
+        Mc::eventDispatcher().submitEvent("enum.plain", QWidget::DrawWindowBackground);
+        Mc::eventDispatcher().submitEvent("enum.plainFlag", QWidget::RenderFlags(QWidget::DrawWindowBackground));
     });
 
     {

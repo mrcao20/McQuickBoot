@@ -71,7 +71,9 @@ void McControllerContainer::init(const IMcApplicationContextPtr &appCtx) noexcep
         controller.bean = obj;
         const QMetaObject *metaObj = obj->metaObject();
         int count = metaObj->methodCount();
+#ifdef MC_USE_QT6
         useRequestMethods.resize(0);
+#endif
         for (int i = 0; i < count; ++i) {
             QMetaMethod method = metaObj->method(i);
             if (useRequestMethods.contains(method.name())) {
