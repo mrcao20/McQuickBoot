@@ -18,6 +18,7 @@ set(PROJECT_HEADERS
     Utils/McPause.h
     Utils/McProgress.h
     Utils/McRequest.h
+    Utils/McSignalBlocker.h
     PluginChecker/IMcPluginChecker.h
     PluginChecker/Impl/McNormalPluginChecker.h
     MemoryLibrary/McMemoryLibrary.h
@@ -28,7 +29,6 @@ set(PROJECT_HEADERS
     Callback/Impl/McCppAsyncCallback.h
     Connection/McAbstractConnection.h
     Connection/McCppConnection.h
-    Zip/McCompressor.h
 )
 
 set(PROJECT_SOURCES
@@ -43,6 +43,7 @@ set(PROJECT_SOURCES
     Utils/McPause.cpp
     Utils/McProgress.cpp
     Utils/McRequest.cpp
+    Utils/McSignalBlocker.cpp
     PluginChecker/Impl/McNormalPluginChecker.cpp
     MemoryLibrary/McMemoryLibrary.cpp
     Callback/Impl/McAbstractSyncCallback.cpp
@@ -51,8 +52,12 @@ set(PROJECT_SOURCES
     Callback/Impl/McCppAsyncCallback.cpp
     Connection/McAbstractConnection.cpp
     Connection/McCppConnection.cpp
-    Zip/McCompressor.cpp
 )
+
+if(NOT DISABLE_ZLIB)
+    list(APPEND PROJECT_HEADERS Zip/McCompressor.h)
+    list(APPEND PROJECT_SOURCES Zip/McCompressor.cpp)
+endif()
 
 include(${CMAKE_SOURCE_DIR}/3rdparty/3rdparty.cmake)
 

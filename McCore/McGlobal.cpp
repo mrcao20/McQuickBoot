@@ -80,7 +80,8 @@ static QString getStandardPath(QStandardPaths::StandardLocation type)
 static QSharedPointer<QLibrary> loadLibraryHelper(const QString &path, QLatin1String checkSymbol) noexcept
 {
     auto libPath = Mc::toAbsolutePath(path);
-    if (!QLibrary::isLibrary(libPath)) {
+    QFileInfo fileInfo(libPath);
+    if (!fileInfo.suffix().isEmpty() && !QLibrary::isLibrary(libPath)) {
         return QSharedPointer<QLibrary>();
     }
     auto library = QSharedPointer<QLibrary>::create(libPath);

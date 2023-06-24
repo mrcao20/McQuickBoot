@@ -30,6 +30,7 @@ if(NOT (CMAKE_BUILD_TYPE STREQUAL "Debug"))
     add_definitions(-DQT_MESSAGELOGCONTEXT)
 endif()
 
+option(DISABLE_ZLIB "Disable zlib" OFF)
 option(BUILD_EXAMPLES "Build examples" ON)
 option(BUILD_TESTS "Build tests. depend qtest" ON)
 option(BUILD_STATIC "Build static" OFF)

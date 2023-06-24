@@ -23,7 +23,7 @@ public:
     T resolveBeanReference(const McBeanReferencePtr &beanRef) noexcept
     {
         QVariant var = resolveBeanReference(beanRef);
-        return var.value<T>();
+        return McPrivate::toRealValue<T>(var);
     }
 
     virtual QVariant resolveBeanReference(const McBeanReferencePtr &beanRef) noexcept = 0;

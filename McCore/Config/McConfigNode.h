@@ -61,9 +61,26 @@ public:
     static McConfigNode loadOrCreate(
         const QString &configPath, QIODevice::OpenMode flags = QIODevice::ReadWrite) noexcept;
 
+    bool isAutoSync() const noexcept;
+    void setAutoSync(bool val) noexcept;
     void sync() noexcept;
+    //! 同步整颗节点树上的所有数据，从根开始
+    void syncTo(const QString &path) const noexcept;
+    //! 从当前节点开始，同步当前节点及其子节点数据
+    void syncCurrentTo(const QString &path) const noexcept;
+    /*!
+     * \brief configPath
+     * 由于存在父子关系悖论，所以不提供setConfigPath这样的方法。
+     * 如果想要构造一个包含配置路径的节点，只能调用loadOrCreate方法来实现。
+     * 如果想将已有节点的数据保存到某一配置文件路径，可以直接调用已有节点的syncTo或syncCurrentTo方法，或者
+     * 调用已有节点的copyContentTo方法将内容拷贝到由loadOrCreate方法创建的新节点中。
+     * \return
+     */
+    QString configPath() const noexcept;
+    void copyContentTo(McConfigNode &other) const noexcept;
 
     NodeType type() const noexcept;
+    bool isValid() const noexcept { return isDefined() && !isNull(); }
     bool isDefined() const noexcept;
     bool isNull() const noexcept { return type() == NodeType::Null; }
     bool isScalar() const noexcept { return type() == NodeType::Scalar; }
@@ -81,14 +98,14 @@ public:
     T as() const noexcept
     {
         QVariant var = as();
-        return var.value<T>();
+        return McPrivate::toRealValue<T>(var);
     }
     QVariant as() const noexcept;
     template<typename T, typename S>
     T as(const S &fallback) const noexcept
     {
         QVariant var = as(McPrivate::toQVariant(fallback));
-        return var.value<T>();
+        return McPrivate::toRealValue<T>(var);
     }
     QVariant as(const QVariant &fallback) const noexcept;
 
@@ -96,14 +113,14 @@ public:
     T asMap() const noexcept
     {
         QVariant var = asMap();
-        return var.value<T>();
+        return McPrivate::toRealValue<T>(var);
     }
     QVariant asMap() const noexcept;
     template<typename T, typename S>
     T asMap(const S &fallback) const noexcept
     {
         QVariant var = asMap(McPrivate::toQVariant(fallback));
-        return var.value<T>();
+        return McPrivate::toRealValue<T>(var);
     }
     QVariant asMap(const QVariant &fallback) const noexcept;
 
@@ -111,14 +128,14 @@ public:
     T asPair() const noexcept
     {
         QVariant var = asPair();
-        return var.value<T>();
+        return McPrivate::toRealValue<T>(var);
     }
     QVariant asPair() const noexcept;
     template<typename T, typename S>
     T asPair(const S &fallback) const noexcept
     {
         QVariant var = asPair(McPrivate::toQVariant(fallback));
-        return var.value<T>();
+        return McPrivate::toRealValue<T>(var);
     }
     QVariant asPair(const QVariant &fallback) const noexcept;
 
@@ -169,7 +186,7 @@ public:
         using difference_type = std::ptrdiff_t;
 
         iterator() noexcept;
-        iterator(YAML::iterator yamlItr) noexcept;
+        iterator(const YAML::iterator &yamlItr) noexcept;
         ~iterator();
 
         iterator(const iterator &o) noexcept;
@@ -197,7 +214,7 @@ public:
         using difference_type = std::ptrdiff_t;
 
         const_iterator() noexcept;
-        const_iterator(YAML::const_iterator yamlItr) noexcept;
+        const_iterator(const YAML::const_iterator &yamlItr) noexcept;
         ~const_iterator();
 
         const_iterator(const const_iterator &o) noexcept;
@@ -271,6 +288,7 @@ public:
 
 private:
     void setRootNode(const McConfigNode &node) const noexcept;
+    void sync_helper() noexcept;
 
 private:
     MC_DECL_PRIVATE(McConfigNode)

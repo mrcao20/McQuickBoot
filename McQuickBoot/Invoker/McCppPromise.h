@@ -34,7 +34,7 @@ public:
     template<typename T>
     T result() const noexcept
     {
-        return body().value<T>();
+        return McPrivate::toRealValue<T>(body());
     }
 
     QPointer<McCppPromise> capture() noexcept;

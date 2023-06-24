@@ -54,7 +54,7 @@ public:
     template<typename T>
     T getBean(const QString &name) const noexcept
     {
-        return getBeanToVariant(name).value<T>();
+        return McPrivate::toRealValue<T>(getBeanToVariant(name));
     }
     //    template<typename T>
     //    T getModel(const QString &name) const noexcept

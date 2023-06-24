@@ -78,7 +78,9 @@ struct MetaTypeHelper<QtPrivate::List<Args...>>
 template<typename T>
 QVariant toQVariant(const T &data) noexcept
 {
-    if constexpr (!std::is_enum_v<T> || QtPrivate::IsQEnumHelper<T>::Value) {
+    if constexpr (std::is_same_v<char *, T> || std::is_same_v<const char *, T>) {
+        return QVariant(data);
+    } else if constexpr (!std::is_enum_v<T> || QtPrivate::IsQEnumHelper<T>::Value) {
         return QVariant::fromValue(data);
     } else {
         return static_cast<std::underlying_type_t<T>>(data);
@@ -93,11 +95,47 @@ QVariant toQVariant(const QFlags<T> &flags) noexcept
         return static_cast<std::underlying_type_t<T>>(QFlags<T>::Int(flags));
     }
 }
+
+template<typename T>
+struct ToRealValueHelper
+{
+    static T to(const QVariant &var) noexcept
+    {
+        if constexpr (!std::is_enum_v<T> || QtPrivate::IsQEnumHelper<T>::Value) {
+            return var.value<T>();
+        } else {
+            return static_cast<T>(var.value<std::underlying_type_t<T>>());
+        }
+    }
+};
+template<typename T>
+struct ToRealValueHelper<QFlags<T>>
+{
+    static QFlags<T> to(const QVariant &var) noexcept
+    {
+        if constexpr (QtPrivate::IsQEnumHelper<QFlags<T>>::Value) {
+            return var.value<QFlags<T>>();
+        } else {
+            return QFlags<T>(static_cast<T>(var.value<std::underlying_type_t<T>>()));
+        }
+    }
+};
+template<typename T>
+T toRealValue(const QVariant &var) noexcept
+{
+    return ToRealValueHelper<T>::to(var);
+}
 #else
 template<typename T>
 QVariant toQVariant(T &&data) noexcept
 {
     return QVariant::fromValue(std::forward<T>(data));
+}
+
+template<typename T>
+T toRealValue(const QVariant &var) noexcept
+{
+    return var.value<T>();
 }
 #endif
 template<int N>

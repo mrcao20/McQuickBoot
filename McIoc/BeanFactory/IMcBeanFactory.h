@@ -25,7 +25,7 @@ public:
     T getBean(const QString &name, QThread *thread = nullptr) noexcept
     {
         QVariant var = getBean(name, thread);
-        return var.value<T>();
+        return McPrivate::toRealValue<T>(var);
     }
 
     virtual QVariant getBean(const QString &name, QThread *thread = nullptr) noexcept = 0;

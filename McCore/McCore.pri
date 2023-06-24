@@ -27,8 +27,7 @@ HEADERS += \
     $$PWD/Callback/Impl/McCppSyncCallback.h \
     $$PWD/Callback/Impl/McCppAsyncCallback.h \
     $$PWD/Connection/McAbstractConnection.h \
-    $$PWD/Connection/McCppConnection.h \
-    $$PWD/Zip/McCompressor.h
+    $$PWD/Connection/McCppConnection.h
 
 SOURCES += \
     $$PWD/McGlobal.cpp \
@@ -49,8 +48,12 @@ SOURCES += \
     $$PWD/Callback/Impl/McCppSyncCallback.cpp \
     $$PWD/Callback/Impl/McCppAsyncCallback.cpp \
     $$PWD/Connection/McAbstractConnection.cpp \
-    $$PWD/Connection/McCppConnection.cpp \
-    $$PWD/Zip/McCompressor.cpp
+    $$PWD/Connection/McCppConnection.cpp
+
+!contains(DEFINES, MC_DISABLE_ZLIB) {
+    HEADERS += $$PWD/Zip/McCompressor.h
+    SOURCES += $$PWD/Zip/McCompressor.cpp
+}
 
 win32 {
     HEADERS += $$PWD/MemoryLibrary/MemoryModule.h

@@ -6,7 +6,6 @@ set(PROJECT_HEADERS
     Utils/McMessagePattern.h
     Utils/McFileUtils.h
     Utils/McLogDeleter.h
-    Utils/McLogPackager.h
     Appender/IMcAppender.h
     Appender/IMcConfigurableAppender.h
     Appender/IMcCodecableAppender.h
@@ -46,7 +45,6 @@ set(PROJECT_SOURCES
     Utils/McMessagePattern.cpp
     Utils/McFileUtils.cpp
     Utils/McLogDeleter.cpp
-    Utils/McLogPackager.cpp
     Appender/Impl/McAbstractAppender.cpp
     Appender/Impl/McAbstractIODeviceAppender.cpp
     Appender/Impl/McAbstractFormatAppender.cpp
@@ -70,6 +68,11 @@ set(PROJECT_SOURCES
     Configurator/McXMLConfigurator.cpp
     McLogManager.cpp
 )
+
+if(NOT DISABLE_ZLIB)
+    list(APPEND PROJECT_HEADERS Utils/McLogPackager.h)
+    list(APPEND PROJECT_SOURCES Utils/McLogPackager.cpp)
+endif()
 
 if(WIN32)
     list(APPEND PROJECT_HEADERS

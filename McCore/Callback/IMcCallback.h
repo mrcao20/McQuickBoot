@@ -39,7 +39,7 @@ public:
     {
         QVariantList vars;
         (vars << ... << McPrivate::toQVariant(args));
-        return call(vars).value<R>();
+        return McPrivate::toRealValue<R>(call(vars));
     }
 
     QVariant operator()(const QVariantList &varList) const noexcept { return call(varList); }

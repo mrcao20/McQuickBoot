@@ -38,7 +38,7 @@ public:
     T at(qsizetype i) const noexcept
     {
         QVariant var = at(i);
-        return var.value<T>();
+        return McPrivate::toRealValue<T>(var);
     }
     QVariant at(qsizetype i) const noexcept;
     template<typename... Args>

@@ -227,12 +227,32 @@ struct convert<QPair<T, U>>
 //! QLinkedList, QStack, QQueue, QSet, QMultiMap, QHash, QMultiHash, QStringList, ...
 } // end namespace YAML
 
+static void writeYamlNode(const YAML::Node &node, const QString &path) noexcept
+{
+    if (path.isEmpty()) {
+        return;
+    }
+    QFile file(path);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        qCWarning(mcCore) << file.error() << ":" << file.errorString();
+        return;
+    }
+    try {
+        YAML::Emitter emitter;
+        emitter << node;
+        file.write(emitter.c_str(), emitter.size());
+    } catch (const std::exception &e) {
+        qCCritical(mcCore, "dump yaml failure. exception: %s", e.what());
+    }
+}
+
 MC_DECL_PRIVATE_DATA2(McConfigNode)
 {
+    bool isAutoSync{true};
     QString configPath;
     YAML::Node yamlNode;
 
-    McConfigNode *rootNode{nullptr};
+    std::function<void(const QString &)> syncFunc;
 };
 
 MC_DECL_PRIVATE_DATA2(McConfigNodeIterator)
@@ -285,32 +305,36 @@ McConfigNode::~McConfigNode() {}
 McConfigNode::McConfigNode(const McConfigNode &o) noexcept
     : McConfigNode(o.d->yamlNode)
 {
+    d->isAutoSync = o.d->isAutoSync;
     d->configPath = o.d->configPath;
-    d->rootNode = o.d->rootNode;
+    d->syncFunc = o.d->syncFunc;
 }
 
 McConfigNode &McConfigNode::operator=(const McConfigNode &o) noexcept
 {
+    d->isAutoSync = o.d->isAutoSync;
     d->yamlNode = o.d->yamlNode;
     d->configPath = o.d->configPath;
-    d->rootNode = o.d->rootNode;
+    d->syncFunc = o.d->syncFunc;
     return *this;
 }
 
 McConfigNode::McConfigNode(McConfigNode &&o) noexcept
     : McConfigNode(o.d->yamlNode)
 {
+    d->isAutoSync = o.d->isAutoSync;
     d->configPath = o.d->configPath;
-    d->rootNode = o.d->rootNode;
+    d->syncFunc = o.d->syncFunc;
 
     o.d.reset();
 }
 
 McConfigNode &McConfigNode::operator=(McConfigNode &&o) noexcept
 {
+    d->isAutoSync = o.d->isAutoSync;
     d->yamlNode = o.d->yamlNode;
     d->configPath = o.d->configPath;
-    d->rootNode = o.d->rootNode;
+    d->syncFunc = o.d->syncFunc;
 
     o.d.reset();
     return *this;
@@ -320,7 +344,7 @@ McConfigNode McConfigNode::loadOrCreate(const QString &configPath, QIODevice::Op
 {
     QString realPath = configPath;
     if (realPath.isEmpty()) {
-        realPath = "./config/runtimeConfig.yml";
+        realPath = QStringLiteral("./config/runtimeConfig.yml");
     }
     realPath = Mc::toAbsolutePath(realPath);
     if (!QFile::exists(realPath)) {
@@ -341,6 +365,7 @@ McConfigNode McConfigNode::loadOrCreate(const QString &configPath, QIODevice::Op
         McConfigNode node(YAML::Load(file.readAll()));
         if (flags.testFlag(QIODevice::WriteOnly)) {
             node.d->configPath = realPath;
+            node.d->syncFunc = std::bind(&writeYamlNode, node.d->yamlNode, std::placeholders::_1);
         }
         return node;
     } catch (const std::exception &e) {
@@ -349,26 +374,42 @@ McConfigNode McConfigNode::loadOrCreate(const QString &configPath, QIODevice::Op
     }
 }
 
+bool McConfigNode::isAutoSync() const noexcept
+{
+    return d->isAutoSync;
+}
+
+void McConfigNode::setAutoSync(bool val) noexcept
+{
+    d->isAutoSync = val;
+}
+
 void McConfigNode::sync() noexcept
 {
-    if (d->rootNode != nullptr) {
-        d->rootNode->sync();
+    syncTo(d->configPath);
+}
+
+void McConfigNode::syncTo(const QString &path) const noexcept
+{
+    if (d->syncFunc == nullptr)
         return;
-    }
-    if (d->configPath.isEmpty()) {
-        return;
-    }
-    QFile file(d->configPath);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-        return;
-    }
-    try {
-        YAML::Emitter emitter;
-        emitter << d->yamlNode;
-        file.write(emitter.c_str());
-    } catch (const std::exception &e) {
-        qCCritical(mcCore, "dump yaml failure. exception: %s", e.what());
-    }
+
+    d->syncFunc(path);
+}
+
+void McConfigNode::syncCurrentTo(const QString &path) const noexcept
+{
+    writeYamlNode(d->yamlNode, path);
+}
+
+QString McConfigNode::configPath() const noexcept
+{
+    return d->configPath;
+}
+
+void McConfigNode::copyContentTo(McConfigNode &other) const noexcept
+{
+    other.d->yamlNode = d->yamlNode;
 }
 
 McConfigNode::NodeType McConfigNode::type() const noexcept
@@ -484,7 +525,7 @@ McConfigNode &McConfigNode::operator=(const QVariant &rhs) noexcept
     } catch (const std::exception &e) {
         qCDebug(mcCore, "yaml exception: %s", e.what());
     }
-    sync();
+    sync_helper();
     return *this;
 }
 
@@ -495,7 +536,7 @@ void McConfigNode::reset(const McConfigNode &rhs) noexcept
     } catch (const std::exception &e) {
         qCDebug(mcCore, "yaml exception: %s", e.what());
     }
-    sync();
+    sync_helper();
 }
 
 std::size_t McConfigNode::size() const noexcept
@@ -575,7 +616,7 @@ McConfigNode::iterator::iterator() noexcept
     MC_NEW_PRIVATE_DATA(McConfigNodeIterator);
 }
 
-McConfigNode::iterator::iterator(YAML::iterator yamlItr) noexcept
+McConfigNode::iterator::iterator(const YAML::iterator &yamlItr) noexcept
     : iterator()
 {
     d->yamlItr = yamlItr;
@@ -656,7 +697,7 @@ McConfigNode::const_iterator::const_iterator() noexcept
     MC_NEW_PRIVATE_DATA(McConfigNodeConstIterator);
 }
 
-McConfigNode::const_iterator::const_iterator(YAML::const_iterator yamlItr) noexcept
+McConfigNode::const_iterator::const_iterator(const YAML::const_iterator &yamlItr) noexcept
     : const_iterator()
 {
     d->yamlItr = yamlItr;
@@ -774,7 +815,7 @@ void McConfigNode::append(const QVariant &rhs) noexcept
     } catch (const std::exception &e) {
         qCDebug(mcCore, "yaml exception: %s", e.what());
     }
-    sync();
+    sync_helper();
 }
 
 void McConfigNode::append(const McConfigNode &rhs) noexcept
@@ -785,7 +826,7 @@ void McConfigNode::append(const McConfigNode &rhs) noexcept
         qCDebug(mcCore, "yaml exception: %s", e.what());
     }
     setRootNode(rhs);
-    sync();
+    sync_helper();
 }
 
 const McConfigNode McConfigNode::operator[](const QString &key) const noexcept
@@ -816,7 +857,7 @@ bool McConfigNode::remove(const QString &key) noexcept
 {
     try {
         bool flag = d->yamlNode.remove(key);
-        sync();
+        sync_helper();
         return flag;
     } catch (const std::exception &e) {
         qCDebug(mcCore, "yaml exception: %s", e.what());
@@ -852,7 +893,7 @@ bool McConfigNode::remove(const McConfigNode &key) noexcept
 {
     try {
         bool flag = d->yamlNode.remove(key.d->yamlNode);
-        sync();
+        sync_helper();
         return flag;
     } catch (const std::exception &e) {
         qCDebug(mcCore, "yaml exception: %s", e.what());
@@ -867,7 +908,7 @@ void McConfigNode::insert(const QString &key, const QVariant &value) noexcept
     } catch (const std::exception &e) {
         qCDebug(mcCore, "yaml exception: %s", e.what());
     }
-    sync();
+    sync_helper();
 }
 
 void McConfigNode::insert(const QString &key, const McConfigNode &value) noexcept
@@ -878,16 +919,19 @@ void McConfigNode::insert(const QString &key, const McConfigNode &value) noexcep
         qCDebug(mcCore, "yaml exception: %s", e.what());
     }
     setRootNode(value);
-    sync();
+    sync_helper();
 }
 
 void McConfigNode::setRootNode(const McConfigNode &node) const noexcept
 {
-    if (d->rootNode == nullptr) {
-        node.d->rootNode = const_cast<McConfigNode *>(this);
-    } else {
-        node.d->rootNode = d->rootNode;
-    }
+    node.d->syncFunc = d->syncFunc;
+}
+
+void McConfigNode::sync_helper() noexcept
+{
+    if (!d->isAutoSync)
+        return;
+    sync();
 }
 
 namespace Mc {
