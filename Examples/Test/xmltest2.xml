@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<beans>
-    <bean name="object" class="Object" isSingleton="true">
-        <property name="text" value="Hello World!"></property>
-    </bean>
-</beans>

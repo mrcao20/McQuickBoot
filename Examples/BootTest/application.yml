@@ -1,7 +1,0 @@
-boot: 
-    application: 
-        requestor: 
-            maxThreadCount: 10
-        stateMachine: 
-            paths: ["./BootTest.scxml"]
-        

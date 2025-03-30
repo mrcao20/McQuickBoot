@@ -1,0 +1,119 @@
+project(McIoc)
+
+set(PROJECT_HEADERS
+    McIocMacroGlobal.h
+    McIocConstantGlobal.h
+    McIocGlobal.h
+    Utils/IMcBeanBuildable.h
+    Utils/XmlBuilder/IMcXml.h
+    Utils/XmlBuilder/IMcBeanContent.h
+    Utils/XmlBuilder/IMcPropertyContent.h
+    Utils/XmlBuilder/IMcBean.h
+    Utils/XmlBuilder/Impl/McBeanCollection.h
+    Utils/XmlBuilder/Impl/McBean.h
+    Utils/XmlBuilder/Impl/McClassBean.h
+    Utils/XmlBuilder/Impl/McPluginBean.h
+    Utils/XmlBuilder/Impl/McConnect.h
+    Utils/XmlBuilder/Impl/McEnum.h
+    Utils/XmlBuilder/Impl/McList.h
+    Utils/XmlBuilder/Impl/McMap.h
+    Utils/XmlBuilder/Impl/McPlaceholder.h
+    Utils/XmlBuilder/Impl/McProperty.h
+    Utils/XmlBuilder/Impl/McRef.h
+    Utils/XmlBuilder/Impl/McValue.h
+    Utils/XmlBuilder/Impl/McConstructorArg.h
+    Utils/XmlBuilder/Impl/McPluginChecker.h
+    BeanFactory/IMcBeanFactory.h
+    BeanFactory/IMcBeanBuilderRegistry.h
+    BeanFactory/IMcConfigurableBeanFactory.h
+    BeanFactory/Impl/McAbstractBeanFactory.h
+    BeanFactory/Impl/McDefaultBeanFactory.h
+    BeanFactory/Impl/McResolverBeanFactory.h
+    BeanBuilder/IMcBeanBuilder.h
+    BeanBuilder/IMcBeanReferenceResolver.h
+    BeanBuilder/IMcCustomPlaceholder.h
+    BeanBuilder/IMcCustomBeanBuilderFactory.h
+    BeanBuilder/McCustomBeanBuilderContainer.h
+    BeanBuilder/Impl/McBeanReference.h
+    BeanBuilder/Impl/McBeanPlaceholder.h
+    BeanBuilder/Impl/McBeanEnum.h
+    BeanBuilder/Impl/McBeanConnector.h
+    BeanBuilder/Impl/McAbstractBeanBuilder.h
+    BeanBuilder/Impl/McObjectBeanBuilder.h
+    BeanBuilder/Impl/McObjectClassBeanBuilder.h
+    BeanBuilder/Impl/McSharedObjectClassBeanBuilder.h
+    BeanBuilder/Impl/McObjectPluginBeanBuilder.h
+    BeanBuilder/Impl/McSharedObjectPluginBeanBuilder.h
+    BeanBuilder/Impl/McGadgetBeanBuilder.h
+    BeanBuilder/Impl/McSharedGadgetBeanBuilder.h
+    BeanBuilder/Impl/McListBeanBuilder.h
+    BeanBuilder/Impl/McMapBeanBuilder.h
+    BeanBuilder/Impl/McSimpleBeanBuilder.h
+    BeanBuilder/Impl/McCustomBeanBuilder.h
+    BeanBuilder/Impl/McCustomBeanBuilderFactory.h
+    BeanBuilderReader/IMcBeanBuilderReader.h
+    BeanBuilderReader/Impl/McAbstractBeanBuilderReader.h
+    BeanBuilderReader/Impl/McXmlBeanBuilderReader.h
+    BeanBuilderReader/Impl/McAnnotationBeanDefinitionReader.h
+    ApplicationContext/IMcRefreshableApplicationContext.h
+    ApplicationContext/IMcApplicationContext.h
+    ApplicationContext/IMcReadableApplicationContext.h
+    ApplicationContext/Impl/McAbstractApplicationContext.h
+    ApplicationContext/Impl/McReadableApplicationContext.h
+    ApplicationContext/Impl/McXmlApplicationContext.h
+    ApplicationContext/Impl/McLocalPathApplicationContext.h
+    ApplicationContext/Impl/McAnnotationApplicationContext.h
+)
+
+set(PROJECT_SOURCES
+    McIocGlobal.cpp
+    Utils/XmlBuilder/Impl/McBeanCollection.cpp
+    Utils/XmlBuilder/Impl/McBean.cpp
+    Utils/XmlBuilder/Impl/McClassBean.cpp
+    Utils/XmlBuilder/Impl/McPluginBean.cpp
+    Utils/XmlBuilder/Impl/McConnect.cpp
+    Utils/XmlBuilder/Impl/McEnum.cpp
+    Utils/XmlBuilder/Impl/McList.cpp
+    Utils/XmlBuilder/Impl/McMap.cpp
+    Utils/XmlBuilder/Impl/McPlaceholder.cpp
+    Utils/XmlBuilder/Impl/McProperty.cpp
+    Utils/XmlBuilder/Impl/McRef.cpp
+    Utils/XmlBuilder/Impl/McValue.cpp
+    Utils/XmlBuilder/Impl/McConstructorArg.cpp
+    Utils/XmlBuilder/Impl/McPluginChecker.cpp
+    BeanFactory/Impl/McAbstractBeanFactory.cpp
+    BeanFactory/Impl/McDefaultBeanFactory.cpp
+    BeanFactory/Impl/McResolverBeanFactory.cpp
+    BeanBuilder/McCustomBeanBuilderContainer.cpp
+    BeanBuilder/Impl/McAbstractBeanBuilder.cpp
+    BeanBuilder/Impl/McObjectBeanBuilder.cpp
+    BeanBuilder/Impl/McObjectClassBeanBuilder.cpp
+    BeanBuilder/Impl/McSharedObjectClassBeanBuilder.cpp
+    BeanBuilder/Impl/McObjectPluginBeanBuilder.cpp
+    BeanBuilder/Impl/McSharedObjectPluginBeanBuilder.cpp
+    BeanBuilder/Impl/McGadgetBeanBuilder.cpp
+    BeanBuilder/Impl/McSharedGadgetBeanBuilder.cpp
+    BeanBuilder/Impl/McListBeanBuilder.cpp
+    BeanBuilder/Impl/McMapBeanBuilder.cpp
+    BeanBuilder/Impl/McSimpleBeanBuilder.cpp
+    BeanBuilderReader/Impl/McAbstractBeanBuilderReader.cpp
+    BeanBuilderReader/Impl/McXmlBeanBuilderReader.cpp
+    BeanBuilderReader/Impl/McAnnotationBeanDefinitionReader.cpp
+    ApplicationContext/Impl/McAbstractApplicationContext.cpp
+    ApplicationContext/Impl/McReadableApplicationContext.cpp
+    ApplicationContext/Impl/McXmlApplicationContext.cpp
+    ApplicationContext/Impl/McLocalPathApplicationContext.cpp
+    ApplicationContext/Impl/McAnnotationApplicationContext.cpp
+)
+
+add_library(${PROJECT_NAME} ${MC_BUILD_TYPE}
+    ${PROJECT_HEADERS}
+    ${PROJECT_SOURCES}
+)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Core
+    McCore)
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE MC_IOC_LIBRARY)
+
+include(${CMAKE_SOURCE_DIR}/cmake/Install.cmake)
