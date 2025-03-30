@@ -1,34 +1,21 @@
 /*
- * MIT License
- *
- * Copyright (c) 2021 mrcao20
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * Copyright (c) 2021 mrcao20/mrcao20@163.com
+ * McQuickBoot is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *          http://license.coscl.org.cn/MulanPSL2
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
  */
 #include "McCppConnection.h"
 
 #include <QMetaMethod>
 
 MC_DECL_PRIVATE_DATA(McCppConnection)
-QObject *receiver{nullptr};
 QMetaMethod sig;
-QtPrivate::QSlotObjectBase *callback{nullptr};
+McSlotObjectWrapper callback;
 MC_DECL_PRIVATE_DATA_END
 
 McCppConnection::McCppConnection(QObject *parent) noexcept
@@ -39,24 +26,22 @@ McCppConnection::McCppConnection(QObject *parent) noexcept
 
 McCppConnection::~McCppConnection()
 {
-    d->callback->destroyIfLastRef();
 }
 
-QMetaObject::Connection McCppConnection::init(QObject *sender, const QString &signal, QObject *receiver,
-    QtPrivate::QSlotObjectBase *slot, Qt::ConnectionType type) noexcept
+QMetaObject::Connection McCppConnection::init(
+    QObject *sender, const QString &signal, const McSlotObjectWrapper &slot, Qt::ConnectionType type) noexcept
 {
     d->callback = slot;
     auto con = McAbstractConnection::init(sender, signal, type, d->sig);
     if (!d->sig.isValid()) {
         return con;
     }
-    moveToThread(receiver->thread());
-    setParent(receiver);
-    d->receiver = receiver;
+    moveToThread(slot.receiver()->thread());
+    setParent(const_cast<QObject *>(slot.receiver()));
     return con;
 }
 
 void McCppConnection::call(void **arguments) noexcept
 {
-    d->callback->call(d->receiver, arguments);
+    d->callback.call(arguments);
 }

@@ -1,25 +1,13 @@
 /*
- * MIT License
- *
- * Copyright (c) 2021 mrcao20
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * Copyright (c) 2021 mrcao20/mrcao20@163.com
+ * McQuickBoot is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *          http://license.coscl.org.cn/MulanPSL2
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
  */
 #include "TestCore.h"
 
@@ -37,6 +25,7 @@
 #include <McCore/Utils/McJsonUtils.h>
 #include <McCore/Utils/McPause.h>
 #include <McCore/Utils/McProgress.h>
+#include <McCore/Utils/McRequest.h>
 
 #include "MetaTypeTest.h"
 
@@ -45,6 +34,23 @@ mcRegisterMetaTypeSimple<GadgetData>();
 mcRegisterMetaType<ObjectData>();
 mcRegisterContainer<QList<GadgetDataPtr>>();
 MC_STATIC_END
+
+void TestCore::coreCase()
+{
+    int a = 1;
+    QString b = QStringLiteral("b");
+    GadgetDataPtr c = GadgetDataPtr::create();
+    McRequest request;
+    request.addParam(a);
+    request.addParam(b);
+    request.addParam(c);
+    QVERIFY(request.rollAt<int>() == a);
+    QVERIFY(request.rollAt<QString>() == b);
+    QVERIFY(request.rollAt<GadgetDataPtr>() == c);
+    QVERIFY(request.rollAt<QString>() != b);
+    QVERIFY(request.rollAt<GadgetDataPtr>() != c);
+    QVERIFY(request.rollAt<int>() != a);
+}
 
 void TestCore::jsonCase()
 {
@@ -122,21 +128,23 @@ void TestCore::pathPlaceholderCase()
 void TestCore::eventDispatcherCase()
 {
     int result = -1;
-    Mc::eventDispatcher().connectToEvent("event", [&result](const QVariant &var) { result = var.toInt(); });
-    Mc::eventDispatcher().submitEvent("event", 1);
+    int result2 = -1;
+    Mc::eventDispatcher().connectToEvent("event", [&result, &result2](const QVariant &var, int i) {
+        result = var.toInt();
+        result2 = i;
+    });
+    Mc::eventDispatcher().submitEvent("event", 1, 2);
     QVERIFY(result == 1);
-    Mc::eventDispatcher().submitEvent("event", "ff");
+    QVERIFY(result2 == 2);
+    Mc::eventDispatcher().submitEvent("event", "ff", 3);
     QVERIFY(result != 1);
+    QVERIFY(result2 == 3);
 }
 
 void TestCore::metaTypeCase()
 {
     auto metaType = McMetaType::fromType<MetaTypeTest>();
-#ifdef MC_USE_QT5
     auto star = metaType.createPointer();
-#else
-    auto star = metaType.metaType().create();
-#endif
     QVERIFY(star != nullptr);
     QVariant var(metaType.pMetaType(), &star);
     auto test = var.value<MetaTypeTest *>();
@@ -216,8 +224,8 @@ void TestCore::callbackCase()
     McPause pause;
     McProgress progress;
     int current = 0, total = 0;
-    progress.totalCallback([&total](int t) { total = t; });
-    progress.currentCallback([&current](int c) { current = c; });
+    progress.onTotalCallback([&total](int t) { total = t; });
+    progress.onCurrentCallback(this, [&current](int c) { current = c; });
 
     bool isCancel = false, isPause = false, isFinished = false;
     auto future = QtConcurrent::run([&isCancel, &isPause, &isFinished, cancel, pause, progress]() {
@@ -243,8 +251,10 @@ void TestCore::callbackCase()
         return isFinished;
     });
 
+    auto functor = McSlotObjectWrapper::build(nullptr, []() { return 1; });
     QVERIFY(current == 10);
     QVERIFY(total == 10);
     QVERIFY(isCancel);
     QVERIFY(isPause);
+    QVERIFY(functor.call(QVariantList()).toInt() == 1);
 }

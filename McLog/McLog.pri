@@ -1,4 +1,9 @@
-DEFINES += MC_LOG_LIBRARY
+INCLUDEPATH += $$PWD
+
+contains(DEFINES, MC_USE_LIBRARY) {
+    DEFINES += MC_LOG_LIBRARY
+}
+
 HEADERS += \
     $$PWD/McLogMacroGlobal.h \
     $$PWD/McLogGlobal.h \
@@ -66,14 +71,17 @@ SOURCES += \
     $$PWD/Configurator/McXMLConfigurator.cpp \
     $$PWD/McLogManager.cpp
 
+!contains(DEFINES, MC_DISABLE_ZLIB) {
+    HEADERS += $$PWD/Utils/McLogPackager.h
+    SOURCES += $$PWD/Utils/McLogPackager.cpp
+}
+
 win32 {
     HEADERS += \
         $$PWD/Device/McVSDebugDevice.h \
-        $$PWD/Appender/Impl/McVSDebugAppender.h \
-        $$PWD/Utils/McLogPackager.h
+        $$PWD/Appender/Impl/McVSDebugAppender.h
 
     SOURCES += \
         $$PWD/Device/McVSDebugDevice.cpp \
-        $$PWD/Appender/Impl/McVSDebugAppender.cpp \
-        $$PWD/Utils/McLogPackager.cpp
+        $$PWD/Appender/Impl/McVSDebugAppender.cpp
 }

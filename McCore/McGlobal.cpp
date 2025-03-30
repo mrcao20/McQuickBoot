@@ -1,25 +1,13 @@
 /*
- * MIT License
- *
- * Copyright (c) 2021 mrcao20
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * Copyright (c) 2021 mrcao20/mrcao20@163.com
+ * McQuickBoot is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *          http://license.coscl.org.cn/MulanPSL2
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
  */
 #include "McGlobal.h"
 
@@ -80,8 +68,7 @@ Q_CONSTRUCTOR_FUNCTION(coreStaticInit)
 
 McCustomEvent::~McCustomEvent() noexcept {}
 
-namespace {
-QString getStandardPath(QStandardPaths::StandardLocation type)
+static QString getStandardPath(QStandardPaths::StandardLocation type)
 {
     auto paths = QStandardPaths::standardLocations(type);
     if (paths.isEmpty()) {
@@ -90,10 +77,11 @@ QString getStandardPath(QStandardPaths::StandardLocation type)
     return paths.first();
 }
 
-QSharedPointer<QLibrary> loadLibraryHelper(const QString &path, const QLatin1String &checkSymbol) noexcept
+static QSharedPointer<QLibrary> loadLibraryHelper(const QString &path, QLatin1String checkSymbol) noexcept
 {
     auto libPath = Mc::toAbsolutePath(path);
-    if (!QLibrary::isLibrary(libPath)) {
+    QFileInfo fileInfo(libPath);
+    if (!fileInfo.suffix().isEmpty() && !QLibrary::isLibrary(libPath)) {
         return QSharedPointer<QLibrary>();
     }
     auto library = QSharedPointer<QLibrary>::create(libPath);
@@ -116,7 +104,7 @@ QSharedPointer<QLibrary> loadLibraryHelper(const QString &path, const QLatin1Str
     return QSharedPointer<QLibrary>();
 }
 
-McMemoryLibrary loadMemoryLibraryHelper(const QByteArray &data, const QLatin1String &checkSymbol) noexcept
+static McMemoryLibrary loadMemoryLibraryHelper(const QByteArray &data, QLatin1String checkSymbol) noexcept
 {
     McMemoryLibrary library(data);
     if (!library.load()) {
@@ -135,49 +123,66 @@ McMemoryLibrary loadMemoryLibraryHelper(const QByteArray &data, const QLatin1Str
     library.unload();
     return McMemoryLibrary();
 }
-} // namespace
 
 MC_GLOBAL_STATIC_BEGIN(coreGlobalStaticData)
 QString applicationDirPath;
 QString applicationName;
 QHash<QString, std::function<QString()>> pathPlaceholders{
-    {QLatin1String("{desktop}"), std::bind(getStandardPath, QStandardPaths::DesktopLocation)},
-    {QLatin1String("{documents}"), std::bind(getStandardPath, QStandardPaths::DocumentsLocation)},
-    {QLatin1String("{temp}"), std::bind(getStandardPath, QStandardPaths::TempLocation)},
-    {QLatin1String("{home}"), std::bind(getStandardPath, QStandardPaths::HomeLocation)},
-    {QLatin1String("{appLocalData}"), std::bind(getStandardPath, QStandardPaths::AppLocalDataLocation)},
-    {QLatin1String("{data}"), std::bind(getStandardPath, QStandardPaths::AppLocalDataLocation)},
-    {QLatin1String("{cache}"), std::bind(getStandardPath, QStandardPaths::CacheLocation)},
-    {QLatin1String("{config}"), std::bind(getStandardPath, QStandardPaths::GenericConfigLocation)},
-    {QLatin1String("{appData}"), std::bind(getStandardPath, QStandardPaths::AppDataLocation)},
+    {QStringLiteral("{desktop}"), std::bind(getStandardPath, QStandardPaths::DesktopLocation)},
+    {QStringLiteral("{documents}"), std::bind(getStandardPath, QStandardPaths::DocumentsLocation)},
+    {QStringLiteral("{temp}"), std::bind(getStandardPath, QStandardPaths::TempLocation)},
+    {QStringLiteral("{home}"), std::bind(getStandardPath, QStandardPaths::HomeLocation)},
+    {QStringLiteral("{appLocalData}"), std::bind(getStandardPath, QStandardPaths::AppLocalDataLocation)},
+    {QStringLiteral("{data}"), std::bind(getStandardPath, QStandardPaths::AppLocalDataLocation)},
+    {QStringLiteral("{cache}"), std::bind(getStandardPath, QStandardPaths::CacheLocation)},
+    {QStringLiteral("{config}"), std::bind(getStandardPath, QStandardPaths::GenericConfigLocation)},
+    {QStringLiteral("{appData}"), std::bind(getStandardPath, QStandardPaths::AppDataLocation)},
 };
+
+char *preallocMemory{nullptr};
+std::function<void()> newHandlerFunc;
 MC_GLOBAL_STATIC_END(coreGlobalStaticData)
 
+static void fatalNewHandler()
+{
+    Mc::setNewHandlerType(Mc::NewHandlerType::None);
+    qFatal("out of memory");
+}
+
+static void preallocNewHandler()
+{
+    Mc::setNewHandlerType(Mc::NewHandlerType::None);
+    MC_SAFETY_DELETE2(coreGlobalStaticData->preallocMemory)
+    if (coreGlobalStaticData->newHandlerFunc != nullptr) {
+        coreGlobalStaticData->newHandlerFunc();
+    }
+}
+
 namespace Mc {
-bool waitForExecFunc(const std::function<bool()> &func, qint64 timeout) noexcept
+bool waitForExecFunc(
+    const std::function<bool()> &func, QDeadlineTimer deadline, QEventLoop::ProcessEventsFlags flags) noexcept
 {
     QEventLoop loop;
     QTimer timer;
-    timer.setInterval(100);
-    QElapsedTimer stopWatcher;
+    timer.setSingleShot(true);
+    using namespace std::chrono_literals;
+    timer.setInterval(100ms);
     bool ret = true;
 
-    QObject::connect(&timer, &QTimer::timeout, [&timer, &stopWatcher, &loop, &ret, &func, &timeout]() {
-        timer.stop();
+    timer.callOnTimeout([&timer, &loop, &ret, func, deadline]() {
         if ((ret = func())) {
             loop.quit();
             return;
         }
-        if (timeout != -1 && stopWatcher.elapsed() > timeout) {
+        if (deadline.hasExpired()) {
             loop.quit();
             return;
         }
         timer.start();
     });
 
-    stopWatcher.start();
     timer.start();
-    loop.exec();
+    loop.exec(flags);
     return ret;
 }
 
@@ -197,10 +202,10 @@ QString toAbsolutePath(const QString &inPath) noexcept
             path.replace(key, plhPath);
         }
     }
-    QString dstPath = QDir::toNativeSeparators(path);
-    if (QDir::isAbsolutePath(dstPath)) {
-        return dstPath;
+    if (QDir::isAbsolutePath(path)) {
+        return path;
     }
+    QString dstPath = QDir::toNativeSeparators(path);
     QString sepDot = ".";
     QString sepDotDot = "..";
     sepDot += QDir::separator();
@@ -294,7 +299,7 @@ void addPostRoutine(int priority, const CleanUpFunction &func) noexcept
     (*funcs)[priority].prepend(func);
 }
 
-QFunctionPointer loadLibrary(const QString &path, const QLatin1String &symbol, const QLatin1String &checkSymbol) noexcept
+QFunctionPointer loadLibrary(const QString &path, QLatin1String symbol, QLatin1String checkSymbol) noexcept
 {
     auto library = loadLibraryHelper(path, checkSymbol);
     if (library.isNull()) {
@@ -303,13 +308,12 @@ QFunctionPointer loadLibrary(const QString &path, const QLatin1String &symbol, c
     return library->resolve(symbol.data());
 }
 
-void loadLibrary(const QString &path, const QLatin1String &checkSymbol) noexcept
+void loadLibrary(const QString &path, QLatin1String checkSymbol) noexcept
 {
     loadLibraryHelper(path, checkSymbol);
 }
 
-QFunctionPointer loadMemoryLibrary(
-    const QByteArray &data, const QLatin1String &symbol, const QLatin1String &checkSymbol) noexcept
+QFunctionPointer loadMemoryLibrary(const QByteArray &data, QLatin1String symbol, QLatin1String checkSymbol) noexcept
 {
     auto library = loadMemoryLibraryHelper(data, checkSymbol);
     if (!library.isLoaded()) {
@@ -318,7 +322,7 @@ QFunctionPointer loadMemoryLibrary(
     return library.resolve(symbol);
 }
 
-void loadMemoryLibrary(const QByteArray &data, const QLatin1String &checkSymbol) noexcept
+void loadMemoryLibrary(const QByteArray &data, QLatin1String checkSymbol) noexcept
 {
     loadMemoryLibraryHelper(data, checkSymbol);
 }
@@ -340,5 +344,23 @@ QObject *loadPlugin(const QString &pluginPath, const std::function<bool(const QJ
     }
     Mc::callPreRoutine();
     return loader.instance();
+}
+
+void setNewHandlerType(NewHandlerType type, quint64 size, const std::function<void()> &func)
+{
+    if (type == NewHandlerType::None) {
+        std::set_new_handler(nullptr);
+    } else if (type == NewHandlerType::Fatal) {
+        std::set_new_handler(&fatalNewHandler);
+    } else {
+        if (size < 0) {
+            return;
+        }
+        coreGlobalStaticData->newHandlerFunc = func;
+        if (size > 0) {
+            coreGlobalStaticData->preallocMemory = new char[size];
+        }
+        std::set_new_handler(&preallocNewHandler);
+    }
 }
 } // namespace Mc

@@ -1,8 +1,5 @@
 project(McLog)
 
-include_directories(${CMAKE_SOURCE_DIR})
-include_directories(${CMAKE_BINARY_DIR}/McCore)
-
 set(PROJECT_HEADERS
     McLogMacroGlobal.h
     McLogGlobal.h
@@ -72,17 +69,20 @@ set(PROJECT_SOURCES
     McLogManager.cpp
 )
 
+if(NOT DISABLE_ZLIB)
+    list(APPEND PROJECT_HEADERS Utils/McLogPackager.h)
+    list(APPEND PROJECT_SOURCES Utils/McLogPackager.cpp)
+endif()
+
 if(WIN32)
     list(APPEND PROJECT_HEADERS
         Device/McVSDebugDevice.h
         Appender/Impl/McVSDebugAppender.h
-        Utils/McLogPackager.h
     )
 
     list(APPEND PROJECT_SOURCES
         Device/McVSDebugDevice.cpp
         Appender/Impl/McVSDebugAppender.cpp
-        Utils/McLogPackager.cpp
     )
 endif()
 

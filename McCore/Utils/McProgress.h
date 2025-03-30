@@ -1,38 +1,44 @@
 /*
- * MIT License
- *
- * Copyright (c) 2021 mrcao20
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * Copyright (c) 2021 mrcao20/mrcao20@163.com
+ * McQuickBoot is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *          http://license.coscl.org.cn/MulanPSL2
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
  */
 #pragma once
 
 #include <QSharedData>
 
 #include "../Callback/Impl/McCppSyncCallback.h"
-#include "../McGlobal.h"
 
-struct McProgressSharedData;
+MC_FORWARD_DECL_PRIVATE_DATA(McProgress)
 
 class MC_CORE_EXPORT McProgress
 {
-    MC_DECL_INIT(McProgress)
+    struct CurrentChecker
+    {
+        template<int argCount>
+        static inline void check() noexcept
+        {
+            static_assert(
+                argCount == 1, "The number of parameters of callback function can only be equal to 1(int current)");
+        }
+    };
+
+    struct TotalChecker
+    {
+        template<int argCount>
+        static inline void check() noexcept
+        {
+            static_assert(
+                argCount == 1, "The number of parameters of callback function can only be equal to 1(int total)");
+        }
+    };
+
 public:
     McProgress() noexcept;
     ~McProgress();
@@ -44,69 +50,38 @@ public:
 
     int current() const noexcept;
     void setCurrent(int val) noexcept;
+    void increaseCurrent(int val = 1) noexcept;
     int total() const noexcept;
     void setTotal(int val) noexcept;
     void setCurrentCallback(const IMcCallbackPtr &val) noexcept;
     void setTotalCallback(const IMcCallbackPtr &val) noexcept;
 
-    template<typename Func>
-    void currentCallback(const typename QtPrivate::FunctionPointer<Func>::Object *recever, Func func) noexcept
+    template<typename Object, typename Func>
+    void onCurrentCallback(const Object *receiver, Func callback) noexcept
     {
-        static_assert(int(QtPrivate::FunctionPointer<Func>::ArgumentCount) == 1,
-            "The number of parameters of callback function can only be equal to 1(int current)");
-
-        setCurrentCallback(McCppSyncCallback::build(recever, func));
+        setCurrentCallback(McCppSyncCallback::build<Object, Func, CurrentChecker>(receiver, callback));
     }
     template<typename Func>
-    std::enable_if_t<int(QtPrivate::FunctionPointer<Func>::ArgumentCount) >= 0
-                         && !QtPrivate::FunctionPointer<Func>::IsPointerToMemberFunction,
-        void>
-        currentCallback(Func func) noexcept
+    void onCurrentCallback(Func callback) noexcept
     {
-        static_assert(int(QtPrivate::FunctionPointer<Func>::ArgumentCount) == 1,
-            "The number of parameters of callback function can only be equal to 1(int current)");
-
-        setCurrentCallback(McCppSyncCallback::build(func));
-    }
-    template<typename Func>
-    std::enable_if_t<QtPrivate::FunctionPointer<Func>::ArgumentCount == -1, void> currentCallback(Func func) noexcept
-    {
-        static_assert(int(McPrivate::LambdaType<Func>::ArgumentCount) == 1,
-            "The number of parameters of callback function can only be equal to 1(int current)");
-
-        setCurrentCallback(McCppSyncCallback::build(func));
+        setCurrentCallback(McCppSyncCallback::build<Func, CurrentChecker>(callback));
     }
 
-    template<typename Func>
-    void totalCallback(const typename QtPrivate::FunctionPointer<Func>::Object *recever, Func func) noexcept
+    template<typename Object, typename Func>
+    void onTotalCallback(const Object *receiver, Func callback) noexcept
     {
-        static_assert(int(QtPrivate::FunctionPointer<Func>::ArgumentCount) == 1,
-            "The number of parameters of callback function can only be equal to 1(int total)");
-
-        setTotalCallback(McCppSyncCallback::build(recever, func));
+        setTotalCallback(McCppSyncCallback::build<Object, Func, TotalChecker>(receiver, callback));
     }
     template<typename Func>
-    std::enable_if_t<int(QtPrivate::FunctionPointer<Func>::ArgumentCount) >= 0
-                         && !QtPrivate::FunctionPointer<Func>::IsPointerToMemberFunction,
-        void>
-        totalCallback(Func func) noexcept
+    void onTotalCallback(Func callback) noexcept
     {
-        static_assert(int(QtPrivate::FunctionPointer<Func>::ArgumentCount) == 1,
-            "The number of parameters of callback function can only be equal to 1(int total)");
-
-        setTotalCallback(McCppSyncCallback::build(func));
-    }
-    template<typename Func>
-    std::enable_if_t<QtPrivate::FunctionPointer<Func>::ArgumentCount == -1, void> totalCallback(Func func) noexcept
-    {
-        static_assert(int(McPrivate::LambdaType<Func>::ArgumentCount) == 1,
-            "The number of parameters of callback function can only be equal to 1(int total)");
-
-        setTotalCallback(McCppSyncCallback::build(func));
+        setTotalCallback(McCppSyncCallback::build<Func, TotalChecker>(callback));
     }
 
 private:
-    QExplicitlySharedDataPointer<McProgressSharedData> d;
+    MC_DECL_SHARED_PRIVATE(McProgress)
 };
 
-MC_DECL_METATYPE(McProgress)
+#ifdef MC_USE_QT5
+Q_DECLARE_METATYPE(McProgress)
+#endif

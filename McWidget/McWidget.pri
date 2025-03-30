@@ -1,4 +1,9 @@
-DEFINES += MC_WIDGET_LIBRARY
+INCLUDEPATH += $$PWD
+
+contains(DEFINES, MC_USE_LIBRARY) {
+    DEFINES += MC_WIDGET_LIBRARY
+}
+
 HEADERS += \
     $$PWD/McWidgetMacroGlobal.h \
     $$PWD/McWidgetGlobal.h \

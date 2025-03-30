@@ -1,4 +1,4 @@
-project(McCore)
+project(McCore LANGUAGES C CXX ASM)
 
 configure_file(McConfig.h.in McConfig.h)
 
@@ -8,9 +8,7 @@ set(PROJECT_HEADERS
     McMacroGlobal.h
     McGlobal.h
     McMetaType.h
-    Config/McRuntimeConfig.h
-    Config/McRuntimeConfigObject.h
-    Config/McRuntimeConfigValue.h
+    Config/McConfigNode.h
     Destroyer/IMcDestroyer.h
     Event/McEventDispatcher.h
     Event/McEventRouter.h
@@ -19,6 +17,9 @@ set(PROJECT_HEADERS
     Utils/McCancel.h
     Utils/McPause.h
     Utils/McProgress.h
+    Utils/McRequest.h
+    Utils/McSignalBlocker.h
+    Utils/McCrashHandler.h
     PluginChecker/IMcPluginChecker.h
     PluginChecker/Impl/McNormalPluginChecker.h
     MemoryLibrary/McMemoryLibrary.h
@@ -34,9 +35,7 @@ set(PROJECT_HEADERS
 set(PROJECT_SOURCES
     McGlobal.cpp
     McMetaType.cpp
-    Config/McRuntimeConfig.cpp
-    Config/McRuntimeConfigObject.cpp
-    Config/McRuntimeConfigValue.cpp
+    Config/McConfigNode.cpp
     Event/McEventDispatcher.cpp
     Event/McEventRouter.cpp
     Utils/McSlotObjectWrapper.cpp
@@ -44,6 +43,9 @@ set(PROJECT_SOURCES
     Utils/McCancel.cpp
     Utils/McPause.cpp
     Utils/McProgress.cpp
+    Utils/McRequest.cpp
+    Utils/McSignalBlocker.cpp
+    Utils/McCrashHandler.cpp
     PluginChecker/Impl/McNormalPluginChecker.cpp
     MemoryLibrary/McMemoryLibrary.cpp
     Callback/Impl/McAbstractSyncCallback.cpp
@@ -54,23 +56,16 @@ set(PROJECT_SOURCES
     Connection/McCppConnection.cpp
 )
 
-if(WIN32)
-    list(APPEND PROJECT_HEADERS
-        MemoryLibrary/MemoryModule.h
-        Zip/McCompressor.h
-        Zip/zip.h
-        Zip/unzip.h
-        Zip/ioapi.h
-        Zip/crypt.h
-    )
+if(NOT DISABLE_ZLIB)
+    list(APPEND PROJECT_HEADERS Zip/McCompressor.h)
+    list(APPEND PROJECT_SOURCES Zip/McCompressor.cpp)
+endif()
 
-    list(APPEND PROJECT_SOURCES
-        MemoryLibrary/MemoryModule.c
-        Zip/McCompressor.cpp
-        Zip/zip.c
-        Zip/unzip.c
-        Zip/ioapi.c
-    )
+include(${CMAKE_SOURCE_DIR}/3rdparty/3rdparty.cmake)
+
+if(WIN32)
+    list(APPEND PROJECT_HEADERS MemoryLibrary/MemoryModule.h)
+    list(APPEND PROJECT_SOURCES MemoryLibrary/MemoryModule.c)
 else()
     list(APPEND PROJECT_HEADERS MemoryLibrary/memload.h)
     list(APPEND PROJECT_SOURCES MemoryLibrary/memload.cpp)
@@ -82,6 +77,9 @@ add_library(${PROJECT_NAME} ${MC_BUILD_TYPE}
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Core)
+if(UNIX AND NOT ANDROID)
+    target_link_libraries(${PROJECT_NAME} PRIVATE rt)
+endif()
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE MC_CORE_LIBRARY)
 

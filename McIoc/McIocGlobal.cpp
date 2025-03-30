@@ -1,25 +1,13 @@
 /*
- * MIT License
- *
- * Copyright (c) 2021 mrcao20
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * Copyright (c) 2021 mrcao20/mrcao20@163.com
+ * McQuickBoot is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *          http://license.coscl.org.cn/MulanPSL2
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
  */
 #include "McIocGlobal.h"
 
@@ -27,6 +15,7 @@
 #include <QMetaClassInfo>
 
 #include "ApplicationContext/Impl/McAnnotationApplicationContext.h"
+#include "BeanBuilder/IMcBeanBuilder.h"
 
 Q_LOGGING_CATEGORY(mcIoc, "mc.ioc")
 
@@ -62,6 +51,70 @@ QString getBeanName(const QMetaObject *metaObj) noexcept
 } // namespace McPrivate
 
 namespace Mc {
+QList<QString> getAllComponent(const IMcApplicationContextPtr &appCtx) noexcept
+{
+    if (appCtx.isNull()) {
+        qCCritical(mcIoc, "Please call 'initContainer' to initialize container first");
+        return QList<QString>();
+    }
+    QList<QString> components;
+    auto beanBuilders = appCtx->getBeanBuilders();
+    for (auto itr = beanBuilders.cbegin(); itr != beanBuilders.cend(); ++itr) {
+        auto beanBuilder = itr.value();
+        if (!isComponent(beanBuilder->getBeanMetaObject()))
+            continue;
+        components.append(itr.key());
+    }
+    return components;
+}
+
+QList<QString> getComponents(const IMcApplicationContextPtr &appCtx, const QString &componentType) noexcept
+{
+    if (appCtx.isNull()) {
+        qCCritical(mcIoc, "Please call 'initContainer' to initialize container first");
+        return QList<QString>();
+    }
+    QList<QString> components;
+    auto beanBuilders = appCtx->getBeanBuilders();
+    for (auto itr = beanBuilders.cbegin(); itr != beanBuilders.cend(); ++itr) {
+        auto beanBuilder = itr.value();
+        if (!isComponentType(beanBuilder->getBeanMetaObject(), componentType))
+            continue;
+        components.append(itr.key());
+    }
+    return components;
+}
+
+bool isComponent(const QMetaObject *metaObj) noexcept
+{
+    if (metaObj == nullptr) {
+        return false;
+    }
+    int classInfoCount = metaObj->classInfoCount();
+    for (int i = 0; i < classInfoCount; ++i) {
+        auto classInfo = metaObj->classInfo(i);
+        if (qstrcmp(classInfo.name(), MC_COMPONENT_TAG) != 0)
+            continue;
+        return true;
+    }
+    return false;
+}
+
+bool isComponentType(const QMetaObject *metaObj, const QString &type) noexcept
+{
+    if (metaObj == nullptr) {
+        return false;
+    }
+    int classInfoCount = metaObj->classInfoCount();
+    for (int i = 0; i < classInfoCount; ++i) {
+        auto classInfo = metaObj->classInfo(i);
+        if (qstrcmp(classInfo.name(), MC_COMPONENT_TAG) != 0)
+            continue;
+        return classInfo.value() == type;
+    }
+    return false;
+}
+
 bool isContainedTag(const QByteArray &tags, const QByteArray &tag) noexcept
 {
     auto tagList = tags.split(' ');

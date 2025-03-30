@@ -1,30 +1,20 @@
 /*
- * MIT License
- *
- * Copyright (c) 2021 mrcao20
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * Copyright (c) 2021 mrcao20/mrcao20@163.com
+ * McQuickBoot is licensed under Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *          http://license.coscl.org.cn/MulanPSL2
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+ * EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+ * MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+ * See the Mulan PSL v2 for more details.
  */
 #pragma once
 
+#include <QDeadlineTimer>
 #include <QDir>
 #include <QEvent>
+#include <QEventLoop>
 #include <QLoggingCategory>
 #include <QObject>
 #include <QVariant>
@@ -43,10 +33,36 @@ template<typename... Args>
 struct MetaTypeHelper<QtPrivate::List<Args...>>
 {
 #ifdef MC_USE_QT5
+    template<typename T>
+    struct Helper
+    {
+        static int id() noexcept
+        {
+            if constexpr (!std::is_enum_v<T> || QtPrivate::IsQEnumHelper<T>::Value) {
+                return qMetaTypeId<T>();
+            } else {
+                return qMetaTypeId<std::underlying_type_t<T>>();
+            }
+        }
+    };
+    template<typename T>
+    struct Helper<QFlags<T>>
+    {
+        static int id() noexcept
+        {
+            if constexpr (QtPrivate::IsQEnumHelper<QFlags<T>>::Value) {
+                return qMetaTypeId<QFlags<T>>();
+            } else {
+                return qMetaTypeId<std::underlying_type_t<T>>();
+            }
+        }
+    };
+
     static QList<int> metaTypes() noexcept
     {
         QList<int> ms;
-        (ms << ... << qMetaTypeId<Args>());
+        //! 去除安卓上的警告
+        Q_UNUSED((ms << ... << Helper<Args>::id()));
         return ms;
     }
 #else
@@ -60,11 +76,71 @@ struct MetaTypeHelper<QtPrivate::List<Args...>>
 #endif
 };
 
+#ifdef MC_USE_QT5
+template<typename T>
+QVariant toQVariant(const T &data) noexcept
+{
+    if constexpr (std::is_same_v<char *, T> || std::is_same_v<const char *, T>) {
+        return QVariant(data);
+    } else if constexpr (!std::is_enum_v<T> || QtPrivate::IsQEnumHelper<T>::Value) {
+        return QVariant::fromValue(data);
+    } else {
+        return static_cast<std::underlying_type_t<T>>(data);
+    }
+}
+template<typename T>
+QVariant toQVariant(const QFlags<T> &flags) noexcept
+{
+    if constexpr (QtPrivate::IsQEnumHelper<QFlags<T>>::Value) {
+        return QVariant::fromValue(flags);
+    } else {
+        typename QFlags<T>::Int intFlags = flags;
+        return static_cast<std::underlying_type_t<T>>(intFlags);
+    }
+}
+
+template<typename T>
+struct ToRealValueHelper
+{
+    static T to(const QVariant &var) noexcept
+    {
+        if constexpr (!std::is_enum_v<T> || QtPrivate::IsQEnumHelper<T>::Value) {
+            return var.value<T>();
+        } else {
+            return static_cast<T>(var.value<std::underlying_type_t<T>>());
+        }
+    }
+};
+template<typename T>
+struct ToRealValueHelper<QFlags<T>>
+{
+    static QFlags<T> to(const QVariant &var) noexcept
+    {
+        if constexpr (QtPrivate::IsQEnumHelper<QFlags<T>>::Value) {
+            return var.value<QFlags<T>>();
+        } else {
+            return QFlags<T>(static_cast<T>(var.value<std::underlying_type_t<T>>()));
+        }
+    }
+};
+template<typename T>
+T toRealValue(const QVariant &var) noexcept
+{
+    return ToRealValueHelper<T>::to(var);
+}
+#else
 template<typename T>
 QVariant toQVariant(T &&data) noexcept
 {
     return QVariant::fromValue(std::forward<T>(data));
 }
+
+template<typename T>
+T toRealValue(const QVariant &var) noexcept
+{
+    return var.value<T>();
+}
+#endif
 template<int N>
 QVariant toQVariant(const char (&data)[N]) noexcept
 {
@@ -121,10 +197,21 @@ private:
 };
 
 namespace Mc {
+//! 标识析构代码块的优先级，同一优先级下的代码块没有顺序
 enum RoutinePriority : int {
-    Min = -10,
-    Normal = 0,
-    Max = 10,
+    RoutineMin = std::numeric_limits<int>::min(), //!< 最小值，不可再小
+    RoutineQuickBootThreadPool = -200, //!< 启动框架中全局线程池的析构优先级
+    RoutineLogDestroy = -100, //!< 日志库析构的优先级
+    RoutineNormal = 0, //!< 默认优先级，未特殊指定时均使用此优先级
+    RoutineWidgetBuildInTypeRegistry = 10, //!< 界面库内置类型注册的优先级
+    RoutineQuickBootServiceLoad = 20, //!< 启动框架的业务库加载优先级
+    RoutineMax = std::numeric_limits<int>::max(), //!< 最大值，不可再大
+};
+
+enum class NewHandlerType {
+    None = -1, //!< 不处理new失败的情况
+    Fatal = 0, //!< 如果出现new失败的情况，直接调用qFatal打印错误消息，并退出程序
+    Prealloc = 1 //!< 采用预分配内存的方案
 };
 
 template<typename Container>
@@ -136,16 +223,31 @@ inline bool isContains(int index, const Container &container) noexcept
 }
 
 /*!
- * \brief waitForExecFunc，执行一个函数，当该函数返回true时或timeout超时时返回
- *
- * 注意：如果当前线程本身处于退出状态，那么此函数会立即返回
- * 如果timeout设置为-1，则表示永不超时
- * 只有当func返回true时当前函数才会返回true，否则都返回false
+ * \brief waitForExecFunc
+ * 执行一个函数，当该函数返回true时或timeout超时时返回。
+ * \note 如果当前线程本身处于退出状态，那么此函数会立即返回,
+ * 只有当func返回true时当前函数才会返回true，否则都返回false。
  * \param func 将要执行的函数，该函数返回bool值
- * \param timeout 超时时长，单位: ms
+ * \param timeout 用于超时判断
+ * \param flags 事件循环的的执行标志
  * \return 返回函数执行结果
  */
-MC_CORE_EXPORT bool waitForExecFunc(const std::function<bool()> &func, qint64 timeout = -1) noexcept;
+MC_CORE_EXPORT bool waitForExecFunc(
+    const std::function<bool()> &func, QDeadlineTimer deadline, QEventLoop::ProcessEventsFlags flags) noexcept;
+inline bool waitForExecFunc(const std::function<bool()> &func, QDeadlineTimer deadline) noexcept
+{
+    return waitForExecFunc(func, deadline, QEventLoop::AllEvents);
+}
+//! timeout单位为ms
+inline bool waitForExecFunc(const std::function<bool()> &func, qint64 timeout) noexcept
+{
+    return waitForExecFunc(func, QDeadlineTimer(timeout));
+}
+inline bool waitForExecFunc(const std::function<bool()> &func) noexcept
+{
+    static constexpr const QDeadlineTimer deadline(QDeadlineTimer::Forever);
+    return waitForExecFunc(func, deadline);
+}
 
 MC_CORE_EXPORT void registerPathPlaceholder(const QString &placeholder, const std::function<QString()> &func) noexcept;
 
@@ -179,24 +281,55 @@ MC_CORE_EXPORT void cleanPreRoutine() noexcept;
 MC_CORE_EXPORT void addPostRoutine(int priority, const CleanUpFunction &func) noexcept;
 
 MC_CORE_EXPORT QFunctionPointer loadLibrary(
-    const QString &path, const QLatin1String &symbol, const QLatin1String &checkSymbol) noexcept;
-MC_CORE_EXPORT void loadLibrary(const QString &path, const QLatin1String &checkSymbol) noexcept;
+    const QString &path, QLatin1String symbol, QLatin1String checkSymbol) noexcept;
+MC_CORE_EXPORT void loadLibrary(const QString &path, QLatin1String checkSymbol) noexcept;
 MC_CORE_EXPORT QFunctionPointer loadMemoryLibrary(
-    const QByteArray &data, const QLatin1String &symbol, const QLatin1String &checkSymbol) noexcept;
-MC_CORE_EXPORT void loadMemoryLibrary(const QByteArray &data, const QLatin1String &checkSymbol) noexcept;
+    const QByteArray &data, QLatin1String symbol, QLatin1String checkSymbol) noexcept;
+MC_CORE_EXPORT void loadMemoryLibrary(const QByteArray &data, QLatin1String checkSymbol) noexcept;
 MC_CORE_EXPORT QObject *loadPlugin(
     const QString &pluginPath, const std::function<bool(const QJsonObject &)> &checker = nullptr) noexcept;
 
+//! 如果type为Prealloc，则可以传入第二个参数标识预分配内存的大小，单位：byte，默认64KB。
+//! 此时还可以传入第三个参数，为一个函数。当预分配的内存释放之后，就会调用该函数。
+//! 否则第二个参数无效
+MC_CORE_EXPORT void setNewHandlerType(
+    NewHandlerType type, quint64 size = 65536, const std::function<void()> &func = nullptr);
+
 template<typename T>
-T *loadPlugin(const QString &pluginPath, const std::function<bool(const QJsonObject &)> &checker = nullptr) noexcept
+inline T *loadPlugin(
+    const QString &pluginPath, const std::function<bool(const QJsonObject &)> &checker = nullptr) noexcept
 {
     QObject *obj = loadPlugin(pluginPath, checker);
     return qobject_cast<T *>(obj);
 }
+
+template<typename T>
+inline bool qmetaCheck(QObject *obj) noexcept
+{
+    return (obj != nullptr && obj->metaObject() == &T::staticMetaObject);
+}
+
+template<typename T>
+inline bool qmetaCheck(const QObjectPtr &obj) noexcept
+{
+    return (!obj.isNull() && obj->metaObject() == &T::staticMetaObject);
+}
+
+template<typename T>
+inline bool qmetaInheritsCheck(QObject *obj) noexcept
+{
+    return (obj != nullptr && obj->metaObject()->inherits(&T::staticMetaObject));
+}
+
+template<typename T>
+inline bool qmetaInheritsCheck(const QObjectPtr &obj) noexcept
+{
+    return (!obj.isNull() && obj->metaObject()->inherits(&T::staticMetaObject));
+}
 } // namespace Mc
 
 namespace McPrivate {
-inline constexpr auto extractRoutinePriority(int val = Mc::RoutinePriority::Normal) noexcept
+inline constexpr auto extractRoutinePriority(int val = Mc::RoutinePriority::RoutineNormal) noexcept
 {
     return val;
 }

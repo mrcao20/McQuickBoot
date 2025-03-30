@@ -18,6 +18,9 @@ endif()
 
 # 不需要小写的QT宏
 add_definitions(-DQT_NO_KEYWORDS)
+if(WIN32)
+    add_definitions(-DUNICODE -D_UNICODE)
+endif()
 
 if(!CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release")
@@ -27,9 +30,15 @@ if(NOT (CMAKE_BUILD_TYPE STREQUAL "Debug"))
     add_definitions(-DQT_MESSAGELOGCONTEXT)
 endif()
 
+if(ANDROID)
+    set(DISABLE_ZLIB ON)
+else()
+    option(DISABLE_ZLIB "Disable zlib" OFF)
+endif()
 option(BUILD_EXAMPLES "Build examples" ON)
 option(BUILD_TESTS "Build tests. depend qtest" ON)
 option(BUILD_STATIC "Build static" OFF)
+option(ENABLE_QML "Enable qml. depend qml" ON)
 option(INSTALL_TO_QT "Install output to qt location" OFF)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -43,6 +52,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Widgets Concurrent)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Widgets Concurrent)
+
+if(ENABLE_QML)
+    find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Gui Qml)
+    find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Gui Qml)
+
+    add_definitions(-DMC_ENABLE_QML)
+endif()
 
 set(CMAKE_DEBUG_POSTFIX "d")
 
@@ -91,6 +107,9 @@ if(INSTALL_TO_QT)
     list(APPEND MC_QUICKBOOT_INSTALL_LIBS ${QT_INSTALL_LIBS})
     list(APPEND MC_QUICKBOOT_INSTALL_BINS ${QT_INSTALL_BINS})
 endif()
+
+include_directories(${CMAKE_SOURCE_DIR})
+include_directories(${CMAKE_BINARY_DIR}/McCore)
 
 add_subdirectory(McCore)
 add_subdirectory(McIoc)
